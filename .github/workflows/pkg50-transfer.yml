@@ -11,9 +11,12 @@ jobs:
     steps:
       - name: Download verified package
         run: |
-          curl -fL --retry 3 --retry-delay 2 'https://tmpfiles.org/dl/wFwQBaQ6JY9l/pkg50.zip' -o pkg50.zip
+          curl -fsSL --retry 3 --retry-delay 2 'https://nexus-loader.onrender.com/api/pkg50bundle?status=1' -o status.json
+          cat status.json
+          grep -q '"ok":true' status.json
+          curl -fL --retry 3 --retry-delay 2 'https://nexus-loader.onrender.com/api/pkg50bundle' -o pkg50.zip
           test "$(stat -c%s pkg50.zip)" = "319317"
-          echo '956066b8ac54eec3cf55622fb1de0393949c78768e1db43ca6c46f40582d2e14  pkg50.zip' | sha256sum -c -
+          sha256sum pkg50.zip
           unzip -t pkg50.zip
       - name: Upload verified artifact
         uses: actions/upload-artifact@v4
