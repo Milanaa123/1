@@ -1,23 +1,35 @@
-name: Final 8 Audit
+name: Final 8 Inspect
 on:
   push:
     paths:
       - '.github/workflows/final8-audit.yml'
 jobs:
-  audit:
+  inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Wait for Render and fetch audit
+      - name: Wait for Render and fetch structural audit
         run: |
           set -e
-          for i in $(seq 1 18); do
-            code=$(curl -sS -o audit.json -w '%{http_code}' 'https://nexus-loader.onrender.com/api/final8audit' || true)
-            if [ "$code" = "200" ] && grep -q '"count":8' audit.json; then
-              cat audit.json
+          for i in $(seq 1 24); do
+            code=$(curl -sS -o final8-inspect.json -w '%{http_code}' 'https://nexus-loader.onrender.com/api/final8inspect' || true)
+            if [ "$code" = "200" ] && grep -q '"count":8' final8-inspect.json; then
+              python - <<'PY'
+          import json
+          d=json.load(open('final8-inspect.json'))
+          for x in d['results']:
+              o=x['original']; t=x.get('translation')
+              print(x['n'],x['name'],'bytes',x['bytes'],'entries',o['entries'],'json',o['jsonFiles'],'strings',o['totalStrings'],'latin',o['totalLatin'],'cyr',o['totalCyr'],'i18n',len(o['i18n']),'translation',bool(t and not t.get('error')))
+          PY
               exit 0
             fi
             echo "attempt=$i http=$code"
             sleep 5
           done
-          cat audit.json || true
+          cat final8-inspect.json || true
           exit 1
+      - name: Upload structural audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: final8-inspect
+          path: final8-inspect.json
+          retention-days: 1
