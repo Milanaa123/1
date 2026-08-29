@@ -1,0 +1,29 @@
+name: Translation API Test
+on:
+  push:
+    paths:
+      - '.github/workflows/translation-api-test.yml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test translation endpoint
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import urllib.parse, urllib.request, json
+          tests=[
+            'Hey Shane. I need to talk to you.',
+            'Winter Star Gift',
+            'Choose your clown outfit.',
+            'Hello {{playerName}}! You found 3 items. $h'
+          ]
+          for s in tests:
+              q=urllib.parse.urlencode({'client':'gtx','sl':'en','tl':'ru','dt':'t','q':s})
+              u='https://translate.googleapis.com/translate_a/single?'+q
+              with urllib.request.urlopen(u,timeout=20) as r:
+                  data=json.load(r)
+              out=''.join(x[0] for x in data[0] if x and x[0])
+              print('EN=',s)
+              print('RU=',out)
+          PY
