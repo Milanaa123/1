@@ -48,6 +48,7 @@ jobs:
             done
             [ "$ok" = 1 ] || { cat work/link.json; exit 1; }
             url=$(jq -r .url work/link.json)
+            url=${url// /%20}
             curl -fL --retry 3 --retry-delay 2 "$url" -o "work/downloads/$label.arc"
             mkdir -p "work/extracted/$label"
             7z x -y "work/downloads/$label.arc" -o"work/extracted/$label" >/dev/null
