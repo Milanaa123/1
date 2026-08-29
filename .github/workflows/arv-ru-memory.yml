@@ -24,14 +24,30 @@ jobs:
             curl -fL --retry 3 "$url" -o "$label.arc"
             7z x -y "$label.arc" -o"$label" >/dev/null
           done
-          find orig -type f -path '*/i18n/default.json' -print
-          find ru -type f -path '*/i18n/ru.json' -print
+          echo '--- ORIGINAL I18N ---'
+          find orig -type f -iname '*.json' | sort | head -80
+          echo '--- RU JSON ---'
+          find ru -type f -iname '*.json' | sort | head -120
           cp "$(find orig -type f -path '*/i18n/default.json' | head -1)" out/default.json
-          cp "$(find ru -type f -path '*/i18n/ru.json' | head -1)" out/ru.json
+          RUF=$(find ru -type f \( -iname 'ru.json' -o -iname 'ru-RU.json' -o -iname '*russian*.json' \) | head -1)
+          if [ -z "$RUF" ]; then
+            RUF=$(python - <<'PY'
+          import pathlib,re
+          best=None
+          for p in pathlib.Path('ru').rglob('*.json'):
+              s=p.read_text('utf-8-sig',errors='ignore')
+              score=len(re.findall('[А-Яа-яЁё]',s))
+              if score and (best is None or score>best[0]): best=(score,str(p))
+          print(best[1] if best else '')
+          PY
+          )
+          fi
+          echo "RUF=$RUF"
+          test -n "$RUF"
+          cp "$RUF" out/ru.json
           python - <<'PY'
           import json,pathlib,re
           def strip(s):
-              import re
               s=re.sub(r'/\*.*?\*/','',s,flags=re.S)
               s=re.sub(r'(^|\s)//.*',r'\1',s)
               s=re.sub(r',\s*([}\]])',r'\1',s)
