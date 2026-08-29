@@ -8,13 +8,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install translation runtime
-        run: pip install -q 'transformers>=4.55,<5' sentencepiece sacremoses
+        run: |
+          pip install -q --index-url https://download.pytorch.org/whl/cpu torch
+          pip install -q 'transformers>=4.55,<5' sentencepiece sacremoses
       - name: Test Helsinki EN-RU model
         env:
           HF_HUB_DISABLE_TELEMETRY: '1'
         run: |
           python - <<'PY'
+          import torch
           from transformers import MarianMTModel, MarianTokenizer
+          print('torch',torch.__version__)
           name='Helsinki-NLP/opus-mt-en-ru'
           tok=MarianTokenizer.from_pretrained(name)
           model=MarianMTModel.from_pretrained(name)
