@@ -24,26 +24,24 @@ jobs:
             curl -fL --retry 3 "$url" -o "$label.arc"
             7z x -y "$label.arc" -o"$label" >/dev/null
           done
-          OROOT="$(find orig -type d -path '*/[CP] Always Raining in the Valley' | head -1)"
-          RROOT="$(find ru -type d -path '*/[CP] Always Raining in the Valley' | head -1)"
-          echo "OROOT=$OROOT"
-          echo "RROOT=$RROOT"
-          test -d "$OROOT" && test -d "$RROOT"
-          for rel in \
-            'Data/ConversationTopics.json' \
-            'Data/EventData/SterlingEvents.json' \
-            'Data/Mail.json' \
-            'Data/TriggerActions.json' \
-            'content.json'; do
-            if [ -f "$OROOT/$rel" ]; then mkdir -p "out/en/$(dirname "$rel")"; cp "$OROOT/$rel" "out/en/$rel"; fi
-            if [ -f "$RROOT/$rel" ]; then mkdir -p "out/ru/$(dirname "$rel")"; cp "$RROOT/$rel" "out/ru/$rel"; fi
-          done
-          find out -type f -printf '%P %s\n' | sort
           python - <<'PY'
-          import pathlib
-          for side in ('en','ru'):
-              print(side, len(list(pathlib.Path('out',side).rglob('*.json'))),'json files')
+          import pathlib,shutil
+          rels=['Data/ConversationTopics.json','Data/EventData/SterlingEvents.json','Data/Mail.json','Data/TriggerActions.json','content.json']
+          for side in ('orig','ru'):
+              files=list(pathlib.Path(side).rglob('*.json'))
+              for rel in rels:
+                  hits=[p for p in files if p.as_posix().endswith('/[CP] Always Raining in the Valley/'+rel)]
+                  if not hits:
+                      hits=[p for p in files if p.as_posix().endswith('/Always Raining in the Valley/'+rel)]
+                  if hits:
+                      out=pathlib.Path('out','en' if side=='orig' else 'ru',rel)
+                      out.parent.mkdir(parents=True,exist_ok=True)
+                      shutil.copy2(hits[0],out)
+                      print(side,rel,'->',hits[0])
+          print('EN',len(list(pathlib.Path('out/en').rglob('*.json'))),'RU',len(list(pathlib.Path('out/ru').rglob('*.json'))))
           PY
+          test "$(find out/en -type f | wc -l)" -ge 4
+          test "$(find out/ru -type f | wc -l)" -ge 3
       - uses: actions/upload-artifact@v4
         with:
           name: arv-ru-paired-json
