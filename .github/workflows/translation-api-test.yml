@@ -10,25 +10,27 @@ jobs:
       - name: Test fallback translation endpoints
         shell: bash
         run: |
-          set -u
-          text='Hey Shane. I need to talk to you.'
+          set +e
           enc=$(python -c 'import urllib.parse; print(urllib.parse.quote("Hey Shane. I need to talk to you.", safe=""))')
           for host in \
             'https://translate.jae.fi' \
             'https://lingva.garudalinux.org' \
-            'https://translate.dr460nf1r3.org'; do
-            echo "LINGVA $host"
-            curl -sS --max-time 20 -w '\nHTTP=%{http_code}\n' "$host/api/v1/en/ru/$enc" | head -c 1200
+            'https://translate.dr460nf1r3.org' \
+            'https://lingva.thedaviddelta.com' \
+            'https://translate.igna.rocks'; do
+            echo "===== LINGVA $host ====="
+            curl -sS --max-time 20 -w '\nHTTP=%{http_code}\n' "$host/api/v1/en/ru/$enc" 2>&1 | head -c 1600
             echo
           done
           for host in \
             'https://translate.argosopentech.com' \
             'https://translate.mentality.rip' \
-            'https://trans.zillyhuhn.com'; do
-            echo "LIBRE $host"
+            'https://trans.zillyhuhn.com' \
+            'https://libretranslate.de'; do
+            echo "===== LIBRE $host ====="
             curl -sS --max-time 20 -w '\nHTTP=%{http_code}\n' -X POST "$host/translate" \
               -H 'Content-Type: application/json' \
-              -d '{"q":"Hey Shane. I need to talk to you.","source":"en","target":"ru","format":"text"}' | head -c 1200
+              -d '{"q":"Hey Shane. I need to talk to you.","source":"en","target":"ru","format":"text"}' 2>&1 | head -c 1600
             echo
           done
           exit 0
