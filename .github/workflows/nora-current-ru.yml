@@ -15,18 +15,19 @@ jobs:
           file nora.7z
           mkdir -p extracted final
           7z x -y nora.7z -oextracted >/dev/null
-          find extracted -type f -iname 'ru.json' -print
           mapfile -t RUFILES < <(find extracted -type f -path '*/i18n/ru.json')
           test "${#RUFILES[@]}" -ge 1
           cp "${RUFILES[0]}" final/ru.json
           python - <<'PY'
-          import json,re,pathlib
+          import pathlib,re
           p=pathlib.Path('final/ru.json')
           raw=p.read_text('utf-8-sig')
-          data=json.loads(raw)
-          assert isinstance(data,dict) and len(data)>100
-          assert any(re.search('[А-Яа-яЁё]',str(v)) for v in data.values())
-          print('keys',len(data),'bytes',p.stat().st_size)
+          # Stardew i18n files may legally contain // comments; validate content rather than strict JSON.
+          keys=len(re.findall(r'^\s*"[^"\n]+"\s*:',raw,re.M))
+          cyr=len(re.findall('[А-Яа-яЁё]',raw))
+          assert keys>100, keys
+          assert cyr>1000, cyr
+          print('keys',keys,'cyr_chars',cyr,'bytes',p.stat().st_size)
           PY
       - name: Upload Nora Russian i18n
         uses: actions/upload-artifact@v4
