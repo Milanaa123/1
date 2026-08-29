@@ -1,0 +1,23 @@
+name: Final 8 Audit
+on:
+  push:
+    paths:
+      - '.github/workflows/final8-audit.yml'
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Render and fetch audit
+        run: |
+          set -e
+          for i in $(seq 1 18); do
+            code=$(curl -sS -o audit.json -w '%{http_code}' 'https://nexus-loader.onrender.com/api/final8audit' || true)
+            if [ "$code" = "200" ] && grep -q '"count":8' audit.json; then
+              cat audit.json
+              exit 0
+            fi
+            echo "attempt=$i http=$code"
+            sleep 5
+          done
+          cat audit.json || true
+          exit 1
