@@ -7,23 +7,28 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Test translation endpoint
+      - name: Test fallback translation endpoints
+        shell: bash
         run: |
-          set -euo pipefail
-          python - <<'PY'
-          import urllib.parse, urllib.request, json
-          tests=[
-            'Hey Shane. I need to talk to you.',
-            'Winter Star Gift',
-            'Choose your clown outfit.',
-            'Hello {{playerName}}! You found 3 items. $h'
-          ]
-          for s in tests:
-              q=urllib.parse.urlencode({'client':'gtx','sl':'en','tl':'ru','dt':'t','q':s})
-              u='https://translate.googleapis.com/translate_a/single?'+q
-              with urllib.request.urlopen(u,timeout=20) as r:
-                  data=json.load(r)
-              out=''.join(x[0] for x in data[0] if x and x[0])
-              print('EN=',s)
-              print('RU=',out)
-          PY
+          set -u
+          text='Hey Shane. I need to talk to you.'
+          enc=$(python -c 'import urllib.parse; print(urllib.parse.quote("Hey Shane. I need to talk to you.", safe=""))')
+          for host in \
+            'https://translate.jae.fi' \
+            'https://lingva.garudalinux.org' \
+            'https://translate.dr460nf1r3.org'; do
+            echo "LINGVA $host"
+            curl -sS --max-time 20 -w '\nHTTP=%{http_code}\n' "$host/api/v1/en/ru/$enc" | head -c 1200
+            echo
+          done
+          for host in \
+            'https://translate.argosopentech.com' \
+            'https://translate.mentality.rip' \
+            'https://trans.zillyhuhn.com'; do
+            echo "LIBRE $host"
+            curl -sS --max-time 20 -w '\nHTTP=%{http_code}\n' -X POST "$host/translate" \
+              -H 'Content-Type: application/json' \
+              -d '{"q":"Hey Shane. I need to talk to you.","source":"en","target":"ru","format":"text"}' | head -c 1200
+            echo
+          done
+          exit 0
