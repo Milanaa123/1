@@ -1,0 +1,38 @@
+name: Penny RU Translation Memory
+on:
+  push:
+    paths:
+      - '.github/workflows/penny-ru-fetch.yml'
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Russian translation archives
+        run: |
+          set -euo pipefail
+          mkdir -p out tmp
+          for id in 18091 25751; do
+            for attempt in $(seq 1 12); do
+              code=$(curl -sS -o tmp/link.json -w '%{http_code}' "https://nexus-loader.onrender.com/api/nexusFileLink?game=stardewvalley&modId=$id" || true)
+              if [ "$code" = 200 ] && jq -e '.url' tmp/link.json >/dev/null; then break; fi
+              sleep 5
+            done
+            url=$(jq -r .url tmp/link.json); url=${url// /%20}
+            file=$(jq -r '.chosen.file_id' tmp/link.json)
+            echo "mod=$id file=$file"
+            curl -fL --retry 3 "$url" -o "tmp/$id.arc"
+            mkdir -p "tmp/$id"
+            7z x -y "tmp/$id.arc" -o"tmp/$id" >/dev/null
+            find "tmp/$id" -type f \( -iname 'ru.json' -o -iname '*.json' \) -print
+            while IFS= read -r p; do
+              rel=${p#tmp/$id/}
+              mkdir -p "out/$id/$(dirname "$rel")"
+              cp "$p" "out/$id/$rel"
+            done < <(find "tmp/$id" -type f \( -iname 'ru.json' -o -iname '*.json' \))
+          done
+      - name: Upload translation memory
+        uses: actions/upload-artifact@v4
+        with:
+          name: penny-ru-memory
+          path: out/
+          retention-days: 1
