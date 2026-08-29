@@ -1,0 +1,47 @@
+name: ARV RU Memory
+on:
+  push:
+    paths:
+      - '.github/workflows/arv-ru-memory.yml'
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download ARV original and RU translation
+        run: |
+          set -euo pipefail
+          mkdir -p orig ru out
+          for spec in '9999:orig' '11114:ru'; do
+            IFS=: read -r mod label <<< "$spec"
+            for i in $(seq 1 20); do
+              curl -fsSL "https://nexus-loader.onrender.com/api/nexusFileLink?game=stardewvalley&modId=$mod" -o link.json || true
+              url=$(jq -r '.url // empty' link.json)
+              [ -n "$url" ] && break
+              sleep 5
+            done
+            test -n "$url"
+            url=${url// /%20}
+            curl -fL --retry 3 "$url" -o "$label.arc"
+            7z x -y "$label.arc" -o"$label" >/dev/null
+          done
+          find orig -type f -path '*/i18n/default.json' -print
+          find ru -type f -path '*/i18n/ru.json' -print
+          cp "$(find orig -type f -path '*/i18n/default.json' | head -1)" out/default.json
+          cp "$(find ru -type f -path '*/i18n/ru.json' | head -1)" out/ru.json
+          python - <<'PY'
+          import json,pathlib,re
+          def strip(s):
+              import re
+              s=re.sub(r'/\*.*?\*/','',s,flags=re.S)
+              s=re.sub(r'(^|\s)//.*',r'\1',s)
+              s=re.sub(r',\s*([}\]])',r'\1',s)
+              return s
+          d=json.loads(strip(pathlib.Path('out/default.json').read_text('utf-8-sig')))
+          r=json.loads(strip(pathlib.Path('out/ru.json').read_text('utf-8-sig')))
+          print('default',len(d),'ru',len(r),'common',len(set(d)&set(r)))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: arv-ru-memory
+          path: out/
+          retention-days: 1
