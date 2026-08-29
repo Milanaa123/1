@@ -7,30 +7,24 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Test fallback translation endpoints
+      - name: Probe viable LibreTranslate mirrors
         shell: bash
         run: |
           set +e
-          enc=$(python -c 'import urllib.parse; print(urllib.parse.quote("Hey Shane. I need to talk to you.", safe=""))')
-          for host in \
-            'https://translate.jae.fi' \
-            'https://lingva.garudalinux.org' \
-            'https://translate.dr460nf1r3.org' \
-            'https://lingva.thedaviddelta.com' \
-            'https://translate.igna.rocks'; do
-            echo "===== LINGVA $host ====="
-            curl -sS --max-time 20 -w '\nHTTP=%{http_code}\n' "$host/api/v1/en/ru/$enc" 2>&1 | head -c 1600
-            echo
-          done
-          for host in \
-            'https://translate.argosopentech.com' \
-            'https://translate.mentality.rip' \
-            'https://trans.zillyhuhn.com' \
-            'https://libretranslate.de'; do
-            echo "===== LIBRE $host ====="
-            curl -sS --max-time 20 -w '\nHTTP=%{http_code}\n' -X POST "$host/translate" \
-              -H 'Content-Type: application/json' \
-              -d '{"q":"Hey Shane. I need to talk to you.","source":"en","target":"ru","format":"text"}' 2>&1 | head -c 1600
+          payload='{"q":"Hey Shane. I need to talk to you.","source":"en","target":"ru","format":"text"}'
+          for spec in \
+            'normal|https://libretranslate.de' \
+            'insecure|https://trans.zillyhuhn.com' \
+            'normal|https://translate.flossboxin.org.in' \
+            'normal|https://libretranslate.esmailelbob.xyz' \
+            'normal|https://libretranslate.pussthecat.org' \
+            'normal|https://lt.psf.lt'; do
+            mode=${spec%%|*}; host=${spec#*|}
+            echo "===== $host ====="
+            extra=''
+            [ "$mode" = insecure ] && extra='-k'
+            curl $extra -sSL --max-time 30 -w '\nHTTP=%{http_code}\n' -X POST "$host/translate" \
+              -H 'Content-Type: application/json' -d "$payload" 2>&1 | head -c 2000
             echo
           done
           exit 0
