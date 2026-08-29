@@ -1,0 +1,26 @@
+name: Offline MT Test
+on:
+  push:
+    paths:
+      - '.github/workflows/offline-mt-test.yml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install translation runtime
+        run: pip install -q 'transformers>=4.55,<5' sentencepiece sacremoses
+      - name: Test Helsinki EN-RU model
+        env:
+          HF_HUB_DISABLE_TELEMETRY: '1'
+        run: |
+          python - <<'PY'
+          from transformers import MarianMTModel, MarianTokenizer
+          name='Helsinki-NLP/opus-mt-en-ru'
+          tok=MarianTokenizer.from_pretrained(name)
+          model=MarianMTModel.from_pretrained(name)
+          xs=['Hey Shane. I need to talk to you.','Winter Star Gift','Choose your clown outfit.','I think Sterling is hiding something.']
+          b=tok(xs,return_tensors='pt',padding=True,truncation=True,max_length=512)
+          ys=model.generate(**b,max_new_tokens=256,num_beams=4)
+          for a,y in zip(xs,tok.batch_decode(ys,skip_special_tokens=True)):
+              print('EN=',a); print('RU=',y)
+          PY
