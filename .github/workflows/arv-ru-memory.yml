@@ -10,7 +10,7 @@ jobs:
       - name: Download ARV original and RU translation
         run: |
           set -euo pipefail
-          mkdir -p orig ru out
+          mkdir -p orig ru out/en out/ru
           for spec in '9999:orig' '11114:ru'; do
             IFS=: read -r mod label <<< "$spec"
             for i in $(seq 1 20); do
@@ -24,40 +24,28 @@ jobs:
             curl -fL --retry 3 "$url" -o "$label.arc"
             7z x -y "$label.arc" -o"$label" >/dev/null
           done
-          echo '--- ORIGINAL I18N ---'
-          find orig -type f -iname '*.json' | sort | head -80
-          echo '--- RU JSON ---'
-          find ru -type f -iname '*.json' | sort | head -120
-          cp "$(find orig -type f -path '*/i18n/default.json' | head -1)" out/default.json
-          RUF=$(find ru -type f \( -iname 'ru.json' -o -iname 'ru-RU.json' -o -iname '*russian*.json' \) | head -1)
-          if [ -z "$RUF" ]; then
-            RUF=$(python - <<'PY'
-          import pathlib,re
-          best=None
-          for p in pathlib.Path('ru').rglob('*.json'):
-              s=p.read_text('utf-8-sig',errors='ignore')
-              score=len(re.findall('[А-Яа-яЁё]',s))
-              if score and (best is None or score>best[0]): best=(score,str(p))
-          print(best[1] if best else '')
-          PY
-          )
-          fi
-          echo "RUF=$RUF"
-          test -n "$RUF"
-          cp "$RUF" out/ru.json
+          OROOT="$(find orig -type d -path '*/[CP] Always Raining in the Valley' | head -1)"
+          RROOT="$(find ru -type d -path '*/[CP] Always Raining in the Valley' | head -1)"
+          echo "OROOT=$OROOT"
+          echo "RROOT=$RROOT"
+          test -d "$OROOT" && test -d "$RROOT"
+          for rel in \
+            'Data/ConversationTopics.json' \
+            'Data/EventData/SterlingEvents.json' \
+            'Data/Mail.json' \
+            'Data/TriggerActions.json' \
+            'content.json'; do
+            if [ -f "$OROOT/$rel" ]; then mkdir -p "out/en/$(dirname "$rel")"; cp "$OROOT/$rel" "out/en/$rel"; fi
+            if [ -f "$RROOT/$rel" ]; then mkdir -p "out/ru/$(dirname "$rel")"; cp "$RROOT/$rel" "out/ru/$rel"; fi
+          done
+          find out -type f -printf '%P %s\n' | sort
           python - <<'PY'
-          import json,pathlib,re
-          def strip(s):
-              s=re.sub(r'/\*.*?\*/','',s,flags=re.S)
-              s=re.sub(r'(^|\s)//.*',r'\1',s)
-              s=re.sub(r',\s*([}\]])',r'\1',s)
-              return s
-          d=json.loads(strip(pathlib.Path('out/default.json').read_text('utf-8-sig')))
-          r=json.loads(strip(pathlib.Path('out/ru.json').read_text('utf-8-sig')))
-          print('default',len(d),'ru',len(r),'common',len(set(d)&set(r)))
+          import pathlib
+          for side in ('en','ru'):
+              print(side, len(list(pathlib.Path('out',side).rglob('*.json'))),'json files')
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: arv-ru-memory
+          name: arv-ru-paired-json
           path: out/
           retention-days: 1
