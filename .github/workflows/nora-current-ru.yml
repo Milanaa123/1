@@ -1,0 +1,37 @@
+name: Nora RU 2.9.2
+on:
+  push:
+    paths:
+      - '.github/workflows/nora-current-ru.yml'
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download and validate current Russian translation
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 --retry-delay 2 'https://stardewmods.ru/index.php?do=download&id=921' -o nora-ru.arc
+          echo "bytes=$(stat -c%s nora-ru.arc)"
+          file nora-ru.arc
+          mkdir -p final
+          7z x -y nora-ru.arc -ofinal >/dev/null
+          find final -type f -maxdepth 8 -printf '%P %s\n'
+          test "$(find final -type f | wc -l)" -gt 0
+          python - <<'PY'
+          import pathlib,re,sys
+          files=list(pathlib.Path('final').rglob('*'))
+          texts=[]
+          for p in files:
+              if p.is_file() and p.suffix.lower() in {'.json','.jsonc'}:
+                  s=p.read_text('utf-8-sig',errors='ignore'); texts.append(s)
+          alltext='\n'.join(texts)
+          assert re.search('[А-Яа-яЁё]',alltext), 'No Cyrillic text found'
+          print('json_files',sum(1 for p in files if p.is_file() and p.suffix.lower() in {'.json','.jsonc'}),'cyr_chars',len(re.findall('[А-Яа-яЁё]',alltext)))
+          PY
+      - name: Upload final Nora Russian overlay
+        uses: actions/upload-artifact@v4
+        with:
+          name: nora-ru-2.9.2-final
+          path: final/
+          retention-days: 1
+          compression-level: 6
