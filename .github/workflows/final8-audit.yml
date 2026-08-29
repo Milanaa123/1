@@ -1,17 +1,86 @@
-name: Final 8 Direct Links
+name: Final 8 Encrypted Sources
 on:
   push:
     paths:
       - '.github/workflows/final8-audit.yml'
 jobs:
-  links:
+  extract:
     runs-on: ubuntu-latest
     steps:
-      - name: Get temporary Nexus links
+      - name: Download exact archives and extract JSON
+        shell: bash
         run: |
-          set -e
-          for id in 10675 31537 27161 18176 19091 37926 30294 9972 33571 20653; do
-            echo "MOD=$id"
-            curl -fsSL "https://nexus-loader.onrender.com/api/nexusFileLink?game=stardewvalley&modId=$id"
-            echo
+          set -euo pipefail
+          mkdir -p work/downloads work/extracted work/jsonsrc
+          cat > work/public.pem <<'EOF'
+          -----BEGIN PUBLIC KEY-----
+          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAwEPv1K9+EQOXV7AXZgfe
+          4guoPov/UEs3SIUCAyS9kI6SMrUt4rW12iSRpI5Z/J6e2P6CTy74rBRjQTHsMcXw
+          VAh3XKS/SWRrbJY6A2B7HjRY5sEsp5MLwZE0Ac0eHxds0GdisxmGvdG/+7YsJSkS
+          s+V/kRdDMe9tpNqmfYpLDpIz050FuXUGxXT+2W0ODm6ulxB5Q83uQPQmyohSW4yx
+          hVXB3wZ6ZwOQ3lcpU/xBji5aYKJOpKNKPNsz8XEn25BBZ++QnwVUoLZ67nhU7dqN
+          1DT6whIMMQP0Z5t3d6Ep1GiC8v+79+NuF/TGHpoKc0PRIJWXkzOcOP6oar/lJhyz
+          EmSyKMCRLbxYS5c0UycyKSYRLOAsuVBiikLgas9p124NGfhmXlj1f5sPwEuhqoAM
+          J0fQFf1WXIiHbXEDXXixZolFQ/l/TnmV1ss2y88d439A77v1t99uCfl+OARuXmAF
+          65Nf4morLjYkE/JwODb8VlyPZtU7A/v0eGGXLdjCMuSJAgMBAAE=
+          -----END PUBLIC KEY-----
+          EOF
+          specs=(
+            '10675:129882:168_dynamic'
+            '31537:137300:300_maggs'
+            '27161:111738:312_gnmt'
+            '18176:155655:358_nora'
+            '19091:120932:498_trinkets'
+            '37926:164272:502_clowning'
+            '30294:124322:505_winterstar_rsv'
+            '9972:46468:530_farmerjack'
+            '33571:131035:358_nora_ru'
+            '20653:82995:498_trinkets_ru'
+          )
+          for spec in "${specs[@]}"; do
+            IFS=: read -r mod file label <<< "$spec"
+            echo "fetch $label mod=$mod file=$file"
+            ok=0
+            for attempt in $(seq 1 24); do
+              code=$(curl -sS -o work/link.json -w '%{http_code}' "https://nexus-loader.onrender.com/api/nexusFileLink?game=stardewvalley&modId=$mod&fileId=$file" || true)
+              if [ "$code" = 200 ] && [ "$(jq -r '.chosen.file_id // 0' work/link.json)" = "$file" ]; then ok=1; break; fi
+              sleep 5
+            done
+            [ "$ok" = 1 ] || { cat work/link.json; exit 1; }
+            url=$(jq -r .url work/link.json)
+            curl -fL --retry 3 --retry-delay 2 "$url" -o "work/downloads/$label.arc"
+            mkdir -p "work/extracted/$label"
+            7z x -y "work/downloads/$label.arc" -o"work/extracted/$label" >/dev/null
+            python - "$label" <<'PY'
+          import os,sys,shutil
+          label=sys.argv[1]
+          src=os.path.join('work','extracted',label)
+          dst=os.path.join('work','jsonsrc',label)
+          count=0
+          for root,dirs,files in os.walk(src):
+              for fn in files:
+                  if not fn.lower().endswith(('.json','.jsonc')): continue
+                  p=os.path.join(root,fn)
+                  rel=os.path.relpath(p,src)
+                  out=os.path.join(dst,rel)
+                  os.makedirs(os.path.dirname(out),exist_ok=True)
+                  shutil.copy2(p,out); count+=1
+          print(label,'json_files',count)
+          PY
           done
+          tar -C work -czf work/source-json.tgz jsonsrc
+          openssl rand 48 > work/keyiv.bin
+          KEY=$(dd if=work/keyiv.bin bs=1 count=32 2>/dev/null | xxd -p -c 256)
+          IV=$(dd if=work/keyiv.bin bs=1 skip=32 count=16 2>/dev/null | xxd -p -c 256)
+          openssl enc -aes-256-cbc -K "$KEY" -iv "$IV" -in work/source-json.tgz -out work/source-json.enc
+          openssl pkeyutl -encrypt -pubin -inkey work/public.pem -pkeyopt rsa_padding_mode:oaep -in work/keyiv.bin -out work/keyiv.enc
+          rm -rf work/downloads work/extracted work/jsonsrc work/source-json.tgz work/keyiv.bin work/public.pem work/link.json
+      - name: Upload encrypted sources
+        uses: actions/upload-artifact@v4
+        with:
+          name: final8-encrypted-json
+          path: |
+            work/source-json.enc
+            work/keyiv.enc
+          retention-days: 1
+          compression-level: 0
