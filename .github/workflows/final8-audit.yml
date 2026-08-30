@@ -14,15 +14,13 @@ jobs:
           mkdir -p work/downloads work/extracted work/jsonsrc
           cat > work/public.pem <<'EOF'
           -----BEGIN PUBLIC KEY-----
-          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAxBkXxcLoA8jmop0gpCWR
-          xVycza6CoKDFHDAgu4h2Qy7g532lXdrCS9OaP2KxwGDVKCes1NUHfBxRxFZgcdQt
-          HUmVb3aPS5083/3KnpJg/BK03or71ueCxpwqNhpMaITNXNqvIGrbAsr0N92JXGgB
-          IiOF1E5V9ALVDkdfKLQEX2o7i7xANIpXWMtrrWcAb+XiR4m3WeKPKV8L6BRmxjxs
-          Txv0tdSjdcCmiz5uj6N0lr76m1P+5gQbylhSJhuk/o3QeKcWRLR8pBm+iRN4ko2T
-          mwOIA2kf1a6f8e6PGBZmbs1x87xBIx7gEx5x6TAPVjYBN3xrYJTfulDV0XYLHamy
-          cxLnjALyroknhwai1zh+zlxLmUM3DLAg02jMY2RTYOgzimZmiBPnVMYaeLS2Lclh
-          nZdGP2Pe0RbyGsvkw9f1iXolkCYa7IV3h1EqRR5c/phivuJsagRGsCfB/nM7ak0c
-          KeTyyxFmwm82qOYOAHpGP9Jvb+8nNfdyXwLSKbu8WwSVAgMBAAE=
+          MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkNeAaEqUXvfbsvFuxy8f
+          pEsQRtSQld29STaouVFFSKsaYa3b1Vb4D25FoW7mgQEU2lbfXsW8tw11PFwfKVyV
+          jeZk8/fEF7KuJBZ6qGtkiaedLI1fVsc549gH9LVRKDJ2Qdood2w0pDgcfnJFVB0v
+          eGyXzuK7+IeeTiJFJJX6mfX+HzlK3TVd7SJTLvwR4nfkxiTG3J2LriL0lCFWjLyg
+          2kt/z8ZDMjjsSAH/kz9eqncVXa4sSvcqLhj5PdDzga+6IOXBE0ZtCfhsMqnwFJvO
+          Upy13XeVKx3PfJfGM20A3DOhahsfvGquX/d8gcVx8tP6Wsgzbwb7AbdUu9EbqF+1
+          WwIDAQAB
           -----END PUBLIC KEY-----
           EOF
           specs=(
@@ -40,7 +38,7 @@ jobs:
             ok=0
             for attempt in $(seq 1 24); do
               code=$(curl -sS -o work/link.json -w '%{http_code}' "https://nexus-loader.onrender.com/api/nexusFileLink?game=stardewvalley&modId=$mod&fileId=$file" || true)
-              if [ "$code" = 200 ] && [ "$(jq -r '.chosen.file_id // 0' work/link.json)" = "$file" ]; then ok=1; break; fi
+              if [ "$code" = "200" ] && [ "$(jq -r '.chosen.file_id // 0' work/link.json)" = "$file" ]; then ok=1; break; fi
               sleep 5
             done
             [ "$ok" = 1 ] || { cat work/link.json; exit 1; }
