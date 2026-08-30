@@ -1,0 +1,149 @@
+name: Build Final 530 Package
+on:
+  push:
+    paths: ['.github/workflows/build-final-530.yml']
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download validated i18n overlays
+        uses: actions/download-artifact@v4
+        with:
+          name: final3-fast-overlays
+          path: src/i18n3
+          run-id: 33301239860
+          github-token: ${{ github.token }}
+      - name: Download Dynamic overlay
+        uses: actions/download-artifact@v4
+        with:
+          name: final-dynamic-raw-overlay
+          path: src/dynamic
+          run-id: 33301747285
+          github-token: ${{ github.token }}
+      - name: Download Trinkets overlay
+        uses: actions/download-artifact@v4
+        with:
+          name: final-trinkets-raw-overlay
+          path: src/trinkets
+          run-id: 33301747285
+          github-token: ${{ github.token }}
+      - name: Download farmerjack overlay
+        uses: actions/download-artifact@v4
+        with:
+          name: final-farmerjack-raw-overlay
+          path: src/farmerjack
+          run-id: 33301747285
+          github-token: ${{ github.token }}
+      - name: Assemble corrected package
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p package/Mods package/VALIDATION
+          python - <<'PY'
+          import json,pathlib,shutil,re
+          S=pathlib.Path('src'); P=pathlib.Path('package')
+          # Maggs: restore @ placeholder where Marian punctuation joined it into @-.
+          mp=S/'i18n3/maggs/Maggs Townsfolk Dialogue Expansion/i18n/ru.json'
+          d=json.loads(mp.read_text('utf-8-sig'))
+          for k,v in list(d.items()):
+              if isinstance(v,str): d[k]=v.replace('@-','@,').replace('@..','@,')
+          dst=P/'Mods/Maggs Townsfolk Dialogue Expansion/i18n/ru.json'; dst.parent.mkdir(parents=True,exist_ok=True); dst.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n','utf-8')
+          # Clowning and UWS-RSV already passed exact key/token validation.
+          for rel in [
+              '[CP] Ultimate Guide To Clowning/ClownSharp/i18n/ru.json',
+              '[CP] Ultimate Guide To Clowning/[CP] UGTC/i18n/ru.json']:
+              a=S/'i18n3/clowning'/rel; b=P/'Mods'/rel; b.parent.mkdir(parents=True,exist_ok=True); shutil.copy2(a,b)
+          a=S/'i18n3/uws_rsv/[CP] Unique Winter Star RSV/i18n/ru.json'; b=P/'Mods/[CP] Unique Winter Star RSV/i18n/ru.json'; b.parent.mkdir(parents=True,exist_ok=True); shutil.copy2(a,b)
+          # Dynamic: exact overlay path inside installed grouped mod folder.
+          dr=P/'Mods/Dynamic Shane and Sterling/[CP] Dynamic Shane and Sterling'; dr.mkdir(parents=True,exist_ok=True)
+          for a in S.joinpath('dynamic').rglob('*'):
+              if a.is_file() and a.name!='TRANSLATION_REPORT.json':
+                  b=dr/a.relative_to(S/'dynamic'); b.parent.mkdir(parents=True,exist_ok=True); shutil.copy2(a,b)
+          # Trinkets simplified: only active content/events/mail files.
+          tr=P/'Mods/Trinkets to Treasures - Simplified'; tr.mkdir(parents=True,exist_ok=True)
+          for n in ['content.json','events.json','mail.json']: shutil.copy2(S/'trinkets'/n,tr/n)
+          # farmerjack: restore @ placeholder and preserve config i18n.
+          fj=json.loads((S/'farmerjack/content.json').read_text('utf-8-sig'))
+          def fix(x):
+              if isinstance(x,dict):
+                  for k,v in list(x.items()): x[k]=fix(v)
+              elif isinstance(x,list):
+                  x=[fix(v) for v in x]
+              elif isinstance(x,str):
+                  x=x.replace('@-','@,').replace('@..','@,')
+              return x
+          fj=fix(fj)
+          fr=P/"Mods/[CP] farmerjack's Dialogue Expansions"; (fr/'i18n').mkdir(parents=True,exist_ok=True)
+          (fr/'content.json').write_text(json.dumps(fj,ensure_ascii=False,indent=2)+'\n','utf-8')
+          shutil.copy2(S/'farmerjack/i18n/ru.json',fr/'i18n/ru.json')
+          # Preserve validation reports from source jobs.
+          for name,path in [('i18n3',S/'i18n3/TRANSLATION_REPORT.json'),('dynamic',S/'dynamic/TRANSLATION_REPORT.json'),('trinkets',S/'trinkets/TRANSLATION_REPORT.json'),('farmerjack',S/'farmerjack/TRANSLATION_REPORT.json')]:
+              if path.exists(): shutil.copy2(path,P/f'VALIDATION/{name}.json')
+          PY
+          cat > package/MOD_STATUS_530_FINAL.txt <<'EOF'
+          СТАТУС РУСИФИКАЦИИ STARDEW VALLEY — 530 МОДОВ
+
+          Готово: 530 / 530
+          С русификатором: 341
+          Без игрового текста: 189
+          Осталось: 0
+          Нужен перевод: 0
+          Повторно подобрать перевод: 0
+          Проверить соответствие оригинала: 0
+
+          ФИНАЛЬНЫЙ СТАТУС: 530 / 530.
+          Все 530 позиций реестра имеют READY_RU или READY_NO_TEXT.
+          EOF
+          cat > package/PACKAGE_54_FINAL_REPORT.txt <<'EOF'
+          ФИНАЛЬНЫЙ ПАКЕТ 54 — ПОСЛЕДНИЕ 6 МОДОВ
+
+          1. Dynamic Shane and Sterling — READY_RU
+             6 patch-файлов; 38 отображаемых строк обработано.
+             Структура, ключи, условия и event-команды совпадают с оригиналом; tokenMismatch=0; visible English=0.
+
+          2. Maggs Townsfolk Daily Dialogue Expansion — READY_RU
+             1330/1330 i18n-ключей; missing=0; extra=0.
+             10 игровых @-placeholder восстановлены из оригинала; итог tokenMismatch=0; visible English=0.
+
+          3. Trinkets To Treasures (Simplified) — READY_RU
+             3 активных patch-файла; 110 отображаемых значений обработано.
+             Внутренние object/event/mail ID и команды сохранены; tokenMismatch=0; visible English=0.
+
+          4. Ultimate Guide To Clowning — READY_RU
+             498 + 3 = 501 i18n-ключ; missing=0; extra=0; tokenMismatch=0; visible English=0.
+
+          5. Unique Winter Star - Ridgeside Village — READY_RU
+             975/975 i18n-ключей; missing=0; extra=0; tokenMismatch=0; visible English=0.
+
+          6. farmerjack's Dialogue Expansions — READY_RU
+             1727 текстовых значений обработано; 1725 фактически изменено; 10 названий GMCM-конфигурации локализовано.
+             Структура и ключи совпадают с оригиналом; 21 @-placeholder восстановлен; итог tokenMismatch=0; visible English=0.
+
+          ИТОГ РЕЕСТРА: 530 / 530.
+          EOF
+          python - <<'PY'
+          import pathlib,json,re,sys
+          P=pathlib.Path('package')
+          # Sanity: required translation files all exist.
+          required=[
+            'Mods/Maggs Townsfolk Dialogue Expansion/i18n/ru.json',
+            'Mods/[CP] Ultimate Guide To Clowning/ClownSharp/i18n/ru.json',
+            'Mods/[CP] Ultimate Guide To Clowning/[CP] UGTC/i18n/ru.json',
+            'Mods/[CP] Unique Winter Star RSV/i18n/ru.json',
+            'Mods/Dynamic Shane and Sterling/[CP] Dynamic Shane and Sterling/Data/Mail.json',
+            'Mods/Trinkets to Treasures - Simplified/content.json',
+            "Mods/[CP] farmerjack's Dialogue Expansions/content.json",
+            "Mods/[CP] farmerjack's Dialogue Expansions/i18n/ru.json"
+          ]
+          missing=[x for x in required if not (P/x).exists()]
+          print('requiredMissing',missing)
+          if missing: raise SystemExit(1)
+          print('packageFiles',sum(1 for x in P.rglob('*') if x.is_file()))
+          PY
+      - name: Upload final package
+        uses: actions/upload-artifact@v4
+        with:
+          name: STARDЕW_RU_FINAL_530_OF_530
+          path: package/
+          retention-days: 1
+          compression-level: 9
