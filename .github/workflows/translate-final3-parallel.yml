@@ -1,0 +1,106 @@
+name: Parallel Final 3 i18n
+on:
+  push:
+    paths: ['.github/workflows/translate-final3-parallel.yml']
+jobs:
+  translate:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: maggs
+            mod: 31537
+            file: 137300
+          - label: clowning
+            mod: 37926
+            file: 164272
+          - label: uws_rsv
+            mod: 30294
+            file: 124322
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Install
+        run: |
+          python -m pip install --quiet --index-url https://download.pytorch.org/whl/cpu torch
+          python -m pip install --quiet 'transformers>=4.45,<5' sentencepiece sacremoses json5
+      - name: Download exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p x out
+          for i in $(seq 1 24); do
+            c=$(curl -sS -o l.json -w '%{http_code}' "https://nexus-loader.onrender.com/api/nexusFileLink?game=stardewvalley&modId=${{ matrix.mod }}&fileId=${{ matrix.file }}" || true)
+            [ "$c" = 200 ] && [ "$(jq -r '.chosen.file_id//0' l.json)" = "${{ matrix.file }}" ] && break
+            sleep 5
+          done
+          u=$(jq -r .url l.json); u=${u// /%20}
+          curl -fL --retry 3 "$u" -o src.arc
+          7z x -y src.arc -ox >/dev/null
+      - name: Translate and validate
+        env:
+          LABEL: ${{ matrix.label }}
+        run: |
+          cat > t.py <<'PY'
+          import os,re,json,pathlib,json5
+          from transformers import MarianMTModel,MarianTokenizer
+          label=os.environ['LABEL']
+          N='Helsinki-NLP/opus-mt-en-ru'; tk=MarianTokenizer.from_pretrained(N); md=MarianMTModel.from_pretrained(N)
+          P=re.compile(r'(\{\{[^{}]+\}\}|#\$[A-Za-z0-9_]+#|\$[A-Za-z0-9_]+|@[A-Za-z0-9_.-]*|\[[^\[\]]+\]|%[^%]+%|#)'); L=re.compile(r'[A-Za-z]{2,}')
+          mp={'Ridgeside Village':'деревня Риджсайд','Winter Star':'Зимняя звезда','Pelican Town':'Пеликан Таун','Stardew Valley':'Долина Стардью','Yoba':'Йоба','Junimo':'Джунимо','Krobus':'Кробус','Shane':'Шейн','Marnie':'Марни','Jas':'Джас','Pierre':'Пьер','Emily':'Эмили','Abigail':'Эбигейл','Alex':'Алекс','Caroline':'Кэролайн','Clint':'Клинт','Demetrius':'Деметриус','Elliott':'Эллиот','Evelyn':'Эвелин','George':'Джордж','Gus':'Гас','Haley':'Хейли','Harvey':'Харви','Jodi':'Джоди','Kent':'Кент','Lewis':'Льюис','Maru':'Мару','Penny':'Пенни','Robin':'Робин','Sam':'Сэм','Sebastian':'Себастьян','Vincent':'Винсент','Willy':'Вилли','Leah':'Лия','Pam':'Пэм','Linus':'Линус','Wizard':'Волшебник','Morris':'Моррис','Sandy':'Сэнди','Leo':'Лео'}
+          cm={'a':'а','b':'б','c':'к','d':'д','e':'е','f':'ф','g':'г','h':'х','i':'и','j':'дж','k':'к','l':'л','m':'м','n':'н','o':'о','p':'п','q':'к','r':'р','s':'с','t':'т','u':'у','v':'в','w':'в','x':'кс','y':'й','z':'з'}
+          def tl(w):
+              z=''.join(cm.get(c.lower(),c) for c in w); return z.capitalize() if w[:1].isupper() else z
+          files=list(pathlib.Path('x').glob('**/i18n/default.json'))
+          if not files: raise SystemExit('default.json not found')
+          docs=[]; seg=[]; seen=set()
+          for p in files:
+              o=json5.loads(p.read_text('utf-8-sig')); docs.append((p,o))
+              for v in o.values():
+                  if not isinstance(v,str): continue
+                  for s in P.split(v):
+                      s=s.strip()
+                      if s and not P.fullmatch(s) and L.search(s) and s not in seen: seen.add(s); seg.append(s)
+          pcs=[]; owner={}
+          for s in seg:
+              if len(tk(s).input_ids)<=400:q=[s]
+              else:
+                  q=[]; c=[]
+                  for w in s.split():
+                      z=' '.join(c+[w])
+                      if c and len(tk(z).input_ids)>380:q.append(' '.join(c));c=[w]
+                      else:c.append(w)
+                  if c:q.append(' '.join(c))
+              owner[s]=q; pcs+=q
+          tr={}
+          for i in range(0,len(pcs),32):
+              b=pcs[i:i+32]; e=tk(b,return_tensors='pt',padding=True,truncation=False); g=md.generate(**e,max_new_tokens=512,num_beams=1); d=tk.batch_decode(g,skip_special_tokens=True); tr.update(zip(b,d)); print(label,i+len(b),'/',len(pcs),flush=True)
+          C={}
+          for s,q in owner.items():
+              z=' '.join(tr[x] for x in q)
+              for a,b in mp.items(): z=re.sub(rf'\b{re.escape(a)}\b',b,z,flags=re.I)
+              C[s]=L.sub(lambda m:tl(m.group()),z)
+          def cv(v):
+              o=[]
+              for s in P.split(v):
+                  if not s: continue
+                  if P.fullmatch(s): o.append(s); continue
+                  m=re.match(r'^(\s*)(.*?)(\s*)$',s,flags=re.S); a,b,c=m.groups(); o.append(a+C.get(b,b)+c)
+              return ''.join(o)
+          report=[]
+          for p,o in docs:
+              ru={k:(cv(v) if isinstance(v,str) else v) for k,v in o.items()}
+              rel=p.relative_to('x'); dst=pathlib.Path('out')/rel.parent/'ru.json'; dst.parent.mkdir(parents=True,exist_ok=True); dst.write_text(json.dumps(ru,ensure_ascii=False,indent=2)+'\n','utf8')
+              mm=[k for k,v in o.items() if isinstance(v,str) and P.findall(v)!=P.findall(ru[k])]
+              rr=[k for k,v in ru.items() if isinstance(v,str) and L.search(P.sub('',v))]
+              report.append({'label':label,'keys':len(o),'missing':len(set(o)-set(ru)),'extra':len(set(ru)-set(o)),'tokenMismatch':len(mm),'residualLatin':len(rr),'mismatchKeys':mm[:20],'residualKeys':rr[:20]})
+          pathlib.Path('out/TRANSLATION_REPORT.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),'utf8')
+          print(json.dumps(report,ensure_ascii=False),flush=True)
+          if any(r['missing'] or r['extra'] or r['tokenMismatch'] or r['residualLatin'] for r in report): raise SystemExit('validation failed')
+          PY
+          python t.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: final-${{ matrix.label }}-overlay
+          path: out/
+          retention-days: 1
