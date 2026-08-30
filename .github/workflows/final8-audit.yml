@@ -14,15 +14,15 @@ jobs:
           mkdir -p work/downloads work/extracted work/jsonsrc
           cat > work/public.pem <<'EOF'
           -----BEGIN PUBLIC KEY-----
-          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAwEPv1K9+EQOXV7AXZgfe
-          4guoPov/UEs3SIUCAyS9kI6SMrUt4rW12iSRpI5Z/J6e2P6CTy74rBRjQTHsMcXw
-          VAh3XKS/SWRrbJY6A2B7HjRY5sEsp5MLwZE0Ac0eHxds0GdisxmGvdG/+7YsJSkS
-          s+V/kRdDMe9tpNqmfYpLDpIz050FuXUGxXT+2W0ODm6ulxB5Q83uQPQmyohSW4yx
-          hVXB3wZ6ZwOQ3lcpU/xBji5aYKJOpKNKPNsz8XEn25BBZ++QnwVUoLZ67nhU7dqN
-          1DT6whIMMQP0Z5t3d6Ep1GiC8v+79+NuF/TGHpoKc0PRIJWXkzOcOP6oar/lJhyz
-          EmSyKMCRLbxYS5c0UycyKSYRLOAsuVBiikLgas9p124NGfhmXlj1f5sPwEuhqoAM
-          J0fQFf1WXIiHbXEDXXixZolFQ/l/TnmV1ss2y88d439A77v1t99uCfl+OARuXmAF
-          65Nf4morLjYkE/JwODb8VlyPZtU7A/v0eGGXLdjCMuSJAgMBAAE=
+          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAsZ9WHPPoEGq1f19qEWnb
+          E9Fb+073I3N+Vdaqn+lORhtP+9opFumk7Ui0exL3sHyfxZcrT1ykX6YitZHzzvSY
+          wyqexU06T5R0ZzVvLoBfjTJ+6T2keSDgxMAMBR5q6e8T2Q4f3GAxUZ8XCOIrLtvd
+          lLY52iSKNhS92FK3579LduUo0TrhsRYAC3/ICWtMX4apvVStp4uultmo2ToAmPFp
+          j/Y8jmO2p8vMa+vr6MymSElhYKCYPCWSvkQOSEU2GOrPnya8qzH2jZA41+mWl6cm
+          3A0D9vU50Z09qmhf5169596R7FaFnxYxC1ZfKNmRH5uy21cSP23NLotunaASu/s3
+          nie3a/a73dG8giuuUhXYcuA3C/sZKfgXgHZWvWHjXmrmYvSOL+bdX9YWBOAqTBL7
+          SVPrAQ5nZYXl/BDZohQiMaEO0VgD/Y/klHXmIgZwqOvNil22A4wINSFlE8mJvM17
+          YM7rBdkeoKl69tG+6F7QOyOiTj2Yk5i+LBGz/13nvHEtAgMBAAE=
           -----END PUBLIC KEY-----
           EOF
           specs=(
