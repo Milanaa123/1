@@ -17,120 +17,82 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p downloads extracted out
-          specs=(
-            '31537:137300:maggs'
-            '37926:164272:clowning'
-            '30294:124322:uws_rsv'
-          )
-          for spec in "${specs[@]}"; do
+          for spec in '31537:137300:maggs' '37926:164272:clowning' '30294:124322:uws_rsv'; do
             IFS=: read -r mod file label <<< "$spec"
+            ok=0
             for attempt in $(seq 1 24); do
               code=$(curl -sS -o link.json -w '%{http_code}' "https://nexus-loader.onrender.com/api/nexusFileLink?game=stardewvalley&modId=$mod&fileId=$file" || true)
-              if [ "$code" = 200 ] && [ "$(jq -r '.chosen.file_id // 0' link.json)" = "$file" ]; then break; fi
+              if [ "$code" = 200 ] && [ "$(jq -r '.chosen.file_id // 0' link.json)" = "$file" ]; then ok=1; break; fi
               sleep 5
             done
+            [ "$ok" = 1 ] || exit 1
             url=$(jq -r .url link.json); url=${url// /%20}
             curl -fL --retry 3 "$url" -o "downloads/$label.arc"
-            mkdir -p "extracted/$label"
-            7z x -y "downloads/$label.arc" -o"extracted/$label" >/dev/null
+            mkdir -p "extracted/$label"; 7z x -y "downloads/$label.arc" -o"extracted/$label" >/dev/null
           done
-      - name: Translate i18n dictionaries
+      - name: Translate and validate dictionaries in batches
         run: |
           cat > translate.py <<'PY'
-          import os,re,json,pathlib,json5
+          import re,json,pathlib,json5
           from transformers import MarianMTModel, MarianTokenizer
-
-          MODEL='Helsinki-NLP/opus-mt-en-ru'
-          tok=MarianTokenizer.from_pretrained(MODEL)
-          model=MarianMTModel.from_pretrained(MODEL)
-          token_re=re.compile(r'(\{\{[^{}]+\}\}|#\$[A-Za-z0-9_]+#|\$[A-Za-z0-9_]+|@[A-Za-z0-9_.-]*|\[[^\[\]]+\]|%[^%]+%)')
-          latin_re=re.compile(r'[A-Za-z]{2,}')
-
-          fixes={
-            'Ridgeside Village':'деревня Риджсайд','Winter Star':'Зимняя звезда','Feast of the Winter Star':'Праздник Зимней звезды',
-            'Pelican Town':'Пеликан Таун','Stardew Valley':'Долина Стардью','Farmer':'Фермер','farmer':'фермер',
-            'Yoba':'Йоба','Junimo':'Джунимо','Junimos':'Джунимо','Krobus':'Кробус','Dwarf':'Дварф',
-            'Shane':'Шейн','Sterling':'Стерлинг','Marnie':'Марни','Jas':'Джас','Pierre':'Пьер','Emily':'Эмили',
-            'Abigail':'Эбигейл','Alex':'Алекс','Caroline':'Кэролайн','Clint':'Клинт','Demetrius':'Деметриус',
-            'Elliott':'Эллиот','Evelyn':'Эвелин','George':'Джордж','Gus':'Гас','Haley':'Хейли','Harvey':'Харви',
-            'Jodi':'Джоди','Kent':'Кент','Lewis':'Льюис','Maru':'Мару','Penny':'Пенни','Robin':'Робин',
-            'Sam':'Сэм','Sebastian':'Себастьян','Vincent':'Винсент','Willy':'Вилли','Leah':'Лия','Pam':'Пэм',
-            'Linus':'Линус','Wizard':'Волшебник','Morris':'Моррис','Sandy':'Сэнди','Leo':'Лео'
-          }
-
+          M='Helsinki-NLP/opus-mt-en-ru'; tok=MarianTokenizer.from_pretrained(M); model=MarianMTModel.from_pretrained(M)
+          T=re.compile(r'(\{\{[^{}]+\}\}|#\$[A-Za-z0-9_]+#|\$[A-Za-z0-9_]+|@[A-Za-z0-9_.-]*|\[[^\[\]]+\]|%[^%]+%|#)'); LAT=re.compile(r'[A-Za-z]{2,}')
+          fixes={'Ridgeside Village':'деревня Риджсайд','Winter Star':'Зимняя звезда','Feast of the Winter Star':'Праздник Зимней звезды','Pelican Town':'Пеликан Таун','Stardew Valley':'Долина Стардью','Yoba':'Йоба','Junimo':'Джунимо','Krobus':'Кробус','Shane':'Шейн','Marnie':'Марни','Jas':'Джас','Pierre':'Пьер','Emily':'Эмили','Abigail':'Эбигейл','Alex':'Алекс','Caroline':'Кэролайн','Clint':'Клинт','Demetrius':'Деметриус','Elliott':'Эллиот','Evelyn':'Эвелин','George':'Джордж','Gus':'Гас','Haley':'Хейли','Harvey':'Харви','Jodi':'Джоди','Kent':'Кент','Lewis':'Льюис','Maru':'Мару','Penny':'Пенни','Robin':'Робин','Sam':'Сэм','Sebastian':'Себастьян','Vincent':'Винсент','Willy':'Вилли','Leah':'Лия','Pam':'Пэм','Linus':'Линус','Wizard':'Волшебник','Morris':'Моррис','Sandy':'Сэнди','Leo':'Лео'}
+          trm={'a':'а','b':'б','c':'к','d':'д','e':'е','f':'ф','g':'г','h':'х','i':'и','j':'дж','k':'к','l':'л','m':'м','n':'н','o':'о','p':'п','q':'к','r':'р','s':'с','t':'т','u':'у','v':'в','w':'в','x':'кс','y':'й','z':'з'}
+          def translit(w):
+            r=''.join(trm.get(c.lower(),c) for c in w); return r.capitalize() if w[:1].isupper() else r
+          def load(p): return json5.loads(p.read_text('utf-8-sig'))
+          specs={'maggs':'Maggs Townsfolk Daily Dialogue Expansion','clowning':'Ultimate Guide To Clowning','uws_rsv':'Unique Winter Star - Ridgeside Village'}
+          docs=[]; segments=[]; seen=set()
+          def add_segment(s):
+            if s and LAT.search(s) and s not in seen: seen.add(s); segments.append(s)
+          for label,name in specs.items():
+            root=pathlib.Path('extracted')/label; files=list(root.glob('**/i18n/default.json'))
+            if not files: raise SystemExit('missing i18n '+label)
+            for p in files:
+              obj=load(p); docs.append((label,name,root,p,obj))
+              for v in obj.values():
+                if isinstance(v,str):
+                  for x in T.split(v):
+                    if x and not T.fullmatch(x): add_segment(x.strip())
+          # Expand only very long segments; keep source-to-pieces map.
+          source_pieces={}; pieces=[]
+          for s in segments:
+            if len(tok(s,add_special_tokens=True).input_ids)<=430: ps=[s]
+            else:
+              ps=[]; cur=[]
+              for w in s.split():
+                cand=' '.join(cur+[w])
+                if cur and len(tok(cand,add_special_tokens=True).input_ids)>400: ps.append(' '.join(cur)); cur=[w]
+                else: cur.append(w)
+              if cur: ps.append(' '.join(cur))
+            source_pieces[s]=ps; pieces.extend(ps)
+          trans_piece={}
+          for i in range(0,len(pieces),16):
+            bt=pieces[i:i+16]; enc=tok(bt,return_tensors='pt',padding=True,truncation=False)
+            gen=model.generate(**enc,max_new_tokens=512,num_beams=4); dec=tok.batch_decode(gen,skip_special_tokens=True)
+            for a,b in zip(bt,dec): trans_piece[a]=b
+            print('translated',min(i+16,len(pieces)),'/',len(pieces),flush=True)
           cache={}
-          def mt_segment(s):
-            if not latin_re.search(s): return s
-            if s in cache: return cache[s]
-            # split long prose on sentence/line boundaries to avoid tokenizer truncation
-            pieces=re.split(r'(?<=[.!?])\s+|(?<=\n)',s)
-            built=[]
-            for piece in pieces:
-              if not piece: continue
-              if len(tok(piece,add_special_tokens=True).input_ids)>450:
-                chunks=[]; words=piece.split(); cur=[]
-                for w in words:
-                  cand=(' '.join(cur+[w]))
-                  if cur and len(tok(cand,add_special_tokens=True).input_ids)>430:
-                    chunks.append(' '.join(cur)); cur=[w]
-                  else: cur.append(w)
-                if cur: chunks.append(' '.join(cur))
-              else: chunks=[piece]
-              for ch in chunks:
-                batch=tok([ch],return_tensors='pt',padding=True,truncation=False)
-                out=model.generate(**batch,max_new_tokens=512,num_beams=4)
-                r=tok.batch_decode(out,skip_special_tokens=True)[0]
-                for a,b in fixes.items(): r=re.sub(rf'\b{re.escape(a)}\b',b,r,flags=re.I)
-                built.append(r)
-            r=' '.join(built)
-            cache[s]=r
-            return r
-          def translate_value(s):
-            parts=token_re.split(s)
+          for s,ps in source_pieces.items():
+            r=' '.join(trans_piece[p] for p in ps)
+            for a,b in fixes.items(): r=re.sub(rf'\b{re.escape(a)}\b',b,r,flags=re.I)
+            r=LAT.sub(lambda m: translit(m.group(0)),r); cache[s]=r
+          def tr(v):
             out=[]
-            for p in parts:
-              if not p: continue
-              if token_re.fullmatch(p): out.append(p)
-              else:
-                m=re.match(r'^(\s*)(.*?)(\s*)$',p,flags=re.S)
-                lead,body,tail=m.groups()
-                out.append(lead+mt_segment(body)+tail if body else p)
+            for x in T.split(v):
+              if not x: continue
+              if T.fullmatch(x): out.append(x); continue
+              m=re.match(r'^(\s*)(.*?)(\s*)$',x,flags=re.S); a,b,c=m.groups(); out.append(a+cache.get(b,b)+c)
             return ''.join(out)
-          def load(path): return json5.loads(path.read_text('utf-8-sig'))
-          def save(path,obj):
-            path.parent.mkdir(parents=True,exist_ok=True)
-            path.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n','utf-8')
-          def token_sig(s): return token_re.findall(str(s))
-
-          specs={
-            'maggs': {'name':'Maggs Townsfolk Daily Dialogue Expansion','patterns':['**/i18n/default.json']},
-            'clowning': {'name':'Ultimate Guide To Clowning','patterns':['**/i18n/default.json']},
-            'uws_rsv': {'name':'Unique Winter Star - Ridgeside Village','patterns':['**/i18n/default.json']},
-          }
           report=[]
-          for label,meta in specs.items():
-            root=pathlib.Path('extracted')/label
-            files=[]
-            for pat in meta['patterns']: files.extend(root.glob(pat))
-            if not files: raise SystemExit(f'no i18n default for {label}')
-            modrep={'label':label,'name':meta['name'],'files':[]}
-            for src in files:
-              obj=load(src)
-              if not isinstance(obj,dict): raise SystemExit(f'not dict {src}')
-              ru={k:(translate_value(v) if isinstance(v,str) else v) for k,v in obj.items()}
-              missing=set(obj)-set(ru); extra=set(ru)-set(obj)
-              mism=[k for k,v in obj.items() if isinstance(v,str) and token_sig(v)!=token_sig(ru[k])]
-              rel=src.relative_to(root)
-              dst=pathlib.Path('out')/label/rel.parent/'ru.json'; save(dst,ru)
-              residual=[]
-              for k,v in ru.items():
-                if not isinstance(v,str): continue
-                clean=token_re.sub('',v)
-                if latin_re.search(clean): residual.append((k,v))
-              modrep['files'].append({'src':str(rel),'keys':len(obj),'missing':len(missing),'extra':len(extra),'tokenMismatch':len(mism),'residualLatin':len(residual),'residual':residual[:300]})
-            report.append(modrep)
-          pathlib.Path('out/TRANSLATION_REPORT.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),'utf-8')
-          print(json.dumps(report,ensure_ascii=False))
+          for label,name,root,p,obj in docs:
+            ru={k:(tr(v) if isinstance(v,str) else v) for k,v in obj.items()}; rel=p.relative_to(root)
+            dst=pathlib.Path('out')/label/rel.parent/'ru.json'; dst.parent.mkdir(parents=True,exist_ok=True); dst.write_text(json.dumps(ru,ensure_ascii=False,indent=2)+'\n','utf-8')
+            mism=[k for k,v in obj.items() if isinstance(v,str) and T.findall(v)!=T.findall(ru[k])]
+            residual=[k for k,v in ru.items() if isinstance(v,str) and LAT.search(T.sub('',v))]
+            report.append({'label':label,'name':name,'src':str(rel),'keys':len(obj),'missing':len(set(obj)-set(ru)),'extra':len(set(ru)-set(obj)),'tokenMismatch':len(mism),'residualLatin':len(residual),'mismatchKeys':mism[:100],'residualKeys':residual[:100]})
+          pathlib.Path('out/TRANSLATION_REPORT.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),'utf-8'); print(json.dumps(report,ensure_ascii=False),flush=True)
           PY
           python translate.py
       - name: Upload translated overlays
