@@ -1,0 +1,33 @@
+name: UWS Base RU Memory
+on:
+  push:
+    paths: ['.github/workflows/uws-base-ru.yml']
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download base Russian translation
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 24); do
+            code=$(curl -sS -o link.json -w '%{http_code}' 'https://nexus-loader.onrender.com/api/nexusFileLink?game=stardewvalley&modId=37138&fileId=142181' || true)
+            [ "$code" = 200 ] && [ "$(jq -r '.chosen.file_id//0' link.json)" = 142181 ] && break
+            sleep 5
+          done
+          url=$(jq -r .url link.json); url=${url// /%20}
+          curl -fL --retry 3 "$url" -o base.arc
+          mkdir -p x out; 7z x -y base.arc -ox >/dev/null
+          find x -type f -path '*/i18n/ru.json' -print
+          p=$(find x -type f -path '*/i18n/ru.json' | head -1); test -n "$p"
+          cp "$p" out/ru.json
+          python - <<'PY'
+          import json5,pathlib
+          p=pathlib.Path('out/ru.json'); d=json5.loads(p.read_text('utf-8-sig'))
+          print('keys',len(d),'bytes',p.stat().st_size)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: uws-base-ru
+          path: out/ru.json
+          retention-days: 1
