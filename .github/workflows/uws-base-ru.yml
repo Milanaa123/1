@@ -22,9 +22,10 @@ jobs:
           p=$(find x -type f -path '*/i18n/ru.json' | head -1); test -n "$p"
           cp "$p" out/ru.json
           python - <<'PY'
-          import json5,pathlib
-          p=pathlib.Path('out/ru.json'); d=json5.loads(p.read_text('utf-8-sig'))
-          print('keys',len(d),'bytes',p.stat().st_size)
+          import pathlib,re
+          p=pathlib.Path('out/ru.json'); s=p.read_text('utf-8-sig',errors='strict')
+          assert re.search('[А-Яа-яЁё]',s), 'no Cyrillic'
+          print('bytes',p.stat().st_size,'cyr_chars',len(re.findall('[А-Яа-яЁё]',s)))
           PY
       - uses: actions/upload-artifact@v4
         with:
