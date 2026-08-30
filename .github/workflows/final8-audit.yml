@@ -1,4 +1,4 @@
-name: Final 8 Encrypted Sources
+name: Final 6 Encrypted Sources
 on:
   push:
     paths:
@@ -14,27 +14,24 @@ jobs:
           mkdir -p work/downloads work/extracted work/jsonsrc
           cat > work/public.pem <<'EOF'
           -----BEGIN PUBLIC KEY-----
-          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAsZ9WHPPoEGq1f19qEWnb
-          E9Fb+073I3N+Vdaqn+lORhtP+9opFumk7Ui0exL3sHyfxZcrT1ykX6YitZHzzvSY
-          wyqexU06T5R0ZzVvLoBfjTJ+6T2keSDgxMAMBR5q6e8T2Q4f3GAxUZ8XCOIrLtvd
-          lLY52iSKNhS92FK3579LduUo0TrhsRYAC3/ICWtMX4apvVStp4uultmo2ToAmPFp
-          j/Y8jmO2p8vMa+vr6MymSElhYKCYPCWSvkQOSEU2GOrPnya8qzH2jZA41+mWl6cm
-          3A0D9vU50Z09qmhf5169596R7FaFnxYxC1ZfKNmRH5uy21cSP23NLotunaASu/s3
-          nie3a/a73dG8giuuUhXYcuA3C/sZKfgXgHZWvWHjXmrmYvSOL+bdX9YWBOAqTBL7
-          SVPrAQ5nZYXl/BDZohQiMaEO0VgD/Y/klHXmIgZwqOvNil22A4wINSFlE8mJvM17
-          YM7rBdkeoKl69tG+6F7QOyOiTj2Yk5i+LBGz/13nvHEtAgMBAAE=
+          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAxBkXxcLoA8jmop0gpCWR
+          xVycza6CoKDFHDAgu4h2Qy7g532lXdrCS9OaP2KxwGDVKCes1NUHfBxRxFZgcdQt
+          HUmVb3aPS5083/3KnpJg/BK03or71ueCxpwqNhpMaITNXNqvIGrbAsr0N92JXGgB
+          IiOF1E5V9ALVDkdfKLQEX2o7i7xANIpXWMtrrWcAb+XiR4m3WeKPKV8L6BRmxjxs
+          Txv0tdSjdcCmiz5uj6N0lr76m1P+5gQbylhSJhuk/o3QeKcWRLR8pBm+iRN4ko2T
+          mwOIA2kf1a6f8e6PGBZmbs1x87xBIx7gEx5x6TAPVjYBN3xrYJTfulDV0XYLHamy
+          cxLnjALyroknhwai1zh+zlxLmUM3DLAg02jMY2RTYOgzimZmiBPnVMYaeLS2Lclh
+          nZdGP2Pe0RbyGsvkw9f1iXolkCYa7IV3h1EqRR5c/phivuJsagRGsCfB/nM7ak0c
+          KeTyyxFmwm82qOYOAHpGP9Jvb+8nNfdyXwLSKbu8WwSVAgMBAAE=
           -----END PUBLIC KEY-----
           EOF
           specs=(
             '10675:129882:168_dynamic'
             '31537:137300:300_maggs'
-            '27161:111738:312_gnmt'
-            '18176:155655:358_nora'
             '19091:120932:498_trinkets'
             '37926:164272:502_clowning'
             '30294:124322:505_winterstar_rsv'
             '9972:46468:530_farmerjack'
-            '33571:131035:358_nora_ru'
             '20653:82995:498_trinkets_ru'
           )
           for spec in "${specs[@]}"; do
@@ -79,7 +76,7 @@ jobs:
       - name: Upload encrypted sources
         uses: actions/upload-artifact@v4
         with:
-          name: final8-encrypted-json
+          name: final6-encrypted-json
           path: |
             work/source-json.enc
             work/keyiv.enc
