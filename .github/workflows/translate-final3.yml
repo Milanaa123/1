@@ -1,0 +1,133 @@
+name: Translate Final 3 i18n Mods
+on:
+  push:
+    paths:
+      - '.github/workflows/translate-final3.yml'
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Install translation runtime
+        run: |
+          python -m pip install --quiet 'transformers>=4.45,<5' sentencepiece json5
+      - name: Download exact mod archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p downloads extracted out
+          specs=(
+            '31537:137300:maggs'
+            '37926:164272:clowning'
+            '30294:124322:uws_rsv'
+          )
+          for spec in "${specs[@]}"; do
+            IFS=: read -r mod file label <<< "$spec"
+            for attempt in $(seq 1 24); do
+              code=$(curl -sS -o link.json -w '%{http_code}' "https://nexus-loader.onrender.com/api/nexusFileLink?game=stardewvalley&modId=$mod&fileId=$file" || true)
+              if [ "$code" = 200 ] && [ "$(jq -r '.chosen.file_id // 0' link.json)" = "$file" ]; then break; fi
+              sleep 5
+            done
+            url=$(jq -r .url link.json); url=${url// /%20}
+            curl -fL --retry 3 "$url" -o "downloads/$label.arc"
+            mkdir -p "extracted/$label"
+            7z x -y "downloads/$label.arc" -o"extracted/$label" >/dev/null
+          done
+      - name: Translate i18n dictionaries
+        run: |
+          cat > translate.py <<'PY'
+          import os,re,json,pathlib,json5
+          from transformers import MarianMTModel, MarianTokenizer
+
+          MODEL='Helsinki-NLP/opus-mt-en-ru'
+          tok=MarianTokenizer.from_pretrained(MODEL)
+          model=MarianMTModel.from_pretrained(MODEL)
+          token_re=re.compile(r'(\{\{[^{}]+\}\}|#\$[A-Za-z0-9_]+#|\$[A-Za-z0-9_]+|@[A-Za-z0-9_.-]*|\[[^\[\]]+\]|%[^%]+%)')
+          latin_re=re.compile(r'[A-Za-z]{2,}')
+
+          # preferred in-game spellings / proper names
+          fixes={
+            'Ridgeside Village':'деревня Риджсайд','Winter Star':'Зимняя звезда','Feast of the Winter Star':'Праздник Зимней звезды',
+            'Pelican Town':'Пеликан Таун','Stardew Valley':'Долина Стардью','Farmer':'Фермер','farmer':'фермер',
+            'Yoba':'Йоба','Junimo':'Джунимо','Junimos':'Джунимо','Krobus':'Кробус','Dwarf':'Дварф',
+            'Shane':'Шейн','Sterling':'Стерлинг','Marnie':'Марни','Jas':'Джас','Pierre':'Пьер','Emily':'Эмили',
+            'Abigail':'Эбигейл','Alex':'Алекс','Caroline':'Кэролайн','Clint':'Клинт','Demetrius':'Деметриус',
+            'Elliott':'Эллиот','Evelyn':'Эвелин','George':'Джордж','Gus':'Гас','Haley':'Хейли','Harvey':'Харви',
+            'Jodi':'Джоди','Kent':'Кент','Lewis':'Льюис','Maru':'Мару','Penny':'Пенни','Robin':'Робин',
+            'Sam':'Сэм','Sebastian':'Себастьян','Vincent':'Винсент','Willy':'Вилли','Leah':'Лия','Pam':'Пэм',
+            'Linus':'Линус','Wizard':'Волшебник','Morris':'Моррис','Sandy':'Сэнди','Leo':'Лео'
+          }
+
+          cache={}
+          def mt_segment(s):
+            if not latin_re.search(s): return s
+            if s in cache: return cache[s]
+            batch=tok([s],return_tensors='pt',padding=True,truncation=True,max_length=512)
+            out=model.generate(**batch,max_new_tokens=512,num_beams=4)
+            r=tok.batch_decode(out,skip_special_tokens=True)[0]
+            for a,b in fixes.items(): r=re.sub(rf'\b{re.escape(a)}\b',b,r,flags=re.I)
+            cache[s]=r
+            return r
+          def translate_value(s):
+            parts=token_re.split(s)
+            out=[]
+            for p in parts:
+              if not p: continue
+              if token_re.fullmatch(p): out.append(p)
+              else:
+                # preserve leading/trailing whitespace exactly
+                m=re.match(r'^(\s*)(.*?)(\s*)$',p,flags=re.S)
+                lead,body,tail=m.groups()
+                out.append(lead+mt_segment(body)+tail if body else p)
+            return ''.join(out)
+          def load(path):
+            txt=path.read_text('utf-8-sig')
+            return json5.loads(txt)
+          def save(path,obj):
+            path.parent.mkdir(parents=True,exist_ok=True)
+            path.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n','utf-8')
+          def token_sig(s): return token_re.findall(str(s))
+
+          specs={
+            'maggs': {'name':'Maggs Townsfolk Daily Dialogue Expansion','patterns':['**/i18n/default.json']},
+            'clowning': {'name':'Ultimate Guide To Clowning','patterns':['**/i18n/default.json']},
+            'uws_rsv': {'name':'Unique Winter Star - Ridgeside Village','patterns':['**/i18n/default.json']},
+          }
+          report=[]
+          for label,meta in specs.items():
+            root=pathlib.Path('extracted')/label
+            files=[]
+            for pat in meta['patterns']: files.extend(root.glob(pat))
+            if not files: raise SystemExit(f'no i18n default for {label}')
+            modrep={'label':label,'name':meta['name'],'files':[]}
+            for src in files:
+              obj=load(src)
+              if not isinstance(obj,dict): raise SystemExit(f'not dict {src}')
+              ru={}
+              for k,v in obj.items():
+                ru[k]=translate_value(v) if isinstance(v,str) else v
+              missing=set(obj)-set(ru); extra=set(ru)-set(obj)
+              mism=[k for k,v in obj.items() if isinstance(v,str) and token_sig(v)!=token_sig(ru[k])]
+              rel=src.relative_to(root)
+              dst=pathlib.Path('out')/label/rel.parent/'ru.json'
+              save(dst,ru)
+              # residual Latin is reported, not silently ignored
+              residual=[]
+              for k,v in ru.items():
+                if not isinstance(v,str): continue
+                clean=token_re.sub('',v)
+                # Ignore short abbreviations/numerals only; everything else is flagged.
+                if latin_re.search(clean): residual.append((k,v))
+              modrep['files'].append({'src':str(rel),'keys':len(obj),'missing':len(missing),'extra':len(extra),'tokenMismatch':len(mism),'residualLatin':len(residual),'residual':residual[:200]})
+            report.append(modrep)
+          pathlib.Path('out/TRANSLATION_REPORT.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),'utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          PY
+          python translate.py
+      - name: Upload translated overlays
+        uses: actions/upload-artifact@v4
+        with:
+          name: final3-russian-overlays
+          path: out/
+          retention-days: 1
+          compression-level: 6
