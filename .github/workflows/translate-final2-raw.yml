@@ -1,0 +1,220 @@
+name: Translate Final 2 Raw Dialogue Mods
+on:
+  push:
+    paths:
+      - '.github/workflows/translate-final2-raw.yml'
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Install translation runtime
+        run: |
+          python -m pip install --quiet --index-url https://download.pytorch.org/whl/cpu torch
+          python -m pip install --quiet 'transformers>=4.45,<5' sentencepiece sacremoses json5
+      - name: Download exact mod archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p downloads extracted out
+          specs=(
+            '10675:129882:dynamic'
+            '9972:46468:farmerjack'
+          )
+          for spec in "${specs[@]}"; do
+            IFS=: read -r mod file label <<< "$spec"
+            ok=0
+            for attempt in $(seq 1 24); do
+              code=$(curl -sS -o link.json -w '%{http_code}' "https://nexus-loader.onrender.com/api/nexusFileLink?game=stardewvalley&modId=$mod&fileId=$file" || true)
+              if [ "$code" = 200 ] && [ "$(jq -r '.chosen.file_id // 0' link.json)" = "$file" ]; then ok=1; break; fi
+              sleep 5
+            done
+            [ "$ok" = 1 ] || { cat link.json; exit 1; }
+            url=$(jq -r .url link.json); url=${url// /%20}
+            curl -fL --retry 3 "$url" -o "downloads/$label.arc"
+            mkdir -p "extracted/$label"
+            7z x -y "downloads/$label.arc" -o"extracted/$label" >/dev/null
+          done
+      - name: Translate only visible dialogue fields
+        run: |
+          cat > translate_raw.py <<'PY'
+          import re,json,pathlib,json5,copy
+          from transformers import MarianMTModel, MarianTokenizer
+
+          MODEL='Helsinki-NLP/opus-mt-en-ru'
+          tok=MarianTokenizer.from_pretrained(MODEL)
+          model=MarianMTModel.from_pretrained(MODEL)
+          # Game tokens and delimiters must survive literally.
+          token_re=re.compile(r'(\{\{[^{}]+\}\}|#\$[A-Za-z0-9_]+#|\$[A-Za-z0-9_]+|@[A-Za-z0-9_.-]*|\^[\^]*|#)')
+          latin_word=re.compile(r'[A-Za-z]{2,}')
+          fixes={
+            'Stardew Valley':'Долина Стардью','Pelican Town':'Пеликан Таун','JojaMart':'ДжоджаМарт','Joja':'Джоджа',
+            'Ridgeside Village':'деревня Риджсайд','East Scarp':'Ист-Скарп','Yoba':'Йоба','Junimo':'Джунимо','Junimos':'Джунимо',
+            'Shane':'Шейн','Sterling':'Стерлинг','Marnie':'Марни','Jas':'Джас','Emily':'Эмили','Abigail':'Эбигейл','Alex':'Алекс',
+            'Caroline':'Кэролайн','Clint':'Клинт','Demetrius':'Деметриус','Elliott':'Эллиот','Evelyn':'Эвелин','George':'Джордж',
+            'Gus':'Гас','Haley':'Хейли','Harvey':'Харви','Jodi':'Джоди','Kent':'Кент','Lewis':'Льюис','Maru':'Мару',
+            'Penny':'Пенни','Pierre':'Пьер','Robin':'Робин','Sam':'Сэм','Sebastian':'Себастьян','Vincent':'Винсент',
+            'Willy':'Вилли','Leah':'Лия','Pam':'Пэм','Linus':'Линус','Wizard':'Волшебник','Morris':'Моррис','Sandy':'Сэнди',
+            'Leo':'Лео','Krobus':'Кробус','Gunther':'Гюнтер','Zuzu':'Зузу','Qi':'Ци','Mia':'Миа','Henry':'Генри'
+          }
+          trmap={'a':'а','b':'б','c':'к','d':'д','e':'е','f':'ф','g':'г','h':'х','i':'и','j':'дж','k':'к','l':'л','m':'м','n':'н','o':'о','p':'п','q':'к','r':'р','s':'с','t':'т','u':'у','v':'в','w':'в','x':'кс','y':'й','z':'з'}
+          def translit_word(w):
+            # last-resort removal of visible Latin if MT leaves a name/acronym untranslated
+            out=''.join(trmap.get(c.lower(),c) for c in w)
+            return out.capitalize() if w[:1].isupper() else out
+          cache={}
+          def translate_segments(texts):
+            uniq=[]; seen=set()
+            for s in texts:
+              for p in token_re.split(s):
+                if not p or token_re.fullmatch(p) or not latin_word.search(p): continue
+                body=p.strip()
+                if body and body not in seen: seen.add(body); uniq.append(body)
+            # Break long prose safely before batching.
+            expanded=[]
+            parent={}
+            for s in uniq:
+              pieces=re.split(r'(?<=[.!?])\s+|(?<=\n)',s)
+              chunks=[]
+              for piece in pieces:
+                if not piece: continue
+                if len(tok(piece,add_special_tokens=True).input_ids)<=430:
+                  chunks.append(piece); continue
+                words=piece.split(); cur=[]
+                for w in words:
+                  cand=' '.join(cur+[w])
+                  if cur and len(tok(cand,add_special_tokens=True).input_ids)>410:
+                    chunks.append(' '.join(cur)); cur=[w]
+                  else: cur.append(w)
+                if cur: chunks.append(' '.join(cur))
+              parent[s]=chunks; expanded.extend(chunks)
+            outs={}
+            for i in range(0,len(expanded),12):
+              batch_text=expanded[i:i+12]
+              enc=tok(batch_text,return_tensors='pt',padding=True,truncation=False)
+              gen=model.generate(**enc,max_new_tokens=512,num_beams=4)
+              dec=tok.batch_decode(gen,skip_special_tokens=True)
+              for src,dst in zip(batch_text,dec): outs[src]=dst
+            for src,chunks in parent.items():
+              r=' '.join(outs[c] for c in chunks)
+              for a,b in fixes.items(): r=re.sub(rf'\b{re.escape(a)}\b',b,r,flags=re.I)
+              # eliminate any remaining visible Latin words; technical tokens were split out already
+              r=latin_word.sub(lambda m: translit_word(m.group(0)),r)
+              cache[src]=r
+          def tr(s):
+            parts=token_re.split(s); out=[]
+            for p in parts:
+              if not p: continue
+              if token_re.fullmatch(p): out.append(p); continue
+              m=re.match(r'^(\s*)(.*?)(\s*)$',p,flags=re.S); lead,body,tail=m.groups()
+              out.append(lead+(cache.get(body,body) if body else body)+tail)
+            return ''.join(out)
+          def load(p): return json5.loads(pathlib.Path(p).read_text('utf-8-sig'))
+          def dump(p,o):
+            p=pathlib.Path(p); p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps(o,ensure_ascii=False,indent=2)+'\n','utf-8')
+          def findone(root,name):
+            xs=list(pathlib.Path(root).rglob(name));
+            if not xs: raise SystemExit(f'missing {name} in {root}')
+            return xs[0]
+
+          report=[]
+          # farmerjack: translate only Entries values. Everything else stays identical.
+          fjroot=pathlib.Path('extracted/farmerjack'); fjp=findone(fjroot,'content.json'); fjo=load(fjp); fjout=copy.deepcopy(fjo)
+          vals=[]
+          for ch in fjout.get('Changes',[]):
+            ent=ch.get('Entries')
+            if isinstance(ent,dict): vals.extend(v for v in ent.values() if isinstance(v,str))
+          translate_segments(vals)
+          changed=0
+          for ch in fjout.get('Changes',[]):
+            ent=ch.get('Entries')
+            if isinstance(ent,dict):
+              for k,v in list(ent.items()):
+                if isinstance(v,str): ent[k]=tr(v); changed+=1
+          # structural proof: after blanking Entries values, source and output must be identical
+          def blank_entries(o):
+            q=copy.deepcopy(o)
+            for ch in q.get('Changes',[]):
+              if isinstance(ch.get('Entries'),dict): ch['Entries']={k:'' for k in ch['Entries']}
+            return q
+          if blank_entries(fjo)!=blank_entries(fjout): raise SystemExit('farmerjack structure changed')
+          residual=[]
+          for ch in fjout.get('Changes',[]):
+            for k,v in (ch.get('Entries') or {}).items():
+              if isinstance(v,str) and latin_word.search(token_re.sub('',v)): residual.append((k,v))
+          rel=fjp.relative_to(fjroot); dump(pathlib.Path('out/farmerjack')/rel,fjout)
+          report.append({'name':"farmerjack's Dialogue Expansions",'translatedEntries':changed,'structureChanged':0,'residualLatin':len(residual),'residual':residual[:200]})
+
+          # Dynamic: translate mail/topic entry values and only quoted text inside event script values.
+          dyroot=pathlib.Path('extracted/dynamic'); selected=[]; alltexts=[]
+          for name in ['Mail.json','ConversationTopics.json']:
+            p=findone(dyroot,name); o=load(p); selected.append((p,o,'entries'))
+            for ch in o.get('Changes',[]):
+              if isinstance(ch.get('Entries'),dict): alltexts.extend(v for v in ch['Entries'].values() if isinstance(v,str))
+          for name in ['SterlingEvents.json','RivalHeartEvents.json']:
+            p=findone(dyroot,name); o=load(p); selected.append((p,o,'events'))
+            for ch in o.get('Changes',[]):
+              if isinstance(ch.get('Entries'),dict):
+                for v in ch['Entries'].values():
+                  if isinstance(v,str): alltexts.extend(m.group(1) for m in re.finditer(r'"([^"\\]*(?:\\.[^"\\]*)*)"',v))
+          translate_segments(alltexts)
+          dcount=0; dres=[]
+          for p,o,kind in selected:
+            src=copy.deepcopy(o); out=copy.deepcopy(o)
+            for ch in out.get('Changes',[]):
+              ent=ch.get('Entries')
+              if not isinstance(ent,dict): continue
+              for k,v in list(ent.items()):
+                if not isinstance(v,str): continue
+                if kind=='entries':
+                  ent[k]=tr(v); dcount+=1
+                else:
+                  def repl(m):
+                    nonlocal_dummy=None
+                    return '"'+tr(m.group(1))+'"'
+                  nv=re.sub(r'"([^"\\]*(?:\\.[^"\\]*)*)"',repl,v)
+                  dcount+=len(re.findall(r'"([^"\\]*(?:\\.[^"\\]*)*)"',v)); ent[k]=nv
+            # structural verification
+            if kind=='entries':
+              def blank(o2):
+                q=copy.deepcopy(o2)
+                for ch in q.get('Changes',[]):
+                  if isinstance(ch.get('Entries'),dict): ch['Entries']={k:'' for k in ch['Entries']}
+                return q
+              if blank(src)!=blank(out): raise SystemExit(f'Dynamic entry structure changed {p}')
+            else:
+              # Strip only quoted payloads and compare exact command scripts.
+              def norm(o2):
+                q=copy.deepcopy(o2)
+                for ch in q.get('Changes',[]):
+                  ent=ch.get('Entries')
+                  if isinstance(ent,dict):
+                    for k,v in list(ent.items()):
+                      if isinstance(v,str): ent[k]=re.sub(r'"([^"\\]*(?:\\.[^"\\]*)*)"','""',v)
+                return q
+              if norm(src)!=norm(out): raise SystemExit(f'Dynamic event commands changed {p}')
+            rel=p.relative_to(dyroot); dump(pathlib.Path('out/dynamic')/rel,out)
+          for p in pathlib.Path('out/dynamic').rglob('*.json'):
+            obj=load(p)
+            def walk(x):
+              if isinstance(x,str):
+                if latin_word.search(token_re.sub('',x)): dres.append((str(p),x))
+              elif isinstance(x,list):
+                for z in x: walk(z)
+              elif isinstance(x,dict):
+                for z in x.values(): walk(z)
+            # Residual scan is intentionally broad, but technical script text can remain outside translated payloads;
+            # final report lets us distinguish those from translated visible fields.
+            walk(obj)
+          report.append({'name':'Dynamic Shane and Sterling','translatedVisibleSegments':dcount,'structureChanged':0,'broadResidualLatin':len(dres),'residualSample':dres[:100]})
+          pathlib.Path('out/TRANSLATION_REPORT.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),'utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          PY
+          python translate_raw.py
+      - name: Upload translated raw overlays
+        uses: actions/upload-artifact@v4
+        with:
+          name: final2-russian-overlays
+          path: out/
+          retention-days: 1
+          compression-level: 6
