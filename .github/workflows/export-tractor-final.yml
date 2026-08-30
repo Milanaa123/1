@@ -1,0 +1,24 @@
+name: Export Tractor Final
+on:
+  push:
+    paths:
+      - '.github/tractor-final-trigger.txt'
+  workflow_dispatch:
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Tractor
+        run: |
+          set -euo pipefail
+          curl -fL --retry 5 --retry-delay 5 --max-time 300 'https://nexus-loader.onrender.com/api/tractor' -o tractor.zip
+          test "$(head -c 2 tractor.zip)" = 'PK'
+          test "$(stat -c%s tractor.zip)" = '368856'
+          echo '7042c057a068393406eee04eac76d64d2d252562139619220833106bad6c5d9c  tractor.zip' | sha256sum -c -
+          unzip -t tractor.zip
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tractor-final
+          path: tractor.zip
+          retention-days: 1
