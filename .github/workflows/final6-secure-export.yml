@@ -1,0 +1,77 @@
+name: Final 6 Secure Export
+on:
+  push:
+    paths:
+      - '.github/workflows/final6-secure-export.yml'
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download exact archives and encrypt JSON-only sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p work/downloads work/extracted work/jsonsrc
+          cat > work/public.pem <<'EOF'
+          -----BEGIN PUBLIC KEY-----
+          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEA2BvvA54A3JgSFQH+XXUD
+          e/WNlCowzwbgM87IoV2BC9BVMM/EaUM/aBIXonJF8+90B43xaELROH47OWUABGx/
+          6vzi5nhpzVffjwFF1FddysYrtYAbivryI1hcvlH701BXcyyNvo2WGeRkK7tkZuq5
+          621M8hcrk4CZ6K9is6pKmfciLkJCWXPAbSoWMzk3RET3KLio0QsK5bR1vqaQ6LGw
+          8SwpLVd8rs3hCrVLWOLsC3kViibTn5VGJR+iqYM0newXlps4lzPTSAhv8aja7aES
+          2nJmlO+RZA7Q1d83j4HaQPjGp213CFNjYkpCkmH8+5KuKmeq6m/tDYjyQpEhQfe7
+          pmAcWSB9GZ617E7c2d2zInirAl9cMFAKl8QmnYuOpksY8i19LWKxOBMwjYpSgCvw
+          BobDw9thHC9PHpEveZzS2oF/yVDAHOlTZuaY4ABWNN+5/8r4TQOQyMSuBTq6NRBW
+          0Sot6Oo3R1whyrG4cOXV2zuaYJmoqjoNMMmVyA6jpWYpAgMBAAE=
+          -----END PUBLIC KEY-----
+          EOF
+          specs=(
+            '10675:129882:168_dynamic'
+            '31537:137300:300_maggs'
+            '19091:120932:498_trinkets'
+            '37926:164272:502_clowning'
+            '30294:124322:505_winterstar_rsv'
+            '9972:46468:530_farmerjack'
+            '20653:82995:498_trinkets_ru_full'
+          )
+          for spec in "${specs[@]}"; do
+            IFS=: read -r mod file label <<< "$spec"
+            ok=0
+            for attempt in $(seq 1 24); do
+              code=$(curl -sS -o work/link.json -w '%{http_code}' "https://nexus-loader.onrender.com/api/nexusFileLink?game=stardewvalley&modId=$mod&fileId=$file" || true)
+              if [ "$code" = 200 ] && [ "$(jq -r '.chosen.file_id // 0' work/link.json)" = "$file" ]; then ok=1; break; fi
+              sleep 5
+            done
+            [ "$ok" = 1 ] || { cat work/link.json; exit 1; }
+            url=$(jq -r .url work/link.json); url=${url// /%20}
+            curl -fL --retry 3 --retry-delay 2 "$url" -o "work/downloads/$label.arc"
+            mkdir -p "work/extracted/$label"
+            7z x -y "work/downloads/$label.arc" -o"work/extracted/$label" >/dev/null
+            python - "$label" <<'PY'
+          import os,sys,shutil
+          label=sys.argv[1]; src=os.path.join('work','extracted',label); dst=os.path.join('work','jsonsrc',label)
+          count=0
+          for root,dirs,files in os.walk(src):
+              for fn in files:
+                  if not fn.lower().endswith(('.json','.jsonc')): continue
+                  p=os.path.join(root,fn); rel=os.path.relpath(p,src); out=os.path.join(dst,rel)
+                  os.makedirs(os.path.dirname(out),exist_ok=True); shutil.copy2(p,out); count+=1
+          print(label,'json_files',count)
+          PY
+          done
+          tar -C work -czf work/source-json.tgz jsonsrc
+          openssl rand 48 > work/keyiv.bin
+          KEY=$(dd if=work/keyiv.bin bs=1 count=32 2>/dev/null | xxd -p -c 256)
+          IV=$(dd if=work/keyiv.bin bs=1 skip=32 count=16 2>/dev/null | xxd -p -c 256)
+          openssl enc -aes-256-cbc -K "$KEY" -iv "$IV" -in work/source-json.tgz -out work/source-json.enc
+          openssl pkeyutl -encrypt -pubin -inkey work/public.pem -pkeyopt rsa_padding_mode:oaep -in work/keyiv.bin -out work/keyiv.enc
+          rm -rf work/downloads work/extracted work/jsonsrc work/source-json.tgz work/keyiv.bin work/public.pem work/link.json
+      - name: Upload encrypted source artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: final6-encrypted-json
+          path: |
+            work/source-json.enc
+            work/keyiv.enc
+          retention-days: 1
+          compression-level: 0
