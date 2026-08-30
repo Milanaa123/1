@@ -10,7 +10,8 @@ jobs:
     steps:
       - name: Install translation runtime
         run: |
-          python -m pip install --quiet 'transformers>=4.45,<5' sentencepiece json5
+          python -m pip install --quiet --index-url https://download.pytorch.org/whl/cpu torch
+          python -m pip install --quiet 'transformers>=4.45,<5' sentencepiece sacremoses json5
       - name: Download exact mod archives
         shell: bash
         run: |
@@ -45,7 +46,6 @@ jobs:
           token_re=re.compile(r'(\{\{[^{}]+\}\}|#\$[A-Za-z0-9_]+#|\$[A-Za-z0-9_]+|@[A-Za-z0-9_.-]*|\[[^\[\]]+\]|%[^%]+%)')
           latin_re=re.compile(r'[A-Za-z]{2,}')
 
-          # preferred in-game spellings / proper names
           fixes={
             'Ridgeside Village':'деревня Риджсайд','Winter Star':'Зимняя звезда','Feast of the Winter Star':'Праздник Зимней звезды',
             'Pelican Town':'Пеликан Таун','Stardew Valley':'Долина Стардью','Farmer':'Фермер','farmer':'фермер',
@@ -62,10 +62,27 @@ jobs:
           def mt_segment(s):
             if not latin_re.search(s): return s
             if s in cache: return cache[s]
-            batch=tok([s],return_tensors='pt',padding=True,truncation=True,max_length=512)
-            out=model.generate(**batch,max_new_tokens=512,num_beams=4)
-            r=tok.batch_decode(out,skip_special_tokens=True)[0]
-            for a,b in fixes.items(): r=re.sub(rf'\b{re.escape(a)}\b',b,r,flags=re.I)
+            # split long prose on sentence/line boundaries to avoid tokenizer truncation
+            pieces=re.split(r'(?<=[.!?])\s+|(?<=\n)',s)
+            built=[]
+            for piece in pieces:
+              if not piece: continue
+              if len(tok(piece,add_special_tokens=True).input_ids)>450:
+                chunks=[]; words=piece.split(); cur=[]
+                for w in words:
+                  cand=(' '.join(cur+[w]))
+                  if cur and len(tok(cand,add_special_tokens=True).input_ids)>430:
+                    chunks.append(' '.join(cur)); cur=[w]
+                  else: cur.append(w)
+                if cur: chunks.append(' '.join(cur))
+              else: chunks=[piece]
+              for ch in chunks:
+                batch=tok([ch],return_tensors='pt',padding=True,truncation=False)
+                out=model.generate(**batch,max_new_tokens=512,num_beams=4)
+                r=tok.batch_decode(out,skip_special_tokens=True)[0]
+                for a,b in fixes.items(): r=re.sub(rf'\b{re.escape(a)}\b',b,r,flags=re.I)
+                built.append(r)
+            r=' '.join(built)
             cache[s]=r
             return r
           def translate_value(s):
@@ -75,14 +92,11 @@ jobs:
               if not p: continue
               if token_re.fullmatch(p): out.append(p)
               else:
-                # preserve leading/trailing whitespace exactly
                 m=re.match(r'^(\s*)(.*?)(\s*)$',p,flags=re.S)
                 lead,body,tail=m.groups()
                 out.append(lead+mt_segment(body)+tail if body else p)
             return ''.join(out)
-          def load(path):
-            txt=path.read_text('utf-8-sig')
-            return json5.loads(txt)
+          def load(path): return json5.loads(path.read_text('utf-8-sig'))
           def save(path,obj):
             path.parent.mkdir(parents=True,exist_ok=True)
             path.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n','utf-8')
@@ -103,22 +117,17 @@ jobs:
             for src in files:
               obj=load(src)
               if not isinstance(obj,dict): raise SystemExit(f'not dict {src}')
-              ru={}
-              for k,v in obj.items():
-                ru[k]=translate_value(v) if isinstance(v,str) else v
+              ru={k:(translate_value(v) if isinstance(v,str) else v) for k,v in obj.items()}
               missing=set(obj)-set(ru); extra=set(ru)-set(obj)
               mism=[k for k,v in obj.items() if isinstance(v,str) and token_sig(v)!=token_sig(ru[k])]
               rel=src.relative_to(root)
-              dst=pathlib.Path('out')/label/rel.parent/'ru.json'
-              save(dst,ru)
-              # residual Latin is reported, not silently ignored
+              dst=pathlib.Path('out')/label/rel.parent/'ru.json'; save(dst,ru)
               residual=[]
               for k,v in ru.items():
                 if not isinstance(v,str): continue
                 clean=token_re.sub('',v)
-                # Ignore short abbreviations/numerals only; everything else is flagged.
                 if latin_re.search(clean): residual.append((k,v))
-              modrep['files'].append({'src':str(rel),'keys':len(obj),'missing':len(missing),'extra':len(extra),'tokenMismatch':len(mism),'residualLatin':len(residual),'residual':residual[:200]})
+              modrep['files'].append({'src':str(rel),'keys':len(obj),'missing':len(missing),'extra':len(extra),'tokenMismatch':len(mism),'residualLatin':len(residual),'residual':residual[:300]})
             report.append(modrep)
           pathlib.Path('out/TRANSLATION_REPORT.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),'utf-8')
           print(json.dumps(report,ensure_ascii=False))
