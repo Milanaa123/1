@@ -1,0 +1,224 @@
+name: Translate Final Raw 3
+on:
+  push:
+    paths:
+      - '.github/workflows/translate-final-raw3.yml'
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Install translation runtime
+        run: |
+          python -m pip install --quiet --index-url https://download.pytorch.org/whl/cpu torch
+          python -m pip install --quiet 'transformers>=4.45,<5' sentencepiece sacremoses json5
+      - name: Download exact source archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p downloads extracted out
+          for spec in '10675:129882:dynamic' '19091:120932:trinkets' '9972:46468:farmerjack'; do
+            IFS=: read -r mod file label <<< "$spec"
+            ok=0
+            for attempt in $(seq 1 24); do
+              code=$(curl -sS -o link.json -w '%{http_code}' "https://nexus-loader.onrender.com/api/nexusFileLink?game=stardewvalley&modId=$mod&fileId=$file" || true)
+              if [ "$code" = 200 ] && [ "$(jq -r '.chosen.file_id // 0' link.json)" = "$file" ]; then ok=1; break; fi
+              sleep 5
+            done
+            [ "$ok" = 1 ] || exit 1
+            url=$(jq -r .url link.json); url=${url// /%20}
+            curl -fL --retry 3 "$url" -o "downloads/$label.arc"
+            mkdir -p "extracted/$label"; 7z x -y "downloads/$label.arc" -o"extracted/$label" >/dev/null
+          done
+      - name: Translate selected user-facing strings and validate
+        run: |
+          cat > translate_raw3.py <<'PY'
+          import re,json,pathlib,json5,copy
+          from transformers import MarianMTModel, MarianTokenizer
+          MODEL='Helsinki-NLP/opus-mt-en-ru'; tok=MarianTokenizer.from_pretrained(MODEL); model=MarianMTModel.from_pretrained(MODEL)
+          TOKEN_RE=re.compile(r'(\{\{[^{}]+\}\}|#\$[A-Za-z0-9_]+#|\$[A-Za-z0-9_]+|@[A-Za-z0-9_.-]*|%[A-Za-z0-9_.-]+|\[[^\[\]]+\]|\^[^^\s]*)')
+          LAT=re.compile(r'[A-Za-z]{2,}')
+          fixes={'Stardew Valley':'Долина Стардью','Pelican Town':'Пеликан Таун','Ridgeside Village':'деревня Риджсайд','Zuzu City':'Зузу-Сити','Winter Star':'Зимняя звезда','Feast of the Winter Star':'Праздник Зимней звезды','Adventurers Guild':'Гильдия искателей приключений','Adventurer’s Guild':'Гильдия искателей приключений','Adventurer\'s Guild':'Гильдия искателей приключений','Junimo':'Джунимо','Yoba':'Йоба','Krobus':'Кробус','Dwarf':'Дварф','Shane':'Шейн','Sterling':'Стерлинг','Marnie':'Марни','Jas':'Джас','Pierre':'Пьер','Emily':'Эмили','Abigail':'Эбигейл','Alex':'Алекс','Caroline':'Кэролайн','Clint':'Клинт','Demetrius':'Деметриус','Elliott':'Эллиот','Evelyn':'Эвелин','George':'Джордж','Gus':'Гас','Haley':'Хейли','Harvey':'Харви','Jodi':'Джоди','Kent':'Кент','Lewis':'Льюис','Maru':'Мару','Penny':'Пенни','Robin':'Робин','Sam':'Сэм','Sebastian':'Себастьян','Vincent':'Винсент','Willy':'Вилли','Leah':'Лия','Pam':'Пэм','Linus':'Линус','Wizard':'Волшебник','Sandy':'Сэнди','Leo':'Лео','Mia':'Миа','Henry':'Генри'}
+          trm={'a':'а','b':'б','c':'к','d':'д','e':'е','f':'ф','g':'г','h':'х','i':'и','j':'дж','k':'к','l':'л','m':'м','n':'н','o':'о','p':'п','q':'к','r':'р','s':'с','t':'т','u':'у','v':'в','w':'в','x':'кс','y':'й','z':'з'}
+          def translit(w):
+            r=''.join(trm.get(c.lower(),c) for c in w); return r.capitalize() if w[:1].isupper() else r
+          # collect unique text segments outside game tokens
+          segments=[]; seen=set()
+          def collect_text(s):
+            for part in TOKEN_RE.split(s):
+              if part and not TOKEN_RE.fullmatch(part):
+                part=part.strip()
+                if LAT.search(part) and part not in seen: seen.add(part); segments.append(part)
+          # quoted text from Stardew event command strings
+          QUOTE_RE=re.compile(r'"((?:\\.|[^"\\])*)"')
+          docs=[]
+          def load(path): return json5.loads(path.read_text('utf-8-sig'))
+          # FARMERJACK: every Entries value is player-visible dialogue/festival/schedule text.
+          fjroot=next(pathlib.Path('extracted/farmerjack').glob('**/[Cc]ontent.json')).parent
+          fjp=next(fjroot.glob('[Cc]ontent.json')); fj=load(fjp)
+          for ch in fj.get('Changes',[]):
+            ent=ch.get('Entries') if isinstance(ch,dict) else None
+            if isinstance(ent,dict):
+              for v in ent.values():
+                if isinstance(v,str): collect_text(v)
+          docs.append(('farmerjack',fjroot,fjp,fj))
+          # DYNAMIC selected files
+          dyroot=next(pathlib.Path('extracted/dynamic').glob('**/[Cc]ontent.json')).parent
+          dynamic_files=[]
+          for rel in ['Content.json','Data/ConversationTopics.json','Data/Mail.json']:
+            p=dyroot/rel
+            if p.exists():
+              o=load(p); dynamic_files.append((rel,p,o,'entries'))
+              for ch in o.get('Changes',[]):
+                ent=ch.get('Entries') if isinstance(ch,dict) else None
+                if isinstance(ent,dict):
+                  for v in ent.values():
+                    if isinstance(v,str): collect_text(v)
+          for p in list((dyroot/'Data/EventData').glob('*.json'))+list((dyroot/'Assets/Events').glob('*.json')):
+            o=load(p); dynamic_files.append((str(p.relative_to(dyroot)),p,o,'event'))
+            for ch in o.get('Changes',[]):
+              ent=ch.get('Entries') if isinstance(ch,dict) else None
+              if isinstance(ent,dict):
+                for v in ent.values():
+                  if isinstance(v,str):
+                    for m in QUOTE_RE.finditer(v): collect_text(m.group(1))
+          # TRINKETS: display fields in content + event quoted dialogue + mail text
+          trroot=next(pathlib.Path('extracted/trinkets').glob('**/content.json')).parent
+          trcontent=load(trroot/'content.json')
+          def walk_display(x):
+            if isinstance(x,dict):
+              for k,v in x.items():
+                if k in ('DisplayName','Description') and isinstance(v,str): collect_text(v)
+                else: walk_display(v)
+            elif isinstance(x,list):
+              for v in x: walk_display(v)
+          walk_display(trcontent)
+          trevents=load(trroot/'events.json'); trmail=load(trroot/'mail.json')
+          for ch in trevents.get('Changes',[]):
+            ent=ch.get('Entries') if isinstance(ch,dict) else None
+            if isinstance(ent,dict):
+              for v in ent.values():
+                if isinstance(v,str):
+                  for m in QUOTE_RE.finditer(v): collect_text(m.group(1))
+          for ch in trmail.get('Changes',[]):
+            ent=ch.get('Entries') if isinstance(ch,dict) else None
+            if isinstance(ent,dict):
+              for v in ent.values():
+                if isinstance(v,str): collect_text(v)
+          # translate
+          pieces=[]; piece_map={}
+          for s in segments:
+            ps=[]; cur=[]
+            words=s.split()
+            if len(tok(s,add_special_tokens=True).input_ids)<=400: ps=[s]
+            else:
+              for w in words:
+                cand=' '.join(cur+[w])
+                if cur and len(tok(cand,add_special_tokens=True).input_ids)>360: ps.append(' '.join(cur)); cur=[w]
+                else: cur.append(w)
+              if cur: ps.append(' '.join(cur))
+            piece_map[s]=ps; pieces.extend(ps)
+          trans_piece={}
+          for i in range(0,len(pieces),16):
+            batch=pieces[i:i+16]; enc=tok(batch,return_tensors='pt',padding=True,truncation=False)
+            gen=model.generate(**enc,max_new_tokens=512,num_beams=4); dec=tok.batch_decode(gen,skip_special_tokens=True)
+            for a,b in zip(batch,dec): trans_piece[a]=b
+            print('translated',min(i+16,len(pieces)),'/',len(pieces),flush=True)
+          cache={}
+          for s,ps in piece_map.items():
+            r=' '.join(trans_piece[p] for p in ps)
+            for a,b in fixes.items(): r=re.sub(rf'\b{re.escape(a)}\b',b,r,flags=re.I)
+            r=LAT.sub(lambda m: translit(m.group(0)),r); cache[s]=r
+          def tr_text(s):
+            out=[]
+            for part in TOKEN_RE.split(s):
+              if not part: continue
+              if TOKEN_RE.fullmatch(part): out.append(part); continue
+              m=re.match(r'^(\s*)(.*?)(\s*)$',part,flags=re.S); a,b,c=m.groups(); out.append(a+cache.get(b,b)+c)
+            return ''.join(out)
+          def tr_event(s): return QUOTE_RE.sub(lambda m:'"'+tr_text(m.group(1)).replace('"','\\"')+'"',s)
+          report=[]
+          # farmerjack output
+          fjo=copy.deepcopy(fj); count=0
+          for ch in fjo.get('Changes',[]):
+            ent=ch.get('Entries') if isinstance(ch,dict) else None
+            if isinstance(ent,dict):
+              for k,v in list(ent.items()):
+                if isinstance(v,str): ent[k]=tr_text(v); count+=1
+          outroot=pathlib.Path('out/farmerjack'); outroot.mkdir(parents=True,exist_ok=True); (outroot/'content.json').write_text(json.dumps(fjo,ensure_ascii=False,indent=2)+'\n','utf-8')
+          cfg={}
+          names={'farmerjack_Abigail_Dialogue':'Диалоги Эбигейл','farmerjack_Elliott_Dialogue':'Диалоги Эллиота','farmerjack_Emily_Dialogue':'Диалоги Эмили','farmerjack_Haley_Dialogue':'Диалоги Хейли','farmerjack_Harvey_Dialogue':'Диалоги Харви','farmerjack_Leah_Dialogue':'Диалоги Лии','farmerjack_Penny_Dialogue':'Диалоги Пенни','farmerjack_Shane_Dialogue':'Диалоги Шейна','farmerjack_Maru_Dialogue':'Диалоги Мару','farmerjack_Alex_Dialogue':'Диалоги Алекса'}
+          for k in (fj.get('ConfigSchema') or {}): cfg[f'config.{k}.name']=names.get(k,'Диалоги персонажа')
+          (outroot/'i18n').mkdir(exist_ok=True); (outroot/'i18n/ru.json').write_text(json.dumps(cfg,ensure_ascii=False,indent=2)+'\n','utf-8')
+          report.append({'mod':'farmerjack','translatedValues':count,'residualLatin':sum(1 for ch in fjo.get('Changes',[]) for v in (ch.get('Entries') or {}).values() if isinstance(v,str) and LAT.search(TOKEN_RE.sub('',v)))})
+          # dynamic outputs
+          dcount=0; dres=0
+          for rel,p,o,mode in dynamic_files:
+            oo=copy.deepcopy(o)
+            for ch in oo.get('Changes',[]):
+              ent=ch.get('Entries') if isinstance(ch,dict) else None
+              if not isinstance(ent,dict): continue
+              for k,v in list(ent.items()):
+                if not isinstance(v,str): continue
+                nv=tr_event(v) if mode=='event' else tr_text(v); ent[k]=nv; dcount+=1
+                if mode=='event':
+                  for m in QUOTE_RE.finditer(nv): dres+=1 if LAT.search(TOKEN_RE.sub('',m.group(1))) else 0
+                elif LAT.search(TOKEN_RE.sub('',nv)): dres+=1
+            dst=pathlib.Path('out/dynamic')/rel; dst.parent.mkdir(parents=True,exist_ok=True); dst.write_text(json.dumps(oo,ensure_ascii=False,indent=2)+'\n','utf-8')
+          report.append({'mod':'dynamic','translatedValues':dcount,'residualLatin':dres})
+          # trinkets outputs
+          tro=copy.deepcopy(trcontent); tcount=0
+          def patch_display(x):
+            nonlocal_dummy=None
+            global tcount
+            if isinstance(x,dict):
+              for k,v in list(x.items()):
+                if k in ('DisplayName','Description') and isinstance(v,str): x[k]=tr_text(v); tcount+=1
+                else: patch_display(v)
+            elif isinstance(x,list):
+              for v in x: patch_display(v)
+          patch_display(tro)
+          teo=copy.deepcopy(trevents)
+          for ch in teo.get('Changes',[]):
+            ent=ch.get('Entries') if isinstance(ch,dict) else None
+            if isinstance(ent,dict):
+              for k,v in list(ent.items()):
+                if isinstance(v,str): ent[k]=tr_event(v); tcount+=1
+          tmo=copy.deepcopy(trmail)
+          for ch in tmo.get('Changes',[]):
+            ent=ch.get('Entries') if isinstance(ch,dict) else None
+            if isinstance(ent,dict):
+              for k,v in list(ent.items()):
+                if isinstance(v,str): ent[k]=tr_text(v); tcount+=1
+          tout=pathlib.Path('out/trinkets'); tout.mkdir(parents=True,exist_ok=True)
+          (tout/'content.json').write_text(json.dumps(tro,ensure_ascii=False,indent=2)+'\n','utf-8'); (tout/'events.json').write_text(json.dumps(teo,ensure_ascii=False,indent=2)+'\n','utf-8'); (tout/'mail.json').write_text(json.dumps(tmo,ensure_ascii=False,indent=2)+'\n','utf-8')
+          residual=0
+          def scan_display(x):
+            nonlocal_dummy=None
+            global residual
+            if isinstance(x,dict):
+              for k,v in x.items():
+                if k in ('DisplayName','Description') and isinstance(v,str) and LAT.search(TOKEN_RE.sub('',v)): residual+=1
+                else: scan_display(v)
+            elif isinstance(x,list):
+              for v in x: scan_display(v)
+          scan_display(tro)
+          for oo in [teo,tmo]:
+            for ch in oo.get('Changes',[]):
+              for v in (ch.get('Entries') or {}).values():
+                if not isinstance(v,str): continue
+                if oo is teo:
+                  for m in QUOTE_RE.finditer(v): residual+=1 if LAT.search(TOKEN_RE.sub('',m.group(1))) else 0
+                elif LAT.search(TOKEN_RE.sub('',v)): residual+=1
+          report.append({'mod':'trinkets','translatedValues':tcount,'residualLatin':residual})
+          pathlib.Path('out/TRANSLATION_REPORT.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),'utf-8'); print(json.dumps(report,ensure_ascii=False),flush=True)
+          if any(r['residualLatin'] for r in report): raise SystemExit('residual Latin found')
+          PY
+          python translate_raw3.py
+      - name: Upload translated overlays
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-raw3-russian-overlays
+          path: out/
+          retention-days: 1
+          compression-level: 6
