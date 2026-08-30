@@ -1,0 +1,144 @@
+name: Parallel Raw 2
+on:
+  push:
+    paths: ['.github/workflows/translate-raw-parallel2.yml']
+jobs:
+  translate:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: dynamic
+            mod: 10675
+            file: 129882
+          - label: trinkets
+            mod: 19091
+            file: 120932
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Install
+        run: |
+          python -m pip install --quiet --index-url https://download.pytorch.org/whl/cpu torch
+          python -m pip install --quiet 'transformers>=4.45,<5' sentencepiece sacremoses json5
+      - name: Download
+        shell: bash
+        env:
+          LABEL: ${{ matrix.label }}
+          MOD: ${{ matrix.mod }}
+          FILEID: ${{ matrix.file }}
+        run: |
+          set -euo pipefail; mkdir -p x out/$LABEL
+          for i in $(seq 1 24); do c=$(curl -sS -o l.json -w '%{http_code}' "https://nexus-loader.onrender.com/api/nexusFileLink?game=stardewvalley&modId=$MOD&fileId=$FILEID"||true); [ "$c" = 200 ] && [ "$(jq -r '.chosen.file_id//0' l.json)" = "$FILEID" ] && break; sleep 5; done
+          u=$(jq -r .url l.json);u=${u// /%20};curl -fL --retry 3 "$u" -o m.arc;7z x -y m.arc -ox >/dev/null
+      - name: Translate
+        env:
+          LABEL: ${{ matrix.label }}
+        run: |
+          cat > t.py <<'PY'
+          import os,re,json,pathlib,json5,copy
+          from transformers import MarianMTModel,MarianTokenizer
+          label=os.environ['LABEL'];root=pathlib.Path('x');N='Helsinki-NLP/opus-mt-en-ru';tk=MarianTokenizer.from_pretrained(N);md=MarianMTModel.from_pretrained(N)
+          P=re.compile(r'(\{\{[^{}]+\}\}|#\$[A-Za-z0-9_]+#|\$[A-Za-z0-9_]+|@[A-Za-z0-9_.-]*|%[A-Za-z0-9_.-]+|\[[^\[\]]+\]|\^[^^\s]*)');L=re.compile(r'[A-Za-z]{2,}');Q=re.compile(r'"((?:\\.|[^"\\])*)"')
+          mp={'Stardew Valley':'Долина Стардью','Pelican Town':'Пеликан Таун','Ridgeside Village':'деревня Риджсайд','Zuzu City':'Зузу-Сити','Winter Star':'Зимняя звезда','Shane':'Шейн','Sterling':'Стерлинг','Marnie':'Марни','Jas':'Джас','Krobus':'Кробус','Dwarf':'Дварф','Junimo':'Джунимо','Yoba':'Йоба'}
+          cm={'a':'а','b':'б','c':'к','d':'д','e':'е','f':'ф','g':'г','h':'х','i':'и','j':'дж','k':'к','l':'л','m':'м','n':'н','o':'о','p':'п','q':'к','r':'р','s':'с','t':'т','u':'у','v':'в','w':'в','x':'кс','y':'й','z':'з'}
+          def tl(w):z=''.join(cm.get(c.lower(),c) for c in w);return z.capitalize() if w[:1].isupper() else z
+          seg=[];seen=set()
+          def collect(s):
+            for a in P.split(s):
+              b=a.strip()
+              if b and not P.fullmatch(b) and L.search(b) and b not in seen:seen.add(b);seg.append(b)
+          def load(p):return json5.loads(p.read_text('utf-8-sig'))
+          docs=[]
+          if label=='dynamic':
+            cr=next(root.glob('**/[Cc]ontent.json')).parent
+            for rel in ['Content.json','Data/ConversationTopics.json','Data/Mail.json']:
+              p=cr/rel
+              if p.exists():
+                o=load(p);docs.append((rel,o,'plain'))
+                for ch in o.get('Changes',[]):
+                  for v in (ch.get('Entries') or {}).values():
+                    if isinstance(v,str):collect(v)
+            for p in list((cr/'Data/EventData').glob('*.json'))+list((cr/'Assets/Events').glob('*.json')):
+              o=load(p);docs.append((str(p.relative_to(cr)),o,'event'))
+              for ch in o.get('Changes',[]):
+                for v in (ch.get('Entries') or {}).values():
+                  if isinstance(v,str):
+                    for m in Q.finditer(v):collect(m.group(1))
+          else:
+            cr=next(root.glob('**/content.json')).parent
+            co=load(cr/'content.json');ev=load(cr/'events.json');ma=load(cr/'mail.json');docs=[('content.json',co,'display'),('events.json',ev,'event'),('mail.json',ma,'plain')]
+            def wd(x):
+              if isinstance(x,dict):
+                for k,v in x.items():
+                  if k in ('DisplayName','Description') and isinstance(v,str):collect(v)
+                  else:wd(v)
+              elif isinstance(x,list):
+                for v in x:wd(v)
+            wd(co)
+            for ch in ev.get('Changes',[]):
+              for v in (ch.get('Entries') or {}).values():
+                if isinstance(v,str):
+                  for m in Q.finditer(v):collect(m.group(1))
+            for ch in ma.get('Changes',[]):
+              for v in (ch.get('Entries') or {}).values():
+                if isinstance(v,str):collect(v)
+          pcs=[];own={}
+          for s in seg:
+            q=[s]
+            if len(tk(s).input_ids)>360:
+              q=[];cur=[]
+              for w in s.split():
+                z=' '.join(cur+[w])
+                if cur and len(tk(z).input_ids)>330:q.append(' '.join(cur));cur=[w]
+                else:cur.append(w)
+              if cur:q.append(' '.join(cur))
+            own[s]=q;pcs+=q
+          tr={}
+          for i in range(0,len(pcs),32):
+            b=pcs[i:i+32];e=tk(b,return_tensors='pt',padding=True,truncation=False);g=md.generate(**e,max_new_tokens=512,num_beams=1);d=tk.batch_decode(g,skip_special_tokens=True);tr.update(zip(b,d));print(label,i+len(b),'/',len(pcs),flush=True)
+          C={}
+          for s,q in own.items():
+            z=' '.join(tr[x] for x in q)
+            for a,b in mp.items():z=re.sub(rf'\b{re.escape(a)}\b',b,z,flags=re.I)
+            C[s]=L.sub(lambda m:tl(m.group()),z)
+          def cv(s):
+            o=[]
+            for a in P.split(s):
+              if not a:continue
+              if P.fullmatch(a):o.append(a);continue
+              m=re.match(r'^(\s*)(.*?)(\s*)$',a,flags=re.S);x,b,y=m.groups();o.append(x+C.get(b,b)+y)
+            return ''.join(o)
+          def ce(s):return Q.sub(lambda m:'"'+cv(m.group(1)).replace('"','\\"')+'"',s)
+          out=pathlib.Path('out')/label;count=resid=0
+          for rel,o,mode in docs:
+            oo=copy.deepcopy(o)
+            if mode=='display':
+              def patch(x):
+                global count,resid
+                if isinstance(x,dict):
+                  for k,v in list(x.items()):
+                    if k in ('DisplayName','Description') and isinstance(v,str):x[k]=cv(v);count+=1;resid+=bool(L.search(P.sub('',x[k])))
+                    else:patch(v)
+                elif isinstance(x,list):
+                  for v in x:patch(v)
+              patch(oo)
+            else:
+              for ch in oo.get('Changes',[]):
+                ent=ch.get('Entries') or {}
+                for k,v in list(ent.items()):
+                  if not isinstance(v,str):continue
+                  ent[k]=ce(v) if mode=='event' else cv(v);count+=1
+                  if mode=='event':
+                    resid+=sum(bool(L.search(P.sub('',m.group(1)))) for m in Q.finditer(ent[k]))
+                  else:resid+=bool(L.search(P.sub('',ent[k])))
+            dst=out/rel;dst.parent.mkdir(parents=True,exist_ok=True);dst.write_text(json.dumps(oo,ensure_ascii=False,indent=2)+'\n','utf8')
+          report={'label':label,'translatedValues':count,'residualLatin':int(resid)};(out/'REPORT.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),'utf8');print(report)
+          if resid:raise SystemExit(report)
+          PY
+          python t.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: raw-${{ matrix.label }}
+          path: out/${{ matrix.label }}/
+          retention-days: 1
