@@ -1,0 +1,116 @@
+name: COL exact transfiguration scan
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/col-exact-scan-temp.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Download Catalogue of Life XR TextTree
+        run: |
+          python - <<'PY'
+          import urllib.request
+          url='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
+          urllib.request.urlretrieve(url, 'col.zip')
+          PY
+      - name: Scan Animalia for exact sums
+        run: |
+          cat > scan.py <<'PY'
+          import zipfile, io, re, json, csv
+          from collections import Counter
+          WEIGHTS={'a':1,'b':2,'c':90,'d':4,'e':5,'f':500,'g':3,'h':600,'i':10,'j':4,'k':20,'l':30,'m':40,'n':50,'o':70,'p':80,'q':90,'r':100,'s':200,'t':300,'u':400,'v':6,'w':6,'x':600,'y':400,'z':7}
+          TARGETS={1134:'Fraser Brown',1939:'Fraser Harold Brown'}
+          LOW_RANKS={'species','subspecies','infraspecies','variety','subvariety','form','forma','subform','morph','aberration','natio','strain','pathovar','biovar'}
+          RANK_MARKERS={'subsp.','ssp.','var.','subvar.','f.','forma','subf.','morph.','ab.','natio','strain','pathovar','biovar'}
+          def score(s): return sum(WEIGHTS.get(ch.lower(),0) for ch in s)
+          assert score('Fraser Brown')==1134 and score('Fraser Harold Brown')==1939
+          def clean_prefix(s):
+              s=s.strip(); syn=False
+              while s and s[0] in '=≡$?†':
+                  if s[0] in '=≡': syn=True
+                  s=s[1:].lstrip()
+              return s,syn
+          def canonical(label,rank):
+              label=label.split('{',1)[0].split('#',1)[0].strip()
+              label,_=clean_prefix(label)
+              toks=label.split(); need=2 if rank=='species' else 3; out=[]
+              for tok in toks:
+                  raw=tok.strip(); low=raw.lower()
+                  if low in RANK_MARKERS or raw=='×': continue
+                  if len(out)>=need: break
+                  t=raw.strip('(),;')
+                  if not t: continue
+                  if any(ch.isdigit() for ch in t): break
+                  if len(out)>0 and t[:1].isupper(): break
+                  out.append(t)
+              return ' '.join(out)
+
+          with zipfile.ZipFile('col.zip') as z:
+              infos=[i for i in z.infolist() if not i.is_dir()]
+              texts=[i for i in infos if i.filename.lower().endswith(('.txt','.txtree','.tree'))]
+              if not texts: raise RuntimeError('No TextTree file found: '+repr([(i.filename,i.file_size) for i in infos[:100]]))
+              main=max(texts,key=lambda x:x.file_size)
+              print('ARCHIVE_MEMBER',main.filename,'UNCOMPRESSED_BYTES',main.file_size,flush=True)
+              print('ARCHIVE_FILES',[(i.filename,i.file_size) for i in infos],flush=True)
+              animal_depth=None; rows=[]; counts=Counter(); stack_names=[]
+              with z.open(main) as raw:
+                  txt=io.TextIOWrapper(raw,encoding='utf-8-sig',errors='replace')
+                  for lineno,line in enumerate(txt,1):
+                      if not line.strip(): continue
+                      depth=(len(line)-len(line.lstrip(' ')))//2
+                      s=line.strip()
+                      m=re.search(r'\[([^\]]+)\]',s)
+                      if not m: continue
+                      rank=m.group(1).strip().lower(); label=s[:m.start()].strip()
+                      clean,is_syn=clean_prefix(label)
+                      first=clean.split()[0] if clean.split() else ''
+                      if rank=='kingdom':
+                          if first=='Animalia':
+                              animal_depth=depth
+                          elif animal_depth is not None and depth<=animal_depth:
+                              animal_depth=None
+                      in_animal=animal_depth is not None and depth>=animal_depth
+                      if depth < len(stack_names): stack_names=stack_names[:depth]
+                      parent=stack_names[-1] if stack_names else ''
+                      can=canonical(label,rank) if rank in LOW_RANKS else ''
+                      if in_animal and rank in LOW_RANKS and can:
+                          status='synonym' if is_syn else 'accepted'
+                          counts[(status,rank)]+=1
+                          val=score(can)
+                          if val in TARGETS:
+                              rows.append({'target':val,'person':TARGETS[val],'status':status,'rank':rank,'canonical_name':can,'score':val,'parent_name':parent,'line_number':lineno,'verbatim':s[:1000]})
+                      current=can or clean.split(' {',1)[0][:300]
+                      if len(stack_names)==depth: stack_names.append(current)
+                      else:
+                          while len(stack_names)<depth: stack_names.append('')
+                          if len(stack_names)==depth: stack_names.append(current)
+              print('SCANNED_COUNTS',json.dumps({f'{a}|{b}':v for (a,b),v in sorted(counts.items())},ensure_ascii=False),flush=True)
+          seen=set(); uniq=[]
+          for r in rows:
+              k=(r['target'],r['status'],r['rank'],r['canonical_name'],r['parent_name'])
+              if k not in seen: seen.add(k); uniq.append(r)
+          rows=sorted(uniq,key=lambda r:(r['target'],r['status'],r['rank'],r['canonical_name'].lower(),r['parent_name'].lower()))
+          with open('results.json','w',encoding='utf-8') as f: json.dump({'targets':TARGETS,'matches':rows},f,ensure_ascii=False,indent=2)
+          with open('results.csv','w',encoding='utf-8-sig',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=['target','person','status','rank','canonical_name','score','parent_name','line_number','verbatim']); w.writeheader(); w.writerows(rows)
+          print('UNIQUE_MATCH_COUNT',len(rows),flush=True)
+          print('===RESULTS_JSON_BEGIN===',flush=True)
+          print(json.dumps(rows,ensure_ascii=False,indent=2),flush=True)
+          print('===RESULTS_JSON_END===',flush=True)
+          PY
+          python scan.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: col-exact-matches
+          path: |
+            results.json
+            results.csv
+          retention-days: 3
