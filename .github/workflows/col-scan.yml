@@ -1,0 +1,204 @@
+name: COL exact transfiguration scan
+
+on:
+  push:
+    branches: [col-scan]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Download Catalogue of Life XR TextTree
+        run: |
+          python - <<'PY'
+          import urllib.request
+          url='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
+          urllib.request.urlretrieve(url, 'col.zip')
+          PY
+
+      - name: Scan Animalia for exact sums
+        run: |
+          cat > scan.py <<'PY'
+          import zipfile, io, re, json, csv, os
+          from collections import Counter, defaultdict
+
+          WEIGHTS = {
+              'a':1,'b':2,'c':90,'d':4,'e':5,'f':500,'g':3,'h':600,
+              'i':10,'j':4,'k':20,'l':30,'m':40,'n':50,'o':70,'p':80,
+              'q':90,'r':100,'s':200,'t':300,'u':400,'v':6,'w':6,
+              'x':600,'y':400,'z':7
+          }
+          TARGETS = {1134:'Fraser Brown', 1939:'Fraser Harold Brown'}
+          LOW_RANKS = {
+              'species','subspecies','infraspecies','variety','subvariety',
+              'form','forma','subform','morph','aberration','natio',
+              'strain','pathovar','biovar'
+          }
+          RANK_MARKERS = {
+              'subsp.','ssp.','var.','subvar.','f.','forma','subf.','morph.',
+              'ab.','natio','strain','pathovar','biovar'
+          }
+
+          def score(s):
+              return sum(WEIGHTS.get(ch.lower(),0) for ch in s)
+
+          assert score('Fraser Brown') == 1134
+          assert score('Fraser Harold Brown') == 1939
+
+          def clean_prefix(s):
+              s=s.strip()
+              syn=False
+              while s and s[0] in '=≡$?†':
+                  if s[0] in '=≡':
+                      syn=True
+                  s=s[1:].lstrip()
+              return s, syn
+
+          def canonical_from_label(label, rank):
+              # Remove dynamic info / inline comments before tokenizing.
+              label = label.split('{',1)[0].split('#',1)[0].strip()
+              label, _ = clean_prefix(label)
+              toks = label.split()
+              if not toks:
+                  return ''
+              rank=rank.lower().strip()
+              need = 2 if rank == 'species' else 3
+              out=[]
+              biological_count=0
+              for tok in toks:
+                  raw=tok.strip()
+                  low=raw.lower()
+                  if low in RANK_MARKERS or raw == '×':
+                      continue
+                  # Authorship reliably starts after enough biological name tokens.
+                  if biological_count >= need:
+                      break
+                  # Remove leading/trailing punctuation but keep hyphens within epithets.
+                  t=raw.strip('(),;')
+                  if not t:
+                      continue
+                  # Before reaching expected name length, reject obvious author/year tokens.
+                  if any(ch.isdigit() for ch in t):
+                      break
+                  if biological_count > 0 and t[:1].isupper():
+                      break
+                  out.append(t)
+                  biological_count += 1
+              return ' '.join(out)
+
+          with zipfile.ZipFile('col.zip') as z:
+              infos=[i for i in z.infolist() if not i.is_dir()]
+              text_infos=[i for i in infos if i.filename.lower().endswith(('.txt','.txtree','.tree'))]
+              if not text_infos:
+                  raise RuntimeError('No TextTree text file found in archive: '+repr([i.filename for i in infos[:50]]))
+              main=max(text_infos, key=lambda x:x.file_size)
+              print('ARCHIVE_MEMBER', main.filename, 'UNCOMPRESSED_BYTES', main.file_size)
+              print('ARCHIVE_FILES', [(i.filename,i.file_size) for i in infos[:20]])
+
+              stack_animal=[]
+              stack_canonical=[]
+              rows=[]
+              counts=Counter()
+              animal_started=False
+              animal_finished=False
+
+              with z.open(main) as raw:
+                  txt=io.TextIOWrapper(raw, encoding='utf-8-sig', errors='replace', newline='')
+                  for lineno,line in enumerate(txt,1):
+                      if not line.strip():
+                          continue
+                      leading=len(line)-len(line.lstrip(' '))
+                      depth=leading//2
+                      s=line.strip()
+                      m=re.search(r'\[([^\]]+)\]', s)
+                      if not m:
+                          continue
+                      rank=m.group(1).strip().lower()
+                      label=s[:m.start()].strip()
+                      clean, is_syn=clean_prefix(label)
+
+                      # Keep ancestry arrays aligned to indentation.
+                      if depth < len(stack_animal):
+                          stack_animal=stack_animal[:depth]
+                          stack_canonical=stack_canonical[:depth]
+
+                      # Use first token for kingdom detection (authorship irrelevant).
+                      current_name_token = clean.split()[0] if clean.split() else ''
+                      parent_in_animal = stack_animal[-1] if stack_animal else False
+                      in_animal = parent_in_animal or (rank=='kingdom' and current_name_token=='Animalia')
+                      if rank=='kingdom' and current_name_token=='Animalia':
+                          animal_started=True
+                      if animal_started and rank=='kingdom' and current_name_token!='Animalia' and depth==0:
+                          animal_finished=True
+
+                      canonical=''
+                      if rank in LOW_RANKS:
+                          canonical=canonical_from_label(label, rank)
+
+                      parent_canonical = stack_canonical[-1] if stack_canonical else ''
+
+                      # Only taxa under Animalia; include accepted taxa and synonyms, labelled.
+                      if in_animal and rank in LOW_RANKS and canonical:
+                          val=score(canonical)
+                          counts[('synonym' if is_syn else 'accepted', rank)] += 1
+                          if val in TARGETS:
+                              rows.append({
+                                  'target':val,
+                                  'person':TARGETS[val],
+                                  'status':'synonym' if is_syn else 'accepted',
+                                  'rank':rank,
+                                  'canonical_name':canonical,
+                                  'score':val,
+                                  'parent_name':parent_canonical,
+                                  'line_number':lineno,
+                                  'verbatim':s[:1000],
+                              })
+
+                      # Synonyms are children but not ancestors for subsequent accepted taxa in normal TextTree.
+                      # Still store a canonical placeholder by depth so ancestry remains structurally correct.
+                      if len(stack_animal)==depth:
+                          stack_animal.append(in_animal)
+                          stack_canonical.append(canonical if canonical else clean.split(' {',1)[0][:300])
+                      else:
+                          stack_animal[depth]=in_animal
+                          stack_canonical[depth]=canonical if canonical else clean.split(' {',1)[0][:300]
+
+              print('ANIMALIA_FOUND', animal_started, 'FINISHED', animal_finished)
+              print('SCANNED_COUNTS', json.dumps({f'{k[0]}|{k[1]}':v for k,v in sorted(counts.items())}, ensure_ascii=False))
+              print('MATCH_COUNT', len(rows))
+
+          # De-duplicate exact repeated entries while preserving biologically distinct statuses/ranks/parents.
+          uniq=[]
+          seen=set()
+          for r in rows:
+              key=(r['target'],r['status'],r['rank'],r['canonical_name'],r['parent_name'])
+              if key not in seen:
+                  seen.add(key); uniq.append(r)
+          rows=sorted(uniq,key=lambda r:(r['target'],r['status'],r['rank'],r['canonical_name'].lower(),r['parent_name'].lower()))
+          print('UNIQUE_MATCH_COUNT', len(rows))
+
+          with open('results.json','w',encoding='utf-8') as f:
+              json.dump({'targets':TARGETS,'weights':WEIGHTS,'matches':rows},f,ensure_ascii=False,indent=2)
+          with open('results.csv','w',encoding='utf-8-sig',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=['target','person','status','rank','canonical_name','score','parent_name','line_number','verbatim'])
+              w.writeheader(); w.writerows(rows)
+
+          print('===RESULTS_JSON_BEGIN===')
+          print(json.dumps(rows,ensure_ascii=False,indent=2))
+          print('===RESULTS_JSON_END===')
+          PY
+          python scan.py
+
+      - name: Upload exact-match results
+        uses: actions/upload-artifact@v4
+        with:
+          name: col-exact-matches
+          path: |
+            results.json
+            results.csv
+          retention-days: 3
