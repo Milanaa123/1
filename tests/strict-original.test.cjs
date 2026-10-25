@@ -5,17 +5,18 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const root = path.resolve(__dirname,'..');
+const g = fs.readFileSync(path.join(root,'greek_taxa.js'),'utf8');
 const a = fs.readFileSync(path.join(root,'app.js'),'utf8');
 const b = fs.readFileSync(path.join(root,'enhancements.js'),'utf8');
 const fakeDocument = {addEventListener(){}};
-const ctx = vm.runInNewContext(a+'\n'+b+'\n({score,scoreLatin,scoreMixed,validGreek,transcribe,inspectImage,featured})',
+const ctx = vm.runInNewContext(g+'\n'+a+'\n'+b+'\n({score,scoreLatin,scoreMixed,validGreek,transcribe,inspectImage,featured,taxonGreek,taxonGreekScore,GREEK_TAXON_RULE_VERSION})',
   {document:fakeDocument,URL});
 test('preserves old Latin letter table exactly',()=>{
   const expected=[['a',1],['b',2],['c',90],['d',4],['f',500],['h',600],
     ['j',4],['q',90],['v',6],['w',6],['x',600],['y',400]];
   for(const [letter,value] of expected)assert.equal(ctx.scoreLatin(letter),value,letter);
 });
-test('original Python Latin scientific name totals',()=>{
+test('original Python Latin scientific name totals (regression reference, not matching)',()=>{
   for(const [s,n] of [['Naja oxiana',788],['Anolis cooki',621],
     ['Panthera uncia',1688],['Ourebia montana',1100]])
     assert.equal(ctx.scoreLatin(s),n,s);
@@ -58,4 +59,42 @@ test('privacy and large catalogue only',()=>{
   assert.match(html,/id="groupFilter"/);
   assert.doesNotMatch(a+b,/localStorage|sessionStorage/);
   assert.doesNotMatch(b,/original_animals\.json/);
+});
+
+
+test('scientific names become Greek before numeric scoring',()=>{
+  const examples=[
+    ['Panthera uncia','πανθερα ουνκια'],
+    ['Naja oxiana','ναια οξιανα'],
+    ['Anolis cooki','ανολις κοοκι'],
+    ['Canis lupus','κανις λουπους'],
+    ['Vulpes vulpes','βουλπες βουλπες'],
+    ['Felis catus','φελις κατους']
+  ];
+  for(const [scientific,greek] of examples){
+    assert.equal(ctx.taxonGreek(scientific),greek,scientific);
+    assert.equal(ctx.taxonGreekScore(scientific),ctx.score(greek),scientific);
+  }
+  assert.equal(ctx.GREEK_TAXON_RULE_VERSION,'taxon-greek-backmap-v1');
+});
+test('Latin totals no longer determine the index',()=>{
+  assert.notEqual(ctx.taxonGreekScore('Panthera uncia'),ctx.scoreLatin('Panthera uncia'));
+  assert.notEqual(ctx.taxonGreekScore('Naja oxiana'),ctx.scoreLatin('Naja oxiana'));
+});
+test('Greek renderer refuses invalid taxon text',()=>{
+  for(const name of ['X','Panthera  uncia','Panthera uncia 1758','E. coli','Χελώνα']){
+    assert.throws(()=>ctx.taxonGreek(name),name);
+  }
+});
+test('only one large catalogue; data files disclose their Greek basis',()=>{
+  const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+  const python=fs.readFileSync(path.join(root,'build_data.py'),'utf8');
+  assert.match(html,/greek_taxa\.js/);
+  assert.match(html,/Это не древнегреческий перевод/);
+  assert.match(python,/n=taxon_score\(name\)/);
+  assert.match(python,/taxon_score\(r\[1\]\)/);
+  assert.match(python,/algorithm_id/);
+  assert.match(b,/taxonGreekScore\(row\[1\]\)/);
+  assert.doesNotMatch(b,/scoreLatin\(row\[1\]\)/);
+  assert.doesNotMatch(python,/n=score\(name\)/);
 });
