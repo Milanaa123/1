@@ -81,3 +81,20 @@ test('все основные названия в подборке написа�
 test('непризнанные русские имена не маскируются под официальные',()=>{
   assert.equal(api.display([551,'Arctosa capensis','species','Arachnida','Araneae','','Arthropoda']),'Паук-волк — арктоса капенсис');
 });
+
+
+test('при большом количестве разных таксонов сначала выбираются интересные группы',()=>{
+  const groups=['Mammalia','Aves','Reptilia','Amphibia','Teleostei','Arachnida','Insecta'];
+  const rows=Array.from({length:260},(_,i)=>{
+    const cls=groups[i%groups.length];
+    return [2195,'Differentgenus'+i+' epithet'+i,'species',cls,
+      cls==='Arachnida'?'Scorpiones':cls==='Insecta'?'Lepidoptera':'', '', 'Chordata'];
+  });
+  for(let i=0;i<50;i++)rows.push([2195,'Obscurus'+i+' specimen'+i,'species','Chromadorea','Rhabditida','','Nematoda']);
+  const list=api.featured(rows);
+  assert.equal(list.length,30);
+  assert.ok(list.every(row=>groups.includes(row[3])),'obscure animals should not displace 30 interesting matches');
+});
+test('в русском заголовке нет букв латинского алфавита даже у неопознанного вида',()=>{
+  assert.doesNotMatch(api.display([887,'Mysteriella novissima','species','','','','']),/[A-Za-z]/);
+});

@@ -111,43 +111,80 @@ function display(r){
 }
 function status(r){return r[5]==='†'?'Вымерший †':r[5]==='?'?'Сомнительный статус ?':'';}
 
+
 const FEATURED_MINIMUM=30;
 const GROUP_PRIORITY=['Mammalia','Aves','Reptilia','Amphibia','Chondrichthyes',
-  'Actinopteri','Actinopterygii','Teleostei','Arachnida','Cephalopoda','Chilopoda',
-  'Malacostraca','Insecta','Gastropoda','Bivalvia'];
+  'Elasmobranchii','Actinopteri','Actinopterygii','Teleostei',
+  'Arachnida','Cephalopoda','Chilopoda','Malacostraca','Insecta',
+  'Gastropoda','Bivalvia'];
+const GROUP_QUOTA={Mammalia:6,Aves:6,Reptilia:6,Amphibia:4,
+  Chondrichthyes:3,Elasmobranchii:3,Actinopteri:5,Actinopterygii:5,
+  Teleostei:5,Arachnida:5,Cephalopoda:3,Chilopoda:2,
+  Malacostraca:3,Insecta:5,Gastropoda:2,Bivalvia:2};
 function groupKey(r){return r[3]||r[6]||'Other';}
 function sortInteresting(a,b){
-  const rank=r=>{
-    let n=GROUP_PRIORITY.indexOf(r[3]);
-    if(n<0)n=GROUP_PRIORITY.length+2;
-    const bonus=r[4]==='Carnivora'||r[4]==='Scorpiones'||r[4]==='Mantodea'?-2:0;
-    return n*10+bonus+(SPECIES_NAME_RU[r[1]]?-7:0)+(r[2]==='species'?0:2)+(r[5]?1000:0);
-  };
-  return rank(a)-rank(b)||a[1].localeCompare(b[1]);
+  function quality(r){
+    const cls=r[3],genus=r[1].split(' ')[0],order=r[4];
+    let value=0;
+    if(SPECIES_NAME_RU[r[1]])value-=10;
+    if(GENUS_RU[genus])value-=3;
+    if(r[2]==='species')value-=2;
+    if(order==='Carnivora'||order==='Scorpiones'||order==='Mantodea')value-=7;
+    if(cls==='Arachnida'){
+      if(['Araneae','Solifugae','Pseudoscorpiones'].includes(order))value-=5;
+      if(['Sarcoptiformes','Trombidiformes','Mesostigmata'].includes(order))value+=8;
+    }
+    if(cls==='Insecta'){
+      if(['Lepidoptera','Odonata'].includes(order))value-=5;
+      if(order==='Coleoptera')value-=2;
+    }
+    if(r[5])value+=1000;
+    return value;
+  }
+  return quality(a)-quality(b)||a[1].localeCompare(b[1]);
 }
 function featured(rows){
   const wanted=Math.min(FEATURED_MINIMUM,rows.length);
   if(!wanted)return [];
-  const ordered=rows.slice().sort(sortInteresting);
-  const groups=new Map(),usedNames=new Set(),usedGenera=new Set(),out=[];
-  for(const r of ordered){const k=groupKey(r);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r);}
-  function add(r){
-    const key=r[1]+'|'+r[2];if(usedNames.has(key))return false;
-    out.push(r);usedNames.add(key);usedGenera.add(r[1].split(' ')[0]);return true;
+  const bucket=new Map();
+  for(const row of rows){
+    const key=groupKey(row);
+    if(!bucket.has(key))bucket.set(key,[]);
+    bucket.get(key).push(row);
   }
-  // First cover distinct animal groups, then fill with distinct genera.
-  for(const noFlags of [true,false]){
-    for(const uniqueGenus of [true,false]){
-      let progress=true;
-      while(progress&&out.length<wanted){
-        progress=false;
-        for(const group of groups.values()){
-          const candidate=group.find(r=>
-            (!noFlags||!r[5])&&(!uniqueGenus||!usedGenera.has(r[1].split(' ')[0]))&&
-            !usedNames.has(r[1]+'|'+r[2]));
-          if(candidate){add(candidate);progress=true;if(out.length===wanted)break;}
-        }
+  for(const items of bucket.values())items.sort(sortInteresting);
+  const primary=GROUP_PRIORITY.filter(g=>bucket.has(g));
+  const secondary=[...bucket.keys()].filter(g=>!GROUP_PRIORITY.includes(g)).sort();
+  const out=[],used=new Set(),usedGenera=new Set(),countByGroup={};
+  function add(row,group){
+    const key=row[1]+'|'+row[2];
+    if(used.has(key))return false;
+    used.add(key);usedGenera.add(row[1].split(' ')[0]);
+    countByGroup[group]=(countByGroup[group]||0)+1;out.push(row);
+    return true;
+  }
+  function fill(groups,quota,noFlags,distinctGenus){
+    let progress=true;
+    while(progress&&out.length<wanted){
+      progress=false;
+      for(const group of groups){
+        if(out.length===wanted)break;
+        if(quota&&(countByGroup[group]||0)>=(GROUP_QUOTA[group]||2))continue;
+        const next=bucket.get(group).find(row=>
+          (!noFlags||!row[5])&&
+          (!distinctGenus||!usedGenera.has(row[1].split(' ')[0]))&&
+          !used.has(row[1]+'|'+row[2]));
+        if(next){add(next,group);progress=true;}
       }
+    }
+  }
+  // Prefer mammals, birds, reptiles, fish and distinctive invertebrates.
+  // Include rarer groups or flagged taxa only when needed to reach 30 real matches.
+  for(const noFlags of [true,false]){
+    for(const distinctGenus of [true,false]){
+      fill(primary,true,noFlags,distinctGenus);
+      fill(primary,false,noFlags,distinctGenus);
+      fill(secondary,false,noFlags,distinctGenus);
     }
   }
   return out;
