@@ -42,7 +42,7 @@ test('греческое поле отвергает латиницу и кир�
 test('интерфейс без кнопок сохранённых имён и с правильным примером', () => {
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
   assert.ok(html.includes('Например: Фрейзер Гарольд Браун'));
-  assert.ok(html.includes('Используй все имена'));
+  assert.ok(html.includes('Введи полное имя'));
   assert.ok(html.includes('Данные не сохраняются'));
   assert.ok(!html.includes('data-example='));
   assert.ok(!script.includes('localStorage'));
