@@ -1,20 +1,41 @@
 #!/usr/bin/env python3
 """Generate exact-match static shards from Catalogue of Life XR 2026-08-26."""
-import os,re,zipfile,json,urllib.request,shutil,tempfile,collections,time
+import os,re,zipfile,json,urllib.request,shutil,tempfile,collections,time,unicodedata
+from original.alphabet_maps import latin_map as CH
+from original.animals import animals_list as ORIGINAL_ANIMALS
 from pathlib import Path
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
 URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
-CH=dict(zip('abcdefghijklmnopqrstuvwxyz',[1,120,20,350,5,500,23,600,10,307,20,30,40,50,70,80,20,100,200,300,470,2,470,60,400,7]))
-DI={'ph':500,'th':9,'ch':600,'ps':700,'rh':100}
 RANK={'species','subspecies','variety','form','natio'}
 RANK_RE=re.compile(rb'\[([^\]]+)\]\s*$');EP=re.compile(r'^[a-z][a-z-]*$');START=re.compile(r'^[A-Z][A-Za-z0-9_-]*')
 SKIP={'subsp.','ssp.','var.','subvar.','f.','forma','natio','ab.','morph.','morph','×'}
+# The scientific-name scorer must reproduce original/main.py get_sum over Latin text.
+# There is NO phonetic re-transliteration and NO two-letter digraph substitution.
+GREEK_WEIGHTS = dict(zip('αβγδεζηθικλμνξοπρστυφχψω',
+    [1,2,3,4,5,7,8,9,10,20,30,40,50,60,70,80,100,200,300,400,500,600,700,800]))
+GREEK_WEIGHTS.update({'ς':200,'ϝ':6,'Ϝ':6,'ϛ':6,'Ϛ':6,
+    'ϙ':90,'Ϙ':90,'ϟ':90,'Ϟ':90,'ϡ':900,'Ϡ':900})
+def letters(s):
+    return (c for c in unicodedata.normalize('NFD',s.lower())
+            if unicodedata.category(c)!='Mn')
 def score(s):
- n=i=0;s=s.lower()
- while i<len(s):
-  if s[i:i+2] in DI:n+=DI[s[i:i+2]];i+=2
-  else:n+=CH.get(s[i],0);i+=1
- return n
+    return sum(CH.get(c,0) for c in letters(s))
+def score_mixed(s):
+    return sum(CH.get(c,GREEK_WEIGHTS.get(c,0)) for c in letters(s))
+def verify_original():
+    # Original code: original/alphabet_maps.py and original/main.py.
+    assert CH['b']==2 and CH['v']==6 and CH['c']==90 and CH['x']==600
+    assert score('Naja oxiana')==788
+    assert score('Anolis cooki')==621
+    assert score('Panthera uncia')==1688
+    assert score('Ourebia montana')==1100
+    # Methodical textbook arithmetic and corrections:
+    assert score_mixed('ιετυ')==715
+    assert score_mixed('ραβδι')==117
+    assert score_mixed('φϟη')==598
+    assert score_mixed('ς')==score_mixed('σ')==200
+    assert score_mixed('ϛ')==6 and score_mixed('ϡ')==900
+
 def canonical(body,rank):
  w=body.lstrip('†?*=$ ').split();i=0
  if not w:return ''
@@ -32,6 +53,7 @@ def parent(body):
  s=body.lstrip('†?*=$ ').strip();m=START.match(s)
  return m.group(0) if m else (s.split()[0] if s else '')
 def build():
+ verify_original()
  zpath=Path(os.getenv('COL_ZIP','')) if os.getenv('COL_ZIP') else BASE/'source.zip'
  if not zpath.is_file():
   print('Downloading CoL data',URL,flush=True)
@@ -86,6 +108,17 @@ def build():
      count=sum(r[0]==target for r in values);print('CONTROL',target,count,expected,flush=True)
      if target==551: assert count==expected
  meta={'version':'2026-08-26 XR','source':'Catalogue of Life Extended Release','url':URL,'scanned_rows':lines,'formal_rows':formal,'unique_records':unique,'buckets':len(available),'bucket_width':25,'available_buckets':sorted(available)}
+ # Original program contains 127 entries, of which some are exact duplicates.
+ # Deduplicate only repeated identical strings; never deduplicate by score.
+ original_rows=[];seen_legacy=set()
+ for name in ORIGINAL_ANIMALS:
+  name=name.strip()
+  if name in seen_legacy:continue
+  seen_legacy.add(name)
+  original_rows.append([score_mixed(name),name,'original','','','',''])
+ (DEST/'original_animals.json').write_text(json.dumps(original_rows,ensure_ascii=False,separators=(',',':')),encoding='utf8')
+ meta['original_unique_names']=len(original_rows)
+ meta['algorithm']='original alphabet_maps.py values; corrected final sigma and historical numerals'
  (DEST/'meta.json').write_text(json.dumps(meta,ensure_ascii=False,separators=(',',':')),encoding='utf8')
  print('SUCCESS',meta,'seconds',round(time.time()-t0),flush=True)
 if __name__=='__main__':build()
