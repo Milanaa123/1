@@ -1,5 +1,6 @@
 'use strict';
-const W={α:1,β:2,γ:3,δ:4,ε:5,ζ:7,η:8,θ:9,ι:10,κ:20,λ:30,μ:40,ν:50,ξ:60,ο:70,π:80,ρ:100,σ:200,ς:200,τ:300,υ:400,φ:500,χ:600,ψ:700,ω:800};
+const W={α:1,β:2,γ:3,δ:4,ε:5,ζ:7,η:8,θ:9,ι:10,κ:20,λ:30,μ:40,ν:50,ξ:60,ο:70,π:80,ρ:100,σ:200,ς:200,τ:300,υ:400,φ:500,χ:600,ψ:700,ω:800,ϝ:6,ϛ:6,ϙ:90,ϟ:90,ϡ:900};
+const LATIN_OLD=Object.fromEntries('abcdefghijklmnopqrstuvwxyz'.split('').map((ch,i)=>[ch,[1,2,90,4,5,500,3,600,10,4,20,30,40,50,70,80,90,100,200,300,400,6,6,600,400,7][i]]));
 const RU={'а':'α','б':'μπ','в':'β','г':'γκ','д':'ντ','е':'ε','ё':'ιο','ж':'ζ','з':'ζ','и':'ι','й':'ι','к':'κ','л':'λ','м':'μ','н':'ν','о':'ο','п':'π','р':'ρ','с':'σ','т':'τ','у':'ου','ф':'φ','х':'χ','ц':'τσ','ч':'τσ','ш':'σ','щ':'στσ','ъ':'','ы':'ι','ь':'','э':'ε','ю':'ιου','я':'ια'};
 const PRONUNCIATION={'гарольд':'Χάρολντ','этан':'Ίθαν','браун':'Μπράουν'};
 const RANK={species:'вид',subspecies:'подвид',variety:'разновидность',form:'форма',natio:'natio'};
@@ -9,8 +10,10 @@ let meta=null,results=[],sum=null,serial=0,manually=false;
 const el=id=>document.getElementById(id);
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 function score(s){let n=0;for(let c of norm(s))n+=W[c]||0;return n;}
+function scoreLatin(s){let n=0;for(const c of norm(s))n+=LATIN_OLD[c]||0;return n;}
+function scoreMixed(s){let n=0;for(const c of norm(s))n+=LATIN_OLD[c]||W[c]||0;return n;}
 function transcribe(raw){return raw.trim().replace(/[А-Яа-яЁё]+/g,s=>{const word=s.toLowerCase();if(PRONUNCIATION[word])return PRONUNCIATION[word];const greek=[...word].map(c=>RU[c]||'').join('').replace(/ρρ/g,'ρ').replace(/σ$/,'ς');return greek.charAt(0).toUpperCase()+greek.slice(1);}).replace(/\s+/g,' ');}
-function validGreek(raw){return !!raw.trim()&&/^[\p{Script=Greek}\s'’\-]+$/u.test(norm(raw));}
+function validGreek(raw){return !!raw.trim()&&[...norm(raw)].every(c=>W[c]!==undefined||/^[\s'’\-]$/.test(c));}
 function breakdown(raw){return raw.trim().split(/\s+/).map(word=>word+' ('+score(word)+')').join(' + ');}
 
 const SPECIES_NAME_RU = {
