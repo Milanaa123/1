@@ -120,7 +120,7 @@ async function photoLookup(row,stamp) {
   if(stamp!==photoGallery.stamp)return null;
   const match=inspectImage(data,row[1],row[2]);
   if(!match){rememberPhoto(key,null);return null;}
-  if(!await photoCheckImage(match.src,stamp))return null;
+  if(!await photoCheckImage(match.preview||match.src,stamp))return null;
   rememberPhoto(key,match);
   return {row,photo:match};
  }catch(err){

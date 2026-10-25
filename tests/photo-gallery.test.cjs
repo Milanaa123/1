@@ -23,7 +23,7 @@ function simulate(photoKind='valid',candidates=rows) {
   const name=decodeURIComponent(url.split('?q=')[1].split('&')[0]);
   return {ok:true,json:async()=>({results:[{
    name:photoKind==='wrong'?'Felis catus':name,rank:'species',id:345,
-   default_photo:{medium_url:'https://static.inaturalist.org/photos/1/medium.jpg',
+   default_photo:{medium_url:'https://static.inaturalist.org/photos/1/medium.jpg',square_url:'https://static.inaturalist.org/photos/1/square.jpg',
      attribution:'Test photographer',license_code:photoKind==='bad-license'?'none':'cc-by'}
   }]})};
  };

@@ -10,7 +10,20 @@ function inspectImage(data,name,rank){
     try{const u=new URL(p.medium_url);
       if(u.protocol!=='https:'||!['static.inaturalist.org','inaturalist-open-data.s3.amazonaws.com'].includes(u.hostname))continue;
       if(!Number.isInteger(Number(x.id)))continue;
-      return {src:p.medium_url,source:'https://www.inaturalist.org/taxa/'+Number(x.id),credit:(p.attribution||'iNaturalist')+' · '+p.license_code.toUpperCase()};
+      // Verify a tiny iNaturalist preview first; download the larger photo
+      // only when the visitor opens the photo viewer.
+      let preview=p.medium_url;
+      for(const suggested of [p.square_url,p.thumb_url]){
+        if(!suggested)continue;
+        try{
+          const thumbnail=new URL(suggested);
+          if(thumbnail.protocol==='https:'&&
+            ['static.inaturalist.org','inaturalist-open-data.s3.amazonaws.com'].includes(thumbnail.hostname)){
+            preview=suggested;break;
+          }
+        }catch{}
+      }
+      return {src:p.medium_url,preview,source:'https://www.inaturalist.org/taxa/'+Number(x.id),credit:(p.attribution||'iNaturalist')+' · '+p.license_code.toUpperCase()};
     }catch{}
   }return null;
 }
