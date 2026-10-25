@@ -124,6 +124,8 @@ run=async function(){
   const fresh=await metaResponse.json();
   if(fresh.algorithm_id!==GREEK_TAXON_RULE_VERSION)
    throw Error('Каталог ещё не пересчитан по греческим названиям. Обнови страницу.');
+  if(fresh.catalog_filter_version!=='nonparasitic-animals-v1')
+   throw Error('Каталог без паразитов ещё не опубликован. Обнови страницу после обновления базы.');
   if(!Array.isArray(fresh.test_vectors)||fresh.test_vectors.length<5)
    throw Error('Отсутствуют контрольные расчёты каталога');
   for(const vector of fresh.test_vectors){
