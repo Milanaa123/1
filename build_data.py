@@ -58,7 +58,7 @@ def build():
  if not zpath.is_file():
   print('Downloading CoL data',URL,flush=True)
   urllib.request.urlretrieve(URL,str(zpath))
- DATA.mkdir(exist_ok=True,parents=True);shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js')
+ DATA.mkdir(exist_ok=True,parents=True);shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js')
  stack=[];active=False;base=-1;lines=formal=0;handles=collections.OrderedDict();t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)
