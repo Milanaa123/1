@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""Generate exact-match static shards from Catalogue of Life XR 2026-08-26."""
+"""Generate Greek-scored taxon shards for the complete Catalogue of Life XR."""
 import os,re,zipfile,json,urllib.request,shutil,tempfile,collections,time,unicodedata
 from original.alphabet_maps import latin_map as CH
+from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_score, CONTROL_NAMES
 from pathlib import Path
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
 URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
 RANK={'species','subspecies','variety','form','natio'}
 RANK_RE=re.compile(rb'\[([^\]]+)\]\s*$');EP=re.compile(r'^[a-z][a-z-]*$');START=re.compile(r'^[A-Z][A-Za-z0-9_-]*')
 SKIP={'subsp.','ssp.','var.','subvar.','f.','forma','natio','ab.','morph.','morph','×'}
-# The scientific-name scorer must reproduce original/main.py get_sum over Latin text.
-# There is NO phonetic re-transliteration and NO two-letter digraph substitution.
+# Historical Latin scoring is retained only as a regression check for the old programme.
+# Matching NOW uses the same Greek-numeral values for names and Greek-rendered taxa.
 GREEK_WEIGHTS = dict(zip('αβγδεζηθικλμνξοπρστυφχψω',
     [1,2,3,4,5,7,8,9,10,20,30,40,50,60,70,80,100,200,300,400,500,600,700,800]))
 GREEK_WEIGHTS.update({'ς':200,'ϝ':6,'Ϝ':6,'ϛ':6,'Ϛ':6,
@@ -34,6 +35,9 @@ def verify_original():
     assert score_mixed('φϟη')==598
     assert score_mixed('ς')==score_mixed('σ')==200
     assert score_mixed('ϛ')==6 and score_mixed('ϡ')==900
+    for latin in CONTROL_NAMES:
+        assert taxon_score(latin) == score_greek(greek_transliterate(latin))
+    assert greek_transliterate('Panthera uncia') == 'πανθερα ουνκια'
 
 def canonical(body,rank):
  w=body.lstrip('†?*=$ ').split();i=0
@@ -57,8 +61,9 @@ def build():
  if not zpath.is_file():
   print('Downloading CoL data',URL,flush=True)
   urllib.request.urlretrieve(URL,str(zpath))
- DATA.mkdir(exist_ok=True,parents=True);shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js')
- stack=[];active=False;base=-1;lines=formal=0;handles=collections.OrderedDict();t0=time.time()
+ if DATA.exists():shutil.rmtree(DATA)
+ DATA.mkdir(exist_ok=True,parents=True);shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
+ stack=[];active=False;base=-1;lines=formal=invalid_names=0;handles=collections.OrderedDict();t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)
   def spool(bid,row):
@@ -88,7 +93,10 @@ def build():
     if body.lstrip('†? ').strip().startswith(('=','*','$')):continue
     if rank in RANK and name:
      lin={r:n for _,r,n in stack}
-     n=score(name)
+     try:
+      n=taxon_score(name)
+     except ValueError:
+      invalid_names+=1;continue
      spool(n//25,[n,name,rank,lin.get('class',''),lin.get('order',''),'†' if '†' in body[:3] else '?' if '?' in body[:3] else '',lin.get('phylum','')])
      formal+=1
     stack.append((indent,rank,name))
@@ -104,14 +112,17 @@ def build():
    (DATA/(str(bid)+'.json')).write_text(json.dumps(values,ensure_ascii=False,separators=(',',':')),encoding='utf8')
    # After restoring the old source letter weights, historic counts are obsolete.
    # Validate every unique record directly against the original arithmetic instead.
-   if any(score(r[1])!=r[0] for r in values):
+   if any(taxon_score(r[1])!=r[0] for r in values):
     raise AssertionError('Old-programme scoring mismatch in bucket '+str(bid))
    for target in (551,1258,1288):
     if bid==target//25:
      count=sum(r[0]==target for r in values)
-     print('CONTROL_ORIGINAL_TABLE',target,count,flush=True)
- meta={'version':'2026-08-26 XR','source':'Catalogue of Life Extended Release','url':URL,'scanned_rows':lines,'formal_rows':formal,'unique_records':unique,'buckets':len(available),'bucket_width':25,'available_buckets':sorted(available)}
- meta['algorithm']='Greek name values, original Latin scientific name values; difference exactly 0'
+     print('CONTROL_GREEK_TAXA',target,count,flush=True)
+ meta={'version':'2026-08-26 XR','source':'Catalogue of Life Extended Release','url':URL,'scanned_rows':lines,'formal_rows':formal,'unique_records':unique,'skipped_uncanonical_names':invalid_names,'buckets':len(available),'bucket_width':25,'available_buckets':sorted(available)}
+ meta['algorithm']='Same Greek numeral table for transcribed name and Greek-rendered Latinised scientific taxon; exact equality only'
+ meta['algorithm_id']=RULE_VERSION
+ meta['animal_name_method']='reproducible Greek transliteration of the original scientific name; not verified Ancient Greek lexical translation'
+ meta['test_vectors']=[{'latin':n,'greek':greek_transliterate(n),'score':taxon_score(n)} for n in CONTROL_NAMES]
  (DEST/'meta.json').write_text(json.dumps(meta,ensure_ascii=False,separators=(',',':')),encoding='utf8')
  print('SUCCESS',meta,'seconds',round(time.time()-t0),flush=True)
 if __name__=='__main__':build()
