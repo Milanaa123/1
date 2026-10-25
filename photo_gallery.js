@@ -1,15 +1,20 @@
 'use strict';
 /*
- * Photo-only curated list. Calculation and full TXT/CSV export remain unchanged.
- * Every featured animal must have an exact-name, correctly ranked, openly
- * licensed iNaturalist photo that the browser has successfully loaded.
+ * Top-30 exact matches appear immediately; verified iNaturalist photos are optional.
+ * Calculation and full TXT/CSV export remain unchanged.
  * Image metadata is held in RAM only, never saved with the submitted name.
  */
-const PHOTO_ORDER = ['Mammalia','Aves','Reptilia','Insecta'];
-const PHOTO_QUOTAS = {'Mammalia':10,'Aves':8,'Reptilia':7,'Insecta':5};
-const PHOTO_TARGET = 30, PHOTO_MAX_CHECKS = 56, PHOTO_MS_BETWEEN = 1050;
+// Class priorities: vertebrates first; invertebrates after; insects last.
+// The presence of an iNaturalist photograph never affects inclusion.
+const PHOTO_ORDER = [
+ 'Mammalia','Aves','Reptilia','Amphibia','Chondrichthyes',
+ 'Elasmobranchii','Actinopteri','Actinopterygii','Teleostei',
+ 'Cephalopoda','Malacostraca','Arachnida','Gastropoda','Bivalvia',
+ 'Asteroidea','Echinoidea','Chilopoda','Diplopoda'
+];
+const PHOTO_VERTEBRATES = new Set(PHOTO_ORDER.slice(0,9));
+const PHOTO_TARGET = 30, PHOTO_MS_BETWEEN = 1050;
 const PHOTO_CONCURRENCY = 3;
-const PHOTO_CHECKS_BY_GROUP = {'Mammalia':19,'Aves':16,'Reptilia':13,'Insecta':12};
 // Cache only animal photo metadata for this browser session, not people's names.
 const photoTaxonCache = new Map();
 let photoNextRequestAt = 0;
@@ -18,18 +23,22 @@ const photoGallery = {
  current:null,error:null
 };
 function photoCategoryRank(row) {
+ if(row[3]==='Insecta')return 1000;
  const idx=PHOTO_ORDER.indexOf(row[3]);
- return idx===-1?4:idx;
+ return idx===-1?100:idx;
 }
 function photoEligible(row) {
  return Array.isArray(row) && (row[2]==='species'||row[2]==='subspecies') &&
-   (row[5]===null||row[5]===undefined||row[5]==='') &&
+   !row[5] && /^[A-Z][a-z-]+ [a-z-]+(?: [a-z-]+)?$/.test(row[1]);
+}
+function galleryEligible(row) {
+ return Array.isArray(row) && typeof row[1]==='string' &&
    /^[A-Z][a-z-]+ [a-z-]+(?: [a-z-]+)?$/.test(row[1]);
 }
 function photoCandidates(rows) {
  const seen=new Set(),listed=[];
  for(const row of rows){
-  if(!photoEligible(row))continue;
+  if(!galleryEligible(row))continue;
   const key=row[1].toLowerCase()+'|'+row[2];
   if(seen.has(key))continue;
   seen.add(key);listed.push(row);
@@ -52,6 +61,32 @@ function photoCandidates(rows) {
   groups.set(group,fresh.concat(extra));
  }
  return groups;
+}
+function selectGalleryRows(rows) {
+ const groups=photoCandidates(rows);
+ const keys=[...groups.keys()].sort((a,b)=>
+  photoCategoryRank({3:a})-photoCategoryRank({3:b})||a.localeCompare(b));
+ // Finish all vertebrate matches before any invertebrate matches. Insects
+ // can only occupy slots remaining after every other group is exhausted.
+ const phases=[
+   keys.filter(g=>PHOTO_VERTEBRATES.has(g)),
+   keys.filter(g=>!PHOTO_VERTEBRATES.has(g)&&g!=='Insecta'),
+   keys.filter(g=>g==='Insecta')
+ ];
+ const chosen=[];
+ for(const phase of phases){
+  const positions=new Map(phase.map(g=>[g,0]));let advanced=true;
+  while(advanced&&chosen.length<PHOTO_TARGET){
+   advanced=false;
+   for(const group of phase){
+    if(chosen.length>=PHOTO_TARGET)break;
+    const pos=positions.get(group),next=groups.get(group)[pos];
+    if(next){chosen.push({row:next,photo:null});positions.set(group,pos+1);advanced=true;}
+   }
+  }
+  if(chosen.length>=PHOTO_TARGET)break;
+ }
+ return chosen;
 }
 function photoOrder(a,b) {
  return photoCategoryRank(a.row)-photoCategoryRank(b.row) ||
@@ -99,7 +134,7 @@ function photoCheckImage(url,stamp){
  });
 }
 async function photoLookup(row,stamp) {
- if(stamp!==photoGallery.stamp)return null;
+ if(stamp!==photoGallery.stamp||!photoEligible(row))return null;
  const key=row[1].toLowerCase()+'|'+row[2];
  if(photoTaxonCache.has(key)){
   const saved=photoTaxonCache.get(key);
@@ -131,19 +166,16 @@ async function photoLookup(row,stamp) {
  }
 }
 function photoStatus(done=false){
- const count=photoGallery.chosen.length;
- el('featuredCount').textContent= count+' из '+PHOTO_TARGET+' с проверенными фотографиями';
+ const total=photoGallery.chosen.length;
+ const photographed=photoGallery.chosen.filter(item=>Boolean(item.photo)).length;
+ el('featuredCount').textContent=total+' из '+Math.min(PHOTO_TARGET,results.length)+' точных совпадений';
  const target=document.getElementById('galleryStatus');
  if(!target)return;
  if(!photoGallery.source){target.textContent='';return;}
- if(!photoGallery.scanning&&done){
-  target.textContent=count?
-    (count<PHOTO_TARGET?'Доступно фото: '+count+'.':'30 животных с фотографиями.') :
-    'Фотографии не найдены. Полный список доступен ниже.';
-  if(photoGallery.error)target.textContent+=' '+photoGallery.error;
- }else{
-  target.textContent='✧ Подбираем фото · '+count+'/30';
- }
+ target.textContent=total+' животных в подборке · '+photographed+
+   ' с подтверждёнными фотографиями'+
+   (!done&&photoGallery.scanning?' · поиск фотографий…':'')+
+   (photoGallery.error?' '+photoGallery.error:'');
 }
 function photoMakeCard(item,index) {
  const row=item.row,li=document.createElement('li');
@@ -156,9 +188,12 @@ function photoMakeCard(item,index) {
  const greek=document.createElement('small');greek.textContent='Греческая запись: '+taxonGreek(row[1]);
  const button=document.createElement('button');button.type='button';
  button.className='view-photo-button';
- button.textContent='Посмотреть фотографию';
- button.setAttribute('aria-label','Посмотреть фотографию: '+display(row));
- button.addEventListener('click',()=>photoOpen(item,button));
+ button.textContent=item.photo?'Посмотреть фотографию':'Фото не подтверждено';
+ button.disabled=!item.photo;
+ if(item.photo){
+  button.setAttribute('aria-label','Посмотреть фотографию: '+display(row));
+  button.addEventListener('click',()=>photoOpen(item,button));
+ }
  const details=document.createElement('details');details.className='animal-detail';
  const toggle=document.createElement('summary');toggle.textContent='Проверить числовое совпадение';
  const info=document.createElement('div');
@@ -193,52 +228,18 @@ function photoDraw() {
 }
 async function photoCollect() {
  const stamp=photoGallery.stamp;
- const groups=photoCandidates(photoGallery.source||[]);
- const checked=new Set();
- const selectedByGroup=new Map();
- // A small parallel image pipeline, with global API request pacing.
- async function scanGroup(group,needed,limit) {
-  const rows=groups.get(group)||[];
-  let cursor=0,visited=0;
-  async function worker(){
-   while(stamp===photoGallery.stamp &&
-      photoGallery.chosen.length<PHOTO_TARGET &&
-      (selectedByGroup.get(group)||0)<needed &&
-      photoGallery.checked<PHOTO_MAX_CHECKS &&
-      visited<limit){
-    const row=rows[cursor++];
-    if(!row)return;
-    const key=row[1].toLowerCase()+'|'+row[2];
-    if(checked.has(key))continue;
-    checked.add(key);visited++;photoGallery.checked++;
-    const item=await photoLookup(row,stamp);
-    if(stamp!==photoGallery.stamp)return;
-    if(item && photoGallery.chosen.length<PHOTO_TARGET &&
-       (selectedByGroup.get(group)||0)<needed){
-      photoGallery.chosen.push(item);
-      selectedByGroup.set(group,(selectedByGroup.get(group)||0)+1);
-      photoDraw();
-    }else photoStatus();
-   }
+ const queue=photoGallery.chosen.filter(item=>photoEligible(item.row));
+ let cursor=0;
+ async function worker() {
+  while(stamp===photoGallery.stamp && cursor<queue.length) {
+   const item=queue[cursor++];
+   const found=await photoLookup(item.row,stamp);
+   if(stamp!==photoGallery.stamp)return;
+   if(found){item.photo=found.photo;photoDraw();}
   }
-  await Promise.all(Array.from({length:Math.min(PHOTO_CONCURRENCY,rows.length)},
-    ()=>worker()));
  }
- // The four priority groups are searched together; results are always
- // sorted by Mammalia → Aves → Reptilia → Insecta before being shown.
- await Promise.all(PHOTO_ORDER.map(group=>
-   scanGroup(group,PHOTO_QUOTAS[group],PHOTO_CHECKS_BY_GROUP[group])));
- if(stamp!==photoGallery.stamp)return;
- // Give spare places to the same preferred classes before considering others.
- for(const group of PHOTO_ORDER){
-  if(stamp!==photoGallery.stamp||photoGallery.chosen.length>=PHOTO_TARGET)break;
-  await scanGroup(group,PHOTO_TARGET,PHOTO_MAX_CHECKS-photoGallery.checked);
- }
- const remaining=[...groups.keys()].filter(g=>!PHOTO_ORDER.includes(g)).sort();
- for(const group of remaining){
-  if(stamp!==photoGallery.stamp||photoGallery.chosen.length>=PHOTO_TARGET)break;
-  await scanGroup(group,PHOTO_TARGET,Math.min(8,PHOTO_MAX_CHECKS-photoGallery.checked));
- }
+ await Promise.all(Array.from({length:Math.min(PHOTO_CONCURRENCY,queue.length)},
+  ()=>worker()));
  if(stamp===photoGallery.stamp){photoGallery.scanning=false;photoDraw();}
 }
 render=function(){
@@ -250,11 +251,12 @@ render=function(){
  if(photoGallery.source===results&&photoGallery.sum===sum){photoDraw();return;}
  photoCancel();
  photoGallery.source=results;photoGallery.sum=sum;
+ photoGallery.chosen=selectGalleryRows(results);
  photoGallery.controller=new AbortController();
  photoGallery.scanning=true;
  el('preview').replaceChildren();
  el('previewSection').hidden=false;el('downloads').hidden=false;
- photoStatus();
+ photoDraw(); // Show all matching rows immediately, even if they have no photo.
  void photoCollect();
 };
 function photoOpen(item,trigger) {
