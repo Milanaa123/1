@@ -75,12 +75,14 @@ render=function(){
     const body=document.createElement('span');
     const name=document.createElement('span');name.className='animal-name';name.textContent=display(row);
     const latin=document.createElement('small');latin.textContent=row[1]+(row[5]?' · '+status(row):'');
-    body.append(name,latin);card.append(index,body);
+    const renderedGreek=document.createElement('small');
+    renderedGreek.textContent='По-гречески (транслитерация): '+taxonGreek(row[1]);
+    body.append(name,latin,renderedGreek);card.append(index,body);
     const meta=document.createElement('div');meta.className='photo-meta';
     const credit=document.createElement('span');credit.textContent='Фото не найдено';
     const details=document.createElement('details');details.className='animal-detail';
     const toggle=document.createElement('summary');toggle.textContent='Проверка совпадения';
-    const info=document.createElement('div');info.textContent='Сумма названия '+row[0]+', сумма имени '+sum+', разница '+Math.abs(row[0]-sum)+'. '+filterName(row);
+    const info=document.createElement('div');info.textContent='Научное название: '+row[1]+' · Греческая запись: '+taxonGreek(row[1])+' · Греческая сумма животного: '+taxonGreekScore(row[1])+' · Число имени: '+sum+' · Разница: '+Math.abs(row[0]-sum)+'. '+filterName(row);
     details.append(toggle,info);meta.append(credit,details);li.append(media,card,meta);fragment.append(li);
     const photoRank=row[2];
     if(!row[5]&&/^[A-Z][a-z-]+ [a-z-]+(?: [a-z-]+)?$/.test(row[1])&&['species','subspecies'].includes(photoRank)){
@@ -100,17 +102,35 @@ run=async function(){
  }
  const target=score(greek),id=++serial;
  if(!target){reset();el('error').textContent='Число имени не определено';return;}
- el('run').disabled=true;el('runLabel').textContent='Проверяю каталог…';el('error').textContent='';
+ el('run').disabled=true;el('runLabel').textContent='Проверяю греческие суммы…';el('error').textContent='';
  try{
-  let matches=[],bucket=Math.floor(target/25);
-  if(!meta||meta.available_buckets.includes(bucket)){
-   const response=await fetch('./data/'+bucket+'.json');
+  // Always retrieve the matching index's metadata first: stale cache cannot
+  // silently mix pre-migration Latin scores with Greek scores.
+  const metaResponse=await fetch('./meta.json',{cache:'no-store'});
+  if(!metaResponse.ok)throw Error('Не удалось проверить версию каталога');
+  const fresh=await metaResponse.json();
+  if(fresh.algorithm_id!==GREEK_TAXON_RULE_VERSION)
+   throw Error('Каталог ещё не пересчитан по греческим названиям. Обнови страницу.');
+  if(!Array.isArray(fresh.test_vectors)||fresh.test_vectors.length<5)
+   throw Error('Отсутствуют контрольные расчёты каталога');
+  for(const vector of fresh.test_vectors){
+   if(taxonGreek(vector.latin)!==vector.greek||
+      score(vector.greek)!==vector.score||
+      taxonGreekScore(vector.latin)!==vector.score)
+     throw Error('Греческая таблица не совпадает с версией каталога');
+  }
+  if(!Array.isArray(fresh.available_buckets))throw Error('Некорректное описание каталога');
+  if(id!==serial)return;
+  meta=fresh;
+  let matches=[];const bucket=Math.floor(target/25);
+  if(meta.available_buckets.includes(bucket)){
+   const response=await fetch('./data/'+bucket+'.json',{cache:'no-store'});
    if(!response.ok)throw Error('Большой каталог животных недоступен');
    const data=await response.json();if(id!==serial)return;
    if(!Array.isArray(data))throw Error('Некорректный формат индекса');
    matches=data.filter(row=>Array.isArray(row)&&row[0]===target);
-   if(matches.some(row=>scoreLatin(row[1])!==target))
-    throw Error('Контрольная сумма научного названия не совпадает с исходной таблицей');
+   if(matches.some(row=>taxonGreekScore(row[1])!==target))
+    throw Error('Сумма транслитерированного греческого названия не совпала с индексом');
   }
   if(id!==serial)return;
   results=matches;sum=target;
@@ -124,11 +144,11 @@ run=async function(){
 };
 download=function(format){
   if(!results.length)return;
-  const origin='Catalogue of Life XR 2026-08-26 — научные названия, исходные латинские числовые веса';
-  const rows=results.map(r=>[display(r),r[1],r[2],r[0],r[5],filterName(r)]);
+  const origin='Catalogue of Life XR 2026-08-26; греческая транслитерация латинизированных научных названий, единая греческая числовая таблица; это не исторический перевод';
+  const rows=results.map(r=>[display(r),r[1],taxonGreek(r[1]),r[2],r[0],r[5],filterName(r)]);
   const csv=v=>/[;"\r\n]/.test(String(v))?'"'+String(v).replace(/"/g,'""')+'"':String(v);
-  const content=format==='csv'?[['Русское название','Исходное название','Ранг','Число','Статус','Группа'],...rows].map(row=>row.map(csv).join(';')).join('\r\n'):
-    ['Имя: '+el('name').value,'Греческая запись: '+el('greek').value,'Число: '+sum,'Точных совпадений: '+results.length,'Источник: '+origin,'',...rows.map((r,i)=>(i+1)+'. '+r[0]+' — '+r[1]+' ('+r[2]+', '+r[3]+')')].join('\n');
+  const content=format==='csv'?[['Русское название','Научное латинское название','Греческая транслитерация','Ранг','Число (греческое)','Статус','Группа'],...rows].map(row=>row.map(csv).join(';')).join('\r\n'):
+    ['Имя: '+el('name').value,'Греческая запись: '+el('greek').value,'Число: '+sum,'Точных совпадений: '+results.length,'Источник: '+origin,'',...rows.map((r,i)=>(i+1)+'. '+r[0]+' — '+r[1]+' → '+r[2]+' ('+r[3]+', '+r[4]+')')].join('\n');
   const url=URL.createObjectURL(new Blob(['\ufeff'+content],{type:format==='csv'?'text/csv;charset=utf-8':'text/plain;charset=utf-8'}));
   const a=document.createElement('a');a.href=url;a.download='Анимагия_'+sum+'_все_'+results.length+'.'+format;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
 };
