@@ -7,8 +7,12 @@
  */
 const PHOTO_ORDER = ['Mammalia','Aves','Reptilia','Insecta'];
 const PHOTO_QUOTAS = {'Mammalia':10,'Aves':8,'Reptilia':7,'Insecta':5};
-const PHOTO_TARGET = 30, PHOTO_MAX_CHECKS = 175, PHOTO_MS_BETWEEN = 1050;
-const PHOTO_CHECKS_BY_GROUP = {'Mammalia':48,'Aves':48,'Reptilia':44,'Insecta':48};
+const PHOTO_TARGET = 30, PHOTO_MAX_CHECKS = 90, PHOTO_MS_BETWEEN = 1050;
+const PHOTO_CONCURRENCY = 3;
+const PHOTO_CHECKS_BY_GROUP = {'Mammalia':26,'Aves':24,'Reptilia':22,'Insecta':20};
+// Cache only animal photo metadata for this browser session, not people's names.
+const photoTaxonCache = new Map();
+let photoNextRequestAt = 0;
 const photoGallery = {
  source:null,sum:null,stamp:0,controller:null,chosen:[],checked:0,scanning:false,
  current:null,error:null
@@ -65,6 +69,19 @@ function photoCancel() {
 const photoOriginalReset=reset;
 reset=function(){photoCancel();photoOriginalReset();};
 function photoDelay(ms){return new Promise(done=>setTimeout(done,ms));}
+async function photoAcquireRequestSlot(stamp){
+ // iNaturalist recommends roughly one API request per second.
+ // Parallel workers can overlap image loading without violating that rate.
+ const start=Math.max(Date.now(),photoNextRequestAt);
+ photoNextRequestAt=start+PHOTO_MS_BETWEEN;
+ const pause=start-Date.now();
+ if(pause>0)await photoDelay(pause);
+ return stamp===photoGallery.stamp;
+}
+function rememberPhoto(key,photo){
+ if(photoTaxonCache.size>=320)photoTaxonCache.delete(photoTaxonCache.keys().next().value);
+ photoTaxonCache.set(key,photo);
+}
 function photoCheckImage(url,stamp){
  return new Promise(resolve=>{
   if(stamp!==photoGallery.stamp){resolve(false);return;}
@@ -82,21 +99,31 @@ function photoCheckImage(url,stamp){
 }
 async function photoLookup(row,stamp) {
  if(stamp!==photoGallery.stamp)return null;
+ const key=row[1].toLowerCase()+'|'+row[2];
+ if(photoTaxonCache.has(key)){
+  const saved=photoTaxonCache.get(key);
+  return saved?{row,photo:saved}:null;
+ }
+ if(!await photoAcquireRequestSlot(stamp))return null;
  const controller=photoGallery.controller;
  const url='https://api.inaturalist.org/v1/taxa?q='+
-   encodeURIComponent(row[1])+'&per_page=10';
+   encodeURIComponent(row[1])+'&per_page=8';
  try {
   const response=await fetch(url,{signal:controller.signal,headers:{Accept:'application/json'}});
-  if(!response.ok){if(response.status===429)photoGallery.error='Сервис фотографий ограничил запросы.';return null;}
+  if(!response.ok){
+   if(response.status===429)photoGallery.error='Сервис фотографий временно ограничил запросы.';
+   return null;
+  }
   const data=await response.json();
   if(stamp!==photoGallery.stamp)return null;
   const match=inspectImage(data,row[1],row[2]);
-  if(!match)return null;
+  if(!match){rememberPhoto(key,null);return null;}
   if(!await photoCheckImage(match.src,stamp))return null;
+  rememberPhoto(key,match);
   return {row,photo:match};
  }catch(err){
   if(err.name!=='AbortError'&&stamp===photoGallery.stamp){
-   photoGallery.error='Не удалось загрузить часть фотографий из iNaturalist.';
+   photoGallery.error='Не все фотографии удалось загрузить.';
   }
   return null;
  }
@@ -109,12 +136,11 @@ function photoStatus(done=false){
  if(!photoGallery.source){target.textContent='';return;}
  if(!photoGallery.scanning&&done){
   target.textContent=count?
-    (count<PHOTO_TARGET?'Найдено '+count+' животных с фотографиями. Другие записи без фото не добавлены.':'Подобраны 30 животных с подтверждёнными фотографиями.') :
-    'Не удалось подтвердить фотографии для найденных видов. Полный список совпадений по-прежнему доступен для скачивания.';
+    (count<PHOTO_TARGET?'Доступно фото: '+count+'.':'30 животных с фотографиями.') :
+    'Фотографии не найдены. Полный список доступен ниже.';
   if(photoGallery.error)target.textContent+=' '+photoGallery.error;
  }else{
-  target.textContent='Проверяем фотографии: '+count+'/30 · просмотрено научных названий: '+
-    photoGallery.checked+'. В подборку попадают только доступные снимки.';
+  target.textContent='✧ Подбираем фото · '+count+'/30';
  }
 }
 function photoMakeCard(item,index) {
@@ -164,40 +190,52 @@ function photoDraw() {
  photoStatus(!photoGallery.scanning);
 }
 async function photoCollect() {
- const stamp=photoGallery.stamp,groups=photoCandidates(photoGallery.source||[]);
+ const stamp=photoGallery.stamp;
+ const groups=photoCandidates(photoGallery.source||[]);
  const checked=new Set();
- const getOrder=(group)=>groups.get(group)||[];
- async function scanList(rows,desired,maxChecks){
-  let n=0;
-  for(const row of rows){
-   if(stamp!==photoGallery.stamp||photoGallery.chosen.length>=PHOTO_TARGET||n>=maxChecks||photoGallery.checked>=PHOTO_MAX_CHECKS)return;
-   const key=row[1].toLowerCase()+'|'+row[2];
-   if(checked.has(key))continue;checked.add(key);
-   photoGallery.checked++;n++;
-   const item=await photoLookup(row,stamp);
-   if(stamp!==photoGallery.stamp)return;
-   if(item){photoGallery.chosen.push(item);photoDraw();}
-   else photoStatus();
-   if(stamp===photoGallery.stamp)await photoDelay(PHOTO_MS_BETWEEN);
-   if(stamp!==photoGallery.stamp)return;
-   if(photoGallery.chosen.filter(x=>x.row[3]===row[3]).length>=desired)break;
+ const selectedByGroup=new Map();
+ // A small parallel image pipeline, with global API request pacing.
+ async function scanGroup(group,needed,limit) {
+  const rows=groups.get(group)||[];
+  let cursor=0,visited=0;
+  async function worker(){
+   while(stamp===photoGallery.stamp &&
+      photoGallery.chosen.length<PHOTO_TARGET &&
+      (selectedByGroup.get(group)||0)<needed &&
+      photoGallery.checked<PHOTO_MAX_CHECKS &&
+      visited<limit){
+    const row=rows[cursor++];
+    if(!row)return;
+    const key=row[1].toLowerCase()+'|'+row[2];
+    if(checked.has(key))continue;
+    checked.add(key);visited++;photoGallery.checked++;
+    const item=await photoLookup(row,stamp);
+    if(stamp!==photoGallery.stamp)return;
+    if(item && photoGallery.chosen.length<PHOTO_TARGET &&
+       (selectedByGroup.get(group)||0)<needed){
+      photoGallery.chosen.push(item);
+      selectedByGroup.set(group,(selectedByGroup.get(group)||0)+1);
+      photoDraw();
+    }else photoStatus();
+   }
   }
+  await Promise.all(Array.from({length:Math.min(PHOTO_CONCURRENCY,rows.length)},
+    ()=>worker()));
  }
- // First give each requested class an opportunity, in exactly the requested order.
- for(const group of PHOTO_ORDER) {
-  if(stamp!==photoGallery.stamp)break;
-  await scanList(getOrder(group),PHOTO_QUOTAS[group],PHOTO_CHECKS_BY_GROUP[group]);
- }
- // Fill missing places from the same categories, still respecting their order.
- for(const group of PHOTO_ORDER) {
+ // The four priority groups are searched together; results are always
+ // sorted by Mammalia → Aves → Reptilia → Insecta before being shown.
+ await Promise.all(PHOTO_ORDER.map(group=>
+   scanGroup(group,PHOTO_QUOTAS[group],PHOTO_CHECKS_BY_GROUP[group])));
+ if(stamp!==photoGallery.stamp)return;
+ // Give spare places to the same preferred classes before considering others.
+ for(const group of PHOTO_ORDER){
   if(stamp!==photoGallery.stamp||photoGallery.chosen.length>=PHOTO_TARGET)break;
-  await scanList(getOrder(group),PHOTO_TARGET,PHOTO_MAX_CHECKS-photoGallery.checked);
+  await scanGroup(group,PHOTO_TARGET,PHOTO_MAX_CHECKS-photoGallery.checked);
  }
- // Additional animals (amphibians, fish etc.) are only considered afterwards.
- const remaining=[...groups.keys()].filter(key=>!PHOTO_ORDER.includes(key)).sort();
- for(const group of remaining) {
+ const remaining=[...groups.keys()].filter(g=>!PHOTO_ORDER.includes(g)).sort();
+ for(const group of remaining){
   if(stamp!==photoGallery.stamp||photoGallery.chosen.length>=PHOTO_TARGET)break;
-  await scanList(getOrder(group),PHOTO_TARGET,Math.min(16,PHOTO_MAX_CHECKS-photoGallery.checked));
+  await scanGroup(group,PHOTO_TARGET,Math.min(8,PHOTO_MAX_CHECKS-photoGallery.checked));
  }
  if(stamp===photoGallery.stamp){photoGallery.scanning=false;photoDraw();}
 }
