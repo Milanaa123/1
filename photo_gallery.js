@@ -7,9 +7,9 @@
  */
 const PHOTO_ORDER = ['Mammalia','Aves','Reptilia','Insecta'];
 const PHOTO_QUOTAS = {'Mammalia':10,'Aves':8,'Reptilia':7,'Insecta':5};
-const PHOTO_TARGET = 30, PHOTO_MAX_CHECKS = 90, PHOTO_MS_BETWEEN = 1050;
+const PHOTO_TARGET = 30, PHOTO_MAX_CHECKS = 56, PHOTO_MS_BETWEEN = 1050;
 const PHOTO_CONCURRENCY = 3;
-const PHOTO_CHECKS_BY_GROUP = {'Mammalia':26,'Aves':24,'Reptilia':22,'Insecta':20};
+const PHOTO_CHECKS_BY_GROUP = {'Mammalia':19,'Aves':16,'Reptilia':13,'Insecta':12};
 // Cache only animal photo metadata for this browser session, not people's names.
 const photoTaxonCache = new Map();
 let photoNextRequestAt = 0;
@@ -79,14 +79,14 @@ async function photoAcquireRequestSlot(stamp){
  return stamp===photoGallery.stamp;
 }
 function rememberPhoto(key,photo){
- if(photoTaxonCache.size>=320)photoTaxonCache.delete(photoTaxonCache.keys().next().value);
+ if(photoTaxonCache.size>=700)photoTaxonCache.delete(photoTaxonCache.keys().next().value);
  photoTaxonCache.set(key,photo);
 }
 function photoCheckImage(url,stamp){
  return new Promise(resolve=>{
   if(stamp!==photoGallery.stamp){resolve(false);return;}
   const preview=new Image();let finished=false;
-  const timer=setTimeout(()=>complete(false),10500);
+  const timer=setTimeout(()=>complete(false),5500);
   function complete(good){
    if(finished)return;finished=true;clearTimeout(timer);
    preview.onload=null;preview.onerror=null;resolve(good);
