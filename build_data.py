@@ -2,7 +2,6 @@
 """Generate exact-match static shards from Catalogue of Life XR 2026-08-26."""
 import os,re,zipfile,json,urllib.request,shutil,tempfile,collections,time,unicodedata
 from original.alphabet_maps import latin_map as CH
-from original.animals import animals_list as ORIGINAL_ANIMALS
 from pathlib import Path
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
 URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
@@ -112,17 +111,7 @@ def build():
      count=sum(r[0]==target for r in values)
      print('CONTROL_ORIGINAL_TABLE',target,count,flush=True)
  meta={'version':'2026-08-26 XR','source':'Catalogue of Life Extended Release','url':URL,'scanned_rows':lines,'formal_rows':formal,'unique_records':unique,'buckets':len(available),'bucket_width':25,'available_buckets':sorted(available)}
- # Original program contains 127 entries, of which some are exact duplicates.
- # Deduplicate only repeated identical strings; never deduplicate by score.
- original_rows=[];seen_legacy=set()
- for name in ORIGINAL_ANIMALS:
-  name=name.strip()
-  if name in seen_legacy:continue
-  seen_legacy.add(name)
-  original_rows.append([score_mixed(name),name,'original','','','',''])
- (DEST/'original_animals.json').write_text(json.dumps(original_rows,ensure_ascii=False,separators=(',',':')),encoding='utf8')
- meta['original_unique_names']=len(original_rows)
- meta['algorithm']='original alphabet_maps.py values; corrected final sigma and historical numerals'
+ meta['algorithm']='Greek name values, original Latin scientific name values; difference exactly 0'
  (DEST/'meta.json').write_text(json.dumps(meta,ensure_ascii=False,separators=(',',':')),encoding='utf8')
  print('SUCCESS',meta,'seconds',round(time.time()-t0),flush=True)
 if __name__=='__main__':build()

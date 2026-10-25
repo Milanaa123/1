@@ -47,13 +47,15 @@ test('photo result must be exact taxon with open license',()=>{
   assert.equal(ctx.inspectImage({results:[{...valid,default_photo:{...valid.default_photo,license_code:'none'}}]},
     'Panthera uncia','species'),null);
 });
-test('privacy and source modes visible in UI',()=>{
+test('privacy and large catalogue only',()=>{
   const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-  assert.match(html,/option value="original"/);
-  assert.match(html,/option value="catalog"/);
+  assert.doesNotMatch(html,/option value="original"/);
+  assert.doesNotMatch(html,/id="method"/);
+  assert.match(html,/Catalogue of Life XR 2026-08-26/);
   assert.match(html,/Например: Фрейзер Гарольд Браун/);
   assert.match(html,/id="printPdf"/);
   assert.match(html,/id="letterBreakdown"/);
   assert.match(html,/id="groupFilter"/);
   assert.doesNotMatch(a+b,/localStorage|sessionStorage/);
+  assert.doesNotMatch(b,/original_animals\.json/);
 });
