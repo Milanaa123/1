@@ -3,6 +3,7 @@
 import os,re,zipfile,json,urllib.request,shutil,tempfile,collections,time,unicodedata
 from original.alphabet_maps import latin_map as CH
 from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_score, CONTROL_NAMES
+from taxon_filters import POLICY_VERSION, allow_animal_taxon
 from pathlib import Path
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
 URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
@@ -63,7 +64,7 @@ def build():
   urllib.request.urlretrieve(URL,str(zpath))
  if DATA.exists():shutil.rmtree(DATA)
  DATA.mkdir(exist_ok=True,parents=True);shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
- stack=[];active=False;base=-1;lines=formal=invalid_names=0;handles=collections.OrderedDict();t0=time.time()
+ stack=[];active=False;base=-1;lines=formal=invalid_names=excluded=0;handles=collections.OrderedDict();t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)
   def spool(bid,row):
@@ -93,12 +94,16 @@ def build():
     if body.lstrip('†? ').strip().startswith(('=','*','$')):continue
     if rank in RANK and name:
      lin={r:n for _,r,n in stack}
-     try:
-      n=taxon_score(name)
-     except ValueError:
-      invalid_names+=1;continue
-     spool(n//25,[n,name,rank,lin.get('class',''),lin.get('order',''),'†' if '†' in body[:3] else '?' if '?' in body[:3] else '',lin.get('phylum','')])
-     formal+=1
+     if not allow_animal_taxon(lin):
+      excluded+=1
+     else:
+      try:
+       n=taxon_score(name)
+      except ValueError:
+       invalid_names+=1
+      else:
+       spool(n//25,[n,name,rank,lin.get('class',''),lin.get('order',''),'†' if '†' in body[:3] else '?' if '?' in body[:3] else '',lin.get('phylum','')])
+       formal+=1
     stack.append((indent,rank,name))
   for f in handles.values():f.close()
   unique=0;available=[]
@@ -121,6 +126,8 @@ def build():
  meta={'version':'2026-08-26 XR','source':'Catalogue of Life Extended Release','url':URL,'scanned_rows':lines,'formal_rows':formal,'unique_records':unique,'skipped_uncanonical_names':invalid_names,'buckets':len(available),'bucket_width':25,'available_buckets':sorted(available)}
  meta['algorithm']='Same Greek numeral table for transcribed name and Greek-rendered Latinised scientific taxon; exact equality only'
  meta['algorithm_id']=RULE_VERSION
+ meta['catalog_filter_version']=POLICY_VERSION
+ meta['excluded_parasites_unplaced_and_wormlike_rows']=excluded
  meta['animal_name_method']='ancient-Greek-alphabet approximation of the original scientific name; not verified Ancient Greek lexical translation; digamma stands in for modern v/w'
  meta['test_vectors']=[{'latin':n,'greek':greek_transliterate(n),'score':taxon_score(n)} for n in CONTROL_NAMES]
  (DEST/'meta.json').write_text(json.dumps(meta,ensure_ascii=False,separators=(',',':')),encoding='utf8')
