@@ -3,13 +3,13 @@
 Not an ancient-Greek lexical translation. Zoological binomials include Latin,
 Latinised Greek, geographic words and modern people's names: no unique ancient
 Greek equivalent exists for all Catalogue of Life taxa.
-Versioned convention; change it only with complete re-indexing and a migration.
+Versioned ancient-alphabet convention; modern /v/ has no direct equivalent, so the archaic /w/ digamma ϝ is an approximation. Re-index every taxon when changed.
 """
 from __future__ import annotations
 import re
 import unicodedata
 
-RULE_VERSION = "taxon-greek-backmap-v1"
+RULE_VERSION = "taxon-ancient-alphabet-v2"
 DIGRAPHS = {
     "ph": "φ", "th": "θ", "ch": "χ", "ps": "ψ", "rh": "ρ",
     "ae": "αι", "oe": "οι", "au": "αυ", "eu": "ευ",
@@ -20,7 +20,7 @@ SINGLE = {
     "f": "φ", "g": "γ", "h": "χ", "i": "ι", "j": "ι",
     "k": "κ", "l": "λ", "m": "μ", "n": "ν", "o": "ο",
     "p": "π", "q": "κ", "r": "ρ", "s": "σ", "t": "τ",
-    "u": "ου", "v": "β", "w": "ου", "x": "ξ",
+    "u": "ου", "v": "ϝ", "w": "ϝ", "x": "ξ",
     "y": "υ", "z": "ζ",
 }
 WEIGHTS = dict(zip("αβγδεζηθικλμνξοπρστυφχψω",

@@ -1,7 +1,8 @@
 'use strict';
-/* Greek taxon v1: deterministic Greek rendering, NOT an attested Ancient
-   Greek translation. Keep this mapping in exact parity with greek_taxa.py. */
-const GREEK_TAXON_RULE_VERSION = 'taxon-greek-backmap-v1';
+/* Ancient-alphabet v2: deterministic transcription, NOT a lexical translation.
+   v and w use archaic digamma /w/ as an approximation, never Ancient beta /b/.
+   Keep exact parity with greek_taxa.py; any revision requires full reindex. */
+const GREEK_TAXON_RULE_VERSION = 'taxon-ancient-alphabet-v2';
 const GREEK_TAXON_DIGRAPHS = {
  ph:'φ',th:'θ',ch:'χ',ps:'ψ',rh:'ρ',ae:'αι',oe:'οι',au:'αυ',
  eu:'ευ',ei:'ει',ai:'αι',ou:'ου'
@@ -10,7 +11,7 @@ const GREEK_TAXON_SINGLE = {
  a:'α',b:'β',c:'κ',d:'δ',e:'ε',f:'φ',g:'γ',h:'χ',
  i:'ι',j:'ι',k:'κ',l:'λ',m:'μ',n:'ν',o:'ο',
  p:'π',q:'κ',r:'ρ',s:'σ',t:'τ',u:'ου',
- v:'β',w:'ου',x:'ξ',y:'υ',z:'ζ'
+ v:'ϝ',w:'ϝ',x:'ξ',y:'υ',z:'ζ'
 };
 const GREEK_TAXON_REGEX = /^[A-Za-z]+(?:-[A-Za-z]+)*(?: [A-Za-z]+(?:-[A-Za-z]+)*)+$/;
 function taxonGreek(scientific) {

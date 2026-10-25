@@ -12,11 +12,11 @@ const api = vm.runInNewContext(script + '\n;({score, transcribe, validGreek, bre
 });
 
 const cases = [
-  ['Фрейзер Гарольд Браун', 2619],
-  ['Нерис Фостер Берриклот', 2195],
+  ['Фрейзер Гарольд Браун', 2155],
+  ['Нерис Фостер Берриклот', 2077],
   ['Илайн Эли Нельсон', 551],
-  ['Эйк Льюис Эйвери', 887],
-  ['Льюис Этан Эйвери', 922]
+  ['Эйк Льюис Эйвери', 891],
+  ['Льюис Этан Эйвери', 926]
 ];
 
 for (const [name, value] of cases) {
@@ -28,12 +28,12 @@ for (const [name, value] of cases) {
   });
 }
 test('ударения и конечная сигма не влияют на число', () => {
-  assert.equal(api.score('Φρέιζερ Χάρολντ Μπράουν'), 2619);
-  assert.equal(api.score('Φρειζερ Χαρολντ Μπραουν'), 2619);
+  assert.equal(api.score('Φρειζερ Χάρολδ Βράουν'), 2155);
+  assert.equal(api.score('Φρειζερ Χαρολδ Βραουν'), 2155);
   assert.equal(api.score('Ιλάιν Έλι Νέλσον'), 551);
 });
 test('греческое поле отвергает латиницу и кириллицу', () => {
-  assert.equal(api.validGreek('Φρέιζερ Χάρολντ Μπράουν'), true);
+  assert.equal(api.validGreek('Φρειζερ Χάρολδ Βράουν'), true);
   assert.equal(api.validGreek('Harold'), false);
   assert.equal(api.validGreek('Φρέιζερ Harold'), false);
   assert.equal(api.validGreek('Илайн'), false);

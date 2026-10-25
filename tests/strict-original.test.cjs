@@ -28,8 +28,8 @@ test('corrected historical numerals and methodical 598 difference',()=>{
   assert.equal(ctx.score('ιετυ')-ctx.score('ραβδι'),598);
 });
 test('Russian phonetic Greek transliteration with manual correction support',()=>{
-  for(const [n,s] of [['Фрейзер Гарольд Браун',2619],
-    ['Нерис Фостер Берриклот',2195],['Илайн Эли Нельсон',551]])
+  for(const [n,s] of [['Фрейзер Гарольд Браун',2155],
+    ['Нерис Фостер Берриклот',2077],['Илайн Эли Нельсон',551]])
     assert.equal(ctx.score(ctx.transcribe(n)),s,n);
   assert.equal(ctx.validGreek('φϟη'),true);
   assert.equal(ctx.validGreek('греческий'),false);
@@ -68,14 +68,14 @@ test('scientific names become Greek before numeric scoring',()=>{
     ['Naja oxiana','ναια οξιανα'],
     ['Anolis cooki','ανολις κοοκι'],
     ['Canis lupus','κανις λουπους'],
-    ['Vulpes vulpes','βουλπες βουλπες'],
+    ['Vulpes vulpes','ϝουλπες ϝουλπες'],
     ['Felis catus','φελις κατους']
   ];
   for(const [scientific,greek] of examples){
     assert.equal(ctx.taxonGreek(scientific),greek,scientific);
     assert.equal(ctx.taxonGreekScore(scientific),ctx.score(greek),scientific);
   }
-  assert.equal(ctx.GREEK_TAXON_RULE_VERSION,'taxon-greek-backmap-v1');
+  assert.equal(ctx.GREEK_TAXON_RULE_VERSION,'taxon-ancient-alphabet-v2');
 });
 test('Latin totals no longer determine the index',()=>{
   assert.notEqual(ctx.taxonGreekScore('Panthera uncia'),ctx.scoreLatin('Panthera uncia'));
@@ -97,4 +97,14 @@ test('only one large catalogue; data files disclose their Greek basis',()=>{
   assert.match(b,/taxonGreekScore\(row\[1\]\)/);
   assert.doesNotMatch(b,/scoreLatin\(row\[1\]\)/);
   assert.doesNotMatch(python,/n=score\(name\)/);
+});
+
+test('древнегреческая запись Брауна и звонких согласных',()=>{
+  assert.equal(ctx.transcribe('Браун'),'Βράουν');
+  assert.equal(ctx.score('Βράουν'),623);
+  assert.equal(ctx.transcribe('Гарольд'),'Χάρολδ');
+  assert.equal(ctx.transcribe('Дамир'),'Δαμιρ');
+  assert.equal(ctx.transcribe('Вивиан'),'Ϝιϝιαν');
+  assert.equal(ctx.taxonGreek('Vulpes vulpes'),'ϝουλπες ϝουλπες');
+  assert.doesNotMatch(ctx.transcribe('Браун'),/μπ/);
 });
