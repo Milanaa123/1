@@ -1,11 +1,11 @@
 'use strict';
 /*
- * Top-30 exact matches appear immediately; verified iNaturalist photos are optional.
- * Calculation and full TXT/CSV export remain unchanged.
+ * Only exact numerical matches with a verified, loadable iNaturalist photo
+ * may enter the top-30 gallery. Full TXT/CSV exports remain unchanged.
  * Image metadata is held in RAM only, never saved with the submitted name.
  */
 // Class priorities: vertebrates first; invertebrates after; insects last.
-// The presence of an iNaturalist photograph never affects inclusion.
+// Photos are mandatory for the gallery, not for the complete export.
 const PHOTO_ORDER = [
  'Mammalia','Aves','Reptilia','Amphibia','Chondrichthyes',
  'Elasmobranchii','Actinopteri','Actinopterygii','Teleostei',
@@ -14,6 +14,9 @@ const PHOTO_ORDER = [
 ];
 const PHOTO_VERTEBRATES = new Set(PHOTO_ORDER.slice(0,9));
 const PHOTO_TARGET = 30, PHOTO_MS_BETWEEN = 1050;
+// Exhaust more candidates than the previous 30/56-item limit, in priority tiers.
+const PHOTO_MAX_CHECKS = 240;
+const PHOTO_STAGE_LIMITS = [100,90,50];
 const PHOTO_CONCURRENCY = 3;
 // Cache only animal photo metadata for this browser session, not people's names.
 const photoTaxonCache = new Map();
@@ -31,14 +34,10 @@ function photoEligible(row) {
  return Array.isArray(row) && (row[2]==='species'||row[2]==='subspecies') &&
    !row[5] && /^[A-Z][a-z-]+ [a-z-]+(?: [a-z-]+)?$/.test(row[1]);
 }
-function galleryEligible(row) {
- return Array.isArray(row) && typeof row[1]==='string' &&
-   /^[A-Z][a-z-]+ [a-z-]+(?: [a-z-]+)?$/.test(row[1]);
-}
 function photoCandidates(rows) {
  const seen=new Set(),listed=[];
  for(const row of rows){
-  if(!galleryEligible(row))continue;
+  if(!photoEligible(row))continue;
   const key=row[1].toLowerCase()+'|'+row[2];
   if(seen.has(key))continue;
   seen.add(key);listed.push(row);
@@ -62,31 +61,30 @@ function photoCandidates(rows) {
  }
  return groups;
 }
-function selectGalleryRows(rows) {
+// Inspect all exact matches in priority tiers, never just the first 30.
+// Round-robin within a tier balances photo candidates from different classes.
+// Bounded stage searches avoid getting stuck on unphotographed taxa.
+function photoCandidateTiers(rows) {
  const groups=photoCandidates(rows);
  const keys=[...groups.keys()].sort((a,b)=>
   photoCategoryRank({3:a})-photoCategoryRank({3:b})||a.localeCompare(b));
- // Finish all vertebrate matches before any invertebrate matches. Insects
- // can only occupy slots remaining after every other group is exhausted.
  const phases=[
-   keys.filter(g=>PHOTO_VERTEBRATES.has(g)),
-   keys.filter(g=>!PHOTO_VERTEBRATES.has(g)&&g!=='Insecta'),
-   keys.filter(g=>g==='Insecta')
+  keys.filter(g=>PHOTO_VERTEBRATES.has(g)),
+  keys.filter(g=>!PHOTO_VERTEBRATES.has(g)&&g!=='Insecta'),
+  keys.filter(g=>g==='Insecta')
  ];
- const chosen=[];
- for(const phase of phases){
-  const positions=new Map(phase.map(g=>[g,0]));let advanced=true;
-  while(advanced&&chosen.length<PHOTO_TARGET){
+ return phases.map(phase=>{
+  const positions=new Map(phase.map(group=>[group,0])),queue=[];
+  let advanced=true;
+  while(advanced){
    advanced=false;
    for(const group of phase){
-    if(chosen.length>=PHOTO_TARGET)break;
     const pos=positions.get(group),next=groups.get(group)[pos];
-    if(next){chosen.push({row:next,photo:null});positions.set(group,pos+1);advanced=true;}
+    if(next){queue.push(next);positions.set(group,pos+1);advanced=true;}
    }
   }
-  if(chosen.length>=PHOTO_TARGET)break;
- }
- return chosen;
+  return queue;
+ });
 }
 function photoOrder(a,b) {
  return photoCategoryRank(a.row)-photoCategoryRank(b.row) ||
@@ -141,7 +139,6 @@ async function photoLookup(row,stamp) {
   return saved?{row,photo:saved}:null;
  }
  if(!await photoAcquireRequestSlot(stamp))return null;
- if(photoGallery.chosen.length>=PHOTO_TARGET)return null;
  const controller=photoGallery.controller;
  const url='https://api.inaturalist.org/v1/taxa?q='+
    encodeURIComponent(row[1])+'&per_page=8';
@@ -166,41 +163,46 @@ async function photoLookup(row,stamp) {
  }
 }
 function photoStatus(done=false){
- const total=photoGallery.chosen.length;
- const photographed=photoGallery.chosen.filter(item=>Boolean(item.photo)).length;
- el('featuredCount').textContent=total+' из '+Math.min(PHOTO_TARGET,results.length)+' точных совпадений';
+ const found=photoGallery.chosen.length;
+ el('featuredCount').textContent=found+' из '+PHOTO_TARGET+' с проверенными фотографиями';
  const target=document.getElementById('galleryStatus');
  if(!target)return;
  if(!photoGallery.source){target.textContent='';return;}
- target.textContent=total+' животных в подборке · '+photographed+
-   ' с подтверждёнными фотографиями'+
-   (!done&&photoGallery.scanning?' · поиск фотографий…':'')+
-   (photoGallery.error?' '+photoGallery.error:'');
+ const checks='Проверено '+photoGallery.checked+' вариантов.';
+ target.textContent=(photoGallery.scanning&&!done
+  ?'Поиск фотографий · '+found+'/30. '+checks
+  : found===PHOTO_TARGET
+    ?'Найдены 30 животных с подтверждёнными фотографиями. '+checks
+    : 'Найдено '+found+' из 30 животных с фотографиями. '+checks+
+      ' Другие совпадения можно скачать полным списком.')+
+  (photoGallery.error?' '+photoGallery.error:'');
 }
 function photoMakeCard(item,index) {
  const row=item.row,li=document.createElement('li');
  li.className='species-row verified-animal-card';
  const badge=document.createElement('span');badge.className='photo-card-number';
  badge.textContent=String(index+1).padStart(2,'0');
+ const thumb=document.createElement('img');
+ thumb.className='verified-animal-thumb';
+ thumb.src=item.photo.preview||item.photo.src;
+ thumb.alt='Фотография: '+display(row);
+ thumb.loading='lazy';thumb.decoding='async';
  const body=document.createElement('div');body.className='photo-card-body';
  const name=document.createElement('strong');name.className='animal-name';name.textContent=display(row);
  const science=document.createElement('small');science.textContent=row[1];
  const greek=document.createElement('small');greek.textContent='Греческая запись: '+taxonGreek(row[1]);
  const button=document.createElement('button');button.type='button';
  button.className='view-photo-button';
- button.textContent=item.photo?'Посмотреть фотографию':'Фото не подтверждено';
- button.disabled=!item.photo;
- if(item.photo){
-  button.setAttribute('aria-label','Посмотреть фотографию: '+display(row));
-  button.addEventListener('click',()=>photoOpen(item,button));
- }
+ button.textContent='Увеличить фотографию';
+ button.setAttribute('aria-label','Посмотреть фотографию: '+display(row));
+ button.addEventListener('click',()=>photoOpen(item,button));
  const details=document.createElement('details');details.className='animal-detail';
  const toggle=document.createElement('summary');toggle.textContent='Проверить числовое совпадение';
  const info=document.createElement('div');
  info.textContent='Сумма греческой записи: '+taxonGreekScore(row[1])+
    ' · Сумма имени: '+sum+' · Разница: '+Math.abs(sum-row[0]);
  details.append(toggle,info);body.append(name,science,greek,button,details);
- li.append(badge,body);return li;
+ li.append(badge,thumb,body);return li;
 }
 function photoDraw() {
  const selected=photoGallery.chosen.slice().sort(photoOrder);
@@ -228,18 +230,31 @@ function photoDraw() {
 }
 async function photoCollect() {
  const stamp=photoGallery.stamp;
- const queue=photoGallery.chosen.filter(item=>photoEligible(item.row));
- let cursor=0;
- async function worker() {
-  while(stamp===photoGallery.stamp && cursor<queue.length) {
-   const item=queue[cursor++];
-   const found=await photoLookup(item.row,stamp);
-   if(stamp!==photoGallery.stamp)return;
-   if(found){item.photo=found.photo;photoDraw();}
+ const tiers=photoCandidateTiers(photoGallery.source||[]);
+ for(let phase=0;phase<tiers.length;phase++){
+  if(stamp!==photoGallery.stamp||photoGallery.chosen.length>=PHOTO_TARGET||
+     photoGallery.checked>=PHOTO_MAX_CHECKS)break;
+  const queue=tiers[phase];
+  const budget=Math.min(PHOTO_STAGE_LIMITS[phase],PHOTO_MAX_CHECKS-photoGallery.checked);
+  let cursor=0,phaseChecked=0;
+  async function worker(){
+   while(stamp===photoGallery.stamp &&
+     photoGallery.chosen.length<PHOTO_TARGET &&
+     phaseChecked<budget){
+    const row=queue[cursor++];
+    if(!row)return;
+    phaseChecked++;photoGallery.checked++;
+    const found=await photoLookup(row,stamp);
+    if(stamp!==photoGallery.stamp)return;
+    if(found && photoGallery.chosen.length<PHOTO_TARGET &&
+       !photoGallery.chosen.some(item=>item.row[1]===row[1]&&item.row[2]===row[2])){
+     photoGallery.chosen.push(found);
+     photoDraw();
+    }else photoStatus();
+   }
   }
+  await Promise.all(Array.from({length:Math.min(PHOTO_CONCURRENCY,queue.length,budget)},()=>worker()));
  }
- await Promise.all(Array.from({length:Math.min(PHOTO_CONCURRENCY,queue.length)},
-  ()=>worker()));
  if(stamp===photoGallery.stamp){photoGallery.scanning=false;photoDraw();}
 }
 render=function(){
@@ -251,12 +266,11 @@ render=function(){
  if(photoGallery.source===results&&photoGallery.sum===sum){photoDraw();return;}
  photoCancel();
  photoGallery.source=results;photoGallery.sum=sum;
- photoGallery.chosen=selectGalleryRows(results);
  photoGallery.controller=new AbortController();
  photoGallery.scanning=true;
  el('preview').replaceChildren();
  el('previewSection').hidden=false;el('downloads').hidden=false;
- photoDraw(); // Show all matching rows immediately, even if they have no photo.
+ photoDraw(); // Initially empty: only successful photo checks add cards.
  void photoCollect();
 };
 function photoOpen(item,trigger) {
