@@ -8,7 +8,7 @@ function inspectImage(data,name,rank){
   for(const x of data&&Array.isArray(data.results)?data.results:[]){
     if(String(x.name||'').toLowerCase()!==name.toLowerCase()||x.rank!==rank)continue;
     const p=x.default_photo;
-    if(!p||!p.medium_url||!['cc0','cc-by','cc-by-sa'].includes(String(p.license_code||'').toLowerCase()))continue;
+    if(!p||!p.medium_url||!['cc0','cc-by','cc-by-sa','cc-by-nc','cc-by-nc-sa'].includes(String(p.license_code||'').toLowerCase()))continue;
     try{const u=new URL(p.medium_url);
       if(u.protocol!=='https:'||!['static.inaturalist.org','inaturalist-open-data.s3.amazonaws.com'].includes(u.hostname))continue;
       if(!Number.isInteger(Number(x.id)))continue;
@@ -17,7 +17,7 @@ function inspectImage(data,name,rank){
   }return null;
 }
 function loadPhotos(){
-  while(busy<3&&queue.length){
+  while(busy<1&&queue.length){
     const j=queue.shift();if(j.stamp!==photoStamp)continue;busy++;
     (async()=>{try{
       const u='https://api.inaturalist.org/v1/taxa?q='+encodeURIComponent(j.row[1])+'&per_page=8';
@@ -29,7 +29,7 @@ function loadPhotos(){
       j.media.append(image);
       const link=document.createElement('a');link.href=p.source;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Фото: '+p.credit;
       j.credit.replaceChildren(link);
-    }catch{if(j.stamp===photoStamp)j.credit.textContent='Фото не найдено';}finally{busy--;loadPhotos();}})();
+    }catch{if(j.stamp===photoStamp)j.credit.textContent='Фото не найдено';}finally{await new Promise(ok=>setTimeout(ok,700));busy--;loadPhotos();}})();
   }
 }
 function auditSum(greek){
