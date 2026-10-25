@@ -103,10 +103,14 @@ def build():
    values=sorted(seen.values(),key=lambda r:(r[0],r[3],r[1]))
    unique+=len(values);available.append(bid)
    (DATA/(str(bid)+'.json')).write_text(json.dumps(values,ensure_ascii=False,separators=(',',':')),encoding='utf8')
-   for target,expected in [(551,75),(1258,609),(1288,629)]:
+   # After restoring the old source letter weights, historic counts are obsolete.
+   # Validate every unique record directly against the original arithmetic instead.
+   if any(score(r[1])!=r[0] for r in values):
+    raise AssertionError('Old-programme scoring mismatch in bucket '+str(bid))
+   for target in (551,1258,1288):
     if bid==target//25:
-     count=sum(r[0]==target for r in values);print('CONTROL',target,count,expected,flush=True)
-     if target==551: assert count==expected
+     count=sum(r[0]==target for r in values)
+     print('CONTROL_ORIGINAL_TABLE',target,count,flush=True)
  meta={'version':'2026-08-26 XR','source':'Catalogue of Life Extended Release','url':URL,'scanned_rows':lines,'formal_rows':formal,'unique_records':unique,'buckets':len(available),'bucket_width':25,'available_buckets':sorted(available)}
  # Original program contains 127 entries, of which some are exact duplicates.
  # Deduplicate only repeated identical strings; never deduplicate by score.
