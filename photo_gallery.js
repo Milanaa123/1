@@ -59,6 +59,7 @@ function photoOrder(a,b) {
 }
 function photoCancel() {
  photoGallery.stamp++;
+ photoNextRequestAt=Math.min(photoNextRequestAt,Date.now()+PHOTO_MS_BETWEEN);
  if(photoGallery.controller)photoGallery.controller.abort();
  photoGallery.controller=null;photoGallery.source=null;photoGallery.sum=null;
  photoGallery.chosen=[];photoGallery.checked=0;photoGallery.scanning=false;
