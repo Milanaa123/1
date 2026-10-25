@@ -29,7 +29,7 @@ test('corrected historical numerals and methodical 598 difference',()=>{
 });
 test('Russian phonetic Greek transliteration with manual correction support',()=>{
   for(const [n,s] of [['Фрейзер Гарольд Браун',2155],
-    ['Нерис Фостер Берриклот',2077],['Илайн Эли Нельсон',551]])
+    ['Нерис Фостер Берриклот',2177],['Илайн Эли Нельсон',551]])
     assert.equal(ctx.score(ctx.transcribe(n)),s,n);
   assert.equal(ctx.validGreek('φϟη'),true);
   assert.equal(ctx.validGreek('греческий'),false);
@@ -107,4 +107,9 @@ test('древнегреческая запись Брауна и звонких
   assert.equal(ctx.transcribe('Вивиан'),'Ϝιϝιαν');
   assert.equal(ctx.taxonGreek('Vulpes vulpes'),'ϝουλπες ϝουλπες');
   assert.doesNotMatch(ctx.transcribe('Браун'),/μπ/);
+});
+
+test('удвоенные древнегреческие согласные не удаляются',()=>{
+ assert.equal(ctx.transcribe('Берриклот'),'Βερρικλοτ');
+ assert.equal(ctx.transcribe('Карра'),'Καρρα');
 });

@@ -14,7 +14,7 @@ const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 function score(s){let n=0;for(let c of norm(s))n+=W[c]||0;return n;}
 function scoreLatin(s){let n=0;for(const c of norm(s))n+=LATIN_OLD[c]||0;return n;}
 function scoreMixed(s){let n=0;for(const c of norm(s))n+=LATIN_OLD[c]||W[c]||0;return n;}
-function transcribe(raw){return raw.trim().replace(/[А-Яа-яЁё]+/g,s=>{const word=s.toLowerCase();if(PRONUNCIATION[word])return PRONUNCIATION[word];const greek=[...word].map(c=>RU[c]||'').join('').replace(/ρρ/g,'ρ').replace(/σ$/,'ς');return greek.charAt(0).toUpperCase()+greek.slice(1);}).replace(/\s+/g,' ');}
+function transcribe(raw){return raw.trim().replace(/[А-Яа-яЁё]+/g,s=>{const word=s.toLowerCase();if(PRONUNCIATION[word])return PRONUNCIATION[word];const greek=[...word].map(c=>RU[c]||'').join('').replace(/σ$/,'ς');return greek.charAt(0).toUpperCase()+greek.slice(1);}).replace(/\s+/g,' ');}
 function validGreek(raw){return !!raw.trim()&&[...norm(raw)].every(c=>W[c]!==undefined||/^[\s'’\-]$/.test(c));}
 function breakdown(raw){return raw.trim().split(/\s+/).map(word=>word+' ('+score(word)+')').join(' + ');}
 
