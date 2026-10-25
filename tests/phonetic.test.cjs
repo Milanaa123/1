@@ -7,7 +7,7 @@ const path = require('node:path');
 
 // Tests run without a browser, downloads, services, or storing anyone's name.
 const script = fs.readFileSync(path.join(__dirname, '..', 'app.js'), 'utf8');
-const api = vm.runInNewContext(script + '\n;({score, transcribe, validGreek, breakdown})', {
+const api = vm.runInNewContext(script + '\n;({score, transcribe, validGreek, breakdown, featured, display})', {
   document: {addEventListener() {}}
 });
 
@@ -47,4 +47,37 @@ test('интерфейс без кнопок сохранённых имён и 
   assert.ok(!html.includes('data-example='));
   assert.ok(!script.includes('localStorage'));
   assert.ok(!script.includes('sessionStorage'));
+});
+
+
+test('подборка показывает 30 разных видов при наличии 30+ совпадений', () => {
+  const species=Array.from({length:65},(_,i)=>[
+    551,'Testus species'+String(i),'species',
+    i<6?'Mammalia':i<14?'Aves':i<22?'Reptilia':i<35?'Arachnida':'Insecta',
+    i<6?'Carnivora':i<35?'Araneae':'Lepidoptera','','Arthropoda'
+  ]);
+  const selected=api.featured(species);
+  assert.equal(selected.length,30);
+  assert.equal(new Set(selected.map(r=>r[1])).size,30);
+  assert.ok(selected.some(r=>r[3]==='Mammalia'));
+  assert.ok(selected.some(r=>r[3]==='Aves'));
+});
+test('если точных животных меньше 30, не добавляются вымышленные',()=>{
+  const rows=Array.from({length:12},(_,i)=>[551,'Testus exemplar'+i,'species','Aves','Passeriformes','','Chordata']);
+  assert.equal(api.featured(rows).length,12);
+});
+test('все основные названия в подборке написаны кириллицей',()=>{
+  const rows=[
+    [551,'Arctosa capensis','species','Arachnida','Araneae','','Arthropoda'],
+    [551,'Gekko hulk','species','Reptilia','Squamata','','Chordata'],
+    [551,'Mysteriella alfatica','species','Insecta','Coleoptera','','Arthropoda']
+  ];
+  for(const row of rows){
+    const label=api.display(row);
+    assert.match(label,/[А-Яа-яЁё]/);
+    assert.doesNotMatch(label,/[A-Za-z]/);
+  }
+});
+test('непризнанные русские имена не маскируются под официальные',()=>{
+  assert.equal(api.display([551,'Arctosa capensis','species','Arachnida','Araneae','','Arthropoda']),'Паук-волк — арктоса капенсис');
 });
