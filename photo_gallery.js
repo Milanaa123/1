@@ -105,6 +105,7 @@ async function photoLookup(row,stamp) {
   return saved?{row,photo:saved}:null;
  }
  if(!await photoAcquireRequestSlot(stamp))return null;
+ if(photoGallery.chosen.length>=PHOTO_TARGET)return null;
  const controller=photoGallery.controller;
  const url='https://api.inaturalist.org/v1/taxa?q='+
    encodeURIComponent(row[1])+'&per_page=8';
