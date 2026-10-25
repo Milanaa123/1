@@ -10,7 +10,7 @@ let meta=null,results=[],sum=null,serial=0,manually=false;
 const el=id=>document.getElementById(id);
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 function score(s){let n=0;for(let c of norm(s))n+=W[c]||0;return n;}
-function transcribe(raw){return raw.trim().replace(/[А-Яа-яЁё]+/g,s=>{const word=s.toLowerCase();if(PRONUNCIATION[word])return PRONUNCIATION[word];return [...word].map(c=>RU[c]||'').join('').replace(/ρρ/g,'ρ').replace(/σ$/,'ς');}).replace(/\s+/g,' ');}
+function transcribe(raw){return raw.trim().replace(/[А-Яа-яЁё]+/g,s=>{const word=s.toLowerCase();if(PRONUNCIATION[word])return PRONUNCIATION[word];const greek=[...word].map(c=>RU[c]||'').join('').replace(/ρρ/g,'ρ').replace(/σ$/,'ς');return greek.charAt(0).toUpperCase()+greek.slice(1);}).replace(/\s+/g,' ');}
 function validGreek(raw){return !!raw.trim()&&/^[\p{Script=Greek}\s'’\-]+$/u.test(norm(raw));}
 function breakdown(raw){return raw.trim().split(/\s+/).map(word=>word+' ('+score(word)+')').join(' + ');}
 function category(r){return ORDER[r[4]]||GROUP[r[3]]||({Arthropoda:'Членистоногие',Annelida:'Кольчатые черви',Mollusca:'Моллюски',Chordata:'Хордовые'})[r[6]]||r[6]||'Животные';}
