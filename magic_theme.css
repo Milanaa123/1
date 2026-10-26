@@ -644,3 +644,182 @@ body::before{
  .results.is-revealing #audit{animation:none!important}
  .main-btn,.name-step{transition:none!important}
 }
+
+
+/* ===========================================================
+   Phase II · three-stage name ritual
+   Optional progressive enhancement. Form and maths remain intact.
+   =========================================================== */
+.ritual-intro{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-6px 0 17px}
+.ritual-intro-copy{font-size:12px;color:#d8c7d6;line-height:1.55}
+.ritual-expand{
+ appearance:none;background:#272337a3;border:1px solid #a68d6c94;
+ color:#f2d5aa;border-radius:25px;padding:9px 12px;
+ font:600 11px Manrope,system-ui,sans-serif;min-height:39px;flex-shrink:0;
+ transition:background-color .18s,border-color .18s;
+}
+.ritual-expand:hover{background:#40324b;border-color:#e9c58f}
+.ritual-track{
+ display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;
+ padding:0;margin:0 0 21px;list-style:none;
+}
+.ritual-track li{
+ position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ min-width:0;min-height:67px;padding:8px 4px;gap:4px;
+ border:1px solid #866e6055;border-radius:10px;
+ background:linear-gradient(160deg,#30273c91,#211f30bd);
+ color:#aa9da9;font-size:10px;font-weight:600;text-align:center;
+ transition:border-color .22s,background-color .22s,color .22s;
+}
+.ritual-track li>span:first-child{
+ font:24px 'Noto Serif',Georgia,serif;
+ line-height:1.2;color:#a78964;
+}
+.ritual-track li[data-status="done"]{
+ border-color:#ab966d85;color:#e0caaa;
+}
+.ritual-track li[data-status="done"]>span:first-child{color:#cdb186}
+.ritual-track li[data-status="active"]{
+ border-color:#edcd96c4;color:#f4ddc0;
+ background:radial-gradient(circle at 50% 0,#b79b7c3d,transparent 82%),#30273b;
+ box-shadow:inset 0 0 17px #cfab7d17,0 0 15px #dbb57915;
+}
+.ritual-track li[data-status="active"]>span:first-child{color:#ffe3b4;text-shadow:0 0 15px #ffd89c68}
+.ritual-track li[data-status="locked"]{opacity:.68}
+.ritual-track li::after{
+ content:"";width:17px;height:1px;position:absolute;top:50%;right:-13px;
+ background:#d5b27e74;z-index:1;pointer-events:none;
+}
+.ritual-track li:last-child::after{display:none}
+.name-step.ritual-arrived{
+ animation:ritual-page-unfold .56s cubic-bezier(.16,.8,.23,1) both;
+}
+.ritual-next{
+ display:flex;gap:10px;align-items:center;justify-content:space-between;
+ width:100%;min-height:44px;margin:15px 0 0;padding:10px 13px;
+ color:#f0d0a3;border:1px solid #b99a697d;border-radius:9px;
+ background:linear-gradient(115deg,#45344da3,#342c3e9c);
+ font:700 12px Manrope,system-ui,sans-serif;
+ box-shadow:inset 0 0 19px #dfb3760f;
+ transition:border-color .2s,background-color .2s;
+}
+.ritual-next:hover{border-color:#e4bb84;background:#443448}
+.ritual-next span{color:#fbe1b5;font-size:20px}
+.ritual-checkline{
+ display:flex;align-items:flex-start;gap:8px;
+ margin-top:10px;font-size:11px;line-height:1.55;
+ color:#edd4b2;
+}
+.ritual-checkline>span{color:#d8b67c}
+.name-path-arrow{
+ height:44px;line-height:35px;position:relative;overflow:hidden;
+ font-size:17px;margin:1px auto 3px;
+ animation:ritual-thread-glow 3.6s ease-in-out infinite;
+}
+.name-path-arrow::before,.name-path-arrow::after{
+ content:"";position:absolute;left:50%;top:1px;bottom:8px;width:1px;
+ background:linear-gradient(180deg,transparent,#d9b88486 45%,transparent);
+ transform:translateX(-50%);z-index:-1;
+}
+.name-path-arrow::after{width:21px;filter:blur(12px);opacity:.6}
+.ritual-calculation{
+ position:relative;margin-top:19px;padding:20px 18px 16px;
+ border:1px solid #c8a77680;border-radius:11px;
+ background:
+  radial-gradient(ellipse at 48% 0%,#d5b57c16,transparent 64%),
+  linear-gradient(155deg,#201d2de8,#191b2cdd);
+ box-shadow:inset 0 0 24px #d2ae8312;
+}
+.ritual-calculation::before{
+ content:"";height:1px;position:absolute;left:23px;right:23px;top:0;
+ background:linear-gradient(90deg,transparent,#ffe1b494,transparent);
+}
+.ritual-calculation-heading{
+ display:flex;flex-wrap:wrap;justify-content:space-between;
+ gap:8px;align-items:center;font-size:11px;color:#edd2ac;
+}
+.ritual-calculation-heading span:first-child{font-weight:800;letter-spacing:.06em}
+#ritualScoreState{color:#bfaec8;font-size:10px}
+.ritual-live-number{
+ margin:13px 0 6px;font:600 clamp(37px,5vw,51px)/1.05 'Cormorant Garamond',Georgia,serif;
+ color:#f5d398;font-variant-numeric:tabular-nums;
+ text-shadow:0 0 27px #d6ab6441;
+ overflow-wrap:anywhere;
+}
+.ritual-word-sums{
+ color:#cec1cd;font:12px/1.6 'Noto Serif',Georgia,serif;
+ overflow-wrap:anywhere;margin:8px 0;
+}
+.ritual-letters{margin-top:11px;border-top:1px solid #a48a634e;padding-top:12px}
+.ritual-letters summary,.ritual-lexicon summary{
+ cursor:pointer;color:#e7ca9c;font-size:11px;font-weight:700;
+ line-height:1.6;
+}
+.ritual-letters summary:focus-visible,.ritual-lexicon summary:focus-visible{
+ outline:2px solid #e8c68c;outline-offset:5px;
+}
+.ritual-letters-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.ritual-letter-chip{
+ display:flex;flex-direction:column;align-items:center;
+ min-width:34px;padding:6px 7px;gap:2px;
+ background:linear-gradient(145deg,#3b3044,#262239);
+ border:1px solid #b69a746b;border-radius:7px;
+}
+.ritual-glyph{font:19px/1.2 'Noto Serif',Georgia,serif;color:#f8e2be}
+.ritual-letter-chip small{font:10px/1.3 Manrope,system-ui,sans-serif;color:#dab786}
+.ritual-letter-gap{flex-basis:9px}
+.ritual-copied-row{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:13px}
+.ritual-copy{
+ min-height:40px;background:#3b3144;border:1px solid #b99b7191;
+ border-radius:8px;padding:10px 13px;color:#f4ddba;
+ font:700 11px Manrope,system-ui,sans-serif;
+}
+.ritual-copy:hover{background:#4b3b4b}
+#ritualCopyStatus{font-size:11px;color:#e5c998}
+.ritual-lexicon{
+ border:1px solid #927e6570;border-radius:9px;
+ padding:12px 14px;margin-top:14px;
+ background:#322b3e7f;
+}
+.ritual-lexicon p{font-size:11px;line-height:1.75;color:#cdbed2;margin:12px 0 0}
+.ritual-lexicon strong{color:#f2dbb6}
+.ritual-lexicon em{font-family:'Noto Serif',Georgia,serif;color:#eee1cf}
+.ritual-final-actions{position:relative;margin-top:17px}
+.ritual-final-actions::before{
+ content:"";position:absolute;left:50%;top:-17px;height:16px;width:1px;
+ background:linear-gradient(180deg,#bda2766a,transparent);
+}
+.ritual-screenreader{
+ position:absolute!important;width:1px;height:1px;padding:0;overflow:hidden;
+ clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+@keyframes ritual-page-unfold{
+ from{opacity:0;transform:translateY(14px) scale(.986);filter:blur(2px)}
+ to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+@keyframes ritual-thread-glow{
+ 0%,100%{opacity:.56}45%{opacity:1}
+}
+@media(max-width:680px){
+ .ritual-intro{align-items:flex-start}
+ .ritual-intro-copy{font-size:11px}
+ .ritual-expand{font-size:10px;padding:8px 10px}
+ .ritual-track{gap:6px}
+ .ritual-track li{min-height:60px;font-size:9px;padding:6px 3px}
+ .ritual-track li>span:first-child{font-size:20px}
+ .ritual-calculation{padding:17px 12px 13px}
+ .ritual-live-number{font-size:44px}
+}
+@media(max-width:380px){
+ .ritual-intro{flex-wrap:wrap}
+ .ritual-expand{margin-left:auto}
+ .ritual-track li{font-size:8px}
+}
+@media print{
+ .ritual-intro,.ritual-track,.ritual-next,.ritual-checkline,
+ .ritual-calculation,.ritual-lexicon{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .name-step.ritual-arrived,.name-path-arrow{animation:none!important}
+ .ritual-track li,.ritual-next,.ritual-expand{transition:none!important}
+}
