@@ -163,9 +163,9 @@
   return out;
  }
  function atlas(){return window.AnimagiaAnimalAtlas||null;}
- function updateEcology(profile){
+ function updateEcology(profile,row){
   const root=get('relicLaboratory'),box=get('animalProfile');
-  const meta=atlas()?.style(profile)||{diet:'unknown',habitat:'unknown',
+  const meta=atlas()?.style(atlas().classify(row)||profile)||{diet:'unknown',habitat:'unknown',
     dietText:'Рацион не установлен',habitatText:'Среда не установлена',secondaryText:[]};
   if(root){root.dataset.diet=meta.diet;root.dataset.habitat=meta.habitat;}
   if(box){box.dataset.diet=meta.diet;box.dataset.habitat=meta.habitat;}
@@ -198,7 +198,7 @@
   frame.replaceChildren(elem('span','✧'));
   link.hidden=true;
   const gallery=atlas(),profile=gallery?.resolve(row)||null;
-  updateEcology(profile);
+  updateEcology(profile,row);
   if(profile){
    gallery.render(frame,profile);
    info.textContent=profile.note+' · золотая линейная иллюстрация из библиотеки Анимагии';
@@ -268,7 +268,7 @@
    const canvas=elem('canvas');canvas.width=1200;canvas.height=1900;
    const ctx=canvas.getContext('2d');
    if(!ctx)throw Error('Canvas недоступен');
-   const styl=gallery?.style(profile)||{};
+   const styl=gallery?.style(gallery.classify(row))||{};
    const glow={
     predator:'#4c283a',herbivore:'#28382f',omnivore:'#39304c',
     unknown:'#30283e'
@@ -408,7 +408,7 @@
    art.append(elem('h3',label(r)));
    art.append(elem('p',r[1]+' · '+(r[2]==='subspecies'?'подвид':'вид')));
    if(illustration){
-    const nature=atlas().style(illustration);
+    const nature=atlas().style(atlas().classify(r));
     const labels=[nature.diet!=='unknown'?nature.dietText:null,
       nature.habitat!=='unknown'?nature.habitatText:null,...nature.secondaryText].filter(Boolean);
     if(labels.length)art.append(elem('p',labels.join(' · ')));
