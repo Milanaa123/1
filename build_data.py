@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Generate Greek-scored taxon shards for the complete Catalogue of Life XR."""
-import os,re,zipfile,json,urllib.request,shutil,tempfile,collections,time,unicodedata
+import os,re,zipfile,json,urllib.request,shutil,tempfile,collections,time,unicodedata,hashlib
 from original.alphabet_maps import latin_map as CH
 from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_score, CONTROL_NAMES
 from taxon_filters import POLICY_VERSION, allow_animal_taxon
+from audit_index import audit_bucket
 from pathlib import Path
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
 URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
@@ -169,7 +170,7 @@ def build():
        formal+=1
     stack.append((indent,rank,name,is_extinct))
   for f in handles.values():f.close()
-  unique=0;available=[]
+  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();bucket_sha256={};index_digest=hashlib.sha256()
   for p in directory.glob('*.part'):
    bid=int(p.stem);seen={}
    with p.open(encoding='utf8') as f:
@@ -177,11 +178,16 @@ def build():
      r=json.loads(line);seen.setdefault((r[1],r[2]),r)
    values=sorted(seen.values(),key=lambda r:(r[0],r[3],r[1]))
    unique+=len(values);available.append(bid)
-   (DATA/(str(bid)+'.json')).write_text(json.dumps(values,ensure_ascii=False,separators=(',',':')),encoding='utf8')
-   # After restoring the old source letter weights, historic counts are obsolete.
-   # Validate every unique record directly against the original arithmetic instead.
-   if any(taxon_score(r[1])!=r[0] for r in values):
-    raise AssertionError('Old-programme scoring mismatch in bucket '+str(bid))
+   # Fail the entire publication if ANY row is invalid, misplaced,
+   # duplicated, excluded, incorrectly scored or out of sorted order.
+   report=audit_bucket(values,bid)
+   audit_ranks.update(report['ranks']);audit_classes.update(report['classes'])
+   blob=json.dumps(values,ensure_ascii=False,separators=(',',':')).encode('utf8')
+   (DATA/(str(bid)+'.json')).write_bytes(blob)
+   digest=hashlib.sha256(blob).hexdigest()
+   bucket_sha256[str(bid)]=digest
+   # Canonical full-index fingerprint, independent of filesystem enumeration.
+   # The final digest is computed later from sorted per-bucket checksums.
    for target in (551,1258,1288):
     if bid==target//25:
      count=sum(r[0]==target for r in values)
@@ -198,6 +204,23 @@ def build():
  meta['category_filter']='Curated noncolonial independent animal groups: mammals, birds, reptiles, amphibians, fish, insects, spiders/scorpions, free-moving crustaceans, cephalopods and echinoderms. Excludes corals/polyps, sponges, attached molluscs and worms; ecology is inferred, not verified species by species.'
  meta['animal_name_method']='ancient-Greek-alphabet approximation of the original scientific name; not verified Ancient Greek lexical translation; digamma stands in for modern v/w'
  meta['test_vectors']=[{'latin':n,'greek':greek_transliterate(n),'score':taxon_score(n)} for n in CONTROL_NAMES]
+ if sum(audit_ranks.values())!=unique or sum(audit_classes.values())!=unique:
+  raise AssertionError('QA total diverges from indexed unique records')
+ for bucket in sorted(available):
+  index_digest.update(str(bucket).encode('ascii')+b':'+bucket_sha256[str(bucket)].encode('ascii')+b'\\n')
+ meta['bucket_sha256']=bucket_sha256
+ meta['quality_audit']={
+  'status':'passed',
+  'method':'per-record Greek recomputation, bucket, canonical name, rank, group, extinction marker, uniqueness and order',
+  'checked_records':unique,
+  'checked_buckets':len(available),
+  'rank_counts':dict(sorted(audit_ranks.items())),
+  'class_counts':dict(sorted(audit_classes.items())),
+  'index_sha256':index_digest.hexdigest(),
+  'ecological_verification':'not performed species-by-species',
+  'extant_verification':'not performed species-by-species'
+ }
+ print('QUALITY_AUDIT_PASSED',unique,'records',len(available),'files','sha256',index_digest.hexdigest(),flush=True)
  (DEST/'meta.json').write_text(json.dumps(meta,ensure_ascii=False,separators=(',',':')),encoding='utf8')
  print('SUCCESS',meta,'seconds',round(time.time()-t0),flush=True)
 if __name__=='__main__':build()
