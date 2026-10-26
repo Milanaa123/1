@@ -110,9 +110,33 @@ def verify_animal_scope():
   assert actual==expected,(lineage,expected,actual)
  print('SCOPE_TESTS_PASSED',len(tests),flush=True)
 
+def probe_phylopic_art():
+ # Nonfatal live provider contract check for sample taxon; never sends a name.
+ def read(u):
+  req=urllib.request.Request(u,headers={'Accept':'application/vnd.phylopic.v2+json','User-Agent':'Animagia-Quality-Check/1.0'})
+  with urllib.request.urlopen(req,timeout=6) as r:return json.loads(r.read())
+ try:
+  base='https://api.phylopic.org'
+  info=read(base+'/')
+  build=info['build']
+  nodes=read(base+'/nodes?build='+str(build)+'&filter_name=squamata&embed_items=true&page=0')
+  found=(nodes.get('_embedded',{}).get('items') or [])
+  print('PHYLOPIC_PROVIDER_NODE',{'build':build,'total':nodes.get('totalItems'),
+   'sample_fields':list(found[0]) if found else [],'sample_name':found[0].get('name') if found else None},flush=True)
+  if found:
+   uid=found[0]['uuid']
+   url=base+'/images?build='+str(build)+'&filter_clade='+uid+'&filter_license_by=false&filter_license_nc=false&filter_license_sa=false&embed_items=true&page=0'
+   images=read(url);items=images.get('_embedded',{}).get('items') or []
+   print('PHYLOPIC_PROVIDER_IMAGE',{'total':images.get('totalItems'),
+    'items':len(items),'fields':list(items[0]) if items else [],
+    'vector':items[0].get('_links',{}).get('vectorFile') if items else None},flush=True)
+ except Exception as exc:
+  print('PHYLOPIC_PROVIDER_UNAVAILABLE',type(exc).__name__,str(exc)[:200],flush=True)
+
 def build():
  verify_original()
  verify_animal_scope()
+ probe_phylopic_art()
  zpath=Path(os.getenv('COL_ZIP','')) if os.getenv('COL_ZIP') else BASE/'source.zip'
  if not zpath.is_file():
   print('Downloading CoL data',URL,flush=True)
