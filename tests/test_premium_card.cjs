@@ -36,8 +36,13 @@ test('Card hierarchy and no broken technical empty fields',()=>{
  assert.ok(html.includes('id="relicPreviewCategory"'));
  assert.ok(html.includes('id="relicPreviewGreek"'));
  assert.ok(html.includes('id="relicPreviewTraits"'));
- assert.ok(js.includes("drawCelestialBorder(ctx,sum)"));
+ assert.ok(js.includes("drawCelestialBorder(ctx,number)"));
  assert.ok(js.includes("ctx.fillRect(0,0,1200,2070)"));
+ assert.ok(js.includes("paintCardBackdrop(ctx,sum,styl.diet)"));
+ assert.ok(js.includes("paintCardBackdropOnScreen(meta.diet)"));
+ assert.ok(html.includes('id="relicCardBackdrop"'));
+ assert.ok(html.includes('class="relic-card-masthead"'));
+ assert.ok(html.includes('relic_card_stage1.css?v='));
 });
 test('Approved art stored at own domain and integrity checked on build',()=>{
  assert.ok(py.includes('def bundle_curated_gold_art():'));
