@@ -110,39 +110,108 @@ def verify_animal_scope():
   assert actual==expected,(lineage,expected,actual)
  print('SCOPE_TESTS_PASSED',len(tests),flush=True)
 
-def probe_phylopic_art():
- # Nonfatal live provider contract check for sample taxon; never sends a name.
- def read(u):
-  req=urllib.request.Request(u,headers={'Accept':'application/vnd.phylopic.v2+json','User-Agent':'Animagia-Quality-Check/1.0'})
-  with urllib.request.urlopen(req,timeout=6) as r:return json.loads(r.read())
+def bundle_public_domain_silhouettes():
+ """Cache genuine CC0/PDM PhyloPic vector files in our static output.
+ Network failure is nonfatal; never substitute an invented animal shape.
+ Names are biological groups only; no visitor names are transmitted.
+ """
+ from urllib.parse import urlencode
+ sources={
+  'Reptilia':'Squamata',
+  'Mammalia':'Mammalia',
+  'Aves':'Aves',
+  'Amphibia':'Amphibia',
+  'Actinopterygii':'Actinopterygii',
+  'Actinopteri':'Actinopterygii',
+  'Chondrichthyes':'Chondrichthyes',
+  'Insecta':'Insecta',
+  'Arachnida':'Araneae',
+  'Cephalopoda':'Cephalopoda',
+  'Malacostraca':'Decapoda',
+  'Gastropoda':'Gastropoda',
+  'Echinoidea':'Echinoidea',
+  'Asteroidea':'Asteroidea'
+ }
+ folder=DEST/'silhouettes';folder.mkdir(parents=True,exist_ok=True)
+ records={}
+ def read(address,blob=False):
+  headers={'Accept':'image/svg+xml' if blob else 'application/vnd.phylopic.v2+json',
+           'User-Agent':'Animagia-Bestiary/1.0'}
+  with urllib.request.urlopen(urllib.request.Request(address,headers=headers),timeout=6) as response:
+   result=response.read(1200001 if blob else 500000)
+  return result if blob else json.loads(result)
  try:
-  base='https://api.phylopic.org'
-  info=read(base+'/')
-  build=info['build']
-  nodes=read(base+'/nodes?build='+str(build)+'&filter_name=squamata&embed_items=true&page=0')
-  found=(nodes.get('_embedded',{}).get('items') or [])
-  print('PHYLOPIC_PROVIDER_NODE',{'build':build,'total':nodes.get('totalItems'),
-   'sample_fields':list(found[0]) if found else [],'sample_name':found[0].get('name') if found else None},flush=True)
-  if found:
-   uid=found[0]['uuid']
-   url=base+'/images?build='+str(build)+'&filter_clade='+uid+'&filter_license_by=false&filter_license_nc=false&filter_license_sa=false&embed_items=true&page=0'
-   images=read(url);items=images.get('_embedded',{}).get('items') or []
-   print('PHYLOPIC_PROVIDER_IMAGE',{'total':images.get('totalItems'),
-    'items':len(items),'fields':list(items[0]) if items else [],
-    'vector':items[0].get('_links',{}).get('vectorFile') if items else None},flush=True)
- except Exception as exc:
-  print('PHYLOPIC_PROVIDER_UNAVAILABLE',type(exc).__name__,str(exc)[:200],flush=True)
+  api='https://api.phylopic.org'
+  version=read(api+'/')['build']
+ except Exception as e:
+  print('SILHOUETTE_INDEX_UNAVAILABLE',type(e).__name__,str(e)[:140],flush=True)
+  version=None
+ cache={}
+ if version is not None:
+  for group,taxon in sources.items():
+   try:
+    if taxon not in cache:
+     nodes=read(api+'/nodes?'+urlencode({
+       'build':version,'filter_name':taxon.lower(),'embed_items':'true','page':0
+     }))
+     items=nodes.get('_embedded',{}).get('items',[])
+     if isinstance(items,dict):items=[items]
+     # Search term is an exact taxonomic group. Never use random fuzzy results.
+     def same_name(node):
+      names=node.get('names') or []
+      return any((name if isinstance(name,str) else
+       (name.get('value') or name.get('name') or name.get('text') or ''))
+       .casefold()==taxon.casefold() for name in names)
+     node=next((x for x in items if same_name(x)),None)
+     if node is None and len(items)==1:
+      # PhyloPic returned only one candidate for a specific scientific query.
+      node=items[0]
+     if not node:raise ValueError('No taxonomic node')
+     images=read(api+'/images?'+urlencode({
+       'build':version,'filter_clade':node['uuid'],'page':0,
+       'embed_items':'true','filter_license_by':'false',
+       'filter_license_nc':'false','filter_license_sa':'false'
+     }))
+     entries=images.get('_embedded',{}).get('items',[])
+     if isinstance(entries,dict):entries=[entries]
+     valid=None
+     for x in entries:
+      url=x.get('_links',{}).get('vectorFile',{}).get('href','')
+      if not url.startswith('https://images.phylopic.org/'):continue
+      valid=(x.get('uuid'),url)
+      break
+     if not valid:raise ValueError('No public-domain SVG')
+     image_uuid,vector_url=valid
+     svg=read(vector_url,blob=True)
+     if len(svg)>1200000 or b'<svg' not in svg[:1000].lower():
+      raise ValueError('Non-SVG vector')
+     lower=svg.lower()
+     if b'<script' in lower or b'<foreignobject' in lower or b'javascript:' in lower:
+      raise ValueError('Unsafe SVG content')
+     cache[taxon]=(svg,image_uuid)
+    svg,image_uuid=cache[taxon]
+    filename=group+'.svg'
+    (folder/filename).write_bytes(svg)
+    records[group]={'file':filename,'taxon':taxon,'uuid':image_uuid,
+      'source':'https://www.phylopic.org/images/'+image_uuid,
+      'license':'CC0 or Public Domain Mark'}
+    print('SILHOUETTE_BUNDLED',group,taxon,len(svg),flush=True)
+   except Exception as e:
+    print('SILHOUETTE_GROUP_UNAVAILABLE',group,type(e).__name__,str(e)[:120],flush=True)
+ (folder/'manifest.json').write_text(
+  json.dumps({'source':'PhyloPic','records':records},ensure_ascii=False,separators=(',',':')),
+  encoding='utf8')
+ print('SILHOUETTE_BUNDLE_RESULT',len(records),'of',len(sources),flush=True)
 
 def build():
  verify_original()
  verify_animal_scope()
- probe_phylopic_art()
  zpath=Path(os.getenv('COL_ZIP','')) if os.getenv('COL_ZIP') else BASE/'source.zip'
  if not zpath.is_file():
   print('Downloading CoL data',URL,flush=True)
   urllib.request.urlretrieve(URL,str(zpath))
  if DATA.exists():shutil.rmtree(DATA)
- DATA.mkdir(exist_ok=True,parents=True);shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'silhouette_service.js',DEST/'silhouette_service.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
+ DATA.mkdir(exist_ok=True,parents=True);bundle_public_domain_silhouettes();shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'silhouette_service.js',DEST/'silhouette_service.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
  stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)
