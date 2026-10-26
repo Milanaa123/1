@@ -33,7 +33,7 @@
  ];
  const names=['Волк','Сова','Снежный барс','Кит','Кобра','Лисица','Ворон','Олень','Медведь','Лошадь','Кошка','Кролик','Выдра','Летучая ящерица','Морская черепаха','Акула','Дельфин','Осьминог','Лягушка','Ночная бабочка'];
  const exactProfiles=new Map([
-  ['Ursus arctos',['omnivore','terrestrial',[]]],['Ursus maritimus',['predator','terrestrial',['aquatic']]],
+  ['Ursus arctos',['omnivore','terrestrial',[]]],['Ursus maritimus',['predator','semiaquatic',['terrestrial']]],
   ['Ursus americanus',['omnivore','terrestrial',[]]],['Chelonia mydas',['herbivore','aquatic',[]]],
   ['Caretta caretta',['predator','aquatic',[]]],['Vulpes vulpes',['omnivore','terrestrial',['subterranean']]],
   ['Canis lupus',['predator','terrestrial',[]]],['Panthera uncia',['predator','terrestrial',[]]],
@@ -50,12 +50,12 @@
   for(const [id,cell,genera,species,diet,habitat,secondary] of data){
    if(species.includes(name)||genera.includes(genus)){
     candidate={id,cell,label:names[cell],diet,habitat,secondary,
-      exact:species.includes(name)};
+      exact:species.includes(name)&&String(row[1]).trim().split(/\s+/).length===2};
     break;
    }
   }
   if(!candidate)return null;
-  const known=exactProfiles.get(name);
+  const known=String(row[1]).trim().split(/\s+/).length===2?exactProfiles.get(name):null;
   const [diet,habitat,secondary]=known||[candidate.diet,candidate.habitat,candidate.secondary];
   // Conservative exception: some large bears have very different diets;
   // avoid assigning a genus-wide diet when species wasn't checked.
