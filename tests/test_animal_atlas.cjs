@@ -61,6 +61,23 @@ test('sprite uses one uploaded sheet and exact cropped coordinates',()=>{
  assert.equal(calls[0][3],1536/5);
  assert.equal(calls[0][4],1024/4);
 });
+test('aquatic, arboreal and subterranean tags work without any matching illustration',()=>{
+ const fish=[999,'Hippocampus hippocampus','species','Actinopterygii','Syngnathiformes','','Chordata'];
+ assert.equal(atlas.resolve(fish),null);
+ assert.equal(atlas.style(atlas.classify(fish)).habitat,'aquatic');
+ assert.equal(atlas.style(atlas.classify(fish)).diet,'predator');
+ const ocean=[999,'Unknown fish','species','Chondrichthyes','Unknown','','Chordata'];
+ assert.equal(atlas.style(atlas.classify(ocean)).habitat,'aquatic');
+ assert.equal(atlas.style(atlas.classify(ocean)).diet,'unknown');
+ const mole=[999,'Talpa europaea','species','Mammalia','Eulipotyphla','','Chordata'];
+ assert.equal(atlas.resolve(mole),null);
+ assert.equal(atlas.style(atlas.classify(mole)).habitat,'subterranean');
+ const squirrel=[999,'Sciurus vulgaris','species','Mammalia','Rodentia','','Chordata'];
+ assert.equal(atlas.style(atlas.classify(squirrel)).habitat,'arboreal');
+ assert.equal(atlas.style(atlas.classify(squirrel)).diet,'unknown');
+ const panda=[999,'Ailuropoda melanoleuca','species','Mammalia','Carnivora','','Chordata'];
+ assert.equal(atlas.style(atlas.classify(panda)).diet,'herbivore');
+});
 test('art atlas has no local storage, personal-data uploads or numeric changes',()=>{
  const src=fs.readFileSync('animal_atlas.js','utf8');
  for(const forbidden of ['localStorage','sessionStorage','sendBeacon','score(','taxonGreekScore('])
