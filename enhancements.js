@@ -109,9 +109,9 @@ render=function(){
   el('empty').textContent=results.length?'':'Точных совпадений в выбранной базе нет. Приблизительные животные не добавляются.';
 };
 run=async function(){
- const raw=el('name').value.trim(),greek=el('greek').value.trim();
- if(!/^[А-Яа-яЁё\s\-'’]+$/.test(raw)||!validGreek(greek)){
-  reset();el('error').textContent='Проверь полное русское имя и греческую запись: неизвестные символы недопустимы.';return;
+ const raw=el('name').value.trim(),latin=el('latin').value.trim(),greek=el('greek').value.trim();
+ if(!/^[А-Яа-яЁё\s\-'’]+$/.test(raw)||!validLatinName(latin)||!validGreek(greek)){
+  reset();el('error').textContent='Проверь три записи имени: русскую, латинскую и греческую. Допустимы только буквы соответствующих алфавитов.';return;
  }
  const target=score(greek),id=++serial;
  if(!target){reset();el('error').textContent='Число имени не определено';return;}
@@ -163,7 +163,7 @@ download=function(format){
   const rows=results.map(r=>[display(r),r[1],taxonGreek(r[1]),r[2],r[0],r[5],filterName(r)]);
   const csv=v=>/[;"\r\n]/.test(String(v))?'"'+String(v).replace(/"/g,'""')+'"':String(v);
   const content=format==='csv'?[['Русское название','Научное латинское название','Греческая транслитерация','Ранг','Число (греческое)','Статус','Группа'],...rows].map(row=>row.map(csv).join(';')).join('\r\n'):
-    ['Имя: '+el('name').value,'Греческая запись: '+el('greek').value,'Число: '+sum,'Точных совпадений: '+results.length,'Источник: '+origin,'',...rows.map((r,i)=>(i+1)+'. '+r[0]+' — '+r[1]+' → '+r[2]+' ('+r[3]+', '+r[4]+')')].join('\n');
+    ['Имя: '+el('name').value,'Латинское написание: '+el('latin').value,'Греческая запись: '+el('greek').value,'Число: '+sum,'Точных совпадений: '+results.length,'Источник: '+origin,'',...rows.map((r,i)=>(i+1)+'. '+r[0]+' — '+r[1]+' → '+r[2]+' ('+r[3]+', '+r[4]+')')].join('\n');
   const url=URL.createObjectURL(new Blob(['\ufeff'+content],{type:format==='csv'?'text/csv;charset=utf-8':'text/plain;charset=utf-8'}));
   const a=document.createElement('a');a.href=url;a.download='Анимагия_'+sum+'_все_'+results.length+'.'+format;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
 };
