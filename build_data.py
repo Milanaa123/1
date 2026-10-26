@@ -170,12 +170,19 @@ def build():
        formal+=1
     stack.append((indent,rank,name,is_extinct))
   for f in handles.values():f.close()
-  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();bucket_sha256={};index_digest=hashlib.sha256()
+  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
   for p in directory.glob('*.part'):
    bid=int(p.stem);seen={}
    with p.open(encoding='utf8') as f:
     for line in f:
-     r=json.loads(line);seen.setdefault((r[1],r[2]),r)
+     r=json.loads(line)
+     # The release can contain case variants of the same Latin binomial.
+     # Scientific names are not distinguished by capitalization.
+     key=(r[1].casefold(),r[2])
+     if key in seen:
+      if seen[key][1]!=r[1]:casefold_duplicates+=1
+     else:
+      seen[key]=r
    values=sorted(seen.values(),key=lambda r:(r[0],r[3],r[1]))
    unique+=len(values);available.append(bid)
    # Fail the entire publication if ANY row is invalid, misplaced,
@@ -214,6 +221,7 @@ def build():
   'method':'per-record Greek recomputation, bucket, canonical name, rank, group, extinction marker, uniqueness and order',
   'checked_records':unique,
   'checked_buckets':len(available),
+  'casefold_duplicate_rows_removed':casefold_duplicates,
   'rank_counts':dict(sorted(audit_ranks.items())),
   'class_counts':dict(sorted(audit_classes.items())),
   'index_sha256':index_digest.hexdigest(),
