@@ -14,6 +14,9 @@ const PHOTO_ORDER = [
 ];
 const PHOTO_VERTEBRATES = new Set(PHOTO_ORDER.slice(0,9));
 const PHOTO_TARGET = 30, PHOTO_MS_BETWEEN = 1050;
+// At most three insects in a featured 30; only if higher-priority animals
+// did not fill the list with photo-verified exact matches.
+const PHOTO_INSECT_CAP = 3;
 // Exhaust more candidates than the previous 30/56-item limit, in priority tiers.
 const PHOTO_MAX_CHECKS = 240;
 const PHOTO_STAGE_LIMITS = [100,90,50];
@@ -236,17 +239,20 @@ async function photoCollect() {
      photoGallery.checked>=PHOTO_MAX_CHECKS)break;
   const queue=tiers[phase];
   const budget=Math.min(PHOTO_STAGE_LIMITS[phase],PHOTO_MAX_CHECKS-photoGallery.checked);
+  if(phase===2 && photoGallery.chosen.filter(item=>item.row[3]==='Insecta').length>=PHOTO_INSECT_CAP)continue;
   let cursor=0,phaseChecked=0;
   async function worker(){
    while(stamp===photoGallery.stamp &&
      photoGallery.chosen.length<PHOTO_TARGET &&
-     phaseChecked<budget){
+     phaseChecked<budget &&
+     (phase!==2 || photoGallery.chosen.filter(item=>item.row[3]==='Insecta').length<PHOTO_INSECT_CAP)){
     const row=queue[cursor++];
     if(!row)return;
     phaseChecked++;photoGallery.checked++;
     const found=await photoLookup(row,stamp);
     if(stamp!==photoGallery.stamp)return;
     if(found && photoGallery.chosen.length<PHOTO_TARGET &&
+       (phase!==2 || photoGallery.chosen.filter(item=>item.row[3]==='Insecta').length<PHOTO_INSECT_CAP) &&
        !photoGallery.chosen.some(item=>item.row[1]===row[1]&&item.row[2]===row[2])){
      photoGallery.chosen.push(found);
      photoDraw();
