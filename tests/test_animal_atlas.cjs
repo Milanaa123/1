@@ -48,7 +48,7 @@ test('sprite uses one uploaded sheet and exact cropped coordinates',()=>{
  const node={children:[],replaceChildren(...x){this.children=x}};
  atlas.render(node,art);
  assert.equal(node.children.length,1);
- assert.match(node.children[0].style.backgroundImage,/animals-gold-v1\\.png/);
+ assert.ok(node.children[0].style.backgroundImage.includes('animals-gold-v1.png'));
  assert.equal(node.children[0].style.backgroundPosition,'0% 0%');
  const part=atlas.resolve(row('Rana temporaria'));
  assert.equal(part.cell,18);
