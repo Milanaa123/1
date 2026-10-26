@@ -135,6 +135,7 @@ function photoCancel() {
  photoGallery.controller=null;photoGallery.source=null;photoGallery.sum=null;
  photoGallery.chosen=[];photoGallery.reserve=[];photoGallery.checked=0;photoGallery.scanning=false;
  photoGallery.current=null;photoGallery.error=null;
+ const search=document.getElementById('bestiarySearch');if(search)search.value='';
  const modal=document.getElementById('animalPhotoDialog');
  if(modal&&!modal.hidden)photoClose();
 }
@@ -202,7 +203,7 @@ async function photoLookup(row,stamp) {
 }
 function photoStatus(done=false){
  const found=photoGallery.chosen.length;
- el('featuredCount').textContent=found+' из '+PHOTO_TARGET+' с проверенными фотографиями';
+ el('featuredCount').textContent=found+' из '+PHOTO_TARGET;
  const target=document.getElementById('galleryStatus');
  if(!target)return;
  if(!photoGallery.source){target.textContent='';return;}
@@ -438,7 +439,12 @@ function photoOpen(item,trigger) {
  title.textContent=display(item.row);
  image.src=item.photo.src;image.alt='Фотография вида '+display(item.row);
  document.getElementById('photoDialogScientific').textContent=item.row[1];
+ const cl=document.getElementById('photoDialogClass');
+ if(cl)cl.textContent=bestiaryGroupName(item.row)+' · '+
+   (item.row[2]==='subspecies'?'подвид':'вид')+' · число '+item.row[0];
  credit.textContent=item.photo.credit;
+ // The large image is requested ONLY when this photo button is pressed.
+ image.onerror=()=>{credit.textContent='Фотография временно недоступна · '+item.photo.credit;};
  source.href=item.photo.source;
  dlg.hidden=false;document.body.classList.add('photo-dialog-open');
  document.getElementById('closeAnimalPhoto').focus();
@@ -449,15 +455,33 @@ function photoClose(){
  dlg.hidden=true;
  document.body.classList.remove('photo-dialog-open');
  const image=document.getElementById('photoDialogImage');
- if(image)image.removeAttribute('src');
+ if(image){image.onerror=null;image.removeAttribute('src');}
  const button=photoGallery.current;
  photoGallery.current=null;
  if(button&&button.isConnected)button.focus();
 }
 document.addEventListener('DOMContentLoaded',()=>{
+ const search=document.getElementById('bestiarySearch');
+ if(search)search.addEventListener('input',()=>{
+  if(photoGallery.source===results&&photoGallery.sum===sum)photoDraw();
+ });
  document.getElementById('closeAnimalPhoto').addEventListener('click',photoClose);
  document.getElementById('photoDialogBackdrop').addEventListener('click',photoClose);
  document.addEventListener('keydown',ev=>{
-  if(ev.key==='Escape'&&!document.getElementById('animalPhotoDialog').hidden)photoClose();
+  const dialog=document.getElementById('animalPhotoDialog');
+  if(dialog.hidden)return;
+  if(ev.key==='Escape'){ev.preventDefault();photoClose();return;}
+  if(ev.key==='Tab'){
+   // A small, accessible focus loop over the close button and photo credit link.
+   const a=document.getElementById('closeAnimalPhoto');
+   const b=document.getElementById('photoDialogSource');
+   if(ev.shiftKey&&(document.activeElement===a||document.activeElement===dialog)){
+    ev.preventDefault();b.focus();
+   }else if(!ev.shiftKey&&document.activeElement===b){
+    ev.preventDefault();a.focus();
+   }else if(document.activeElement!==a&&document.activeElement!==b){
+    ev.preventDefault();a.focus();
+   }
+  }
  });
 });
