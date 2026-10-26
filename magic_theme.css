@@ -1116,3 +1116,98 @@ body::before{
 @media(prefers-reduced-motion:reduce){
  .quality-panel>summary>span:last-child{transition:none!important}
 }
+
+
+
+/* Phase V — celestial seal, comparison and souvenir keepsakes */
+.sound-bar{display:flex;align-items:center;justify-content:flex-end;gap:13px;margin:15px 0 2px;flex-wrap:wrap}
+.sound-bar>span{font-size:10px;color:#bdadc5}
+.relic-sound{border:1px solid #a88d6699;background:#2d273b;color:#e9c89a;
+ border-radius:25px;min-height:42px;padding:10px 17px;font:700 11px Manrope,sans-serif}
+.relic-sound[aria-pressed="true"]{background:#56445f;color:#f8ddad;border-color:#e4ba7c}
+.relic-laboratory{margin:24px 0;padding:28px 30px 30px;
+ background:radial-gradient(ellipse at 48% 5%,#75536a38,transparent 60%),#1e2030;
+ border:1px solid #c0a07470;overflow:hidden}
+.relic-laboratory h2{font:600 clamp(35px,5vw,53px)/1.1 'Cormorant Garamond',Georgia,serif;
+ color:#f4dfc0;margin:10px 0}
+.relic-ornament{text-align:center;letter-spacing:.22em;font:12px Georgia,serif;color:#d9b982}
+.relic-intro{font-size:12px;color:#c9bdd1;line-height:1.75;max-width:630px}
+.relic-intro strong{color:#eed1a4}
+.relic-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+ gap:25px;align-items:center;margin:17px 0 27px}
+.relic-seal-wrap{text-align:center;min-width:0;
+ background:radial-gradient(circle,#d0a46d18,transparent 67%);padding:4px}
+.personal-seal{display:block;width:100%;max-width:340px;height:auto;margin:0 auto;
+ filter:drop-shadow(0 0 21px #e2b9764d)}
+.seal-caption{color:#e0c79c;font:12px Georgia,serif;text-align:center}
+.relic-tools{display:flex;flex-direction:column;gap:12px}
+.relic-tools label,.compare-inputs label{font-size:11px;color:#ebd1a6;font-weight:700}
+.relic-tools select,.compare-inputs input{min-height:47px;width:100%;min-width:0;
+ background:#121624;border:1px solid #9e86698a;border-radius:9px;
+ color:#f5e7dc;padding:11px 13px;font:13px Manrope,sans-serif}
+.compare-inputs input{font:16px 'Noto Serif',Georgia,serif}
+.relic-tools select:focus-visible,.compare-inputs input:focus-visible,
+.relic-sound:focus-visible,.relic-download:focus-visible,.relic-secondary:focus-visible{
+ outline:2px solid #f3d199;outline-offset:3px}
+.relic-caption{font-size:10px;line-height:1.65;color:#b7a9bd;margin:0}
+.relic-download,.relic-secondary{width:100%;min-height:47px;padding:11px 14px;
+ border:1px solid #ebc58f;border-radius:9px;
+ background:linear-gradient(125deg,#e8ce9c,#c6a070);
+ font:800 12px Manrope,sans-serif;color:#262135;text-align:center}
+.relic-secondary{border-color:#ae906c;background:linear-gradient(125deg,#4d3b52,#312c42);
+ color:#f1d5a9}
+.relic-download:disabled,.relic-secondary:disabled{opacity:.49;cursor:not-allowed}
+.relic-feedback{min-height:16px;margin:0;font-size:11px;line-height:1.5;color:#efd2a5}
+.relic-compare{border-top:1px solid #b5986e69;padding-top:18px}
+.relic-compare>summary{font:600 21px 'Cormorant Garamond',Georgia,serif;
+ color:#f3d8ae;cursor:pointer;line-height:1.55}
+.relic-compare>summary:focus-visible{outline:2px solid #ebc589;outline-offset:4px}
+.relic-compare>p{font-size:11px;color:#c8b9c8;line-height:1.7}
+.compare-inputs{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:14px 0 17px}
+.compare-inputs>div{min-width:0;display:flex;flex-direction:column;gap:7px}
+.compare-results{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:18px}
+.compare-result-item{min-width:0;padding:16px;border:1px solid #b299786f;
+ border-radius:9px;background:radial-gradient(ellipse at 50% 0,#5c455a50,transparent),#242137}
+.compare-result-item span{font:12px 'Noto Serif',Georgia,serif;color:#e6c48c}
+.compare-result-item strong{display:block;font:600 40px 'Cormorant Garamond',Georgia,serif;color:#f6d9a4}
+.compare-result-item p{font-size:11px;line-height:1.7;color:#d1c3d2;overflow-wrap:anywhere}
+.compare-difference{margin:14px 0 0;padding:12px;color:#f1d1a1;
+ background:#58415a3d;border:1px solid #b99d7775;border-radius:8px;font-size:12px}
+.print-relic-cover,.print-relic-list{display:none!important}
+@media(max-width:680px){
+ .sound-bar{justify-content:center;margin:12px 0}
+ .relic-laboratory{padding:20px 16px}
+ .relic-layout,.compare-inputs,.compare-results{grid-template-columns:1fr}
+ .personal-seal{max-width:278px}
+ .relic-layout{gap:15px}
+ .relic-tools{gap:10px}
+}
+@media print {
+ @page{size:A4;margin:14mm}
+ html,body{background:#fff!important;color:#17131a!important}
+ body::before,.wrap::before{display:none!important}
+ .wrap{max-width:none!important;margin:0!important;padding:0!important}
+ .nav,.hero,.layout,.bottom,.sound-bar,.relic-laboratory,.quality-panel,
+ .audit-panel,.stats,.results>.section-eyebrow,.results>h2,.results>.note,
+ .results>.species-grid,.magic-side,.animal-photo-dialog{display:none!important}
+ .results{display:block!important;margin:0!important;padding:0!important;background:#fff!important}
+ .print-relic-cover{display:flex!important;flex-direction:column;align-items:center;
+ justify-content:center;text-align:center;min-height:238mm;padding:19mm 10mm;
+ page-break-after:always;break-after:page;color:#20162b!important;
+ border:2px double #a98756;box-sizing:border-box}
+ .print-relic-cover>div{color:#a17b49;font:19px Georgia,serif;letter-spacing:5px}
+ .print-relic-cover h1{font:600 42pt 'Cormorant Garamond',Georgia,serif;color:#261d30;margin:26mm 0 17mm}
+ .print-relic-cover p{font:15px/1.8 Georgia,serif;color:#302735;overflow-wrap:anywhere}
+ #printRelicNumber{font:600 58pt 'Cormorant Garamond',Georgia,serif;color:#7e5d35;margin:12mm 0}
+ .print-relic-cover .print-relic-method{font-size:10px;max-width:150mm;margin-top:20mm}
+ .print-relic-list{display:grid!important;grid-template-columns:1fr 1fr;gap:7mm;
+ color:#241b2b}
+ .print-relic-animal{border:1px solid #a88e6b;padding:8mm 7mm;
+ break-inside:avoid;page-break-inside:avoid;min-height:68mm}
+ .print-relic-animal>span{font:14px Georgia,serif;color:#917044}
+ .print-relic-animal h3{font:600 23pt 'Cormorant Garamond',Georgia,serif;
+ line-height:1.05;margin:5mm 0;color:#241b2b;overflow-wrap:anywhere}
+ .print-relic-animal p{font:10px/1.6 Georgia,serif;color:#403547;overflow-wrap:anywhere}
+ .print-relic-animal strong{font:600 12px Georgia,serif;color:#725530}
+}
+@media(prefers-reduced-motion:reduce){.personal-seal{filter:none!important}}
