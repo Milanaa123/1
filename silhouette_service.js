@@ -9,6 +9,7 @@
  const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
  const cache=new Map();
  let buildPromise=null;
+ let bundledPromise=null;
  function external(href){
   if(typeof href!=='string')return null;
   try{
@@ -101,6 +102,25 @@
       license:'CC0 / общественное достояние (фильтр PhyloPic)'};
   }catch(e){URL.revokeObjectURL(url);throw e;}
  }
+ async function bundledFallback(row){
+  if(!bundledPromise)bundledPromise=fetch('./silhouettes/manifest.json',{
+    credentials:'omit',cache:'force-cache'
+  }).then(r=>r.ok?r.json():null).catch(()=>null);
+  const index=await bundledPromise;
+  const candidate=index?.records?.[row[3]];
+  if(!candidate||!/^[A-Za-z-]+\.svg$/.test(candidate.file)||
+     !UUID.test(candidate.uuid))return null;
+  if(typeof candidate.taxon!=='string'||!candidate.taxon.trim())return null;
+  const tier=candidate.taxon.toLowerCase()===String(row[3]).toLowerCase()
+    ?'class':'order';
+  try{
+   const art=await objectArt({
+    url:'./silhouettes/'+candidate.file,
+    name:candidate.taxon,uuid:candidate.uuid,level:tier
+   });
+   return art;
+  }catch(_){return null;}
+ }
  async function find(row){
   if(!Array.isArray(row)||typeof row[1]!=='string')return null;
   const name=row[1].trim();
@@ -113,6 +133,10 @@
   ];
   const visited=new Set();
   for(const candidate of levels){
+   if(candidate.level==='order'){
+    const local=await bundledFallback(row);
+    if(local)return local;
+   }
    if(typeof candidate.name!=='string'||!/^[A-Z][A-Za-z-]+$/.test(candidate.name))continue;
    if(visited.has(candidate.name.toLowerCase()))continue;
    visited.add(candidate.name.toLowerCase());
