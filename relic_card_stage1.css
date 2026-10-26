@@ -1,0 +1,233 @@
+/* ANIMAGIA — Stage 1. The collectible seal as one meticulously aligned artifact.
+   The visible card and PNG share the exact 1200 x 2070 background painter.
+   This file overrides legacy rules without touching animal scoring or storage. */
+.relic-laboratory .relic-layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.16fr) minmax(220px,.84fr);
+ align-items:center;
+ gap:clamp(16px,2.6vw,32px);
+}
+.relic-laboratory .relic-seal-wrap{
+ --diet-gold:#e4c798;
+ container-type:inline-size;
+ display:block;
+ position:relative;
+ isolation:isolate;
+ box-sizing:border-box;
+ width:100%;
+ aspect-ratio:1200 / 2070;
+ min-height:0;
+ margin:0 auto;
+ padding:0!important;
+ border:0!important;
+ outline:0!important;
+ border-radius:0!important;
+ overflow:hidden;
+ background:linear-gradient(150deg,#14101f,#302137 55%,#14101f)!important;
+ box-shadow:0 20px 38px #03030a67!important;
+ color:#f3dfbd;
+ text-align:center;
+}
+.relic-laboratory .relic-seal-wrap::before,
+.relic-laboratory .relic-seal-wrap::after{content:none!important;display:none!important}
+.relic-seal-wrap>.relic-card-backdrop{
+ position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;
+ pointer-events:none;
+}
+.relic-seal-wrap>.relic-card-masthead{
+ position:absolute;top:4.3%;left:8%;width:84%;height:5.1%;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:.65cqw;z-index:2;pointer-events:none;
+}
+.relic-card-masthead>strong{
+ display:block;color:#f4ddb0;
+ font:400 clamp(15px,3.65cqw,30px)/1.12 Georgia,'Times New Roman',serif;
+ letter-spacing:.055em;
+ white-space:nowrap;
+}
+.relic-card-masthead>span{
+ color:#bdabc3;
+ font:400 clamp(8px,1.62cqw,13px)/1.4 Georgia,'Times New Roman',serif;
+ letter-spacing:.025em;
+ white-space:nowrap;
+}
+.relic-laboratory .relic-seal-wrap>.personal-seal{
+ position:absolute;z-index:2;
+ left:21.6%;top:11.1%;
+ display:block;
+ width:56.8%!important;
+ height:auto!important;
+ max-width:none!important;
+ margin:0!important;
+ filter:drop-shadow(0 0 3px #f1c47730)!important;
+}
+.relic-seal-wrap>#sealCaption{display:none!important}
+.relic-laboratory .relic-seal-wrap>.relic-preview-greek{
+ position:absolute;z-index:2;
+ left:8%;top:41.1%;width:84%;height:3.8%;
+ box-sizing:border-box;margin:0!important;padding:0 2%!important;
+ display:flex;align-items:center;justify-content:center;
+ color:#f1ddc3;
+ font:400 clamp(13px,4.2cqw,29px)/1.18 Georgia,serif!important;
+ letter-spacing:0!important;
+ text-align:center;overflow-wrap:anywhere;
+}
+.relic-laboratory .relic-seal-wrap>.silhouette-relic{
+ position:absolute;z-index:2;
+ top:46%;left:11%;width:78%!important;height:23%;
+ max-width:none!important;min-height:0;
+ display:flex;flex-direction:column;
+ align-items:center;justify-content:center;
+ margin:0!important;padding:0!important;gap:0!important;
+ background:none!important;
+}
+.relic-seal-wrap .silhouette-frame,
+.relic-seal-wrap .silhouette-frame:has(.atlas-art-sprite){
+ display:flex!important;
+ justify-content:center!important;
+ align-items:center!important;
+ min-height:0!important;max-height:none!important;
+ width:100%!important;height:100%!important;
+ margin:0!important;padding:0!important;
+ overflow:hidden;background:none!important;border:0!important;
+}
+.relic-seal-wrap .silhouette-frame::before,
+.relic-seal-wrap .silhouette-frame::after{content:none!important;display:none!important}
+.relic-seal-wrap .silhouette-frame .atlas-art-sprite,
+.relic-seal-wrap .silhouette-frame:has(.atlas-art-sprite)>.atlas-art-sprite{
+ display:block;
+ width:100%!important;height:100%!important;
+ max-width:100%!important;max-height:100%!important;
+ min-width:0!important;flex-shrink:1!important;
+ aspect-ratio:auto!important;object-fit:contain!important;
+ margin:0!important;padding:0!important;border:0!important;
+ background:none!important;border-radius:0!important;
+ filter:drop-shadow(0 0 6px #e7bc6540)!important;
+}
+.relic-seal-wrap .relic-card-sr-label{
+ position:absolute!important;width:1px!important;height:1px!important;
+ overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;
+}
+.relic-seal-wrap .silhouette-frame:not(:has(.atlas-art-sprite))>span{
+ display:grid;place-items:center;
+ width:24cqw;height:24cqw;max-width:none;
+ border:1px solid #bba07378;border-radius:50%;
+ color:#d9bd87;background:none;
+ box-shadow:inset 0 0 0 2px #a38a5a22;
+ font:14cqw/1 Georgia,serif;
+}
+.relic-laboratory .relic-seal-wrap>.relic-preview-heading{
+ position:absolute;z-index:3;
+ left:9%;top:71.9%;width:82%;height:11.6%;
+ display:flex;flex-direction:column;justify-content:flex-start;align-items:center;
+ gap:.5cqw!important;margin:0!important;padding:0!important;
+ max-width:none!important;min-height:0!important;
+ box-sizing:border-box;
+ text-align:center;
+}
+.relic-seal-wrap .relic-preview-heading>span{
+ flex:none;display:block!important;
+ font:400 clamp(8px,2cqw,15px)/1.35 Georgia,serif!important;
+ letter-spacing:.23em!important;
+ color:#e3c18d!important;
+}
+.relic-seal-wrap .relic-preview-category{
+ flex:none;margin:0!important;max-width:100%;
+ font:400 clamp(9px,2.4cqw,18px)/1.3 Georgia,serif!important;
+ color:#d1ba98!important;
+}
+.relic-seal-wrap .relic-preview-heading>strong{
+ display:block!important;
+ max-width:100%!important;
+ min-width:0!important;
+ margin:0!important;
+ color:#f9e4c7!important;
+ font:400 clamp(19px,6.35cqw,45px)/1.1 Georgia,'Times New Roman',serif!important;
+ letter-spacing:-.015em!important;
+ text-wrap:balance!important;
+ overflow-wrap:break-word!important;
+ hyphens:auto;
+ text-shadow:none!important;
+}
+.relic-seal-wrap .relic-preview-heading>em{
+ display:block!important;
+ color:#cdbcca!important;
+ font:italic clamp(10px,2.75cqw,19px)/1.25 Georgia,serif!important;
+ margin:0!important;
+ overflow-wrap:anywhere;
+}
+.relic-laboratory .relic-seal-wrap>.relic-preview-traits{
+ position:absolute;z-index:3;top:84.7%;left:9%;width:82%;height:3.5%;
+ display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;
+ gap:1cqw!important;max-width:none!important;
+ margin:0!important;padding:0!important;
+ overflow:hidden;
+}
+.relic-seal-wrap .relic-preview-traits[hidden]{display:none!important}
+.relic-seal-wrap .relic-preview-traits>span{
+ flex:0 1 auto;min-width:0;
+ border:1px solid #d2ab736e!important;
+ border-radius:0!important;
+ background:#20192b59!important;
+ color:#ebc994!important;
+ padding:1.1cqw 1.5cqw!important;
+ font:400 clamp(8px,2.15cqw,15px)/1.2 Georgia,serif!important;
+ white-space:nowrap;
+}
+.relic-laboratory .relic-seal-wrap>.relic-preview-numbers{
+ position:absolute;z-index:3;top:89%;left:10%;width:80%;height:6%;
+ box-sizing:border-box;
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ max-width:none!important;
+ margin:0!important;
+ border:1px solid #c39e6d9c!important;
+ border-radius:0!important;background:#18132223;
+}
+.relic-seal-wrap .relic-preview-numbers>div{
+ min-width:0;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;
+ padding:.6cqw .2cqw!important;gap:.55cqw!important;
+}
+.relic-seal-wrap .relic-preview-numbers>div+div{border-left:1px solid #b5946f80!important}
+.relic-seal-wrap .relic-preview-numbers span{
+ display:block;
+ color:#c7b9bf!important;
+ font:400 clamp(7px,1.65cqw,12px)/1.15 Georgia,serif!important;
+ letter-spacing:0!important;white-space:nowrap;
+}
+.relic-seal-wrap .relic-preview-numbers strong{
+ display:block;
+ color:#f3d39d!important;
+ font:500 clamp(15px,5.25cqw,40px)/1 Georgia,serif!important;
+ font-variant-numeric:lining-nums tabular-nums;
+}
+.relic-laboratory .relic-seal-wrap>.relic-preview-note{
+ position:absolute;z-index:2;
+ top:96%;left:9%;width:82%;
+ margin:0!important;padding:0!important;
+ color:#c9ae86!important;
+ font:400 clamp(7px,1.65cqw,12px)/1.5 Georgia,serif!important;
+ letter-spacing:.14em!important;
+ text-align:center;
+ white-space:nowrap;
+}
+.relic-tools{align-self:center;min-width:0}
+@media(max-width:850px){
+ .relic-laboratory .relic-layout{
+  grid-template-columns:minmax(0,1fr);
+  gap:20px;justify-items:center;
+ }
+ .relic-laboratory .relic-seal-wrap{width:min(100%,560px)}
+ .relic-laboratory .relic-tools{width:min(100%,560px)}
+}
+@media(max-width:430px){
+ .relic-laboratory .relic-seal-wrap{width:100%}
+ .relic-card-masthead>strong{font-size:3.8cqw}
+ .relic-seal-wrap .relic-preview-heading>strong{font-size:6.25cqw!important}
+ .relic-seal-wrap .relic-preview-heading>em{font-size:2.7cqw!important}
+ .relic-seal-wrap .relic-preview-traits>span{font-size:2.05cqw!important}
+ .relic-seal-wrap .relic-preview-numbers span{font-size:1.7cqw!important}
+}
+@media print{
+ .relic-laboratory .relic-seal-wrap{display:none!important}
+}
