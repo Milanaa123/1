@@ -231,8 +231,21 @@
  }
  let currentPictureSerial=0;
  let previousPictureKey='';
+ function updatePreviewText(row){
+  const pairs=[
+   ['relicPreviewAnimal',row?label(row):'Выбери животное'],
+   ['relicPreviewScientific',row?row[1]:''],
+   ['relicPreviewNameScore',row?String(sum):'—'],
+   ['relicPreviewAnimalScore',row?String(row[0]):'—'],
+   ['relicPreviewDifference',row?String(Math.abs(sum-row[0])):'—']
+  ];
+  for(const [id,value] of pairs){
+   const target=get(id);if(target)target.textContent=value;
+  }
+ }
  function syncSilhouette(picker){
   const row=selection(picker),key=row?row[1]+'|'+row[2]:'';
+  updatePreviewText(row);
   if(key===previousPictureKey)return;
   previousPictureKey=key;
   const serial=++currentPictureSerial;
