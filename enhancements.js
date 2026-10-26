@@ -108,6 +108,47 @@ render=function(){
   el('previewSection').hidden=!results.length;el('downloads').hidden=!results.length;
   el('empty').textContent=results.length?'':'Точных совпадений в выбранной базе нет. Приблизительные животные не добавляются.';
 };
+// Release quality gate: do not display matches from a stale, mismatched or
+// incompletely audited shard. SHA-256 detects delivery/caching inconsistency;
+// it does not certify the ecological status of every taxon.
+function verifyAuditMetadata(fresh){
+ const q=fresh.quality_audit;
+ if(!q||q.status!=='passed'||!Number.isSafeInteger(q.checked_records)||
+    q.checked_records!==fresh.unique_records ||
+    q.checked_buckets!==fresh.available_buckets.length ||
+    !fresh.bucket_sha256||typeof fresh.bucket_sha256!=='object'||
+    Object.keys(fresh.bucket_sha256).length!==q.checked_buckets ||
+    !/^[a-f0-9]{64}$/.test(String(q.index_sha256||'')))
+   throw Error('Контроль целостности каталога отсутствует или не совпадает. Обнови страницу.');
+ const rank=q.rank_counts||{};
+ if((rank.species||0)+(rank.subspecies||0)!==q.checked_records)
+   throw Error('Счётчик видов не совпадает с проверенным индексом.');
+}
+async function verifyShardBody(raw,bucket,manifest){
+ const expected=manifest[String(bucket)];
+ if(typeof expected!=='string'||!/^[a-f0-9]{64}$/.test(expected))
+  throw Error('Для файла отсутствует контрольная сумма.');
+ if(!globalThis.crypto?.subtle || typeof TextEncoder==='undefined')
+  throw Error('Проверка SHA-256 недоступна. Открой сайт через HTTPS.');
+ const bytes=new TextEncoder().encode(raw);
+ const digest=await globalThis.crypto.subtle.digest('SHA-256',bytes);
+ const actual=[...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,'0')).join('');
+ if(actual!==expected)
+  throw Error('Файл животных не совпадает с опубликованным каталогом.');
+}
+function showAuditReport(fresh){
+ const quality=fresh.quality_audit;
+ const target=document.getElementById('qualityAuditSummary');
+ const classes=document.getElementById('qualityAuditGroups');
+ if(target)target.textContent='Пересчитано и структурно проверено '+quality.checked_records.toLocaleString('ru-RU')+
+   ' записей в '+quality.checked_buckets+' файлах. Метод '+fresh.algorithm_id+
+   '. Версия источника: '+fresh.version+'.';
+ if(classes){
+  const most=Object.entries(quality.class_counts).sort((a,b)=>b[1]-a[1]).slice(0,7);
+  classes.textContent='Группы каталога: '+most.map(([name,count])=>
+    (GROUP[name]||CLASS_RU[name]||name)+' — '+count.toLocaleString('ru-RU')).join('; ')+'.';
+ }
+}
 run=async function(){
  const raw=el('name').value.trim(),latin=el('latin').value.trim(),greek=el('greek').value.trim();
  if(!/^[А-Яа-яЁё\s\-'’]+$/.test(raw)||!validLatinName(latin)||!validGreek(greek)){
@@ -135,20 +176,28 @@ run=async function(){
      throw Error('Греческая таблица не совпадает с версией каталога');
   }
   if(!Array.isArray(fresh.available_buckets))throw Error('Некорректное описание каталога');
+  verifyAuditMetadata(fresh);
   if(id!==serial)return;
   meta=fresh;
   let matches=[];const bucket=Math.floor(target/25);
   if(meta.available_buckets.includes(bucket)){
    const response=await fetch('./data/'+bucket+'.json',{cache:'no-store'});
    if(!response.ok)throw Error('Большой каталог животных недоступен');
-   const data=await response.json();if(id!==serial)return;
+   const body=await response.text();if(id!==serial)return;
+   await verifyShardBody(body,bucket,fresh.bucket_sha256);
+   if(id!==serial)return;
+   const data=JSON.parse(body);
    if(!Array.isArray(data))throw Error('Некорректный формат индекса');
    matches=data.filter(row=>Array.isArray(row)&&row[0]===target);
-   if(matches.some(row=>taxonGreekScore(row[1])!==target))
+   if(matches.some(row=>row.length!==7 ||
+      !['species','subspecies'].includes(row[2]) || row[5]!=='' ||
+      !row[3] || !row[6] || !/^[A-Z][A-Za-z-]+(?: [a-z-]+){1,2}$/.test(row[1]) ||
+      taxonGreekScore(row[1])!==target))
     throw Error('Сумма транслитерированного греческого названия не совпала с индексом');
   }
   if(id!==serial)return;
   results=matches;sum=target;
+  showAuditReport(fresh);
   el('score').textContent=String(sum);el('total').textContent=String(matches.length);
   el('formula').textContent=breakdown(greek)+' · разница 0';
   auditSum(greek);el('groupFilter').value='all';
