@@ -1,14 +1,19 @@
-"""Conservative filtering of known parasitic animal lineages in CoL TextTree.
+"""Conservative, explicitly curated catalogue of independent animal forms.
 
-This catalogue is taxonomic rather than ecological: family/lineage exclusions
-cannot prove that every individual parasitic species has been identified.
+Breathing is not a suitable taxonomic filter: coral polyps breathe by diffusion.
+A class-level allowlist is an editorial approximation of the requested
+free-living, independently moving forms; taxonomic source lacks life-history
+or ecology flags sufficient to guarantee absence of every parasite.
 """
-POLICY_VERSION = "living-recognizable-fauna-v2"
+POLICY_VERSION = "independent-noncolonial-fauna-v3"
 
 # Exclude entire worm-like or mostly parasitic clades and known ectoparasitic
 # arthropod taxa. Conservatively omit some free-living members of mixed clades.
 EXCLUDED_TAXA = frozenset({
     "Acanthocephala", "Platyhelminthes", "Nematoda", "Nematomorpha",
+    # No polyps, corals, colonial/sessile filter feeders or worm-like forms.
+    "Cnidaria", "Porifera", "Bryozoa", "Entoprocta",
+    "Ctenophora", "Hemichordata", "Tunicata", "Urochordata",
     "Dicyemida", "Orthonectida", "Mesozoa", "Annelida", "Nemertea",
     "Myxozoa", "Myxosporea", "Malacosporea", "Neodermata",
     "Cestoda", "Trematoda", "Monogenea", "Pentastomida",
@@ -53,15 +58,15 @@ TERRESTRIAL_VERTEBRATES = frozenset({
 })
 FISH = frozenset({
     "Teleostei", "Actinopterygii", "Actinopteri", "Elasmobranchii",
-    "Chondrichthyes", "Chondrostei", "Holocephali", "Myxini",
-    "Petromyzonti", "Dipnoi", "Sarcopterygii"
+    "Chondrichthyes", "Chondrostei", "Holocephali",
+    "Dipnoi", "Sarcopterygii"
 })
 AQUATIC_INVERTEBRATES = frozenset({
-    "Cephalopoda", "Bivalvia", "Polyplacophora",
-    "Scyphozoa", "Cubozoa", "Staurozoa", "Anthozoa",
-    "Octocorallia", "Hydrozoa",
-    "Asteroidea", "Ophiuroidea", "Echinoidea",
-    "Holothuroidea", "Crinoidea"
+    # Free-moving octopuses/squids, chitons, starfish, urchins, sea cucumbers.
+    # Deliberately exclude all Cnidaria (including swimming medusae),
+    # sessile/partly sessile Bivalvia, and attached Crinoidea.
+    "Cephalopoda", "Polyplacophora",
+    "Asteroidea", "Ophiuroidea", "Echinoidea", "Holothuroidea"
 })
 # Known aquatic crustacean orders. Malacostraca also contains land woodlice
 # and parasites: do not include the entire class indiscriminately.
@@ -75,11 +80,11 @@ RECOGNIZABLE_ARACHNID_ORDERS = frozenset({
 })
 
 def allow_animal_taxon(lineage: dict) -> bool:
-    """Allow only explicitly listed non-parasitic animal groups.
+    """Restrict to approved, recognizable independently moving animal groups.
 
-    The source has no complete habitat/living-status field, so this function
-    must not be described as exhaustive parasite/extant-species verification.
-    Extinction markers are handled separately by build_data.py.
+    Not a guaranteed ecological test. Extinction markers are handled by
+    build_data.py. We deliberately omit some eligible animals when the
+    source cannot resolve independence from the taxonomic hierarchy.
     """
     if lineage.get("kingdom") != "Animalia" or not lineage.get("phylum"):
         return False
