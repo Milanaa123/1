@@ -407,6 +407,12 @@
    }
    art.append(elem('h3',label(r)));
    art.append(elem('p',r[1]+' · '+(r[2]==='subspecies'?'подвид':'вид')));
+   if(illustration){
+    const nature=atlas().style(illustration);
+    const labels=[nature.diet!=='unknown'?nature.dietText:null,
+      nature.habitat!=='unknown'?nature.habitatText:null,...nature.secondaryText].filter(Boolean);
+    if(labels.length)art.append(elem('p',labels.join(' · ')));
+   }
    art.append(elem('p','Греческая запись: '+taxonGreek(r[1])));
    art.append(elem('strong','Сумма '+r[0]+' · разница 0'));
    frag.append(art);
