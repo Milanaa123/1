@@ -218,5 +218,5 @@ download=function(format){
 };
 document.addEventListener('DOMContentLoaded',()=>{
   el('groupFilter').addEventListener('change',()=>{if(results.length)render();});
-  el('printPdf').addEventListener('click',()=>window.print());
+  el('printPdf').addEventListener('click',()=>{if(typeof window.printBesteriary==='function')window.printBesteriary();else window.print();});
 });
