@@ -101,6 +101,9 @@ test('aquatic, arboreal and subterranean tags work without any matching illustra
  const squirrel=[999,'Sciurus vulgaris','species','Mammalia','Rodentia','','Chordata'];
  assert.equal(atlas.style(atlas.classify(squirrel)).habitat,'arboreal');
  assert.equal(atlas.style(atlas.classify(squirrel)).diet,'unknown');
+ const beaver=[999,'Castor fiber','species','Mammalia','Rodentia','','Chordata'];
+ assert.equal(atlas.style(atlas.classify(beaver)).diet,'herbivore');
+ assert.equal(atlas.style(atlas.classify(beaver)).habitat,'semiaquatic');
  const panda=[999,'Ailuropoda melanoleuca','species','Mammalia','Carnivora','','Chordata'];
  assert.equal(atlas.style(atlas.classify(panda)).diet,'herbivore');
 });
