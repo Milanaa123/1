@@ -245,7 +245,7 @@ function photoMakeCard(item,index) {
  li.dataset.animalGroup=photoBroadGroup(row);
  const atlas=typeof window!=='undefined'?window.AnimagiaAnimalAtlas:null;
  const profile=atlas?.resolve(row)||null;
- const style=atlas?.style(profile)||null;
+ const style=atlas?.style(atlas.classify(row))||null;
  if(style){li.dataset.diet=style.diet;li.dataset.habitat=style.habitat;}
 
  const top=document.createElement('div');top.className='bestiary-card-top';
