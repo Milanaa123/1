@@ -67,6 +67,49 @@
   ctx.beginPath();ctx.arc(0,0,r*.3,0,Math.PI*2);ctx.fillStyle='#29213D';ctx.fill();ctx.stroke();
   ctx.fillStyle='#FFE1A5';ctx.font='600 '+(n>99999?45:60)+'px Georgia,serif';ctx.fillText(n,0,1);ctx.restore();
  }
+ function drawCelestialBorder(ctx,number){
+  // Star field belongs to the parchment/background; never bake it into animal art.
+  let seed=(number*2654435761)>>>0;
+  function random(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;}
+  ctx.save();
+  for(let i=0;i<175;i++){
+   const x=94+random()*1012,y=88+random()*1865;
+   // Leave the central seal, title and animal clear.
+   if((x>250&&x<950&&y>280&&y<1480))continue;
+   const size=.4+random()*1.8;
+   ctx.fillStyle='rgba(227,190,138,'+(.12+random()*.43).toFixed(2)+')';
+   ctx.beginPath();ctx.arc(x,y,size,0,Math.PI*2);ctx.fill();
+  }
+  ctx.strokeStyle='#CCAB79';ctx.fillStyle='#E1C28F';
+  ctx.lineWidth=1.15;ctx.globalAlpha=.73;
+  for(const [cx,cy,xsign,ysign] of [[88,90,1,1],[1112,90,-1,1],
+    [88,1980,1,-1],[1112,1980,-1,-1]]){
+   ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+xsign*75,cy);
+   ctx.moveTo(cx,cy);ctx.lineTo(cx,cy+ysign*75);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(cx+xsign*24,cy+ysign*24);
+   ctx.lineTo(cx+xsign*32,cy+ysign*32);
+   ctx.lineTo(cx+xsign*24,cy+ysign*40);
+   ctx.lineTo(cx+xsign*16,cy+ysign*32);ctx.closePath();ctx.stroke();
+  }
+  // Fine celestial chains at the sides echo the approved antique chart.
+  for(const x of [100,1100]){
+   ctx.beginPath();ctx.moveTo(x,335);ctx.lineTo(x,710);ctx.stroke();
+   for(const y of [380,520,650]){
+    ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.stroke();
+   }
+  }
+  for(const x of [175,1025]){
+   ctx.beginPath();ctx.moveTo(x,995);ctx.lineTo(x,1390);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(x-7,1040);ctx.lineTo(x,1029);
+   ctx.lineTo(x+7,1040);ctx.lineTo(x,1051);ctx.closePath();ctx.stroke();
+  }
+  // Delicate orbit behind the transparent animal art.
+  ctx.globalAlpha=.32;
+  for(const radius of [280,345]){
+   ctx.beginPath();ctx.ellipse(600,1200,radius,radius*.62,0,0,Math.PI*2);ctx.stroke();
+  }
+  ctx.restore();
+ }
  function textLines(ctx,txt,maxWidth,maxLines){
   const words=String(txt).trim().split(/\s+/),lines=[];
   for(const word of words){
@@ -375,8 +418,9 @@
     unknown:'#30283e'
    }[styl.diet]||'#30283e';
    const bg=ctx.createLinearGradient(0,0,1200,2070);
-   bg.addColorStop(0,'#0b0d1d');bg.addColorStop(.55,glow);bg.addColorStop(1,'#100e1e');
-   ctx.fillStyle=bg;ctx.fillRect(0,0,1200,1900);
+   bg.addColorStop(0,'#0b0c18');bg.addColorStop(.53,glow);bg.addColorStop(1,'#100e1b');
+   ctx.fillStyle=bg;ctx.fillRect(0,0,1200,2070);
+   drawCelestialBorder(ctx,sum);
    ctx.strokeStyle='#D3B683';ctx.lineWidth=3;ctx.strokeRect(56,56,1088,1958);
    ctx.lineWidth=1;ctx.strokeRect(74,74,1052,1920);
    ctx.fillStyle='#F1DDB8';ctx.font='36px Georgia,serif';ctx.textAlign='center';
@@ -389,7 +433,7 @@
    let artNote='';
    if(sprite&&profile){
     gallery.drawCanvas(ctx,sprite,profile,333,1010,534,408);
-    artNote=profile.exact?'Золотой облик':'Символический образ формы';
+    artNote='';
    }else{
     // A quiet celestial mark is better than a biologically wrong silhouette.
     ctx.save();
@@ -403,7 +447,7 @@
     artNote='Образ скрытой формы ещё создаётся';
    }
    ctx.fillStyle='#BDAAC3';ctx.font='17px Georgia,serif';ctx.textAlign='center';
-   ctx.fillText(artNote,600,1446);
+   if(artNote)ctx.fillText(artNote,600,1446);
    ctx.fillStyle='#D5B684';ctx.font='22px Georgia,serif';
    ctx.fillText('✧  С К Р Ы Т А Я   Ф О Р М А  ✧',600,1493);
    // Generic Russian category and the species epithet are separate lines.
@@ -425,11 +469,22 @@
    const nameY=category?1588:1564;
    for(const [i,line] of nameLines.entries())ctx.fillText(line,600,nameY+i*51);
    ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1710,1020,'italic 29px Georgia,serif',1);
-   ctx.fillStyle='#E4CA9C';ctx.font='19px Georgia,serif';
-   const traits=[styl.diet!=='unknown'?styl.dietText:null,
-     styl.habitat!=='unknown'?styl.habitatText:null,
-     ...(styl.secondaryText||[])].filter(Boolean).join('   ✧   ');
-   if(traits)ctx.fillText(traits,600,1763);
+   ctx.fillStyle='#E4CA9C';ctx.font='21px Georgia,serif';
+   const traits=[styl.diet!=='unknown'?'✦ '+styl.dietText:null,
+     styl.habitat!=='unknown'?'◌ '+styl.habitatText:null,
+     ...(styl.secondaryText||[]).map(t=>'◇ '+t)].filter(Boolean).slice(0,3);
+   if(traits.length){
+    const widths=traits.map(t=>Math.max(143,ctx.measureText(t).width+44));
+    const total=widths.reduce((sum,n)=>sum+n,0)+12*(traits.length-1);
+    let x=600-total/2;
+    for(let i=0;i<traits.length;i++){
+     ctx.strokeStyle='#C6A574';ctx.lineWidth=1;
+     ctx.strokeRect(x,1730,widths[i],55);
+     ctx.fillStyle='#E8CAA0';
+     ctx.fillText(traits[i],x+widths[i]/2,1764);
+     x+=widths[i]+12;
+    }
+   }
    const boxes=[['ЧИСЛО ИМЕНИ',sum],['ЧИСЛО ЖИВОТНОГО',row[0]],['РАЗНИЦА',0]];
    for(let i=0;i<boxes.length;i++){
     const x=141+i*307;
