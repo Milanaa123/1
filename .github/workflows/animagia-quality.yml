@@ -28,5 +28,7 @@ jobs:
           done
       - name: Validate silhouette matching and image licenses without external network
         run: node --test tests/test_silhouette.mjs
+      - name: Check curated animal artwork, genus accuracy and habitats
+        run: node --test tests/test_animal_atlas.cjs
       - name: Run deterministic Python-JavaScript equivalence tests
         run: python -m unittest discover -s tests -v
