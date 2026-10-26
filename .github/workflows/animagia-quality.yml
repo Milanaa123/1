@@ -23,7 +23,7 @@ jobs:
           node-version: "22"
       - name: Check JavaScript syntax
         run: |
-          for file in app.js greek_taxa.js enhancements.js photo_gallery.js magic_ui.js ritual_ui.js relic_features.js; do
+          for file in app.js greek_taxa.js enhancements.js photo_gallery.js magic_ui.js ritual_ui.js silhouette_service.js relic_features.js; do
             node --check "$file"
           done
       - name: Run deterministic Python-JavaScript equivalence tests
