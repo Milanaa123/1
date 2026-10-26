@@ -1367,3 +1367,38 @@ body::before{
 .relic-tools #relicAnimalSearch{min-height:47px;width:100%;border:1px solid #9e86698a;border-radius:9px;background:#121624;color:#f5e7dc;padding:11px 13px;font:13px Manrope,system-ui,sans-serif}
 .relic-tools #relicAnimalSearch:focus-visible{outline:2px solid #f3d199;outline-offset:3px}
 .relic-tools #relicAnimalResults{margin:-5px 0 2px;color:#d3bea5}
+
+
+/* The site preview is the same keepsake composition as the downloaded PNG. */
+.relic-seal-wrap{
+ position:relative;min-width:0;padding:23px 16px 23px;
+ border:1px solid #c8a778b3;border-radius:4px;
+ background:radial-gradient(ellipse at 51% 36%,#b98e4b13,transparent 70%),#161525c7;
+ box-shadow:inset 0 0 0 8px #151522ba,inset 0 0 0 9px #b5956655,0 11px 42px #04030d80;
+}
+.relic-seal-wrap::after{
+ content:"";position:absolute;inset:12px;pointer-events:none;
+ background:
+ linear-gradient(90deg,#e8c58f 0 21px,transparent 21px) left top/28px 1px no-repeat,
+ linear-gradient(#e8c58f 0 21px,transparent 21px) left top/1px 28px no-repeat,
+ linear-gradient(90deg,#e8c58f 0 21px,transparent 21px) right bottom/28px 1px no-repeat,
+ linear-gradient(#e8c58f 0 21px,transparent 21px) right bottom/1px 28px no-repeat;
+ opacity:.68;
+}
+.relic-seal-wrap #sealCaption{font:11px/1.6 Georgia,serif;letter-spacing:.04em;color:#dcc6a4;margin:8px 0 1px}
+.relic-preview-heading{display:flex;flex-direction:column;align-items:center;gap:5px;margin:8px auto 14px;padding:0 8px}
+.relic-preview-heading>span{font:12px 'Noto Serif',Georgia,serif;letter-spacing:.14em;color:#d6b47f}
+.relic-preview-heading>strong{font:600 clamp(27px,3.8vw,35px)/1.13 'Cormorant Garamond',Georgia,serif;color:#f4dcc0;overflow-wrap:anywhere;max-width:100%}
+.relic-preview-heading>em{font:italic 13px Georgia,serif;color:#c7b4c9;overflow-wrap:anywhere}
+.relic-preview-numbers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ border:1px solid #c6a37488;margin:5px auto 13px;max-width:350px}
+.relic-preview-numbers>div{padding:10px 3px 8px;display:flex;flex-direction:column;gap:5px}
+.relic-preview-numbers>div+div{border-left:1px solid #bba07861}
+.relic-preview-numbers span{font:9px/1.3 Georgia,serif;color:#b6acc0;letter-spacing:.02em}
+.relic-preview-numbers strong{font:600 clamp(22px,3.2vw,29px)/1 'Cormorant Garamond',Georgia,serif;color:var(--diet-gold)}
+.relic-preview-note{font:9px/1.5 Georgia,serif;letter-spacing:.06em;color:#bea68d;margin:7px 0 0}
+@media(max-width:680px){
+ .relic-seal-wrap{padding:20px 12px}
+ .relic-preview-heading>strong{font-size:30px}
+ .relic-preview-numbers strong{font-size:28px}
+}
