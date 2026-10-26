@@ -115,17 +115,71 @@
     habitatText:HABITATS[p.habitat]||'Среда не установлена',
     secondaryText:(p.secondary||[]).map(x=>HABITATS[x]).filter(Boolean)};
  }
+ const transparentArtCache=new Map();
+ const SUBJECT_OVALS=[
+  [.45,.54,.46,.45],[.50,.53,.39,.46],[.50,.51,.46,.43],[.48,.51,.49,.39],[.54,.53,.42,.47],
+  [.45,.55,.47,.44],[.47,.55,.48,.44],[.50,.54,.39,.44],[.49,.56,.44,.43],[.50,.55,.46,.44],
+  [.48,.57,.42,.42],[.50,.54,.41,.44],[.49,.55,.46,.43],[.51,.53,.49,.44],[.51,.56,.46,.41],
+  [.50,.54,.49,.38],[.48,.54,.47,.44],[.50,.52,.44,.44],[.50,.51,.45,.39],[.50,.52,.43,.46]
+ ];
+ function goldCutout(image,index){
+  if(transparentArtCache.has(index))return transparentArtCache.get(index);
+  const w=Math.round(image.naturalWidth/COLS),h=Math.round(image.naturalHeight/ROWS);
+  const sourceX=Math.round(image.naturalWidth*(index%COLS)/COLS);
+  const sourceY=Math.round(image.naturalHeight*Math.floor(index/COLS)/ROWS);
+  const layer=document.createElement('canvas');layer.width=w;layer.height=h;
+  const ctx=layer.getContext('2d',{willReadFrequently:true});
+  if(!ctx)return null;
+  ctx.drawImage(image,sourceX,sourceY,w,h,0,0,w,h);
+  const pixels=ctx.getImageData(0,0,w,h),data=pixels.data;
+  let frogAlpha=null;
+  if(index===18){
+   const mask=document.createElement('canvas');mask.width=w;mask.height=h;
+   const m=mask.getContext('2d');
+   // The original frog is traced once to exclude stars and the large background rings.
+   const points=[[23,158],[43,124],[42,83],[80,91],[76,70],[104,66],[128,46],
+    [155,36],[191,37],[226,57],[239,96],[259,109],[251,154],[237,168],
+    [213,163],[197,179],[183,191],[150,195],[122,212],[85,207],[59,186],[25,187]];
+   m.filter='blur(3px)';m.fillStyle='#fff';m.beginPath();
+   points.forEach(([x,y],i)=>i?m.lineTo(x*w/307,y*h/256):m.moveTo(x*w/307,y*h/256));
+   m.closePath();m.fill();frogAlpha=m.getImageData(0,0,w,h).data;
+  }
+  const [cx,cy,rx,ry]=SUBJECT_OVALS[index];
+  const clamp=n=>Math.min(1,Math.max(0,n));
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+   const i=(y*w+x)*4;
+   const red=data[i]/255,green=data[i+1]/255,blue=data[i+2]/255;
+   const warm=Math.max(0,red-blue);
+   const luminosity=(red+green+blue)/3;
+   const ellipse=((x/w-cx)/rx)**2+((y/h-cy)/ry)**2;
+   const envelope=index===18?frogAlpha[i+3]/255:clamp((1-ellipse)/.23);
+   const intensity=clamp((luminosity-(index===18?.24:.245))*(index===18?3:3.65))*
+    clamp(warm*(index===18?6:6.5))*envelope;
+   data[i]=Math.round(255*(.81+.19*intensity));
+   data[i+1]=Math.round(255*(.62+.23*intensity));
+   data[i+2]=Math.round(255*(.39+.20*intensity));
+   data[i+3]=Math.round(255*intensity);
+  }
+  ctx.putImageData(pixels,0,0);
+  transparentArtCache.set(index,layer);
+  return layer;
+ }
  function render(container,profile){
   if(!container)return;
   container.replaceChildren();
   if(!profile)return;
-  const img=document.createElement('div');
-  img.className='atlas-art-sprite';img.setAttribute('role','img');
-  img.setAttribute('aria-label',profile.note+' — '+profile.scientific);
-  img.style.backgroundImage='url('+JSON.stringify(URL_SHEET)+')';
-  img.style.backgroundSize='500% 400%';
-  img.style.backgroundPosition=(profile.cell%COLS*25)+'% '+(Math.floor(profile.cell/COLS)*100/(ROWS-1))+'%';
-  container.append(img);
+  const picture=document.createElement('canvas');
+  picture.className='atlas-art-sprite';
+  picture.setAttribute('role','img');
+  picture.setAttribute('aria-label',profile.note+' — '+profile.scientific);
+  container.append(picture);
+  void asset().then(img=>{
+   if(!img||!container.contains(picture))return;
+   const cutout=goldCutout(img,profile.cell);
+   if(!cutout)return;
+   picture.width=cutout.width;picture.height=cutout.height;
+   picture.getContext('2d').drawImage(cutout,0,0);
+  });
  }
  function asset(){
   if(!loaded){
@@ -147,12 +201,12 @@
  }
  function drawCanvas(ctx,image,profile,x,y,w,h){
   if(!image||!profile)return false;
-  const tileW=image.naturalWidth/COLS,tileH=image.naturalHeight/ROWS;
-  const sourceX=(profile.cell%COLS)*tileW,sourceY=Math.floor(profile.cell/COLS)*tileH;
-  ctx.save();ctx.drawImage(image,sourceX,sourceY,tileW,tileH,x,y,w,h);ctx.restore();
+  const cutout=goldCutout(image,profile.cell);
+  if(!cutout)return false;
+  ctx.save();ctx.drawImage(cutout,x,y,w,h);ctx.restore();
   return true;
  }
- window.AnimagiaAnimalAtlas=Object.freeze({
+  window.AnimagiaAnimalAtlas=Object.freeze({
   imageUrl:URL_SHEET,resolve,classify,style,render,drawable,drawCanvas,
   list:data.map(([key,cell])=>({key,cell,name:names[cell]})),dietLabels:DIETS,
   habitatLabels:HABITATS
