@@ -1,16 +1,17 @@
 'use strict';
-/* Approved PROJECT taxon transliteration v3, NOT a lexical Greek translation.
-   Mirrors the fixed earlier Greek scheme (b->μπ, d->ντ, g->γκ,
-   j->τζ, v->β, w->ου). Must match greek_taxa.py exactly. */
-const GREEK_TAXON_RULE_VERSION = 'taxon-project-transcription-v3';
+/* Ancient-alphabet v2: deterministic transcription, NOT a lexical translation.
+   v and w use archaic digamma /w/ as an approximation, never Ancient beta /b/.
+   Keep exact parity with greek_taxa.py; any revision requires full reindex. */
+const GREEK_TAXON_RULE_VERSION = 'taxon-ancient-alphabet-v2';
 const GREEK_TAXON_DIGRAPHS = {
- ph:'φ',th:'θ',ch:'χ',ps:'ψ',rh:'ρ'
+ ph:'φ',th:'θ',ch:'χ',ps:'ψ',rh:'ρ',ae:'αι',oe:'οι',au:'αυ',
+ eu:'ευ',ei:'ει',ai:'αι',ou:'ου'
 };
 const GREEK_TAXON_SINGLE = {
- a:'α',b:'μπ',c:'κ',d:'ντ',e:'ε',f:'φ',g:'γκ',h:'χ',
- i:'ι',j:'τζ',k:'κ',l:'λ',m:'μ',n:'ν',o:'ο',
+ a:'α',b:'β',c:'κ',d:'δ',e:'ε',f:'φ',g:'γ',h:'χ',
+ i:'ι',j:'ι',k:'κ',l:'λ',m:'μ',n:'ν',o:'ο',
  p:'π',q:'κ',r:'ρ',s:'σ',t:'τ',u:'ου',
- v:'β',w:'ου',x:'ξ',y:'υ',z:'ζ'
+ v:'ϝ',w:'ϝ',x:'ξ',y:'υ',z:'ζ'
 };
 const GREEK_TAXON_REGEX = /^[A-Za-z]+(?:-[A-Za-z]+)*(?: [A-Za-z]+(?:-[A-Za-z]+)*)+$/;
 function taxonGreek(scientific) {
