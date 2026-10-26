@@ -54,6 +54,11 @@
     break;
    }
   }
+  // A generic frog engraving is anatomically relevant to adult anurans;
+  // it never claims to show the exact Cornufer, Microkayla etc. species.
+  if(!candidate&&row[4]==='Anura')
+   candidate={id:'frog',cell:18,label:'Лягушка',diet:'predator',
+      habitat:null,secondary:[],exact:false};
   if(!candidate)return null;
   const known=String(row[1]).trim().split(/\s+/).length===2?exactProfiles.get(name):null;
   const [diet,habitat,secondary]=known||[candidate.diet,candidate.habitat,candidate.secondary];
@@ -89,6 +94,10 @@
   if(order==='Chiroptera')return make(null,'aerial');
   if(order==='Sphenisciformes')return make('predator','semiaquatic');
   if(order==='Strigiformes')return make('predator','aerial');
+  // These are adult life-stage dietary categories. Frog habitats vary
+  // enormously; never assume every Anura is semi-aquatic.
+  if(order==='Anura')return make('predator',null);
+  if(order==='Araneae')return make('predator',null);
   if(['Mantodea','Scorpiones'].includes(order))return make('predator','terrestrial');
   if(['Talpa','Heterocephalus','Spalax','Cryptomys','Fukomys'].includes(genus))
    return make(genus==='Talpa'?'predator':'herbivore','subterranean');
