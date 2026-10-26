@@ -150,7 +150,7 @@ body.photo-dialog-open{overflow:hidden}
 .magic-side-orbit span:first-child{width:37px;height:37px;background:none;border:0;color:#e4c488;animation:magic-twinkle 3.5s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.magic-side-orbit span:first-child{animation:none}}
 
-</style><link rel="stylesheet" href="./magic_theme.css?v=animal-diet-v1"></head><body><main class="wrap"><nav class="nav"><div class="brand"><span class="brand-sigil" aria-hidden="true"><svg viewBox="0 0 40 40" focusable="false">
+</style><link rel="stylesheet" href="./magic_theme.css?v=chooser-hotfix-p7"></head><body><main class="wrap"><nav class="nav"><div class="brand"><span class="brand-sigil" aria-hidden="true"><svg viewBox="0 0 40 40" focusable="false">
  <circle cx="20" cy="20" r="16.5"/>
  <circle cx="20" cy="20" r="11.4" stroke-dasharray="1.4 3.5"/>
  <path d="M20 4v32M4 20h32M9 9l22 22M31 9 9 31" stroke-opacity=".7"/>
@@ -268,12 +268,14 @@ body.photo-dialog-open{overflow:hidden}
    <p class="relic-preview-note">Точное числовое совпадение · декоративная печать</p>
   </div>
   <div class="relic-tools">
-   <label for="relicAnimalSearch">Найти животное среди точных совпадений</label>
-   <input id="relicAnimalSearch" type="search" placeholder="Например: волк, Canis или сова" autocomplete="off" spellcheck="false"/>
-   <label for="relicAnimal">Животное на памятной карточке</label>
-   <select id="relicAnimal"><option value="">Сначала выполни поиск</option></select>
-   <p id="relicAnimalResults" class="relic-caption" role="status">Выбери животное после расчёта.</p>
-   <p class="relic-caption">Сначала используется утверждённый золотой рисунок настоящего животного. Если подходящего рисунка нет — проверенный контур из PhyloPic. Фото остаётся только по отдельной кнопке.</p>
+   <label for="animalChooserOpen">Животное на памятной карточке</label>
+   <button type="button" id="animalChooserOpen" class="animal-chooser-open" aria-haspopup="dialog" aria-controls="animalChooser" disabled>
+    <span><strong id="animalChosenName">Сначала выполни расчёт</strong><small id="animalChosenScientific">Выбери найденное животное</small></span>
+    <span aria-hidden="true" class="chooser-chevron">⌄</span>
+   </button>
+   <select id="relicAnimal" hidden aria-hidden="true" tabindex="-1"><option value="">Сначала выполни расчёт</option></select>
+   <p id="relicAnimalResults" class="relic-caption" role="status">После расчёта можно выбрать любую точную форму.</p>
+   <p class="relic-caption">На карточке используются только утверждённые золотые рисунки. Если подходящего рисунка пока нет, останется чистое магическое оформление без чужого силуэта.</p>
    <div class="animal-profile" id="animalProfile" data-diet="unknown" data-habitat="unknown">
      <div class="animal-profile-tag"><span>Рацион</span><strong id="animalDiet">Не подтверждён</strong></div>
      <div class="animal-profile-tag"><span>Среда</span><strong id="animalHabitat">Не подтверждена</strong></div>
@@ -302,6 +304,25 @@ body.photo-dialog-open{overflow:hidden}
   <p id="compareDiff" class="compare-difference" hidden></p>
  </details>
 </section>
+<div id="animalChooser" class="animal-chooser" hidden role="dialog" aria-modal="true" aria-labelledby="animalChooserTitle">
+ <div class="animal-chooser-shade" data-chooser-dismiss></div>
+ <section class="animal-chooser-panel" tabindex="-1">
+  <header class="animal-chooser-head">
+   <div><span class="animal-chooser-eyebrow">✧ АТЛАС СКРЫТЫХ ФОРМ</span><h2 id="animalChooserTitle">Выбери животное</h2></div>
+   <button id="animalChooserClose" type="button" aria-label="Закрыть выбор животного">×</button>
+  </header>
+  <label class="animal-chooser-search-label" for="relicAnimalSearch">Поиск среди точных совпадений</label>
+  <input id="relicAnimalSearch" type="search" placeholder="Название или латинское имя…" autocomplete="off" spellcheck="false"/>
+  <div class="animal-chooser-tabs" role="group" aria-label="Фильтр иллюстраций">
+   <button type="button" id="chooserFilterIllustrated" aria-pressed="false">✦ С золотыми рисунками</button>
+   <button type="button" id="chooserFilterAll" aria-pressed="true">Все совпадения</button>
+  </div>
+  <p class="animal-chooser-count" id="animalChooserCount" aria-live="polite">Список откроется после расчёта</p>
+  <div id="animalChooserList" class="animal-chooser-list" role="group" aria-label="Найденные животные"></div>
+  <button type="button" id="animalChooserMore" class="animal-chooser-more" hidden>Показать ещё</button>
+  <p class="animal-chooser-footnote">Рисунок может изображать обобщённый тип животного, но название и число всегда относятся к точному совпадению.</p>
+ </section>
+</div>
 <div id="printRelicCover" class="print-relic-cover" aria-hidden="true">
  <div>✧ АНИМАГИЯ ✧</div>
  <h1>Атлас скрытых форм</h1>
@@ -340,4 +361,4 @@ body.photo-dialog-open{overflow:hidden}
 <p id="photoDialogCredit" class="photo-viewer-credit"></p>
 <a id="photoDialogSource" href="https://www.inaturalist.org/" target="_blank" rel="noopener noreferrer">Источник фотографии и лицензия — iNaturalist</a>
 </div></div>
-<script src="./enhancements.js?v=quality-audit-p4" defer></script><script src="./photo_gallery.js?v=bestiary-p3" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=ritual-p2" defer></script><script src="./silhouette_service.js?v=silhouettes-p6" defer></script><script src="./animal_atlas.js?v=animal-diet-v1" defer></script><script src="./relic_features.js?v=animal-diet-v1" defer></script></body></html>
+<script src="./enhancements.js?v=quality-audit-p4" defer></script><script src="./photo_gallery.js?v=bestiary-p3" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=ritual-p2" defer></script><script src="./silhouette_service.js?v=silhouettes-p6" defer></script><script src="./animal_atlas.js?v=animal-diet-v1" defer></script><script src="./relic_features.js?v=chooser-hotfix-p7" defer></script></body></html>
