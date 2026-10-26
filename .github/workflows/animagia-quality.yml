@@ -26,5 +26,7 @@ jobs:
           for file in app.js greek_taxa.js enhancements.js photo_gallery.js magic_ui.js ritual_ui.js silhouette_service.js relic_features.js; do
             node --check "$file"
           done
+      - name: Validate silhouette matching and image licenses without external network
+        run: node --test tests/test_silhouette.mjs
       - name: Run deterministic Python-JavaScript equivalence tests
         run: python -m unittest discover -s tests -v
