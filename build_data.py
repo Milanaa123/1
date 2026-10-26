@@ -39,6 +39,26 @@ def verify_original():
     for latin in CONTROL_NAMES:
         assert taxon_score(latin) == score_greek(greek_transliterate(latin))
     assert greek_transliterate('Panthera uncia') == 'πανθερα ουνκια'
+    # Classical-letter score controls: scientific names must NEVER be
+    # silently interpreted using modern Greek μπ/ντ/γκ substitutions.
+    ancient_examples={
+        'Naja oxiana':254,
+        'Anolis cooki':551,
+        'Ompok pabo':433,
+        'Panthera uncia':797,
+        'Canis lupus':1531,
+        'Ursus arctos':2131,
+        'Felis catus':1736,
+        'Vulpes vulpes':1582,
+        'Agapornis taranta':1268,
+        'Hippopotamus amphibius':3234,
+    }
+    for animal,expected in ancient_examples.items():
+        computed=taxon_score(animal)
+        assert computed==expected,(animal,computed,expected)
+    # Anc. β represents /b/ (not modern /v/); δ=/d/, γ=/g/.
+    assert greek_transliterate('Aba dodo gaga')=='αβα δοδο γαγα'
+    print('ANCIENT_GREEK_SCORE_CONTROLS_PASSED',len(ancient_examples),flush=True)
 
 def canonical(body,rank):
  w=body.lstrip('†?*=$ ').split();i=0
