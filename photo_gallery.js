@@ -185,18 +185,13 @@ function photoMakeCard(item,index) {
  li.className='species-row verified-animal-card';
  const badge=document.createElement('span');badge.className='photo-card-number';
  badge.textContent=String(index+1).padStart(2,'0');
- const thumb=document.createElement('img');
- thumb.className='verified-animal-thumb';
- thumb.src=item.photo.preview||item.photo.src;
- thumb.alt='Фотография: '+display(row);
- thumb.loading='lazy';thumb.decoding='async';
  const body=document.createElement('div');body.className='photo-card-body';
  const name=document.createElement('strong');name.className='animal-name';name.textContent=display(row);
  const science=document.createElement('small');science.textContent=row[1];
  const greek=document.createElement('small');greek.textContent='Греческая запись: '+taxonGreek(row[1]);
  const button=document.createElement('button');button.type='button';
  button.className='view-photo-button';
- button.textContent='Увеличить фотографию';
+ button.textContent='Посмотреть фотографию';
  button.setAttribute('aria-label','Посмотреть фотографию: '+display(row));
  button.addEventListener('click',()=>photoOpen(item,button));
  const details=document.createElement('details');details.className='animal-detail';
@@ -205,7 +200,7 @@ function photoMakeCard(item,index) {
  info.textContent='Сумма греческой записи: '+taxonGreekScore(row[1])+
    ' · Сумма имени: '+sum+' · Разница: '+Math.abs(sum-row[0]);
  details.append(toggle,info);body.append(name,science,greek,button,details);
- li.append(badge,thumb,body);return li;
+ li.append(badge,body);return li;
 }
 function photoDraw() {
  const selected=photoGallery.chosen.slice().sort(photoOrder);
