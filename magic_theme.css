@@ -1537,3 +1537,28 @@ body.animal-chooser-opened{overflow:hidden!important}
  .relic-preview-heading>strong{font-size:clamp(23px,6.7vw,30px)}
  .relic-tools .animal-chooser-open strong{font-size:20px}
 }
+
+
+.relic-preview-category{
+ display:block;margin-top:3px;
+ font:500 14px/1.4 Georgia,serif;color:#d7bc93;
+}
+.relic-preview-category[hidden]{display:none!important}
+.relic-preview-heading{gap:7px}
+.relic-preview-heading>strong{
+ font-size:clamp(25px,2.9vw,32px)!important;
+ line-height:1.18!important;font-weight:600;
+ hyphens:auto;word-break:normal;overflow-wrap:break-word;
+}
+.relic-preview-heading>em{font-size:12px;line-height:1.5}
+.relic-seal-wrap .relic-preview-numbers{
+ width:100%;max-width:100%;box-sizing:border-box;
+}
+.relic-seal-wrap .relic-preview-numbers>div{min-width:0;padding:13px 3px}
+.relic-seal-wrap .relic-preview-numbers>div>span{font-size:clamp(8px,1.2vw,10px)}
+.relic-seal-wrap .relic-preview-numbers>div>strong{font-size:clamp(22px,2.8vw,29px)}
+@media(max-width:680px){
+ .relic-seal-wrap{padding:19px 13px 25px!important}
+ .relic-preview-heading>strong{font-size:clamp(23px,6.3vw,30px)!important}
+ .relic-preview-category{font-size:13px}
+}
