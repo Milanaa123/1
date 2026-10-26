@@ -150,7 +150,7 @@ body.photo-dialog-open{overflow:hidden}
 .magic-side-orbit span:first-child{width:37px;height:37px;background:none;border:0;color:#e4c488;animation:magic-twinkle 3.5s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.magic-side-orbit span:first-child{animation:none}}
 
-</style><link rel="stylesheet" href="./magic_theme.css?v=quality-audit-p4"></head><body><main class="wrap"><nav class="nav"><div class="brand"><span class="brand-sigil" aria-hidden="true"><svg viewBox="0 0 40 40" focusable="false">
+</style><link rel="stylesheet" href="./magic_theme.css?v=relic-p5"></head><body><main class="wrap"><nav class="nav"><div class="brand"><span class="brand-sigil" aria-hidden="true"><svg viewBox="0 0 40 40" focusable="false">
  <circle cx="20" cy="20" r="16.5"/>
  <circle cx="20" cy="20" r="11.4" stroke-dasharray="1.4 3.5"/>
  <path d="M20 4v32M4 20h32M9 9l22 22M31 9 9 31" stroke-opacity=".7"/>
@@ -222,7 +222,7 @@ body.photo-dialog-open{overflow:hidden}
  <p><b>01</b> Введи русское имя</p>
  <p><b>02</b> Исправь оригинальное написание латиницей</p>
  <p><b>03</b> Проверь греческую запись и найди форму</p>
-</aside></div><section class="results" id="resultPanel" hidden><div class="section-eyebrow">02 · Результат вычисления</div><h2 style="font-family:'Cormorant Garamond',serif;font-size:42px;line-height:1.1;margin:11px 0 22px">Что показали числа</h2><div class="stats"><div class="stat"><label>Число имени</label><div class="number" id="score">—</div><div class="substat" id="formula">Греческая изопсефия</div></div><div class="stat"><label>Точных совпадений</label><div class="number" id="total">—</div><div class="substat">Виды и подвиды</div></div></div><p id="empty" class="note" role="status"></p>
+</aside></div><div class="sound-bar"><button type="button" id="ritualSound" class="relic-sound" aria-pressed="false">♪ Звук выключен</button><span>Небольшой магический звон — только по желанию</span></div><section class="results" id="resultPanel" hidden><div class="section-eyebrow">02 · Результат вычисления</div><h2 style="font-family:'Cormorant Garamond',serif;font-size:42px;line-height:1.1;margin:11px 0 22px">Что показали числа</h2><div class="stats"><div class="stat"><label>Число имени</label><div class="number" id="score">—</div><div class="substat" id="formula">Греческая изопсефия</div></div><div class="stat"><label>Точных совпадений</label><div class="number" id="total">—</div><div class="substat">Виды и подвиды</div></div></div><p id="empty" class="note" role="status"></p>
 <details class="glass audit-panel" id="audit"><summary><span>Проверить расчёт по буквам</span><span class="audit-arrow">⌄</span></summary>
 <div id="letterBreakdown" class="audit-content"></div>
 <p class="hint">Здесь показано значение каждой буквы и итоговая сумма.</p>
@@ -240,7 +240,51 @@ body.photo-dialog-open{overflow:hidden}
    <p><a href="./meta.json" target="_blank" rel="noopener noreferrer">Открыть технический отчёт и контрольные суммы каталога</a></p>
   </div>
  </div>
-</details><div class="species-grid" id="previewSection" hidden><div class="glass species bestiary-volume">
+</details><section class="glass relic-laboratory" id="relicLaboratory" aria-labelledby="relicTitle">
+ <div class="relic-ornament" aria-hidden="true">✧ · ΑΝΙΜΑΓΙΑ · ✧</div>
+ <div class="section-eyebrow">04 · Артефакты анимагии</div>
+ <h2 id="relicTitle">Печать скрытой формы</h2>
+ <p class="relic-intro">Уникальный узор строится <strong>по числу имени</strong>. Это волшебное оформление результата, а не новый способ определить животное.</p>
+ <div class="relic-layout">
+  <div class="relic-seal-wrap">
+   <svg id="personalSeal" class="personal-seal" viewBox="0 0 360 360" role="img" aria-label="Декоративная магическая печать по числу имени"></svg>
+   <p id="sealCaption" class="seal-caption">Печать появится после расчёта</p>
+  </div>
+  <div class="relic-tools">
+   <label for="relicAnimal">Животное на памятной карточке</label>
+   <select id="relicAnimal"><option value="">Сначала выполни поиск</option></select>
+   <p class="relic-caption">Выбор только среди точных совпадений. Фотографии в PNG не используются.</p>
+   <button type="button" class="relic-download" id="downloadRelic">Скачать магическую карточку PNG <span aria-hidden="true">↓</span></button>
+   <p id="relicStatus" class="relic-feedback" role="status" aria-live="polite"></p>
+   <button type="button" class="relic-secondary" id="printRelic">Оформить бестиарий в PDF (печать)</button>
+   <p class="relic-caption">Откроется системная печать. Выбери «Сохранить как PDF». Включены только отобранные карточки; полный список — в TXT/CSV ниже.</p>
+  </div>
+ </div>
+ <details class="relic-compare" id="compareDetails">
+  <summary>✧ Сравнить два древнегреческих написания</summary>
+  <p>Сравнение помогает увидеть влияние букв и окончаний. Каждое число ищет <strong>только точные совпадения</strong> по опубликованному индексу.</p>
+  <div class="compare-inputs">
+   <div><label for="compareGreekA">Вариант I</label><input id="compareGreekA" type="text" lang="el" spellcheck="false" autocomplete="off" placeholder="Ἁρολδ Φρειζερ Βραουν"/></div>
+   <div><label for="compareGreekB">Вариант II</label><input id="compareGreekB" type="text" lang="el" spellcheck="false" autocomplete="off" placeholder="Ἁρολδός Φρέιζερ Βρούν"/></div>
+  </div>
+  <button type="button" id="compareRun" class="relic-download">Сравнить точные совпадения</button>
+  <p id="compareStatus" role="status" aria-live="polite" class="relic-feedback"></p>
+  <div id="compareResult" class="compare-results" hidden>
+   <div class="compare-result-item"><span>Вариант I</span><strong id="compareScoreA">—</strong><p id="compareCountA"></p><p id="compareExamplesA"></p></div>
+   <div class="compare-result-item"><span>Вариант II</span><strong id="compareScoreB">—</strong><p id="compareCountB"></p><p id="compareExamplesB"></p></div>
+  </div>
+  <p id="compareDiff" class="compare-difference" hidden></p>
+ </details>
+</section>
+<div id="printRelicCover" class="print-relic-cover" aria-hidden="true">
+ <div>✧ АНИМАГИЯ ✧</div>
+ <h1>Атлас скрытых форм</h1>
+ <p id="printRelicName"></p>
+ <p id="printRelicGreek"></p>
+ <strong id="printRelicNumber"></strong>
+ <p id="printRelicCount"></p>
+ <p class="print-relic-method">Точное числовое совпадение по условной древнегреческой буквенной системе · Catalogue of Life Extended Release 2026-08-26</p>
+</div><div class="species-grid" id="previewSection" hidden><div class="glass species bestiary-volume">
 <div class="bestiary-ornament" aria-hidden="true"><span>✧</span><span>Α · Ω</span><span>✧</span></div>
 <header class="bestiary-cover">
  <div class="section-eyebrow">03 · Книга найденных форм</div>
@@ -270,4 +314,4 @@ body.photo-dialog-open{overflow:hidden}
 <p id="photoDialogCredit" class="photo-viewer-credit"></p>
 <a id="photoDialogSource" href="https://www.inaturalist.org/" target="_blank" rel="noopener noreferrer">Источник фотографии и лицензия — iNaturalist</a>
 </div></div>
-<script src="./enhancements.js?v=quality-audit-p4" defer></script><script src="./photo_gallery.js?v=bestiary-p3" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=ritual-p2" defer></script></body></html>
+<script src="./enhancements.js?v=quality-audit-p4" defer></script><script src="./photo_gallery.js?v=bestiary-p3" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=ritual-p2" defer></script><script src="./relic_features.js?v=relic-p5" defer></script></body></html>
