@@ -140,6 +140,12 @@
     nextGreek.addEventListener('click', () => moveTo(3, true));
     expand.addEventListener('click', () => {
       allOpen = !allOpen;
+      // Returning from full view must never unexpectedly hide a name
+      // that the visitor has already typed into the later steps.
+      if (!allOpen) {
+        if (nameIsReady()) stage = Math.max(stage, 2);
+        if (nameIsReady() && latinIsReady()) stage = 3;
+      }
       updateLayout();
       announce(allOpen ? 'Открыты все три поля.' : 'Включён пошаговый режим.');
     });
