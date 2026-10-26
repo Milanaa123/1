@@ -311,7 +311,7 @@
    // Cross-origin imagery may be visible in the browser but still blocked
    // from Canvas. Test actual Canvas read permission before drawing.
    const sprite=profile?await gallery.drawable():null;
-   const canvas=elem('canvas');canvas.width=1200;canvas.height=1900;
+   const canvas=elem('canvas');canvas.width=1200;canvas.height=2070;
    const ctx=canvas.getContext('2d');
    if(!ctx)throw Error('Canvas недоступен');
    const styl=gallery?.style(gallery.classify(row))||{};
@@ -319,11 +319,11 @@
     predator:'#4c283a',herbivore:'#28382f',omnivore:'#39304c',
     unknown:'#30283e'
    }[styl.diet]||'#30283e';
-   const bg=ctx.createLinearGradient(0,0,1200,1900);
+   const bg=ctx.createLinearGradient(0,0,1200,2070);
    bg.addColorStop(0,'#0b0d1d');bg.addColorStop(.55,glow);bg.addColorStop(1,'#100e1e');
    ctx.fillStyle=bg;ctx.fillRect(0,0,1200,1900);
-   ctx.strokeStyle='#D3B683';ctx.lineWidth=3;ctx.strokeRect(56,56,1088,1788);
-   ctx.lineWidth=1;ctx.strokeRect(74,74,1052,1752);
+   ctx.strokeStyle='#D3B683';ctx.lineWidth=3;ctx.strokeRect(56,56,1088,1958);
+   ctx.lineWidth=1;ctx.strokeRect(74,74,1052,1920);
    ctx.fillStyle='#F1DDB8';ctx.font='36px Georgia,serif';ctx.textAlign='center';
    ctx.fillText('✧  А Н И М А Г И Я  ✧',600,148);
    ctx.fillStyle='#C3B1C7';ctx.font='22px Georgia,serif';
@@ -333,42 +333,59 @@
    ctx.fillStyle='#F4E4CB';centered(ctx,greek,884,950,'34px Georgia,serif',2);
    let artNote='';
    if(sprite&&profile){
-    gallery.drawCanvas(ctx,sprite,profile,333,972,534,444);
+    gallery.drawCanvas(ctx,sprite,profile,333,1010,534,408);
     artNote=profile.exact?'Художественный рисунок выбранного вида':'Обобщённый рисунок родственной группы';
    }else{
     // A quiet celestial mark is better than a biologically wrong silhouette.
     ctx.save();
     ctx.strokeStyle='#C9A879';ctx.globalAlpha=.48;ctx.lineWidth=1.6;
     for(const radius of [116,154]){
-      ctx.beginPath();ctx.arc(600,1190,radius,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();ctx.arc(600,1210,radius,0,Math.PI*2);ctx.stroke();
     }
     ctx.fillStyle='#E6C48D';ctx.globalAlpha=.9;
-    ctx.font='58px Georgia,serif';ctx.fillText('✧',600,1210);
+    ctx.font='58px Georgia,serif';ctx.fillText('✧',600,1230);
     ctx.restore();
     artNote='Иллюстрация этого животного ещё готовится';
    }
    ctx.fillStyle='#BDAAC3';ctx.font='17px Georgia,serif';ctx.textAlign='center';
-   ctx.fillText(artNote,600,1438);
+   ctx.fillText(artNote,600,1446);
    ctx.fillStyle='#D5B684';ctx.font='22px Georgia,serif';
-   ctx.fillText('✧  С К Р Ы Т А Я   Ф О Р М А  ✧',600,1484);
-   ctx.fillStyle='#F5E0BE';centered(ctx,label(row),1539,1020,'48px Georgia,serif',2);
-   ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1620,1020,'italic 27px Georgia,serif',1);
+   ctx.fillText('✧  С К Р Ы Т А Я   Ф О Р М А  ✧',600,1493);
+   // Generic Russian category and the species epithet are separate lines.
+   // Avoid forcing very long placeholder names into an overflowing headline.
+   const fullName=label(row),dash=fullName.indexOf(' — ');
+   const category=dash>=0?fullName.slice(0,dash):'';
+   const heading=dash>=0?fullName.slice(dash+3):fullName;
+   if(category){
+    ctx.fillStyle='#D3B385';ctx.font='23px Georgia,serif';
+    ctx.fillText(category,600,1530);
+   }
+   ctx.fillStyle='#F5E0BE';
+   let nameLines=[];
+   for(let font=50;font>=29;font-=3){
+    ctx.font='600 '+font+'px Georgia,serif';
+    nameLines=textLines(ctx,heading,930,2);
+    if(!nameLines.some(line=>line.endsWith('…')))break;
+   }
+   const nameY=category?1588:1564;
+   for(const [i,line] of nameLines.entries())ctx.fillText(line,600,nameY+i*51);
+   ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1710,1020,'italic 29px Georgia,serif',1);
    ctx.fillStyle='#E4CA9C';ctx.font='19px Georgia,serif';
    const traits=[styl.diet!=='unknown'?styl.dietText:null,
      styl.habitat!=='unknown'?styl.habitatText:null,
      ...(styl.secondaryText||[])].filter(Boolean).join('   ✧   ');
-   if(traits)ctx.fillText(traits,600,1670);
+   if(traits)ctx.fillText(traits,600,1763);
    const boxes=[['ЧИСЛО ИМЕНИ',sum],['ЧИСЛО ЖИВОТНОГО',row[0]],['РАЗНИЦА',0]];
    for(let i=0;i<boxes.length;i++){
     const x=141+i*307;
-    ctx.strokeStyle='#B6986E';ctx.lineWidth=1.2;ctx.strokeRect(x,1704,307,92);
+    ctx.strokeStyle='#B6986E';ctx.lineWidth=1.2;ctx.strokeRect(x,1800,307,112);
     ctx.fillStyle='#C6B3C6';ctx.font='15px Georgia,serif';
-    ctx.fillText(boxes[i][0],x+153.5,1733);
+    ctx.fillText(boxes[i][0],x+153.5,1840);
     ctx.fillStyle='#F5D7A5';ctx.font='600 41px Georgia,serif';
-    ctx.fillText(String(boxes[i][1]),x+153.5,1780);
+    ctx.fillText(String(boxes[i][1]),x+153.5,1895);
    }
    ctx.fillStyle='#C9B0A0';ctx.font='17px Georgia,serif';
-   ctx.fillText('ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ · ДЕКОРАТИВНАЯ ПЕЧАТЬ',600,1830);
+   ctx.fillText('ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ · ДЕКОРАТИВНАЯ ПЕЧАТЬ',600,1965);
    const blob=await new Promise((resolve,reject)=>{
      try{canvas.toBlob(resolve,'image/png');}catch(err){reject(err);}
    });
