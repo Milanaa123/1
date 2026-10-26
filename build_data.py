@@ -64,7 +64,7 @@ def build():
   urllib.request.urlretrieve(URL,str(zpath))
  if DATA.exists():shutil.rmtree(DATA)
  DATA.mkdir(exist_ok=True,parents=True);shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
- stack=[];active=False;base=-1;lines=formal=invalid_names=excluded=0;handles=collections.OrderedDict();t0=time.time()
+ stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)
   def spool(bid,row):
@@ -87,24 +87,33 @@ def build():
     if not body:continue
     name=canonical(body,rank) if rank in RANK else parent(body)
     if not active:
-     if rank=='kingdom' and name=='Animalia':active=True;base=indent;stack=[(indent,rank,name)]
+     if rank=='kingdom' and name=='Animalia':active=True;base=indent;stack=[(indent,rank,name,False)]
      continue
     if indent<=base:break
     while stack and stack[-1][0]>=indent:stack.pop()
     if body.lstrip('†? ').strip().startswith(('=','*','$')):continue
+    # A species can inherit extinction from its genus/family/order/etc.
+    # Propagate the dagger (†) down the hierarchy before indexing.
+    is_extinct=('†' in body[:3]) or (stack[-1][3] if stack else False)
+    is_uncertain=body.lstrip().startswith('?')
     if rank in RANK and name:
-     lin={r:n for _,r,n in stack}
-     if not allow_animal_taxon(lin):
-      excluded+=1
+     lin={r:n for _,r,n,_ in stack}
+     if is_extinct:
+      excluded_extinct+=1
+     elif is_uncertain:
+      excluded_uncertain+=1
+     elif not allow_animal_taxon(lin):
+      excluded_scope+=1
      else:
       try:
        n=taxon_score(name)
       except ValueError:
        invalid_names+=1
       else:
-       spool(n//25,[n,name,rank,lin.get('class',''),lin.get('order',''),'†' if '†' in body[:3] else '?' if '?' in body[:3] else '',lin.get('phylum','')])
+       # No extinct/uncertain record may enter the downloadable index.
+       spool(n//25,[n,name,rank,lin.get('class',''),lin.get('order',''),'',lin.get('phylum','')])
        formal+=1
-    stack.append((indent,rank,name))
+    stack.append((indent,rank,name,is_extinct))
   for f in handles.values():f.close()
   unique=0;available=[]
   for p in directory.glob('*.part'):
@@ -127,7 +136,10 @@ def build():
  meta['algorithm']='Same Greek numeral table for transcribed name and Greek-rendered Latinised scientific taxon; exact equality only'
  meta['algorithm_id']=RULE_VERSION
  meta['catalog_filter_version']=POLICY_VERSION
- meta['excluded_parasites_unplaced_and_wormlike_rows']=excluded
+ meta['excluded_extinct_rows']=excluded_extinct
+ meta['excluded_uncertain_rows']=excluded_uncertain
+ meta['excluded_out_of_scope_rows']=excluded_scope
+ meta['category_filter']='Recognizable non-parasitic land vertebrates, birds, fish, aquatic invertebrates, insects and spiders/scorpions; not an exhaustive living-status registry'
  meta['animal_name_method']='ancient-Greek-alphabet approximation of the original scientific name; not verified Ancient Greek lexical translation; digamma stands in for modern v/w'
  meta['test_vectors']=[{'latin':n,'greek':greek_transliterate(n),'score':taxon_score(n)} for n in CONTROL_NAMES]
  (DEST/'meta.json').write_text(json.dumps(meta,ensure_ascii=False,separators=(',',':')),encoding='utf8')
