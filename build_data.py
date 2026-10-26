@@ -221,7 +221,7 @@ def bundle_curated_gold_art():
  req=urllib.request.Request(url,headers={'User-Agent':'Animagia-Bestiary/1.0','Accept':'image/png'})
  with urllib.request.urlopen(req,timeout=40) as response:
   raw=response.read(6000000)
- if len(raw)<200000 or raw[:8]!=b'\\x89PNG\\r\\n\\x1a\\n':
+ if len(raw)<200000 or raw[:8]!=bytes([137,80,78,71,13,10,26,10]):
   raise ValueError('Approved gold artwork is not a valid PNG')
  if hashlib.sha256(raw).hexdigest()!=expected:
   raise ValueError('Approved gold artwork SHA-256 mismatch; deployment blocked')
