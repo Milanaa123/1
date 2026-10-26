@@ -217,7 +217,7 @@ def build():
   print('Downloading CoL data',URL,flush=True)
   urllib.request.urlretrieve(URL,str(zpath))
  if DATA.exists():shutil.rmtree(DATA)
- DATA.mkdir(exist_ok=True,parents=True);bundle_public_domain_silhouettes();shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'silhouette_service.js',DEST/'silhouette_service.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
+ DATA.mkdir(exist_ok=True,parents=True);bundle_public_domain_silhouettes();shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'silhouette_service.js',DEST/'silhouette_service.js');shutil.copy2(BASE/'animal_atlas.js',DEST/'animal_atlas.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
  stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)
