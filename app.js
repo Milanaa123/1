@@ -86,6 +86,60 @@ function breakdown(raw){return raw.trim().split(/\s+/).map(word=>word+' ('+score
 
 const SPECIES_NAME_RU = {
   // Only established or well-attested common names. Others are marked as phonetic renderings.
+  // Proven widespread species names; never infer a common name from Latin letters.
+  'Castor fiber':'Обыкновенный бобр',
+  'Castor canadensis':'Канадский бобр',
+  'Canis lupus':'Волк',
+  'Canis latrans':'Койот',
+  'Canis aureus':'Обыкновенный шакал',
+  'Vulpes vulpes':'Обыкновенная лисица',
+  'Vulpes lagopus':'Песец',
+  'Panthera leo':'Лев',
+  'Panthera tigris':'Тигр',
+  'Panthera pardus':'Леопард',
+  'Panthera onca':'Ягуар',
+  'Panthera uncia':'Снежный барс',
+  'Lynx lynx':'Обыкновенная рысь',
+  'Felis catus':'Домашняя кошка',
+  'Ursus arctos':'Бурый медведь',
+  'Ursus maritimus':'Белый медведь',
+  'Ursus americanus':'Барибал',
+  'Cervus elaphus':'Благородный олень',
+  'Alces alces':'Лось',
+  'Rangifer tarandus':'Северный олень',
+  'Capreolus capreolus':'Европейская косуля',
+  'Oryctolagus cuniculus':'Европейский кролик',
+  'Lepus europaeus':'Заяц-русак',
+  'Lutra lutra':'Речная выдра',
+  'Meles meles':'Европейский барсук',
+  'Sus scrofa':'Дикий кабан',
+  'Sciurus vulgaris':'Обыкновенная белка',
+  'Erinaceus europaeus':'Европейский ёж',
+  'Equus ferus':'Дикая лошадь',
+  'Equus caballus':'Домашняя лошадь',
+  'Bubo bubo':'Филин',
+  'Corvus corax':'Ворон',
+  'Aquila chrysaetos':'Беркут',
+  'Haliaeetus albicilla':'Орлан-белохвост',
+  'Cygnus olor':'Лебедь-шипун',
+  'Strix aluco':'Серая неясыть',
+  'Tyto alba':'Обыкновенная сипуха',
+  'Megaptera novaeangliae':'Горбатый кит',
+  'Balaenoptera musculus':'Синий кит',
+  'Orcinus orca':'Косатка',
+  'Delphinus delphis':'Обыкновенный дельфин',
+  'Tursiops truncatus':'Афалина',
+  'Octopus vulgaris':'Обыкновенный осьминог',
+  'Carcharodon carcharias':'Белая акула',
+  'Rana temporaria':'Травяная лягушка',
+  'Bufo bufo':'Обыкновенная жаба',
+  'Hyla arborea':'Обыкновенная квакша',
+  'Salamandra salamandra':'Огненная саламандра',
+  'Chelonia mydas':'Зелёная черепаха',
+  'Caretta caretta':'Логгерхед',
+  'Naja naja':'Индийская кобра',
+  'Python regius':'Королевский питон',
+  'Draco volans':'Летучий дракон',
   'Naja oxiana':'Среднеазиатская кобра',
   'Anolis cooki':'Анолис Кука',
   'Ompok pabo':'Сом пабо',
@@ -177,8 +231,9 @@ function category(r){return ORDER_RU[r[4]]||CLASS_RU[r[3]]||PHYLUM_RU[r[6]]||'Ж
 function display(r){
   if(SPECIES_NAME_RU[r[1]])return SPECIES_NAME_RU[r[1]];
   const genus=r[1].split(' ')[0];
-  // Distinguish species clearly even when only the group is known.
-  return (GENUS_RU[genus]||category(r))+' — '+rusTransliteration(r[1]);
+  // Never invent a Russian species name by transliterating Latin.
+  // The precise binomial appears in the scientific-name field next to it.
+  return GENUS_RU[genus]||category(r);
 }
 function status(r){return r[5]==='†'?'Вымерший †':r[5]==='?'?'Сомнительный статус ?':'';}
 
