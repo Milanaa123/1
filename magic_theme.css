@@ -1363,3 +1363,7 @@ body::before{
 @media(prefers-reduced-motion:reduce){
  .atlas-art-sprite{filter:none!important}
 }
+
+.relic-tools #relicAnimalSearch{min-height:47px;width:100%;border:1px solid #9e86698a;border-radius:9px;background:#121624;color:#f5e7dc;padding:11px 13px;font:13px Manrope,system-ui,sans-serif}
+.relic-tools #relicAnimalSearch:focus-visible{outline:2px solid #f3d199;outline-offset:3px}
+.relic-tools #relicAnimalResults{margin:-5px 0 2px;color:#d3bea5}
