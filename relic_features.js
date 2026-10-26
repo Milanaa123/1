@@ -558,10 +558,12 @@
   }catch(err){status.textContent='Ошибка сравнения: '+err.message;}
   finally{btn.disabled=false;}
  }
- function printBooklet(status){
+ async function printBooklet(status){
   if(!safeRows().length||!validGreek(get('greek').value)||score(get('greek').value)!==sum){
    status.textContent='Сначала найди точные совпадения.';return;
   }
+  status.textContent='Составляем золотой бестиарий…';
+  const gallery=atlas(),picture=gallery?await gallery.drawable():null;
   const cards=chosenRows(),list=get('printRelicList'),frag=document.createDocumentFragment();
   get('printRelicName').textContent='Имя: '+get('name').value.trim();
   get('printRelicGreek').textContent='Греческая запись: '+get('greek').value.trim();
@@ -572,14 +574,13 @@
    const art=elem('article');art.className='print-relic-animal';
    art.append(elem('span','✧ '+String(i+1).padStart(2,'0')));
    const illustration=atlas()?.resolve(r);
-   if(illustration){
-    const windowArt=elem('div');windowArt.className='print-art-cell';
-    const img=elem('img');img.src=atlas().imageUrl;img.alt=illustration.note;
-    img.style.position='absolute';img.style.maxWidth='none';
-    img.style.width='500%';img.style.height='400%';
-    img.style.left='-'+(illustration.cell%5*100)+'%';
-    img.style.top='-'+(Math.floor(illustration.cell/5)*100)+'%';
-    windowArt.append(img);art.append(windowArt);
+   if(illustration&&picture){
+    const windowArt=elem('canvas');windowArt.className='print-art-cell';
+    windowArt.width=400;windowArt.height=330;
+    windowArt.setAttribute('role','img');
+    windowArt.setAttribute('aria-label','Золотой образ '+r[1]);
+    gallery.drawCanvas(windowArt.getContext('2d'),picture,illustration,0,0,400,330);
+    art.append(windowArt);
    }
    art.append(elem('h3',label(r)));
    art.append(elem('p',r[1]+' · '+(r[2]==='subspecies'?'подвид':'вид')));
