@@ -249,3 +249,36 @@ body{
  .verified-animal-card,.view-photo-button,.field input{transition:none!important}
  .verified-animal-card:hover,.verified-animal-card:focus-within{transform:none!important}
 }
+
+
+/* Three-stage name transcription: readable magic parchment, not extra steps. */
+.name-step{
+ position:relative;margin:0 0 8px;padding:17px 18px 16px;
+ background:linear-gradient(130deg,#2e293e96,#1d1c2bba);
+ border:1px solid #85735d74;border-radius:13px;
+ box-shadow:inset 0 0 18px #c9a97409;
+}
+.name-step label{margin-bottom:9px;line-height:1.4}
+.name-step input{border-color:#6a5c6894;min-height:53px}
+.name-step .hint{margin:9px 0 0}
+.name-step .hint strong{font-weight:700;color:#ecd4ab}
+.name-step .trans-row{align-items:start;gap:8px;margin-bottom:7px}
+.name-step .trans-row label{margin:0;flex:1;min-width:0}
+.name-step .small-button{flex-shrink:0;white-space:nowrap;text-align:right}
+.input-step{
+ display:inline-grid;place-items:center;width:26px;height:26px;margin-right:8px;
+ font:700 12px 'Cormorant Garamond',Georgia,serif;letter-spacing:.035em;
+ background:#343045;border:1px solid #b3966596;border-radius:50%;color:#f4d8ac;
+}
+.name-path-arrow{
+ text-align:center;color:#e3c68c;font:17px Georgia,serif;
+ letter-spacing:6px;line-height:28px;height:36px;
+ text-shadow:0 0 10px #ddbb795e;user-select:none;
+}
+@media(max-width:480px){
+ .name-step{padding:14px 13px 13px}
+ .name-step .trans-row{flex-wrap:wrap}
+ .name-step .trans-row label{flex-basis:100%}
+ .name-step .small-button{margin-left:auto}
+ .name-step input{font-size:16px}
+}
