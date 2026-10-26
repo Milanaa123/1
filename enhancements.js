@@ -124,7 +124,7 @@ run=async function(){
   const fresh=await metaResponse.json();
   if(fresh.algorithm_id!==GREEK_TAXON_RULE_VERSION)
    throw Error('Каталог ещё не пересчитан по греческим названиям. Обнови страницу.');
-  if(fresh.catalog_filter_version!=='living-recognizable-fauna-v2')
+  if(fresh.catalog_filter_version!=='independent-noncolonial-fauna-v3')
    throw Error('Каталог без вымерших и неподходящих групп ещё не опубликован. Обнови страницу после публикации.');
   if(!Array.isArray(fresh.test_vectors)||fresh.test_vectors.length<5)
    throw Error('Отсутствуют контрольные расчёты каталога');
