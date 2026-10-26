@@ -124,18 +124,52 @@
     ' с готовыми золотыми рисунками. Остальные доступны через поиск.';
   }
  }
+ function animalGroup(row){
+  const c=row[3];
+  if(c==='Mammalia')return 'mammal';
+  if(c==='Aves')return 'bird';
+  if(c==='Reptilia')return 'reptile';
+  if(c==='Amphibia')return 'amphibian';
+  if(['Actinopterygii','Actinopteri','Teleostei','Chondrichthyes','Elasmobranchii','Holocephali'].includes(c))return 'fish';
+  if(c==='Arachnida')return 'spider';
+  if(c==='Insecta')return 'insect';
+  if(['Cephalopoda','Malacostraca','Echinoidea','Asteroidea','Holothuroidea'].includes(c))return 'marine';
+  return 'other';
+ }
  function setupAnimalChooser(picker){
   const modal=get('animalChooser'),trigger=get('animalChooserOpen'),close=get('animalChooserClose'),
-   search=get('relicAnimalSearch'),items=get('animalChooserList'),counter=get('animalChooserCount'),
+   groups=get('animalChooserGroups'),items=get('animalChooserList'),counter=get('animalChooserCount'),
    illustrated=get('chooserFilterIllustrated'),all=get('chooserFilterAll'),more=get('animalChooserMore');
-  if(!modal||!trigger||!close||!search||!items||!counter||!more||!illustrated||!all)return;
-  let onlyIllustrated=false,limit=48;
+  if(!modal||!trigger||!close||!groups||!items||!counter||!more||!illustrated||!all)return;
+  const labels={all:'Все',mammal:'Млекопитающие',bird:'Птицы',reptile:'Рептилии',
+   amphibian:'Земноводные',fish:'Рыбы',spider:'Паукообразные',
+   insect:'Насекомые',marine:'Морские',other:'Другие'};
+  let onlyIllustrated=false,group='all',limit=48;
   function matches(){
-   const query=search.value.trim().toLocaleLowerCase('ru');
    return orderedAnimals().filter(row=>{
     if(onlyIllustrated&&!atlas()?.resolve(row))return false;
-    return !query||(label(row)+' '+row[1]).toLocaleLowerCase('ru').includes(query);
+    return group==='all'||animalGroup(row)===group;
    });
+  }
+  function renderGroups(){
+   const counts={all:0};
+   for(const row of orderedAnimals()){
+    if(onlyIllustrated&&!atlas()?.resolve(row))continue;
+    const key=animalGroup(row);
+    counts[key]=(counts[key]||0)+1;counts.all++;
+   }
+   const frag=document.createDocumentFragment();
+   for(const key of Object.keys(labels)){
+    if(!counts[key])continue;
+    const btn=elem('button',labels[key]+' · '+counts[key]);
+    btn.type='button';btn.className='animal-chooser-group';
+    btn.setAttribute('aria-pressed',String(key===group));
+    btn.addEventListener('click',()=>{
+     group=key;limit=48;render();
+    });
+    frag.append(btn);
+   }
+   groups.replaceChildren(frag);
   }
   function render(){
    const matched=matches(),slice=matched.slice(0,limit),frag=document.createDocumentFragment();
@@ -147,29 +181,28 @@
     const common=elem('strong',label(row));
     const scientific=elem('em',row[1]);
     content.append(common,scientific);
-    const badge=elem('small',withArt?'✦ Рисунок':'Арт готовится');
+    const badge=elem('small',withArt?'✧ Золотой образ':'Образ готовится');
     badge.className=withArt?'animal-chooser-art-ready':'animal-chooser-art-pending';
     btn.append(content,badge);
     btn.addEventListener('click',()=>{
      picker.value=row[1]+'|'+row[2];
-     updatePicker(picker);
-     syncSilhouette(picker);
-     closeChooser();
+     updatePicker(picker);syncSilhouette(picker);closeChooser();
     });
     frag.append(btn);
    }
-   if(!matched.length)frag.append(elem('p','Совпадений не найдено. Попробуй другое название.'));
+   if(!matched.length)frag.append(elem('p','В этой группе нет точных совпадений.'));
    items.replaceChildren(frag);
    counter.textContent='Найдено '+matched.length+' · показано '+slice.length;
    more.hidden=matched.length<=limit;
    illustrated.setAttribute('aria-pressed',String(onlyIllustrated));
    all.setAttribute('aria-pressed',String(!onlyIllustrated));
+   renderGroups();
   }
   function openChooser(){
    if(trigger.disabled)return;
    modal.hidden=false;document.body.classList.add('animal-chooser-opened');
-   limit=48;onlyIllustrated=false;search.value='';
-   render();search.focus();
+   limit=48;onlyIllustrated=false;group='all';
+   render();close.focus();
   }
   function closeChooser(){
    modal.hidden=true;document.body.classList.remove('animal-chooser-opened');
@@ -178,16 +211,15 @@
   trigger.addEventListener('click',openChooser);
   close.addEventListener('click',closeChooser);
   modal.querySelector('[data-chooser-dismiss]').addEventListener('click',closeChooser);
-  search.addEventListener('input',()=>{limit=48;render()});
-  illustrated.addEventListener('click',()=>{onlyIllustrated=true;limit=48;render()});
-  all.addEventListener('click',()=>{onlyIllustrated=false;limit=48;render()});
+  illustrated.addEventListener('click',()=>{onlyIllustrated=true;group='all';limit=48;render()});
+  all.addEventListener('click',()=>{onlyIllustrated=false;group='all';limit=48;render()});
   more.addEventListener('click',()=>{limit+=48;render()});
   document.addEventListener('keydown',event=>{
    if(modal.hidden)return;
    if(event.key==='Escape'){event.preventDefault();closeChooser();return;}
    if(event.key!=='Tab')return;
-   const focuses=[...modal.querySelectorAll('button:not([disabled]),input:not([disabled])')]
-      .filter(x=>!x.hidden&&x.offsetParent!==null);
+   const focuses=[...modal.querySelectorAll('button:not([disabled])')]
+    .filter(x=>!x.hidden&&x.offsetParent!==null);
    if(!focuses.length)return;
    const first=focuses[0],last=focuses[focuses.length-1];
    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
@@ -280,6 +312,8 @@
  let currentPictureSerial=0;
  let previousPictureKey='';
  function updatePreviewText(row){
+  const greekView=get('relicPreviewGreek');
+  if(greekView)greekView.textContent=row?get('greek').value.trim():'';
   const original=row?label(row):'',dash=original.indexOf(' — ');
   const category=dash>=0?original.slice(0,dash):'';
   const pretty=dash>=0?original.slice(dash+3):original;
