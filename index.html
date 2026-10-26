@@ -150,7 +150,7 @@ body.photo-dialog-open{overflow:hidden}
 .magic-side-orbit span:first-child{width:37px;height:37px;background:none;border:0;color:#e4c488;animation:magic-twinkle 3.5s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.magic-side-orbit span:first-child{animation:none}}
 
-</style><link rel="stylesheet" href="./magic_theme.css?v=ritual-p2"></head><body><main class="wrap"><nav class="nav"><div class="brand"><span class="brand-sigil" aria-hidden="true"><svg viewBox="0 0 40 40" focusable="false">
+</style><link rel="stylesheet" href="./magic_theme.css?v=bestiary-p3"></head><body><main class="wrap"><nav class="nav"><div class="brand"><span class="brand-sigil" aria-hidden="true"><svg viewBox="0 0 40 40" focusable="false">
  <circle cx="20" cy="20" r="16.5"/>
  <circle cx="20" cy="20" r="11.4" stroke-dasharray="1.4 3.5"/>
  <path d="M20 4v32M4 20h32M9 9l22 22M31 9 9 31" stroke-opacity=".7"/>
@@ -226,8 +226,24 @@ body.photo-dialog-open{overflow:hidden}
 <details class="glass audit-panel" id="audit"><summary><span>Проверить расчёт по буквам</span><span class="audit-arrow">⌄</span></summary>
 <div id="letterBreakdown" class="audit-content"></div>
 <p class="hint">Здесь показано значение каждой буквы и итоговая сумма.</p>
-</details><div class="species-grid" id="previewSection" hidden><div class="glass species"><span class="section-eyebrow">03 · Избранное</span><h2>Интересные животные</h2><div class="species-header"><p>В подборке — только подходящие животные с точным числовым совпадением и проверенным фото. Сначала млекопитающие, птицы, рептилии и водные животные; насекомых — максимум три, в конце. <strong id="featuredCount"></strong></p></div><div class="filter-line"><label for="groupFilter">Группа животных</label><select id="groupFilter" class="mode-select filter-select"><option value="all">Все животные подборки</option></select></div>
-<p id="galleryStatus" class="gallery-status" role="status" aria-live="polite"></p><ol id="preview" class="animal-list photo-grid"></ol>
+</details><div class="species-grid" id="previewSection" hidden><div class="glass species bestiary-volume">
+<div class="bestiary-ornament" aria-hidden="true"><span>✧</span><span>Α · Ω</span><span>✧</span></div>
+<header class="bestiary-cover">
+ <div class="section-eyebrow">03 · Книга найденных форм</div>
+ <h2>Волшебный бестиарий</h2>
+ <p class="bestiary-lead">Только реальные животные с точным числовым совпадением. Фотографии доступны по кнопке, научные имена и расчёты можно проверить.</p>
+ <div class="bestiary-vow"><span aria-hidden="true">✦</span><strong id="featuredCount">0 из 30</strong><span>подтверждённых фотографий</span></div>
+</header>
+<div class="bestiary-contents" aria-label="Главы бестиария" id="bestiaryChapters"></div>
+<div class="bestiary-explore">
+ <div class="filter-line"><label for="groupFilter">Группа животных</label><select id="groupFilter" class="mode-select filter-select"><option value="all">Все подтверждённые животные</option></select></div>
+ <div class="bestiary-search-wrap"><label for="bestiarySearch">Поиск в подборке</label><input id="bestiarySearch" type="search" placeholder="Название животного или рода" spellcheck="false" autocomplete="off"><span class="bestiary-search-note">Поиск среди избранных, полный каталог — в файлах ниже</span></div>
+</div>
+<p id="bestiarySummary" class="bestiary-summary" role="status"></p>
+<p id="galleryStatus" class="gallery-status" role="status" aria-live="polite"></p>
+<div class="bestiary-progress" aria-hidden="true"><span id="bestiaryProgressFill"></span></div>
+<ol id="preview" class="animal-list photo-grid bestiary-pages"></ol>
+<p id="bestiaryEmpty" class="bestiary-empty" hidden>В выбранной главе нет животных с этим названием. Очисти поиск или выбери другую группу.</p>
 <p class="hint photo-note">В каталоге — самостоятельные животные: млекопитающие, птицы, рептилии, земноводные, рыбы, насекомые, пауки, ракообразные и отдельные подвижные морские животные. Кораллы, полипы, губки, плоские и другие черви, известные паразитические группы и вымершие таксоны исключены по правилам каталога. Отсутствие такой отметки не является самостоятельным доказательством современного существования вида.</p></div><div class="glass download-panel" id="downloads" hidden><span class="section-eyebrow">Без ограничений</span><h3>Все животные<br>одним файлом</h3><p>Полный список точных совпадений, включая греческие названия и суммы.</p><button class="export" id="exportTxt" type="button">Скачать TXT <span>↓</span></button><button class="export secondary" id="exportCsv" type="button">Скачать CSV <span>↓</span></button>
 <button class="export secondary" id="printPdf" type="button">PDF с подборкой (печать) <span>▣</span></button><p class="fineprint">Отсутствие † в каталоге само по себе не подтверждает существование вида сегодня.</p></div></div></section><footer class="bottom"><span>Каталог: <span id="catalogVersion">Catalogue of Life XR 2026-08-26</span> · <span id="catalogCount">…</span> записей</span><span>✧ Анимагия · <a href="https://www.catalogueoflife.org/data/download" target="_blank" rel="noopener noreferrer">Источник данных</a></span></footer></main><script src="./greek_taxa.js?v=ancient-v2" defer></script><script src="./app.js?v=ancient-names-v2" defer></script><div id="animalPhotoDialog" class="animal-photo-dialog" hidden>
 <div id="photoDialogBackdrop" class="animal-photo-shade"></div>
@@ -235,8 +251,9 @@ body.photo-dialog-open{overflow:hidden}
 <button id="closeAnimalPhoto" class="photo-close-button" type="button" aria-label="Закрыть фотографию">×</button>
 <h2 id="photoDialogTitle">Фотография животного</h2>
 <p id="photoDialogScientific" class="photo-scientific-name"></p>
+<p id="photoDialogClass" class="photo-classification"></p>
 <div class="photo-viewer"><img id="photoDialogImage" alt=""></div>
 <p id="photoDialogCredit" class="photo-viewer-credit"></p>
 <a id="photoDialogSource" href="https://www.inaturalist.org/" target="_blank" rel="noopener noreferrer">Источник фотографии и лицензия — iNaturalist</a>
 </div></div>
-<script src="./enhancements.js?v=three-stage-v4" defer></script><script src="./photo_gallery.js?v=photos-on-click-v3" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=ritual-p2" defer></script></body></html>
+<script src="./enhancements.js?v=three-stage-v4" defer></script><script src="./photo_gallery.js?v=bestiary-p3" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=ritual-p2" defer></script></body></html>
