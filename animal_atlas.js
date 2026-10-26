@@ -91,6 +91,11 @@
   // Only relatively stable, recognisable groups receive dietary labels.
   if(['Cetacea','Sirenia'].includes(order))return make(
    order==='Sirenia'?'herbivore':'predator','aquatic');
+  // Well-established lifestyles, independent of whether artwork exists.
+  if(genus==='Castor')return make('herbivore','semiaquatic');
+  if(genus==='Bufo')return make('predator','terrestrial');
+  if(['Tyto','Strix'].includes(genus))return make('predator','aerial');
+  if(genus==='Pteropus')return make('herbivore','aerial');
   if(order==='Chiroptera')return make(null,'aerial');
   if(order==='Sphenisciformes')return make('predator','semiaquatic');
   if(order==='Strigiformes')return make('predator','aerial');
