@@ -188,46 +188,25 @@
   if(!frame||!info||!link)return;
   frame.replaceChildren(elem('span','✧'));
   updateEcology(null);
-  info.textContent='Рисунок появится после выбора животного';
+  info.textContent='Выбери животное для красивой карточки';
   link.hidden=true;
  }
  async function showSilhouette(row,serial){
   const frame=get('relicSilhouetteFrame'),info=get('relicSilhouetteStatus');
   const link=get('relicSilhouetteSource');
   if(!frame||!info||!row)return;
-  frame.replaceChildren(elem('span','✧'));
-  link.hidden=true;
+  if(serial!==currentPictureSerial)return;
   const gallery=atlas(),profile=gallery?.resolve(row)||null;
   updateEcology(profile,row);
+  link.hidden=true;
   if(profile){
    gallery.render(frame,profile);
-   info.textContent=profile.note+' · золотая линейная иллюстрация из библиотеки Анимагии';
-   return;
-  }
-  info.textContent='Ищем подтверждённый контур по научному названию…';
-  let result=null;
-  try{result=await currentSilhouette(row)}catch(_){}
-  if(serial!==currentPictureSerial)return;
-  if(!result){
-   info.textContent='Контур для этого вида пока не найден. Карточка остаётся без выдуманного животного.';
-   return;
-  }
-  const outline=goldContour(result.img);
-  if(outline){
-   outline.className='relic-gold-contour';
-   outline.setAttribute('role','img');
-   outline.setAttribute('aria-label',result.message+' · '+row[1]);
-   frame.replaceChildren(outline);
+   info.textContent=profile.exact
+    ?'Золотая иллюстрация животного':'Художественный образ группы · не точный портрет вида';
   }else{
-   // Source SVG can still be shown on screen when canvas can't outline it.
-   const image=elem('img');
-   image.src=result.src;
-   image.alt=result.message+' · '+row[1];
-   image.className='relic-gold-fallback';
-   frame.replaceChildren(image);
+   frame.replaceChildren(elem('span','✦'));
+   info.textContent='Золотой рисунок для этого животного ещё готовится';
   }
-  info.textContent=result.message+(result.exact?' · '+row[1]:' (не обязательно этот вид)');
-  link.href=result.link;link.hidden=false;
  }
  let currentPictureSerial=0;
  let previousPictureKey='';
@@ -263,8 +242,6 @@
    // Cross-origin imagery may be visible in the browser but still blocked
    // from Canvas. Test actual Canvas read permission before drawing.
    const sprite=profile?await gallery.drawable():null;
-   const fallBack=!sprite?await currentSilhouette(row):null;
-   const outline=fallBack?goldContour(fallBack.img,650,320):null;
    const canvas=elem('canvas');canvas.width=1200;canvas.height=1900;
    const ctx=canvas.getContext('2d');
    if(!ctx)throw Error('Canvas недоступен');
@@ -289,13 +266,17 @@
    if(sprite&&profile){
     gallery.drawCanvas(ctx,sprite,profile,333,972,534,444);
     artNote=profile.exact?'Художественный рисунок выбранного вида':'Обобщённый рисунок родственной группы';
-   }else if(outline){
-    const maxW=560,maxH=395,scale=Math.min(maxW/outline.width,maxH/outline.height);
-    const w=outline.width*scale,h=outline.height*scale;
-    ctx.drawImage(outline,600-w/2,1003+(395-h)/2,w,h);
-    artNote=fallBack.exact?'Контур точного вида · PhyloPic':'Обобщённый контур · PhyloPic';
    }else{
-    artNote='Иллюстрация пока недоступна — данные животного сохранены';
+    // A quiet celestial mark is better than a biologically wrong silhouette.
+    ctx.save();
+    ctx.strokeStyle='#C9A879';ctx.globalAlpha=.48;ctx.lineWidth=1.6;
+    for(const radius of [116,154]){
+      ctx.beginPath();ctx.arc(600,1190,radius,0,Math.PI*2);ctx.stroke();
+    }
+    ctx.fillStyle='#E6C48D';ctx.globalAlpha=.9;
+    ctx.font='58px Georgia,serif';ctx.fillText('✧',600,1210);
+    ctx.restore();
+    artNote='Иллюстрация этого животного ещё готовится';
    }
    ctx.fillStyle='#BDAAC3';ctx.font='17px Georgia,serif';ctx.textAlign='center';
    ctx.fillText(artNote,600,1438);
@@ -327,8 +308,7 @@
    a.href=url;a.download='Анимагия_форма_'+sum+'.png';
    document.body.append(a);a.click();a.remove();
    setTimeout(()=>URL.revokeObjectURL(url),5000);
-   status.textContent='Карточка PNG создана. '+(sprite?'Рисунок включён.':
-     outline?'Использован контур PhyloPic.':'Без рисунка — внешний источник недоступен.');
+   status.textContent='Карточка PNG создана. '+(sprite?'Рисунок включён.':'Пока без животного: арт готовится.');
   }catch(err){status.textContent='Не удалось сохранить PNG: '+err.message;}
  }
 
