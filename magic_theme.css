@@ -823,3 +823,256 @@ body::before{
  .name-step.ritual-arrived,.name-path-arrow{animation:none!important}
  .ritual-track li,.ritual-next,.ritual-expand{transition:none!important}
 }
+
+
+
+/* ==============================================================
+   Phase III · Illuminated bestiary
+   Decorative engravings and verified information; no photo thumbnails.
+   ============================================================== */
+.bestiary-volume{
+ position:relative;overflow:hidden;
+ background:
+  radial-gradient(ellipse 66% 24% at 55% 0%,#69516c34,transparent 80%),
+  linear-gradient(158deg,#252332,#1c1d2c 50%,#191a29 100%);
+}
+.bestiary-volume::before{
+ content:"";position:absolute;inset:0 auto 0 0;width:9px;
+ border-right:1px solid #c2a37658;
+ background:linear-gradient(90deg,#ad906030,#5a456146,transparent);
+ pointer-events:none;
+}
+.bestiary-ornament{
+ display:flex;align-items:center;justify-content:center;gap:18px;
+ text-align:center;position:relative;margin:-4px 0 15px;
+ color:#d1b184;font:15px 'Noto Serif',Georgia,serif;
+}
+.bestiary-ornament::before,.bestiary-ornament::after{
+ content:"";height:1px;max-width:105px;flex:1;
+ background:linear-gradient(90deg,transparent,#bfa47898);
+}
+.bestiary-ornament::after{background:linear-gradient(90deg,#bfa47898,transparent)}
+.bestiary-ornament span:nth-child(2){font-size:12px;letter-spacing:.36em}
+.bestiary-cover{position:relative;padding:7px 2px 23px;border-bottom:1px solid #b89a684d}
+.bestiary-cover h2{
+ font:600 clamp(37px,4vw,53px)/1.03 'Cormorant Garamond',Georgia,serif;
+ color:#f6ddbd;margin:11px 0 14px;letter-spacing:-.015em;
+ text-shadow:0 3px 26px #aa855936;
+}
+.bestiary-lead{font-size:12px!important;line-height:1.8!important;color:#cdbfd3!important;max-width:600px}
+.bestiary-vow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:19px 0 0;font-size:11px;color:#c7b4cc}
+.bestiary-vow>span:first-child{font-size:17px;color:#edcf96}
+.bestiary-vow strong{color:#f7dcad;font-size:13px}
+.bestiary-contents{
+ display:flex;align-items:stretch;gap:8px;
+ overflow-x:auto;padding:16px 2px 13px;margin:0 -3px;
+ scrollbar-width:thin;scrollbar-color:#a48664 transparent;
+ -webkit-overflow-scrolling:touch;
+}
+.bestiary-chapter-button{
+ appearance:none;border:1px solid #7c665a92;border-radius:20px;
+ background:linear-gradient(135deg,#322c3b,#292535);
+ color:#d9cad6;white-space:nowrap;
+ padding:9px 13px;min-height:43px;font:700 11px Manrope,system-ui,sans-serif;
+ transition:border-color .18s,background-color .18s,box-shadow .18s;
+}
+.bestiary-chapter-button:hover{border-color:#d8ba84;color:#f1d9b2}
+.bestiary-chapter-button[aria-pressed="true"]{
+ background:linear-gradient(130deg,#e7cb98,#b99969);
+ color:#262030;border-color:#f1d7aa;
+ box-shadow:inset 0 1px 0 #fff6,0 5px 16px #d6aa6b26;
+}
+.bestiary-explore{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);
+ gap:16px;margin-top:5px;padding:14px 0 12px;
+ border-top:1px solid #8b765554;
+}
+.bestiary-explore .filter-line{display:flex;align-items:flex-start;flex-direction:column;gap:8px;margin:0}
+.bestiary-explore .filter-line label,.bestiary-search-wrap label{
+ display:block;font-size:11px;font-weight:700;color:#dfc9ab;
+ margin:0 0 7px;
+}
+.bestiary-explore .filter-select{
+ min-width:0;max-width:none;width:100%;min-height:47px;
+ padding:11px 12px;margin:0;
+ background:#151626b8;border:1px solid #8471639c;color:#f2e6d6;
+}
+.bestiary-search-wrap{min-width:0}
+#bestiarySearch{
+ width:100%;min-height:47px;display:block;
+ background:#151626b8;border:1px solid #8471639c;border-radius:10px;
+ padding:10px 13px;font:13px Manrope,system-ui,sans-serif;color:#f8ede1;
+}
+#bestiarySearch::placeholder{color:#9c91a7;opacity:1}
+#bestiarySearch:focus-visible,.bestiary-chapter-button:focus-visible{
+ outline:2px solid #e5bd82;outline-offset:3px;
+}
+.bestiary-search-note{display:block;font-size:10px;color:#aca0b8;line-height:1.5;margin:6px 0 0}
+.bestiary-summary{margin:5px 0 8px;color:#e4cb9e;font-size:12px;font-weight:700}
+.gallery-status{color:#bdaec5;font-size:11px;margin:4px 0 8px}
+.bestiary-progress{
+ height:3px;width:100%;border-radius:2px;
+ background:#594d5960;overflow:hidden;margin:8px 0 20px;
+}
+.bestiary-progress>span{
+ display:block;width:0;height:100%;
+ background:linear-gradient(90deg,#876e5e,#eac68a,#f8deb0);
+ box-shadow:0 0 8px #e7c48f73;
+ transition:width .35s ease;
+}
+.bestiary-pages{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ column-gap:14px;row-gap:15px;margin:0;
+}
+.bestiary-chapter-heading{
+ list-style:none;grid-column:1/-1;margin:17px 0 1px;
+ display:flex;align-items:center;gap:13px;
+ font:600 18px 'Cormorant Garamond',Georgia,serif;
+ color:#eacb97;letter-spacing:.04em;
+}
+.bestiary-chapter-heading:first-child{margin-top:0}
+.bestiary-chapter-heading::after{
+ content:"";height:1px;flex:1;
+ background:linear-gradient(90deg,#d5b27b73,transparent);
+}
+.bestiary-card.verified-animal-card{
+ margin:0!important;display:flex!important;flex-direction:column!important;
+ min-width:0;min-height:305px!important;gap:0!important;
+ padding:0!important;overflow:hidden;
+ border:1px solid #b7996b7f!important;border-radius:10px!important;
+ background:
+  radial-gradient(ellipse at 84% 0%,#6b52652e,transparent 50%),
+  linear-gradient(155deg,#312938,#242131 62%,#211e2d)!important;
+ box-shadow:inset 0 0 27px #e8c9950d,0 9px 27px #09081474;
+ isolation:isolate;position:relative;
+ transition:transform .22s,border-color .22s,box-shadow .22s;
+}
+.bestiary-card::before{
+ content:"";position:absolute;inset:8px;
+ border:1px solid #b4976652;border-radius:5px;
+ pointer-events:none;z-index:0;
+}
+.bestiary-card.verified-animal-card::after{
+ content:"✧";right:11px;bottom:-7px;top:auto;
+ font:35px 'Cormorant Garamond',Georgia,serif;color:#b7976866;
+}
+.bestiary-card:hover,.bestiary-card:focus-within{
+ border-color:#f0cb8fa8!important;
+ box-shadow:inset 0 0 24px #dbb98416,0 13px 30px #0807119c;
+ transform:translateY(-2px);
+}
+.bestiary-card-top{
+ width:100%;padding:18px 20px 9px;position:relative;z-index:1;
+ display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.bestiary-animal-sigil{
+ display:grid;place-items:center;flex:0 0 58px;width:58px;height:58px;
+ border:1px solid #d1b5856f;border-radius:50%;
+ background:radial-gradient(circle at 40% 30%,#614a5e,#292537 75%);
+ box-shadow:0 0 0 5px #c7a36e0b,inset 0 0 14px #eac48b15;
+}
+.bestiary-animal-sigil svg{
+ width:39px;height:39px;fill:none;stroke:#e9c795;
+ stroke-width:1.35;stroke-linecap:round;stroke-linejoin:round;
+}
+.bestiary-folio{flex:1;text-align:center;color:#c9aa7f;font:10px 'Noto Serif',Georgia,serif;letter-spacing:.09em}
+.bestiary-photo-seal{font-size:9px;line-height:1.3;color:#ead2a9;text-align:right;max-width:83px}
+.photo-card-body.bestiary-card-body{
+ width:100%;min-width:0;align-items:stretch;
+ padding:0 20px 20px;display:flex;flex-direction:column;gap:8px;
+ position:relative;z-index:1;
+}
+.bestiary-category-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:1px 0 1px}
+.bestiary-category,.bestiary-rank{
+ border:1px solid #b19a795c;color:#e3c596;
+ border-radius:20px;background:#393143a8;
+ padding:5px 9px;line-height:1.4;font-size:10px;
+}
+.bestiary-rank{color:#bfb0c7;border-color:#846f7d65}
+.photo-card-body.bestiary-card-body .animal-name{
+ font:600 clamp(24px,2.5vw,29px)/1.12 'Cormorant Garamond',Georgia,serif;
+ letter-spacing:0;color:#f9e8d5;
+ margin:3px 0 0!important;overflow-wrap:anywhere;
+}
+.bestiary-name-origin{font-size:10px;color:#b9a7bc}
+.photo-card-body.bestiary-card-body .bestiary-scientific{
+ font:italic 12px 'Noto Serif',Georgia,serif;
+ color:#e2cecc;overflow-wrap:anywhere;margin:0!important;
+}
+.bestiary-engraving{
+ margin:6px 0 3px;padding:11px 12px;
+ display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;
+ border:1px solid #9c805b55;border-radius:8px;
+ background:linear-gradient(100deg,#a9895b19,transparent);
+}
+.bestiary-number{font:600 29px/1 'Cormorant Garamond',Georgia,serif;color:#f2d297;font-variant-numeric:tabular-nums}
+.bestiary-engraving span:last-child{font-size:10px;line-height:1.5;color:#cdb8c7}
+.bestiary-card .view-photo-button{
+ width:100%;padding:12px 14px;margin:5px 0 0;
+ min-height:46px;align-self:stretch;text-align:center;
+ border-radius:8px;font-size:12px;
+}
+.bestiary-verification{margin-top:4px;width:100%}
+.bestiary-card .animal-detail summary{
+ font-size:11px;color:#d5b995;line-height:1.6;min-height:34px;
+}
+.bestiary-facts{display:flex;flex-direction:column;gap:6px;margin-top:5px}
+.bestiary-facts p{font-size:11px;line-height:1.6;color:#cfc1cb;margin:0;overflow-wrap:anywhere}
+.bestiary-facts a{color:#eed0a0;font-size:11px;line-height:1.6;overflow-wrap:anywhere}
+.bestiary-empty{
+ border:1px solid #a78a635e;border-radius:8px;padding:18px;
+ color:#d8c5d3;background:#2b263a65;font-size:12px;line-height:1.65;
+}
+.photo-classification{color:#d9c098;font-size:11px;line-height:1.6;margin:0 0 10px}
+.animal-photo-window{outline:1px solid #bd9a6b5e;outline-offset:-8px}
+.results.is-revealing .bestiary-card{
+ animation:bestiary-folio-unseal .44s cubic-bezier(.22,.78,.3,1) both;
+}
+@keyframes bestiary-folio-unseal{
+ from{opacity:.1;transform:translateY(13px) scale(.985)}
+ to{opacity:1;transform:translateY(0) scale(1)}
+}
+@media(max-width:960px){
+ .bestiary-pages{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .bestiary-card-top{padding:15px 14px 8px}
+ .photo-card-body.bestiary-card-body{padding:0 14px 16px}
+ .bestiary-photo-seal{max-width:74px}
+ .bestiary-animal-sigil{width:48px;height:48px;flex-basis:48px}
+ .bestiary-animal-sigil svg{width:34px;height:34px}
+}
+@media(max-width:730px){
+ .bestiary-pages{grid-template-columns:1fr}
+ .bestiary-explore{grid-template-columns:1fr;gap:13px}
+ .bestiary-cover h2{font-size:41px}
+ .bestiary-volume{padding:23px 16px}
+ .bestiary-card.verified-animal-card{min-height:0!important}
+}
+@media(max-width:430px){
+ .bestiary-chapter-button{font-size:10px;padding:8px 10px;min-height:42px}
+ .bestiary-cover h2{font-size:36px}
+ .bestiary-ornament{gap:9px}
+ .bestiary-folio{font-size:9px}
+ .bestiary-photo-seal{font-size:8px}
+ .bestiary-category{font-size:9px}
+ .photo-card-body.bestiary-card-body .animal-name{font-size:26px}
+ .bestiary-summary{font-size:11px}
+}
+@media print{
+ .bestiary-contents,.bestiary-explore,.bestiary-vow,
+ .bestiary-progress,.bestiary-summary,.bestiary-empty,
+ .bestiary-engraving,.bestiary-photo-seal{display:none!important}
+ .bestiary-card.verified-animal-card{
+  min-height:0!important;background:white!important;color:#13131b!important;
+  border:1px solid #bbb!important;box-shadow:none!important;
+ }
+ .bestiary-card::before,.bestiary-card::after{display:none!important}
+ .bestiary-card .animal-name,.bestiary-card .bestiary-scientific{color:#15121b!important}
+ .bestiary-category-row span,.bestiary-folio,.bestiary-name-origin{color:#333!important}
+ .bestiary-chapter-heading{color:#161620}
+}
+@media(prefers-reduced-motion:reduce){
+ .results.is-revealing .bestiary-card{animation:none!important}
+ .bestiary-card.verified-animal-card,.bestiary-chapter-button,
+ .bestiary-progress>span{transition:none!important}
+ .bestiary-card:hover,.bestiary-card:focus-within{transform:none!important}
+}
