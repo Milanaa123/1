@@ -280,8 +280,16 @@
  let currentPictureSerial=0;
  let previousPictureKey='';
  function updatePreviewText(row){
+  const original=row?label(row):'',dash=original.indexOf(' — ');
+  const category=dash>=0?original.slice(0,dash):'';
+  const pretty=dash>=0?original.slice(dash+3):original;
+  const categoryField=get('relicPreviewCategory');
+  if(categoryField){
+   categoryField.hidden=!category;
+   categoryField.textContent=category;
+  }
   const pairs=[
-   ['relicPreviewAnimal',row?label(row):'Выбери животное'],
+   ['relicPreviewAnimal',row?pretty:'Выбери животное'],
    ['relicPreviewScientific',row?row[1]:''],
    ['relicPreviewNameScore',row?String(sum):'—'],
    ['relicPreviewAnimalScore',row?String(row[0]):'—'],
