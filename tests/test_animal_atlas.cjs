@@ -3,8 +3,31 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),vm=require('node:vm');
 const window={};
-const context=vm.createContext({window,document:{
- createElement(tag){return {tag,className:'',attrs:{},style:{},setAttribute(k,v){this.attrs[k]=v}}},
+const context=vm.createContext({window,Image:class{
+ constructor(){this.naturalWidth=1536;this.naturalHeight=1024;}
+ set src(_){if(this.onload)this.onload();}
+},document:{
+ createElement(tag){
+  if(tag==='canvas'){
+   const canvas={tag,width:307,height:256,attrs:{},className:'',
+    setAttribute(k,v){this.attrs[k]=v},
+    getContext(){
+     return {save(){},restore(){},drawImage(){},putImageData(){},
+      beginPath(){},moveTo(){},lineTo(){},closePath(){},fill(){},
+      getImageData(){
+       const data=new Uint8ClampedArray(canvas.width*canvas.height*4);
+       for(let i=0;i<data.length;i+=4){
+        data[i]=232;data[i+1]=191;data[i+2]=116;data[i+3]=255;
+       }
+       return {data};
+      }
+     };
+    }
+   };
+   return canvas;
+  }
+  return {tag,className:'',attrs:{},style:{},setAttribute(k,v){this.attrs[k]=v}};
+ }
 }});
 vm.runInContext(fs.readFileSync('animal_atlas.js','utf8'),context,{filename:'animal_atlas.js'});
 const atlas=window.AnimagiaAnimalAtlas;
@@ -43,23 +66,26 @@ test('unknown species not assigned ungrounded diet or habitat',()=>{
  assert.equal(alien.habitat,'unknown');
  assert.equal(atlas.style(atlas.resolve(row('Ursus thibetanus'))).diet,'unknown');
 });
-test('sprite uses one uploaded sheet and exact cropped coordinates',()=>{
+test('transparent watercolor-style ink is isolated on same-origin Canvas',()=>{
  const art=atlas.resolve(row('Canis lupus'));
- const node={children:[],replaceChildren(...x){this.children=x}};
+ assert.equal(art.cell,0);
+ assert.ok(atlas.imageUrl.includes('./art/animals-gold-v1.png'));
+ const node={children:[],replaceChildren(...x){this.children=x},
+  append(...x){this.children.push(...x)},contains(x){return this.children.includes(x)}};
  atlas.render(node,art);
  assert.equal(node.children.length,1);
- assert.ok(node.children[0].style.backgroundImage.includes('animals-gold-v1.png'));
- assert.equal(node.children[0].style.backgroundPosition,'0% 0%');
+ assert.equal(node.children[0].tag,'canvas');
  const part=atlas.resolve(row('Rana temporaria'));
  assert.equal(part.cell,18);
  assert.equal(part.habitat,'semiaquatic');
- const calls=[];const ctx={save(){},drawImage(...args){calls.push(args)},restore(){}};
+ const calls=[];
+ const ctx={save(){},drawImage(...args){calls.push(args)},restore(){}};
  const image={naturalWidth:1536,naturalHeight:1024};
  atlas.drawCanvas(ctx,image,part,0,0,300,250);
- assert.equal(calls[0][1],3*(1536/5));
- assert.equal(calls[0][2],3*(1024/4));
- assert.equal(calls[0][3],1536/5);
- assert.equal(calls[0][4],1024/4);
+ assert.equal(calls.length,1);
+ assert.equal(calls[0][0].tag,'canvas');
+ assert.equal(calls[0][3],300);
+ assert.equal(calls[0][4],250);
 });
 test('aquatic, arboreal and subterranean tags work without any matching illustration',()=>{
  const fish=[999,'Hippocampus hippocampus','species','Actinopterygii','Syngnathiformes','','Chordata'];
