@@ -243,6 +243,10 @@ function photoMakeCard(item,index) {
  const row=item.row,li=document.createElement('li');
  li.className='species-row verified-animal-card bestiary-card';
  li.dataset.animalGroup=photoBroadGroup(row);
+ const atlas=typeof window!=='undefined'?window.AnimagiaAnimalAtlas:null;
+ const profile=atlas?.resolve(row)||null;
+ const style=atlas?.style(profile)||null;
+ if(style){li.dataset.diet=style.diet;li.dataset.habitat=style.habitat;}
 
  const top=document.createElement('div');top.className='bestiary-card-top';
  const mark=document.createElement('span');mark.className='bestiary-animal-sigil';mark.append(bestiaryIcon(row));
@@ -294,8 +298,24 @@ function photoMakeCard(item,index) {
  proof.textContent='Источник проверенной фотографии · iNaturalist';
  info.append(taxonGreekName,exact,classification,proof);
  details.append(toggle,info);
+ if(style&&(style.diet!=='unknown'||style.habitat!=='unknown')){
+  const tags=document.createElement('div');tags.className='bestiary-animal-traits';
+  for(const text of [style.diet!=='unknown'?style.dietText:null,
+     style.habitat!=='unknown'?style.habitatText:null,
+     ...style.secondaryText].filter(Boolean)){
+   const tag=document.createElement('span');tag.textContent=text;tags.append(tag);
+  }
+  body.append(tags);
+ }
  body.append(rank,name,origin,science,engraving,photoButton,details);
- li.append(top,body);
+ if(profile&&atlas){
+  const drawing=document.createElement('div');drawing.className='bestiary-illustration';
+  atlas.render(drawing,profile);
+  const note=document.createElement('div');
+  note.className='bestiary-illustration-label';
+  note.textContent=profile.exact?'Художественная иллюстрация вида':'Обобщённая иллюстрация группы';
+  li.append(top,drawing,note,body);
+ }else li.append(top,body);
  return li;
 }
 function bestiaryUpdateChapters(selected,groupControl,previous){
