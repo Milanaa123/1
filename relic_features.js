@@ -214,19 +214,22 @@
    ctx.fillStyle='#C3B1C7';ctx.font='22px Georgia,serif';
    ctx.fillText('АТЛАС СКРЫТЫХ ФОРМ · МАГИЧЕСКАЯ ПЕЧАТЬ',600,201);
    paintSeal(ctx,sum,600,537,289);
-   ctx.fillStyle='#F4E4CB';centered(ctx,greek,837,960,'34px Georgia,serif',2);
+   // The seal ends at y=826; name starts below it, never touching the rim.
+   ctx.fillStyle='#F4E4CB';centered(ctx,greek,898,960,'33px Georgia,serif',2);
    if(outline){
-    ctx.drawImage(outline,600-outline.width/2,926);
-    ctx.fillStyle='#BDAAAB';ctx.font='16px Georgia,serif';
-    ctx.fillText(art.exact?'Рисунок вида · PhyloPic':'Обобщённый рисунок рода · PhyloPic',600,1120);
+    const drawingHeight=Math.min(outline.height,158);
+    const drawingWidth=outline.width*(drawingHeight/outline.height);
+    ctx.drawImage(outline,600-drawingWidth/2,972,drawingWidth,drawingHeight);
+    ctx.fillStyle='#BDAAAB';ctx.font='15px Georgia,serif';
+    ctx.fillText(art.exact?'Рисунок точного вида · PhyloPic':art.message+' · PhyloPic',600,1144);
    }else{
-    ctx.fillStyle='#D9B782';ctx.font='29px Georgia,serif';
-    ctx.fillText('✧',600,1040);
+    ctx.fillStyle='#AD99A6';ctx.font='18px Georgia,serif';
+    ctx.fillText('Иллюстрация животного не найдена',600,1050);
    }
    ctx.fillStyle='#D1B381';ctx.font='23px Georgia,serif';
-   ctx.fillText('СКРЫТАЯ ФОРМА · ТОЧНОЕ СОВПАДЕНИЕ',600,1160);
-   ctx.fillStyle='#F5E0BE';centered(ctx,label(row),1210,940,'45px Georgia,serif',2);
-   ctx.fillStyle='#CBBACA';centered(ctx,row[1],1340,950,'italic 26px Georgia,serif',2);
+   ctx.fillText('СКРЫТАЯ ФОРМА · ТОЧНОЕ СОВПАДЕНИЕ',600,1179);
+   ctx.fillStyle='#F5E0BE';centered(ctx,label(row),1223,940,'43px Georgia,serif',2);
+   ctx.fillStyle='#CBBACA';centered(ctx,row[1],1350,950,'italic 26px Georgia,serif',1);
    ctx.strokeStyle='#B69A73';ctx.beginPath();ctx.moveTo(190,1411);ctx.lineTo(1010,1411);ctx.stroke();
    ctx.fillStyle='#E1CCA7';ctx.font='22px Georgia,serif';
    ctx.fillText('Число имени '+sum+' = число животного '+row[0]+' · разница 0',600,1464);
