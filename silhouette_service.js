@@ -24,13 +24,18 @@
   return Array.isArray(items)?items:items?[items]:[];
  };
  function exactName(node,name){
-  const possible=[node?.name,node?.scientificName,node?.canonicalName,
-    ...(Array.isArray(node?.names)?node.names:[]),
-    ...(Array.isArray(node?._embedded?.names)?node._embedded.names:[])];
-  return possible.some(item=>{
-   const s=typeof item==='string'?item:item?.value||item?.name||item?.text||item?.scientificName||'';
-   return String(s).trim().replace(/\s+/g,' ').toLowerCase()===name.toLowerCase();
-  });
+  const names=[];
+  function gather(x){
+   if(typeof x==='string'){names.push(x.trim());return;}
+   if(Array.isArray(x)){for(const item of x)gather(item);return;}
+   if(x&&typeof x==='object'){
+    for(const key of ['value','name','text','scientificName','canonicalName'])
+     if(Object.prototype.hasOwnProperty.call(x,key))gather(x[key]);
+   }
+  }
+  gather(node?.name);gather(node?.scientificName);gather(node?.canonicalName);
+  gather(node?.names);gather(node?._embedded?.names);
+  return names.some(x=>x.toLowerCase()===name.toLowerCase());
  }
  function imageUuid(item){
   if(UUID.test(String(item?.uuid||'')))return item.uuid;
