@@ -3,7 +3,7 @@
 This catalogue is taxonomic rather than ecological: family/lineage exclusions
 cannot prove that every individual parasitic species has been identified.
 """
-POLICY_VERSION = "nonparasitic-animals-v1"
+POLICY_VERSION = "living-recognizable-fauna-v2"
 
 # Exclude entire worm-like or mostly parasitic clades and known ectoparasitic
 # arthropod taxa. Conservatively omit some free-living members of mixed clades.
@@ -44,13 +44,59 @@ EXCLUDED_GENERA = frozenset({
     "Cuterebra", "Dermatobia", "Hypoderma"
 })
 
+# Closed catalogue of recognizable animals. Taxonomic classes are only
+# category proxies; they cannot reliably reveal an individual species' habitat.
+# Birds (Aves) and insects (Insecta) remain eligible, but prioritized differently
+# in the *display* layer, without changing any numerological values.
+TERRESTRIAL_VERTEBRATES = frozenset({
+    "Mammalia", "Aves", "Reptilia", "Amphibia"
+})
+FISH = frozenset({
+    "Teleostei", "Actinopterygii", "Actinopteri", "Elasmobranchii",
+    "Chondrichthyes", "Chondrostei", "Holocephali", "Myxini",
+    "Petromyzonti", "Dipnoi", "Sarcopterygii"
+})
+AQUATIC_INVERTEBRATES = frozenset({
+    "Cephalopoda", "Bivalvia", "Polyplacophora",
+    "Scyphozoa", "Cubozoa", "Staurozoa", "Anthozoa",
+    "Octocorallia", "Hydrozoa",
+    "Asteroidea", "Ophiuroidea", "Echinoidea",
+    "Holothuroidea", "Crinoidea"
+})
+# Known aquatic crustacean orders. Malacostraca also contains land woodlice
+# and parasites: do not include the entire class indiscriminately.
+AQUATIC_CRUSTACEAN_ORDERS = frozenset({
+    "Decapoda", "Stomatopoda", "Euphausiacea", "Amphipoda",
+    "Mysida", "Cumacea", "Isopoda"
+})
+# Spiders and scorpions are animal forms too, but exclude the mite orders.
+RECOGNIZABLE_ARACHNID_ORDERS = frozenset({
+    "Araneae", "Scorpiones", "Solifugae", "Opiliones"
+})
+
 def allow_animal_taxon(lineage: dict) -> bool:
-    # A recorded Animalia kingdom and phylum are mandatory; this rejects
-    # plants, mosses, fungi, and unplaced or incomplete taxonomy.
+    """Allow only explicitly listed non-parasitic animal groups.
+
+    The source has no complete habitat/living-status field, so this function
+    must not be described as exhaustive parasite/extant-species verification.
+    Extinction markers are handled separately by build_data.py.
+    """
     if lineage.get("kingdom") != "Animalia" or not lineage.get("phylum"):
         return False
     if EXCLUDED_TAXA.intersection(lineage.values()):
         return False
     if lineage.get("genus") in EXCLUDED_GENERA:
         return False
-    return True
+    group = lineage.get("class", "")
+    order = lineage.get("order", "")
+    if group in TERRESTRIAL_VERTEBRATES or group in FISH:
+        return True
+    if group == "Insecta":
+        return True
+    if group in AQUATIC_INVERTEBRATES:
+        return True
+    if group == "Malacostraca" and order in AQUATIC_CRUSTACEAN_ORDERS:
+        return True
+    if group == "Arachnida" and order in RECOGNIZABLE_ARACHNID_ORDERS:
+        return True
+    return False
