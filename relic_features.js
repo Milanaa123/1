@@ -395,6 +395,16 @@
   for(const [i,r] of cards.entries()){
    const art=elem('article');art.className='print-relic-animal';
    art.append(elem('span','✧ '+String(i+1).padStart(2,'0')));
+   const illustration=atlas()?.resolve(r);
+   if(illustration){
+    const windowArt=elem('div');windowArt.className='print-art-cell';
+    const img=elem('img');img.src=atlas().imageUrl;img.alt=illustration.note;
+    img.style.position='absolute';img.style.maxWidth='none';
+    img.style.width='500%';img.style.height='400%';
+    img.style.left='-'+(illustration.cell%5*100)+'%';
+    img.style.top='-'+(Math.floor(illustration.cell/5)*100)+'%';
+    windowArt.append(img);art.append(windowArt);
+   }
    art.append(elem('h3',label(r)));
    art.append(elem('p',r[1]+' · '+(r[2]==='subspecies'?'подвид':'вид')));
    art.append(elem('p','Греческая запись: '+taxonGreek(r[1])));
