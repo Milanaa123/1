@@ -88,19 +88,46 @@
  }
  function selection(picker){
   const parts=picker.value.split('|');
-  return chosenRows().find(r=>r[1]===parts[0]&&r[2]===parts[1])||null;
+  return safeRows().find(r=>r[1]===parts[0]&&r[2]===parts[1])||null;
  }
  function updatePicker(picker){
-  const rows=chosenRows(),signature=rows.map(r=>r[1]+'|'+r[2]).join(';');
+  const rows=safeRows();
+  const query=(get('relicAnimalSearch')?.value||'').trim().toLocaleLowerCase('ru');
+  const atlasProvider=atlas();
+  const signature=[sum,rows.length,query,typeof photoGallery!=='undefined'?photoGallery.chosen.length:0].join('|');
   if(signature===picker.dataset.signature)return;
   picker.dataset.signature=signature;
-  const old=picker.value,frag=document.createDocumentFragment();
-  for(const row of rows){
+  let available;
+  if(query){
+   available=rows.filter(r=>(label(r)+' '+r[1]).toLocaleLowerCase('ru').includes(query));
+  }else{
+   // Put genuinely illustrated forms first, then photo-verified animals,
+   // then all other exact numerical matches. Only visible options are capped.
+   const illustrated=atlasProvider?rows.filter(r=>atlasProvider.resolve(r)):[],keys=new Set();
+   const picked=[];
+   const add=r=>{const key=r[1]+'|'+r[2];if(!keys.has(key)){keys.add(key);picked.push(r);}};
+   illustrated.forEach(add);
+   if(typeof photoGallery!=='undefined'&&Array.isArray(photoGallery.chosen))
+    photoGallery.chosen.forEach(item=>{
+     const r=item.row;
+     if(rows.some(x=>x[1]===r[1]&&x[2]===r[2]))add(r);
+    });
+   rows.forEach(add);
+   available=picked;
+  }
+  const shown=available.slice(0,120),old=picker.value,frag=document.createDocumentFragment();
+  for(const row of shown){
    const opt=elem('option',label(row)+' · '+row[1]);
    opt.value=row[1]+'|'+row[2];frag.append(opt);
   }
+  if(!shown.length){
+   const opt=elem('option','Нет точных совпадений по этому запросу');opt.value='';frag.append(opt);
+  }
   picker.replaceChildren(frag);
-  if(rows.some(r=>r[1]+'|'+r[2]===old))picker.value=old;
+  if(shown.some(r=>r[1]+'|'+r[2]===old))picker.value=old;
+  const message=get('relicAnimalResults');
+  if(message)message.textContent='Найдено '+available.length+' из '+rows.length+
+    ' точных совпадений. В списке показано до 120; уточни поиск по названию.';
  }
 
  // Recolour a genuine transparent silhouette into a delicate GOLD CONTOUR.
@@ -421,6 +448,11 @@
    }
   }
   picker.addEventListener('change',()=>syncSilhouette(picker));
+  const animalSearch=get('relicAnimalSearch');
+  if(animalSearch)animalSearch.addEventListener('input',()=>{
+   picker.dataset.signature='';
+   updatePicker(picker);syncSilhouette(picker);
+  });
   get('downloadRelic').addEventListener('click',()=>{void savePNG(picker,status);});
   get('printRelic').addEventListener('click',()=>printBooklet(status));
   window.printBesteriary=()=>printBooklet(status);
