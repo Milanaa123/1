@@ -10,15 +10,17 @@
     const form = document.getElementById('form');
     const error = document.getElementById('error');
     const name = document.getElementById('name');
+    const latin = document.getElementById('latin');
     const greek = document.getElementById('greek');
     const restore = document.getElementById('resetGreek');
-    if (!ring || !panel || !form || !error || !name || !greek || !restore) return;
+    if (!ring || !panel || !form || !error || !name || !latin || !greek || !restore) return;
 
     function quiet() {
       ring.classList.remove('is-divining', 'is-awakened');
       panel.classList.remove('is-revealing');
     }
     name.addEventListener('input', quiet);
+    latin.addEventListener('input', quiet);
     greek.addEventListener('input', quiet);
     restore.addEventListener('click', quiet);
 
