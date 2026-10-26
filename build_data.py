@@ -209,6 +209,26 @@ def bundle_public_domain_silhouettes():
   encoding='utf8')
  print('SILHOUETTE_BUNDLE_RESULT',len(records),'of',len(sources),flush=True)
 
+def bundle_curated_gold_art():
+ """Publish the user-approved gold animal sheet on our OWN domain.
+
+ Using a same-origin PNG avoids cross-origin Canvas restrictions and ensures
+ exactly the displayed art can be included in the downloaded card.
+ Verify the uploaded original by SHA-256 before publishing.
+ """
+ url='https://d2ol7oe51mr4n9.cloudfront.net/user_3IWontIKp1HpvdwOJQiSSyMEM6K/9617c2f3-64c8-4ed4-81d2-11bc33934bba.png'
+ expected='4e41a446b94d9efc52250823b9486e96429caf4e62db12e3a4a57822f6b30c69'
+ req=urllib.request.Request(url,headers={'User-Agent':'Animagia-Bestiary/1.0','Accept':'image/png'})
+ with urllib.request.urlopen(req,timeout=40) as response:
+  raw=response.read(6000000)
+ if len(raw)<200000 or raw[:8]!=b'\\x89PNG\\r\\n\\x1a\\n':
+  raise ValueError('Approved gold artwork is not a valid PNG')
+ if hashlib.sha256(raw).hexdigest()!=expected:
+  raise ValueError('Approved gold artwork SHA-256 mismatch; deployment blocked')
+ dest=DEST/'art';dest.mkdir(parents=True,exist_ok=True)
+ (dest/'animals-gold-v1.png').write_bytes(raw)
+ print('CURATED_GOLD_ART_READY',len(raw),'bytes',expected,flush=True)
+
 def build():
  verify_original()
  verify_animal_scope()
@@ -217,7 +237,7 @@ def build():
   print('Downloading CoL data',URL,flush=True)
   urllib.request.urlretrieve(URL,str(zpath))
  if DATA.exists():shutil.rmtree(DATA)
- DATA.mkdir(exist_ok=True,parents=True);bundle_public_domain_silhouettes();shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'silhouette_service.js',DEST/'silhouette_service.js');shutil.copy2(BASE/'animal_atlas.js',DEST/'animal_atlas.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
+ DATA.mkdir(exist_ok=True,parents=True);bundle_curated_gold_art();shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'animal_atlas.js',DEST/'animal_atlas.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
  stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)
