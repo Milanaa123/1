@@ -274,6 +274,20 @@
   if(d){d.textContent=meta.dietText;d.parentElement.hidden=meta.diet==='unknown';}
   if(h){h.textContent=meta.habitatText;h.parentElement.hidden=meta.habitat==='unknown';}
   if(extra)extra.textContent=meta.secondaryText.length?'Также: '+meta.secondaryText.join(' · '):'';
+  const inside=get('relicPreviewTraits');
+  if(inside){
+   inside.replaceChildren();
+   for(const [symbol,label] of [
+    ['✦',meta.diet!=='unknown'?meta.dietText:null],
+    ['◌',meta.habitat!=='unknown'?meta.habitatText:null],
+    ['◇',meta.secondaryText.length?meta.secondaryText.join(' · '):null]
+   ]){
+    if(!label)continue;
+    const element=elem('span',symbol+' '+label);
+    inside.append(element);
+   }
+   inside.hidden=!inside.children.length;
+  }
  }
  function silhouetteService(){
   return window.AnimagiaSilhouettes&&typeof window.AnimagiaSilhouettes.load==='function'
@@ -302,11 +316,10 @@
   link.hidden=true;
   if(profile){
    gallery.render(frame,profile);
-   info.textContent=profile.exact
-    ?'Золотая иллюстрация животного':'Художественный образ группы · не точный портрет вида';
+   info.textContent=profile.exact?'Золотой облик':'Художественный образ формы';
   }else{
    frame.replaceChildren(elem('span','✦'));
-   info.textContent='Золотой рисунок для этого животного ещё готовится';
+   info.textContent='Образ скрытой формы ещё создаётся';
   }
  }
  let currentPictureSerial=0;
@@ -376,7 +389,7 @@
    let artNote='';
    if(sprite&&profile){
     gallery.drawCanvas(ctx,sprite,profile,333,1010,534,408);
-    artNote=profile.exact?'Художественный рисунок выбранного вида':'Обобщённый рисунок родственной группы';
+    artNote=profile.exact?'Золотой облик':'Символический образ формы';
    }else{
     // A quiet celestial mark is better than a biologically wrong silhouette.
     ctx.save();
@@ -387,7 +400,7 @@
     ctx.fillStyle='#E6C48D';ctx.globalAlpha=.9;
     ctx.font='58px Georgia,serif';ctx.fillText('✧',600,1230);
     ctx.restore();
-    artNote='Иллюстрация этого животного ещё готовится';
+    artNote='Образ скрытой формы ещё создаётся';
    }
    ctx.fillStyle='#BDAAC3';ctx.font='17px Georgia,serif';ctx.textAlign='center';
    ctx.fillText(artNote,600,1446);
