@@ -137,7 +137,11 @@
     const local=await bundledFallback(row);
     if(local)return local;
    }
-   if(typeof candidate.name!=='string'||!/^[A-Z][A-Za-z-]+$/.test(candidate.name))continue;
+   if(typeof candidate.name!=='string')continue;
+   const valid=candidate.level==='species'
+    ?/^[A-Z][A-Za-z-]+(?: [a-z-]+){1,2}$/.test(candidate.name)
+    :/^[A-Z][A-Za-z-]+$/.test(candidate.name);
+   if(!valid)continue;
    if(visited.has(candidate.name.toLowerCase()))continue;
    visited.add(candidate.name.toLowerCase());
    try{
