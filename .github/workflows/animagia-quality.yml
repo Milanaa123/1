@@ -32,5 +32,7 @@ jobs:
         run: node --test tests/test_animal_atlas.cjs
       - name: Regression test responsive animal chooser and premium PNG
         run: node --test tests/test_premium_card.cjs
+      - name: Validate antique collectible-card design and shared PNG background
+        run: node --test tests/test_card_artifact.cjs
       - name: Run deterministic Python-JavaScript equivalence tests
         run: python -m unittest discover -s tests -v
