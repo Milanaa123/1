@@ -7,7 +7,7 @@ from taxon_filters import POLICY_VERSION, allow_animal_taxon
 from pathlib import Path
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
 URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
-RANK={'species','subspecies','variety','form','natio'}
+RANK={'species','subspecies'}  # only individual animal species and subspecies; no forms/varieties
 RANK_RE=re.compile(rb'\[([^\]]+)\]\s*$');EP=re.compile(r'^[a-z][a-z-]*$');START=re.compile(r'^[A-Z][A-Za-z0-9_-]*')
 SKIP={'subsp.','ssp.','var.','subvar.','f.','forma','natio','ab.','morph.','morph','×'}
 # Historical Latin scoring is retained only as a regression check for the old programme.
@@ -56,8 +56,42 @@ def canonical(body,rank):
 def parent(body):
  s=body.lstrip('†?*=$ ').strip();m=START.match(s)
  return m.group(0) if m else (s.split()[0] if s else '')
+def verify_animal_scope():
+ # Every example explicitly carries its taxonomic ancestors, just as the indexer does.
+ tests=[
+  ({'kingdom':'Animalia','phylum':'Chordata','class':'Mammalia','genus':'Ursus'},True),
+  ({'kingdom':'Animalia','phylum':'Chordata','class':'Aves','genus':'Bubo'},True),
+  ({'kingdom':'Animalia','phylum':'Chordata','class':'Reptilia'},True),
+  ({'kingdom':'Animalia','phylum':'Chordata','class':'Amphibia'},True),
+  ({'kingdom':'Animalia','phylum':'Chordata','class':'Actinopterygii'},True),
+  ({'kingdom':'Animalia','phylum':'Chordata','class':'Chondrichthyes'},True),
+  ({'kingdom':'Animalia','phylum':'Mollusca','class':'Cephalopoda','order':'Octopoda'},True),
+  ({'kingdom':'Animalia','phylum':'Arthropoda','class':'Insecta','order':'Coleoptera'},True),
+  ({'kingdom':'Animalia','phylum':'Arthropoda','class':'Arachnida','order':'Araneae'},True),
+  ({'kingdom':'Animalia','phylum':'Arthropoda','class':'Malacostraca','order':'Decapoda'},True),
+  ({'kingdom':'Animalia','phylum':'Echinodermata','class':'Asteroidea'},True),
+  ({'kingdom':'Plantae','phylum':'Bryophyta','class':'Bryopsida'},False),
+  ({'kingdom':'Animalia','phylum':'Cnidaria','class':'Anthozoa','genus':'Acropora'},False),
+  ({'kingdom':'Animalia','phylum':'Cnidaria','class':'Scyphozoa'},False),
+  ({'kingdom':'Animalia','phylum':'Porifera','class':'Demospongiae'},False),
+  ({'kingdom':'Animalia','phylum':'Bryozoa','class':'Gymnolaemata'},False),
+  ({'kingdom':'Animalia','phylum':'Platyhelminthes','class':'Cestoda','genus':'Taenia'},False),
+  ({'kingdom':'Animalia','phylum':'Nematoda','class':'Chromadorea','genus':'Ascaris'},False),
+  ({'kingdom':'Animalia','phylum':'Annelida','class':'Clitellata'},False),
+  ({'kingdom':'Animalia','phylum':'Mollusca','class':'Bivalvia','order':'Ostreida'},False),
+  ({'kingdom':'Animalia','phylum':'Echinodermata','class':'Crinoidea'},False),
+  ({'kingdom':'Animalia','phylum':'Arthropoda','class':'Arachnida','order':'Ixodida'},False),
+  ({'kingdom':'Animalia','phylum':'Arthropoda','class':'Insecta','order':'Diptera','family':'Culicidae'},False),
+  ({'kingdom':'Animalia','phylum':'Chordata','class':'Petromyzonti'},False),
+ ]
+ for lineage,expected in tests:
+  actual=allow_animal_taxon(lineage)
+  assert actual==expected,(lineage,expected,actual)
+ print('SCOPE_TESTS_PASSED',len(tests),flush=True)
+
 def build():
  verify_original()
+ verify_animal_scope()
  zpath=Path(os.getenv('COL_ZIP','')) if os.getenv('COL_ZIP') else BASE/'source.zip'
  if not zpath.is_file():
   print('Downloading CoL data',URL,flush=True)
@@ -139,7 +173,9 @@ def build():
  meta['excluded_extinct_rows']=excluded_extinct
  meta['excluded_uncertain_rows']=excluded_uncertain
  meta['excluded_out_of_scope_rows']=excluded_scope
- meta['category_filter']='Recognizable non-parasitic land vertebrates, birds, fish, aquatic invertebrates, insects and spiders/scorpions; not an exhaustive living-status registry'
+ meta['taxon_ranks']='species and subspecies only'
+ meta['editorial_scope_warning']='Independent/nonparasitic status is approximated from taxonomy, not individually proven for each species'
+ meta['category_filter']='Curated noncolonial independent animal groups: mammals, birds, reptiles, amphibians, fish, insects, spiders/scorpions, free-moving crustaceans, cephalopods and echinoderms. Excludes corals/polyps, sponges, attached molluscs and worms; ecology is inferred, not verified species by species.'
  meta['animal_name_method']='ancient-Greek-alphabet approximation of the original scientific name; not verified Ancient Greek lexical translation; digamma stands in for modern v/w'
  meta['test_vectors']=[{'latin':n,'greek':greek_transliterate(n),'score':taxon_score(n)} for n in CONTROL_NAMES]
  (DEST/'meta.json').write_text(json.dumps(meta,ensure_ascii=False,separators=(',',':')),encoding='utf8')
