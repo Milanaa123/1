@@ -150,7 +150,8 @@ body.photo-dialog-open{overflow:hidden}
 .magic-side-orbit span:first-child{width:37px;height:37px;background:none;border:0;color:#e4c488;animation:magic-twinkle 3.5s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.magic-side-orbit span:first-child{animation:none}}
 
-</style><link rel="stylesheet" href="./magic_theme.css?v=gold-card-v3"></head><body><main class="wrap"><nav class="nav"><div class="brand"><span class="brand-sigil" aria-hidden="true"><svg viewBox="0 0 40 40" focusable="false">
+</style><link rel="stylesheet" href="./magic_theme.css?v=gold-card-v3">
+<link rel="stylesheet" href="./relic_card_stage1.css?v=artifact-v1"></head><body><main class="wrap"><nav class="nav"><div class="brand"><span class="brand-sigil" aria-hidden="true"><svg viewBox="0 0 40 40" focusable="false">
  <circle cx="20" cy="20" r="16.5"/>
  <circle cx="20" cy="20" r="11.4" stroke-dasharray="1.4 3.5"/>
  <path d="M20 4v32M4 20h32M9 9l22 22M31 9 9 31" stroke-opacity=".7"/>
@@ -246,13 +247,15 @@ body.photo-dialog-open{overflow:hidden}
  <h2 id="relicTitle">Печать скрытой формы</h2>
  <p class="relic-intro">Число имени пробуждает личную печать, а каждая найденная форма открывает ещё одну страницу волшебного атласа.</p>
  <div class="relic-layout">
-  <div class="relic-seal-wrap">
+  <div class="relic-seal-wrap" id="relicCard" role="group" aria-label="Магическая карточка скрытой формы">
+   <canvas id="relicCardBackdrop" class="relic-card-backdrop" width="1200" height="2070" aria-hidden="true"></canvas>
+   <div class="relic-card-masthead"><strong>✧ А Н И М А Г И Я ✧</strong><span>АТЛАС СКРЫТЫХ ФОРМ · МАГИЧЕСКАЯ ПЕЧАТЬ</span></div>
    <svg id="personalSeal" class="personal-seal" viewBox="0 0 360 360" role="img" aria-label="Декоративная магическая печать по числу имени"></svg>
    <p id="sealCaption" class="seal-caption">Печать появится после расчёта</p>
    <p id="relicPreviewGreek" class="relic-preview-greek" aria-label="Греческая запись имени"></p>
    <figure class="silhouette-relic" id="relicSilhouetteWrap" aria-label="Минималистичный силуэт реального животного">
     <div id="relicSilhouetteFrame" class="silhouette-frame"><span class="silhouette-placeholder" aria-hidden="true">✧</span></div>
-    <figcaption><span id="relicSilhouetteStatus">Золотой образ скрытой формы</span>
+    <figcaption class="relic-card-sr-label"><span id="relicSilhouetteStatus">Золотой образ скрытой формы</span>
       <a id="relicSilhouetteSource" href="https://www.phylopic.org" target="_blank" rel="noopener noreferrer" hidden>PhyloPic · источник</a>
     </figcaption>
    </figure>
@@ -268,7 +271,7 @@ body.photo-dialog-open{overflow:hidden}
      <div><span>Число животного</span><strong id="relicPreviewAnimalScore">—</strong></div>
      <div><span>Разница</span><strong id="relicPreviewDifference">—</strong></div>
    </div>
-   <p class="relic-preview-note">Точное числовое совпадение · декоративная печать</p>
+   <p class="relic-preview-note">✧ ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ ✧</p>
   </div>
   <div class="relic-tools">
    <label for="animalChooserOpen">Животное на памятной карточке</label>
@@ -358,4 +361,4 @@ body.photo-dialog-open{overflow:hidden}
 <p id="photoDialogCredit" class="photo-viewer-credit"></p>
 <a id="photoDialogSource" href="https://www.inaturalist.org/" target="_blank" rel="noopener noreferrer">Источник фотографии и лицензия — iNaturalist</a>
 </div></div>
-<script src="./enhancements.js?v=quality-audit-p4" defer></script><script src="./photo_gallery.js?v=bestiary-p3" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=ritual-p2" defer></script><script src="./animal_atlas.js?v=transparent-gold-v3" defer></script><script src="./relic_features.js?v=gold-card-v3" defer></script></body></html>
+<script src="./enhancements.js?v=quality-audit-p4" defer></script><script src="./photo_gallery.js?v=bestiary-p3" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=ritual-p2" defer></script><script src="./animal_atlas.js?v=transparent-gold-v3" defer></script><script src="./relic_features.js?v=card-artifact-v1" defer></script></body></html>
