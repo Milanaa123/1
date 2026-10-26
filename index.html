@@ -150,7 +150,7 @@ body.photo-dialog-open{overflow:hidden}
 .magic-side-orbit span:first-child{width:37px;height:37px;background:none;border:0;color:#e4c488;animation:magic-twinkle 3.5s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.magic-side-orbit span:first-child{animation:none}}
 
-</style><link rel="stylesheet" href="./magic_theme.css?v=relic-p5"></head><body><main class="wrap"><nav class="nav"><div class="brand"><span class="brand-sigil" aria-hidden="true"><svg viewBox="0 0 40 40" focusable="false">
+</style><link rel="stylesheet" href="./magic_theme.css?v=silhouettes-p6"></head><body><main class="wrap"><nav class="nav"><div class="brand"><span class="brand-sigil" aria-hidden="true"><svg viewBox="0 0 40 40" focusable="false">
  <circle cx="20" cy="20" r="16.5"/>
  <circle cx="20" cy="20" r="11.4" stroke-dasharray="1.4 3.5"/>
  <path d="M20 4v32M4 20h32M9 9l22 22M31 9 9 31" stroke-opacity=".7"/>
@@ -249,11 +249,17 @@ body.photo-dialog-open{overflow:hidden}
   <div class="relic-seal-wrap">
    <svg id="personalSeal" class="personal-seal" viewBox="0 0 360 360" role="img" aria-label="Декоративная магическая печать по числу имени"></svg>
    <p id="sealCaption" class="seal-caption">Печать появится после расчёта</p>
+   <figure class="silhouette-relic" id="relicSilhouetteWrap" aria-label="Минималистичный силуэт реального животного">
+    <div id="relicSilhouetteFrame" class="silhouette-frame"><span class="silhouette-placeholder" aria-hidden="true">✧</span></div>
+    <figcaption><span id="relicSilhouetteStatus">Рисунок появится после выбора животного</span>
+      <a id="relicSilhouetteSource" href="https://www.phylopic.org" target="_blank" rel="noopener noreferrer" hidden>PhyloPic · источник</a>
+    </figcaption>
+   </figure>
   </div>
   <div class="relic-tools">
    <label for="relicAnimal">Животное на памятной карточке</label>
    <select id="relicAnimal"><option value="">Сначала выполни поиск</option></select>
-   <p class="relic-caption">Выбор только среди точных совпадений. Фотографии в PNG не используются.</p>
+   <p class="relic-caption">Животное выбирается только среди точных совпадений. Минималистичный силуэт загружается из PhyloPic по научному названию; фотографии по-прежнему доступны отдельно по кнопке.</p>
    <button type="button" class="relic-download" id="downloadRelic">Скачать магическую карточку PNG <span aria-hidden="true">↓</span></button>
    <p id="relicStatus" class="relic-feedback" role="status" aria-live="polite"></p>
    <button type="button" class="relic-secondary" id="printRelic">Оформить бестиарий в PDF (печать)</button>
@@ -314,4 +320,4 @@ body.photo-dialog-open{overflow:hidden}
 <p id="photoDialogCredit" class="photo-viewer-credit"></p>
 <a id="photoDialogSource" href="https://www.inaturalist.org/" target="_blank" rel="noopener noreferrer">Источник фотографии и лицензия — iNaturalist</a>
 </div></div>
-<script src="./enhancements.js?v=quality-audit-p4" defer></script><script src="./photo_gallery.js?v=bestiary-p3" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=ritual-p2" defer></script><script src="./relic_features.js?v=relic-p5" defer></script></body></html>
+<script src="./enhancements.js?v=quality-audit-p4" defer></script><script src="./photo_gallery.js?v=bestiary-p3" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=ritual-p2" defer></script><script src="./silhouette_service.js?v=silhouettes-p6" defer></script><script src="./relic_features.js?v=silhouettes-p6" defer></script></body></html>
