@@ -90,44 +90,110 @@
   const parts=picker.value.split('|');
   return safeRows().find(r=>r[1]===parts[0]&&r[2]===parts[1])||null;
  }
+ function orderedAnimals(){
+  const rows=safeRows(),provider=atlas();
+  const illustrated=[],others=[];
+  for(const row of rows)(provider?.resolve(row)?illustrated:others).push(row);
+  return [...illustrated,...others];
+ }
  function updatePicker(picker){
-  const rows=safeRows();
-  const query=(get('relicAnimalSearch')?.value||'').trim().toLocaleLowerCase('ru');
-  const atlasProvider=atlas();
-  const signature=[sum,rows.length,query,typeof photoGallery!=='undefined'?photoGallery.chosen.length:0].join('|');
-  if(signature===picker.dataset.signature)return;
-  picker.dataset.signature=signature;
-  let available;
-  if(query){
-   available=rows.filter(r=>(label(r)+' '+r[1]).toLocaleLowerCase('ru').includes(query));
-  }else{
-   // Put genuinely illustrated forms first, then photo-verified animals,
-   // then all other exact numerical matches. Only visible options are capped.
-   const illustrated=atlasProvider?rows.filter(r=>atlasProvider.resolve(r)):[],keys=new Set();
-   const picked=[];
-   const add=r=>{const key=r[1]+'|'+r[2];if(!keys.has(key)){keys.add(key);picked.push(r);}};
-   illustrated.forEach(add);
-   if(typeof photoGallery!=='undefined'&&Array.isArray(photoGallery.chosen))
-    photoGallery.chosen.forEach(item=>{
-     const r=item.row;
-     if(rows.some(x=>x[1]===r[1]&&x[2]===r[2]))add(r);
+  const rows=orderedAnimals();
+  const signature=[sum,rows.length,rows[0]?.[1],rows[rows.length-1]?.[1]].join('|');
+  const old=picker.value;
+  if(signature!==picker.dataset.signature){
+   picker.dataset.signature=signature;
+   const frag=document.createDocumentFragment();
+   for(const row of rows){
+    const option=elem('option',label(row)+' · '+row[1]);
+    option.value=row[1]+'|'+row[2];frag.append(option);
+   }
+   picker.replaceChildren(frag);
+   const chosen=rows.find(r=>r[1]+'|'+r[2]===old)||rows[0];
+   picker.value=chosen?chosen[1]+'|'+chosen[2]:'';
+  }
+  const current=selection(picker);
+  const named=get('animalChosenName'),latin=get('animalChosenScientific');
+  if(named)named.textContent=current?label(current):'Выбери животное';
+  if(latin)latin.textContent=current?current[1]:'';
+  const trigger=get('animalChooserOpen');
+  if(trigger)trigger.disabled=!rows.length;
+  const count=get('relicAnimalResults');
+  if(count){
+   const shown=rows.filter(row=>atlas()?.resolve(row)).length;
+   count.textContent=rows.length+' точных совпадений · '+shown+
+    ' с готовыми золотыми рисунками. Остальные доступны через поиск.';
+  }
+ }
+ function setupAnimalChooser(picker){
+  const modal=get('animalChooser'),trigger=get('animalChooserOpen'),close=get('animalChooserClose'),
+   search=get('relicAnimalSearch'),items=get('animalChooserList'),counter=get('animalChooserCount'),
+   illustrated=get('chooserFilterIllustrated'),all=get('chooserFilterAll'),more=get('animalChooserMore');
+  if(!modal||!trigger||!close||!search||!items||!counter||!more||!illustrated||!all)return;
+  let onlyIllustrated=false,limit=48;
+  function matches(){
+   const query=search.value.trim().toLocaleLowerCase('ru');
+   return orderedAnimals().filter(row=>{
+    if(onlyIllustrated&&!atlas()?.resolve(row))return false;
+    return !query||(label(row)+' '+row[1]).toLocaleLowerCase('ru').includes(query);
+   });
+  }
+  function render(){
+   const matched=matches(),slice=matched.slice(0,limit),frag=document.createDocumentFragment();
+   for(const row of slice){
+    const withArt=atlas()?.resolve(row);
+    const btn=elem('button');btn.type='button';btn.className='animal-chooser-item';
+    btn.setAttribute('aria-pressed',String(picker.value===row[1]+'|'+row[2]));
+    const content=elem('span');content.className='animal-chooser-item-names';
+    const common=elem('strong',label(row));
+    const scientific=elem('em',row[1]);
+    content.append(common,scientific);
+    const badge=elem('small',withArt?'✦ Рисунок':'Арт готовится');
+    badge.className=withArt?'animal-chooser-art-ready':'animal-chooser-art-pending';
+    btn.append(content,badge);
+    btn.addEventListener('click',()=>{
+     picker.value=row[1]+'|'+row[2];
+     updatePicker(picker);
+     syncSilhouette(picker);
+     closeChooser();
     });
-   rows.forEach(add);
-   available=picked;
+    frag.append(btn);
+   }
+   if(!matched.length)frag.append(elem('p','Совпадений не найдено. Попробуй другое название.'));
+   items.replaceChildren(frag);
+   counter.textContent='Найдено '+matched.length+' · показано '+slice.length;
+   more.hidden=matched.length<=limit;
+   illustrated.setAttribute('aria-pressed',String(onlyIllustrated));
+   all.setAttribute('aria-pressed',String(!onlyIllustrated));
   }
-  const shown=available.slice(0,120),old=picker.value,frag=document.createDocumentFragment();
-  for(const row of shown){
-   const opt=elem('option',label(row)+' · '+row[1]);
-   opt.value=row[1]+'|'+row[2];frag.append(opt);
+  function openChooser(){
+   if(trigger.disabled)return;
+   modal.hidden=false;document.body.classList.add('animal-chooser-opened');
+   limit=48;onlyIllustrated=false;search.value='';
+   render();search.focus();
   }
-  if(!shown.length){
-   const opt=elem('option','Нет точных совпадений по этому запросу');opt.value='';frag.append(opt);
+  function closeChooser(){
+   modal.hidden=true;document.body.classList.remove('animal-chooser-opened');
+   trigger.focus();
   }
-  picker.replaceChildren(frag);
-  if(shown.some(r=>r[1]+'|'+r[2]===old))picker.value=old;
-  const message=get('relicAnimalResults');
-  if(message)message.textContent='Найдено '+available.length+' из '+rows.length+
-    ' точных совпадений. В списке показано до 120; уточни поиск по названию.';
+  trigger.addEventListener('click',openChooser);
+  close.addEventListener('click',closeChooser);
+  modal.querySelector('[data-chooser-dismiss]').addEventListener('click',closeChooser);
+  search.addEventListener('input',()=>{limit=48;render()});
+  illustrated.addEventListener('click',()=>{onlyIllustrated=true;limit=48;render()});
+  all.addEventListener('click',()=>{onlyIllustrated=false;limit=48;render()});
+  more.addEventListener('click',()=>{limit+=48;render()});
+  document.addEventListener('keydown',event=>{
+   if(modal.hidden)return;
+   if(event.key==='Escape'){event.preventDefault();closeChooser();return;}
+   if(event.key!=='Tab')return;
+   const focuses=[...modal.querySelectorAll('button:not([disabled]),input:not([disabled])')]
+      .filter(x=>!x.hidden&&x.offsetParent!==null);
+   if(!focuses.length)return;
+   const first=focuses[0],last=focuses[focuses.length-1];
+   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  });
+  return ()=>{if(!modal.hidden)closeChooser();};
  }
 
  // Recolour a genuine transparent silhouette into a delicate GOLD CONTOUR.
@@ -445,6 +511,10 @@
      score(get('greek').value.trim())===sum;
    get('downloadRelic').disabled=!ok;get('printRelic').disabled=!ok;
    if(!ok){
+    if(typeof closeAnimalChooser==='function')closeAnimalChooser();
+    const chooser=get('animalChooserOpen');if(chooser)chooser.disabled=true;
+    const title=get('animalChosenName');if(title)title.textContent='Сначала выполни расчёт';
+    const sci=get('animalChosenScientific');if(sci)sci.textContent='Выбери найденное животное';
     svg.replaceChildren();picker.replaceChildren(elem('option','Сначала выполни поиск'));
     picker.dataset.signature='';previous=null;
     syncSilhouette(picker);
@@ -457,11 +527,7 @@
    }
   }
   picker.addEventListener('change',()=>syncSilhouette(picker));
-  const animalSearch=get('relicAnimalSearch');
-  if(animalSearch)animalSearch.addEventListener('input',()=>{
-   picker.dataset.signature='';
-   updatePicker(picker);syncSilhouette(picker);
-  });
+  const closeAnimalChooser=setupAnimalChooser(picker);
   get('downloadRelic').addEventListener('click',()=>{void savePNG(picker,status);});
   get('printRelic').addEventListener('click',()=>printBooklet(status));
   window.printBesteriary=()=>printBooklet(status);
