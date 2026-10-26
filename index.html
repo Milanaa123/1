@@ -249,6 +249,7 @@ body.photo-dialog-open{overflow:hidden}
   <div class="relic-seal-wrap">
    <svg id="personalSeal" class="personal-seal" viewBox="0 0 360 360" role="img" aria-label="Декоративная магическая печать по числу имени"></svg>
    <p id="sealCaption" class="seal-caption">Печать появится после расчёта</p>
+   <p id="relicPreviewGreek" class="relic-preview-greek" aria-label="Греческая запись имени"></p>
    <figure class="silhouette-relic" id="relicSilhouetteWrap" aria-label="Минималистичный силуэт реального животного">
     <div id="relicSilhouetteFrame" class="silhouette-frame"><span class="silhouette-placeholder" aria-hidden="true">✧</span></div>
     <figcaption><span id="relicSilhouetteStatus">Рисунок появится после выбора животного</span>
@@ -312,8 +313,8 @@ body.photo-dialog-open{overflow:hidden}
    <div><span class="animal-chooser-eyebrow">✧ АТЛАС СКРЫТЫХ ФОРМ</span><h2 id="animalChooserTitle">Выбери животное</h2></div>
    <button id="animalChooserClose" type="button" aria-label="Закрыть выбор животного">×</button>
   </header>
-  <label class="animal-chooser-search-label" for="relicAnimalSearch">Поиск среди точных совпадений</label>
-  <input id="relicAnimalSearch" type="search" placeholder="Название или латинское имя…" autocomplete="off" spellcheck="false"/>
+  <p class="animal-chooser-group-title">Выбери группу животных</p>
+  <div id="animalChooserGroups" class="animal-chooser-groups" role="group" aria-label="Группы животных"></div>
   <div class="animal-chooser-tabs" role="group" aria-label="Фильтр иллюстраций">
    <button type="button" id="chooserFilterIllustrated" aria-pressed="false">✦ С золотыми рисунками</button>
    <button type="button" id="chooserFilterAll" aria-pressed="true">Все совпадения</button>
