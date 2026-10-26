@@ -1413,3 +1413,127 @@ body::before{
  .print-art-cell>img{object-fit:fill;display:block;max-width:none}
  .print-relic-animal{min-height:83mm}
 }
+
+
+/* Emergency finish: Android-friendly bottom-sheet selector, truly blank unknown labels. */
+.animal-chooser[hidden],#relicAnimal[hidden],.animal-profile[hidden],
+.animal-profile-tag[hidden],.animal-chooser-more[hidden]{display:none!important}
+.animal-profile:has(>.animal-profile-tag[hidden]){grid-template-columns:minmax(0,1fr)}
+.relic-tools .animal-chooser-open{
+ display:flex;align-items:center;justify-content:space-between;gap:15px;
+ min-height:82px;width:100%;padding:14px 17px;
+ border-radius:13px;border:1px solid #bd9b72;
+ background:linear-gradient(145deg,#1f1e31,#17182a);
+ text-align:left;color:#f7e4ca;cursor:pointer;
+ box-shadow:inset 0 0 0 3px #b49b5d12;
+}
+.relic-tools .animal-chooser-open:disabled{opacity:.57;cursor:not-allowed}
+.animal-chooser-open>span:first-child{display:flex;flex-direction:column;gap:5px;min-width:0}
+.animal-chooser-open strong{
+ display:block;font:600 22px/1.2 'Cormorant Garamond',Georgia,serif;
+ color:#f2d7aa;overflow-wrap:anywhere
+}
+.animal-chooser-open small{font:italic 12px Georgia,serif;color:#beb3c5;overflow-wrap:anywhere}
+.animal-chooser-open .chooser-chevron{font-size:28px;color:#e9c98e}
+.animal-chooser-open:focus-visible,.animal-chooser-panel button:focus-visible,.animal-chooser-panel input:focus-visible{
+ outline:2px solid #f8daa6;outline-offset:3px
+}
+body.animal-chooser-opened{overflow:hidden!important}
+.animal-chooser{
+ display:flex;align-items:center;justify-content:center;
+ position:fixed;inset:0;z-index:99999;padding:16px
+}
+.animal-chooser-shade{position:absolute;inset:0;background:#0b0916de;backdrop-filter:blur(8px)}
+.animal-chooser-panel{
+ position:relative;display:flex;flex-direction:column;gap:14px;
+ width:min(650px,100%);max-height:min(90dvh,850px);min-height:0;
+ padding:25px 25px 20px;border:1px solid #c8a773;
+ border-radius:20px;background:radial-gradient(ellipse at 48% 0,#54374a65,transparent 58%),#171729;
+ box-shadow:0 24px 90px #030108d9,inset 0 0 0 6px #bea06c0c;
+ color:#ebddcf;
+}
+.animal-chooser-head{display:flex;align-items:start;justify-content:space-between;gap:16px}
+.animal-chooser-head h2{font:600 39px/1.06 'Cormorant Garamond',Georgia,serif;color:#f6dfb9;margin:5px 0 0}
+.animal-chooser-eyebrow{font:10px Georgia,serif;letter-spacing:.14em;color:#d5b57f}
+.animal-chooser-head #animalChooserClose{
+ width:42px;height:42px;display:grid;place-items:center;flex-shrink:0;
+ border-radius:50%;border:1px solid #bb9c6f;color:#f0d4a6;
+ font:25px Georgia,serif;background:#261f34;cursor:pointer
+}
+.animal-chooser-search-label{font:600 12px Manrope,system-ui,sans-serif;color:#e4c594}
+.animal-chooser #relicAnimalSearch{
+ width:100%;min-height:56px;border:1px solid #977c60;border-radius:12px;
+ padding:13px 17px;background:#111425;color:#f8e9db;
+ font:16px Manrope,system-ui,sans-serif
+}
+.animal-chooser #relicAnimalSearch::placeholder{color:#8c8398}
+.animal-chooser-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.animal-chooser-tabs button{
+ font:600 12px Manrope,system-ui,sans-serif;
+ padding:11px 14px;border:1px solid #927f6c;border-radius:30px;
+ background:transparent;color:#d1bfd0;cursor:pointer;
+}
+.animal-chooser-tabs button[aria-pressed=true]{
+ color:#211d2e;background:#e2c592;border-color:#e2c592
+}
+.animal-chooser-count{font:11px Manrope,system-ui,sans-serif;margin:0;color:#c6b1c4}
+.animal-chooser-list{
+ display:flex;flex-direction:column;overflow:auto;overscroll-behavior:contain;
+ min-height:70px;min-width:0;flex:1;gap:5px;padding-right:3px;
+ scrollbar-color:#aa896d #18182a;
+}
+.animal-chooser-item{
+ display:flex;align-items:center;justify-content:space-between;gap:10px;
+ padding:14px 15px;width:100%;min-height:67px;text-align:left;
+ border:1px solid #6e637759;border-radius:10px;background:#2924358c;
+ cursor:pointer;color:#f2e4d6
+}
+.animal-chooser-item:hover,.animal-chooser-item[aria-pressed=true]{
+ border-color:#dfbf87;background:#4e394955
+}
+.animal-chooser-item-names{min-width:0;display:flex;flex-direction:column;gap:5px}
+.animal-chooser-item-names strong{font:600 16px/1.3 Manrope,system-ui,sans-serif;color:#f5dfb9;overflow-wrap:anywhere}
+.animal-chooser-item-names em{font:italic 12px Georgia,serif;color:#c4b1c4;overflow-wrap:anywhere}
+.animal-chooser-art-ready,.animal-chooser-art-pending{
+ flex-shrink:0;font:10px/1.25 Manrope,system-ui,sans-serif;
+ border:1px solid #bca16e7e;padding:7px 9px;border-radius:8px;
+ color:#efd5a4;background:#40344b
+}
+.animal-chooser-art-pending{border-color:#7770816e;background:#282639;color:#9e94a6}
+.animal-chooser-more{
+ border:1px solid #b7956c;color:#f1d6a7;background:#373044;
+ font:600 12px Manrope,system-ui,sans-serif;
+ padding:12px;border-radius:9px;cursor:pointer
+}
+.animal-chooser-footnote{font:10px/1.5 Manrope,system-ui,sans-serif;color:#a79bac;margin:0}
+.silhouette-frame:not(:has(.atlas-art-sprite)){
+ background:radial-gradient(ellipse at center,#d6b07d12,transparent 70%);
+ min-height:205px
+}
+.silhouette-frame:not(:has(.atlas-art-sprite))>span{
+ display:grid;place-items:center;width:98px;height:98px;border-radius:50%;
+ border:1px solid #b7996870;
+ font:60px Georgia,serif;color:#d6b582;
+ box-shadow:0 0 0 13px #bfa07111,inset 0 0 22px #b5976720;
+}
+#relicSilhouetteStatus{font:italic 11px/1.5 Georgia,serif;color:#bcaab6}
+.relic-preview-heading>strong{
+ max-width:100%;font-size:clamp(24px,3vw,33px);
+ line-height:1.17;overflow-wrap:normal;word-break:normal;
+ text-wrap:balance
+}
+.relic-preview-heading>em{margin-top:2px}
+@media(max-width:680px){
+ .animal-chooser{align-items:flex-end;padding:0}
+ .animal-chooser-panel{
+  width:100%;max-height:91dvh;max-height:91svh;
+  padding:22px 17px calc(15px + env(safe-area-inset-bottom,0px));
+  border-radius:24px 24px 0 0;border-bottom:0
+ }
+ .animal-chooser-head h2{font-size:35px}
+ .animal-chooser-item{padding:13px 12px}
+ .animal-chooser-item-names strong{font-size:14px}
+ .animal-chooser-art-ready,.animal-chooser-art-pending{font-size:9px;max-width:87px;text-align:center}
+ .relic-preview-heading>strong{font-size:clamp(23px,6.7vw,30px)}
+ .relic-tools .animal-chooser-open strong{font-size:20px}
+}
