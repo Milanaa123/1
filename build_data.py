@@ -157,11 +157,17 @@ def bundle_public_domain_silhouettes():
      items=nodes.get('_embedded',{}).get('items',[])
      if isinstance(items,dict):items=[items]
      # Search term is an exact taxonomic group. Never use random fuzzy results.
+     def all_name_strings(value):
+      if isinstance(value,str):
+       yield value
+      elif isinstance(value,(list,tuple)):
+       for part in value:yield from all_name_strings(part)
+      elif isinstance(value,dict):
+       for key in ('value','name','text','scientificName','canonicalName'):
+        if key in value:yield from all_name_strings(value[key])
      def same_name(node):
-      names=node.get('names') or []
-      return any((name if isinstance(name,str) else
-       (name.get('value') or name.get('name') or name.get('text') or ''))
-       .casefold()==taxon.casefold() for name in names)
+      return any(label.strip().casefold()==taxon.casefold()
+       for label in all_name_strings(node.get('names',[])))
      node=next((x for x in items if same_name(x)),None)
      if node is None and len(items)==1:
       # PhyloPic returned only one candidate for a specific scientific query.
