@@ -64,6 +64,41 @@
     note:candidate.exact?'Художественная иллюстрация указанного вида':
       'Обобщённый рисунок биологической группы · '+candidate.label};
  }
+ function classify(row){
+  if(!Array.isArray(row)||!row[1])return null;
+  const approved=resolve(row);
+  if(approved)return approved;
+  const name=normalize(row[1]),genus=name.split(' ')[0];
+  const cls=row[3],order=row[4];
+  const aquaticClasses=new Set(['Actinopterygii','Actinopteri','Teleostei',
+    'Chondrichthyes','Elasmobranchii','Holocephali','Chondrostei',
+    'Dipnoi','Sarcopterygii','Cephalopoda','Asteroidea','Ophiuroidea',
+    'Echinoidea','Holothuroidea','Polyplacophora']);
+  const make=(diet,habitat,secondary=[])=>({
+   diet,habitat,secondary,scientific:name,id:null,cell:null,
+   note:'Среда/питание по надёжно распознаваемой группе, без рисунка вида'
+  });
+  // A class identifies habitat for fish and permanently aquatic invertebrates,
+  // but never an individual diet without ecological data.
+  if(aquaticClasses.has(cls))return make(null,'aquatic');
+  // Only relatively stable, recognisable groups receive dietary labels.
+  if(['Cetacea','Sirenia'].includes(order))return make(
+   order==='Sirenia'?'herbivore':'predator','aquatic');
+  if(order==='Chiroptera')return make(null,'aerial');
+  if(order==='Sphenisciformes')return make('predator','semiaquatic');
+  if(order==='Strigiformes')return make('predator','aerial',['arboreal']);
+  if(['Mantodea','Scorpiones'].includes(order))return make('predator','terrestrial');
+  if(['Talpa','Heterocephalus','Spalax','Cryptomys','Fukomys'].includes(genus))
+   return make(genus==='Talpa'?'predator':'herbivore','subterranean');
+  if(['Sciurus','Pongo','Petaurus','Dendrolagus'].includes(genus))
+   return make(null,'arboreal');
+  if(genus==='Ailuropoda')return make('herbivore','terrestrial');
+  if(['Crocodylus','Alligator','Caiman','Gavialis'].includes(genus))
+   return make('predator','semiaquatic');
+  if(['Hippocampus','Orcinus','Physeter','Balaenoptera','Eubalaena'].includes(genus))
+   return make('predator','aquatic');
+  return null;
+ }
  function style(profile){
   const p=profile||{};
   return {diet:p.diet||'unknown',habitat:p.habitat||'unknown',
@@ -109,7 +144,7 @@
   return true;
  }
  window.AnimagiaAnimalAtlas=Object.freeze({
-  imageUrl:URL_SHEET,resolve,style,render,drawable,drawCanvas,
+  imageUrl:URL_SHEET,resolve,classify,style,render,drawable,drawCanvas,
   list:data.map(([key,cell])=>({key,cell,name:names[cell]})),dietLabels:DIETS,
   habitatLabels:HABITATS
  });
