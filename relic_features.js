@@ -234,10 +234,13 @@
   const meta=atlas()?.style(atlas().classify(row)||profile)||{diet:'unknown',habitat:'unknown',
     dietText:'Рацион не установлен',habitatText:'Среда не установлена',secondaryText:[]};
   if(root){root.dataset.diet=meta.diet;root.dataset.habitat=meta.habitat;}
-  if(box){box.dataset.diet=meta.diet;box.dataset.habitat=meta.habitat;}
+  if(box){
+   box.dataset.diet=meta.diet;box.dataset.habitat=meta.habitat;
+   box.hidden=meta.diet==='unknown'&&meta.habitat==='unknown'&&!meta.secondaryText.length;
+  }
   const d=get('animalDiet'),h=get('animalHabitat'),extra=get('animalSecondary');
-  if(d)d.textContent=meta.dietText;
-  if(h)h.textContent=meta.habitatText;
+  if(d){d.textContent=meta.dietText;d.parentElement.hidden=meta.diet==='unknown';}
+  if(h){h.textContent=meta.habitatText;h.parentElement.hidden=meta.habitat==='unknown';}
   if(extra)extra.textContent=meta.secondaryText.length?'Также: '+meta.secondaryText.join(' · '):'';
  }
  function silhouetteService(){
