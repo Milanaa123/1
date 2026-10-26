@@ -110,6 +110,61 @@
   }
   ctx.restore();
  }
+ function paintCardBackdrop(ctx,number,diet){
+  // Same pixels behind BOTH the on-screen artifact and its downloadable PNG.
+  // This routine never touches numerology or taxon data.
+  ctx.save();
+  const base=ctx.createLinearGradient(0,0,1120,2070);
+  base.addColorStop(0,'#0e101d');base.addColorStop(.45,'#241a2d');
+  base.addColorStop(.71,'#342238');base.addColorStop(1,'#11101e');
+  ctx.fillStyle=base;ctx.fillRect(0,0,1200,2070);
+  const warmth={predator:'#a0754b',herbivore:'#8b8773',omnivore:'#8d7194'}[diet]||'#87677c';
+  const aurora=ctx.createRadialGradient(600,1110,80,600,1110,780);
+  aurora.addColorStop(0,warmth+'35');aurora.addColorStop(.52,'#9c628222');
+  aurora.addColorStop(1,'#9c628200');
+  ctx.fillStyle=aurora;ctx.fillRect(0,0,1200,2070);
+  // Art nouveau double foil border with a restrained glow.
+  ctx.strokeStyle='#CFAB75';ctx.lineWidth=3.1;ctx.strokeRect(48,48,1104,1974);
+  ctx.strokeStyle='#99805e';ctx.lineWidth=1.2;ctx.strokeRect(67,67,1066,1936);
+  drawCelestialBorder(ctx,number);
+  // Antique corner engravings are mirrored, rather than four competing drawings.
+  for(const sx of [1,-1])for(const sy of [1,-1]){
+    ctx.save();ctx.translate(sx>0?72:1128,sy>0?72:1998);
+    ctx.scale(sx,sy);ctx.strokeStyle='#BA9568';ctx.lineWidth=1.35;
+    ctx.globalAlpha=.76;
+    ctx.beginPath();ctx.moveTo(0,112);ctx.bezierCurveTo(0,35,35,0,112,0);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,66);ctx.bezierCurveTo(5,29,27,5,66,0);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(18,0);ctx.bezierCurveTo(27,20,48,29,70,30);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,18);ctx.bezierCurveTo(21,26,32,47,34,69);ctx.stroke();
+    for(const [x,y] of [[0,0],[22,22],[42,42]]){
+     ctx.beginPath();ctx.moveTo(x,y-7);ctx.lineTo(x+7,y);
+     ctx.lineTo(x,y+7);ctx.lineTo(x-7,y);ctx.closePath();ctx.stroke();
+    }
+    ctx.restore();
+  }
+  // The small hanging crescents belong to the frame, never the animal.
+  ctx.save();ctx.strokeStyle='#CFAC78';ctx.fillStyle='#D0AE7D';
+  ctx.lineWidth=1.5;ctx.globalAlpha=.82;
+  for(const x of [102,1098]){
+    ctx.beginPath();ctx.moveTo(x,238);ctx.lineTo(x,505);ctx.stroke();
+    ctx.beginPath();ctx.arc(x,530,11,.25,Math.PI*1.75);ctx.stroke();
+    ctx.beginPath();ctx.arc(x+4,527,9,.25,Math.PI*1.75);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x,556);ctx.lineTo(x,572);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x,571);ctx.lineTo(x+5,578);
+    ctx.lineTo(x,585);ctx.lineTo(x-5,578);ctx.closePath();ctx.stroke();
+  }
+  // One quiet divider between celestial mechanics and the animal's life.
+  ctx.lineWidth=.8;ctx.globalAlpha=.3;
+  ctx.beginPath();ctx.moveTo(370,940);ctx.lineTo(470,940);
+  ctx.moveTo(730,940);ctx.lineTo(830,940);ctx.stroke();
+  ctx.restore();ctx.restore();
+ }
+ function paintCardBackdropOnScreen(diet){
+  const canvas=get('relicCardBackdrop');if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  if(!ctx)return;
+  paintCardBackdrop(ctx,typeof sum==='number'&&sum>0?sum:1875,diet);
+ }
  function textLines(ctx,txt,maxWidth,maxLines){
   const words=String(txt).trim().split(/\s+/),lines=[];
   for(const word of words){
@@ -309,6 +364,7 @@
   const meta=atlas()?.style(atlas().classify(row)||profile)||{diet:'unknown',habitat:'unknown',
     dietText:'Рацион не установлен',habitatText:'Среда не установлена',secondaryText:[]};
   if(root){root.dataset.diet=meta.diet;root.dataset.habitat=meta.habitat;}
+  paintCardBackdropOnScreen(meta.diet);
   if(box){
    box.dataset.diet=meta.diet;box.dataset.habitat=meta.habitat;
    box.hidden=meta.diet==='unknown'&&meta.habitat==='unknown'&&!meta.secondaryText.length;
@@ -413,16 +469,7 @@
    const ctx=canvas.getContext('2d');
    if(!ctx)throw Error('Canvas недоступен');
    const styl=gallery?.style(gallery.classify(row))||{};
-   const glow={
-    predator:'#4c283a',herbivore:'#28382f',omnivore:'#39304c',
-    unknown:'#30283e'
-   }[styl.diet]||'#30283e';
-   const bg=ctx.createLinearGradient(0,0,1200,2070);
-   bg.addColorStop(0,'#0b0c18');bg.addColorStop(.53,glow);bg.addColorStop(1,'#100e1b');
-   ctx.fillStyle=bg;ctx.fillRect(0,0,1200,2070);
-   drawCelestialBorder(ctx,sum);
-   ctx.strokeStyle='#D3B683';ctx.lineWidth=3;ctx.strokeRect(56,56,1088,1958);
-   ctx.lineWidth=1;ctx.strokeRect(74,74,1052,1920);
+   paintCardBackdrop(ctx,sum,styl.diet);
    ctx.fillStyle='#F1DDB8';ctx.font='36px Georgia,serif';ctx.textAlign='center';
    ctx.fillText('✧  А Н И М А Г И Я  ✧',600,148);
    ctx.fillStyle='#C3B1C7';ctx.font='22px Georgia,serif';
@@ -432,7 +479,7 @@
    ctx.fillStyle='#F4E4CB';centered(ctx,greek,884,950,'34px Georgia,serif',2);
    let artNote='';
    if(sprite&&profile){
-    gallery.drawCanvas(ctx,sprite,profile,333,1010,534,408);
+    gallery.drawCanvas(ctx,sprite,profile,333,1012,534,438);
     artNote='';
    }else{
     // A quiet celestial mark is better than a biologically wrong silhouette.
@@ -449,7 +496,7 @@
    ctx.fillStyle='#BDAAC3';ctx.font='17px Georgia,serif';ctx.textAlign='center';
    if(artNote)ctx.fillText(artNote,600,1446);
    ctx.fillStyle='#D5B684';ctx.font='22px Georgia,serif';
-   ctx.fillText('✧  С К Р Ы Т А Я   Ф О Р М А  ✧',600,1493);
+   ctx.fillText('✧  С К Р Ы Т А Я   Ф О Р М А  ✧',600,1510);
    // Generic Russian category and the species epithet are separate lines.
    // Avoid forcing very long placeholder names into an overflowing headline.
    const fullName=label(row),dash=fullName.indexOf(' — ');
@@ -457,7 +504,7 @@
    const heading=dash>=0?fullName.slice(dash+3):fullName;
    if(category){
     ctx.fillStyle='#D3B385';ctx.font='23px Georgia,serif';
-    ctx.fillText(category,600,1530);
+    ctx.fillText(category,600,1554);
    }
    ctx.fillStyle='#F5E0BE';
    let nameLines=[];
@@ -466,9 +513,9 @@
     nameLines=textLines(ctx,heading,930,2);
     if(!nameLines.some(line=>line.endsWith('…')))break;
    }
-   const nameY=category?1588:1564;
+   const nameY=category?1596:1586;
    for(const [i,line] of nameLines.entries())ctx.fillText(line,600,nameY+i*51);
-   ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1710,1020,'italic 29px Georgia,serif',1);
+   ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1718,1020,'italic 29px Georgia,serif',1);
    ctx.fillStyle='#E4CA9C';ctx.font='21px Georgia,serif';
    const traits=[styl.diet!=='unknown'?'✦ '+styl.dietText:null,
      styl.habitat!=='unknown'?'◌ '+styl.habitatText:null,
@@ -479,23 +526,23 @@
     let x=600-total/2;
     for(let i=0;i<traits.length;i++){
      ctx.strokeStyle='#C6A574';ctx.lineWidth=1;
-     ctx.strokeRect(x,1730,widths[i],55);
+     ctx.strokeRect(x,1755,widths[i],53);
      ctx.fillStyle='#E8CAA0';
-     ctx.fillText(traits[i],x+widths[i]/2,1764);
+     ctx.fillText(traits[i],x+widths[i]/2,1789);
      x+=widths[i]+12;
     }
    }
    const boxes=[['ЧИСЛО ИМЕНИ',sum],['ЧИСЛО ЖИВОТНОГО',row[0]],['РАЗНИЦА',0]];
    for(let i=0;i<boxes.length;i++){
-    const x=141+i*307;
-    ctx.strokeStyle='#B6986E';ctx.lineWidth=1.2;ctx.strokeRect(x,1800,307,112);
+    const x=120+i*320;
+    ctx.strokeStyle='#B6986E';ctx.lineWidth=1.2;ctx.strokeRect(x,1842,320,124);
     ctx.fillStyle='#C6B3C6';ctx.font='15px Georgia,serif';
-    ctx.fillText(boxes[i][0],x+153.5,1840);
+    ctx.fillText(boxes[i][0],x+160,1883);
     ctx.fillStyle='#F5D7A5';ctx.font='600 41px Georgia,serif';
-    ctx.fillText(String(boxes[i][1]),x+153.5,1895);
+    ctx.fillText(String(boxes[i][1]),x+160,1945);
    }
    ctx.fillStyle='#C9B0A0';ctx.font='17px Georgia,serif';
-   ctx.fillText('ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ · ДЕКОРАТИВНАЯ ПЕЧАТЬ',600,1965);
+   ctx.fillText('✧ ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ ✧',600,2000);
    const blob=await new Promise((resolve,reject)=>{
      try{canvas.toBlob(resolve,'image/png');}catch(err){reject(err);}
    });
