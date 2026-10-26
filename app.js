@@ -34,10 +34,14 @@ function nameLatin(raw){
 }
 // Step 2 -> 3: explicitly approximate Ancient Greek phonetic notation.
 // English spellings do not uniquely specify sounds; every result stays editable.
+// This is an explicitly APPROXIMATE classical Greek rendering, NOT modern
+// pronunciation: β=/b/, δ=/d/, γ=/g/. Classical Greek has no exact
+// equivalents for English /v/, /f/ or /dʒ/. Archaic ϝ represents /w/, used
+// here as an approximation, never as a claim that ancient Greek had /v/.
 // Name transcription is independent of scientific taxon transliteration.
 const NAME_LAT_TO_GREEK={
  a:'α',b:'β',c:'κ',d:'δ',e:'ε',f:'φ',g:'γ',h:'χ',i:'ι',
- j:'τζ',k:'κ',l:'λ',m:'μ',n:'ν',o:'ο',p:'π',q:'κ',
+ j:'ζ',k:'κ',l:'λ',m:'μ',n:'ν',o:'ο',p:'π',q:'κ',
  r:'ρ',s:'σ',t:'τ',u:'ου',v:'ϝ',w:'ϝ',x:'ξ',
  y:'υ',z:'ζ'
 };
