@@ -48,7 +48,7 @@ test('sprite uses one uploaded sheet and exact cropped coordinates',()=>{
  const node={children:[],replaceChildren(...x){this.children=x}};
  atlas.render(node,art);
  assert.equal(node.children.length,1);
- assert.match(node.children[0].style.backgroundImage,/9617c2f3/);
+ assert.match(node.children[0].style.backgroundImage,/animals-gold-v1\\.png/);
  assert.equal(node.children[0].style.backgroundPosition,'0% 0%');
  const part=atlas.resolve(row('Rana temporaria'));
  assert.equal(part.cell,18);
@@ -77,6 +77,18 @@ test('aquatic, arboreal and subterranean tags work without any matching illustra
  assert.equal(atlas.style(atlas.classify(squirrel)).diet,'unknown');
  const panda=[999,'Ailuropoda melanoleuca','species','Mammalia','Carnivora','','Chordata'];
  assert.equal(atlas.style(atlas.classify(panda)).diet,'herbivore');
+});
+test('screenshot examples: real frog illustration and correct frog/spider diet',()=>{
+ const frog=[1878,'Cornufer opisthodon','species','Amphibia','Anura','','Chordata'];
+ const art=atlas.resolve(frog);
+ assert.equal(art.id,'frog');
+ assert.equal(art.exact,false);
+ assert.equal(atlas.style(atlas.classify(frog)).diet,'predator');
+ // Forest frogs may be terrestrial or arboreal; we do not guess habitat.
+ assert.equal(atlas.style(atlas.classify(frog)).habitat,'unknown');
+ const spider=[1878,'Bowie sagittatus','species','Arachnida','Araneae','','Arthropoda'];
+ assert.equal(atlas.style(atlas.classify(spider)).diet,'predator');
+ assert.equal(atlas.style(atlas.classify(spider)).habitat,'unknown');
 });
 test('art atlas has no local storage, personal-data uploads or numeric changes',()=>{
  const src=fs.readFileSync('animal_atlas.js','utf8');
