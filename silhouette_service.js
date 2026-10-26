@@ -41,7 +41,8 @@
   for(const [k,v] of Object.entries(query||{}))u.searchParams.set(k,String(v));
   const r=await fetch(u.href,{
    headers:{Accept:'application/vnd.phylopic.v2+json'},
-   mode:'cors',credentials:'omit',cache:'no-store'
+   mode:'cors',credentials:'omit',cache:'no-store',
+   signal:typeof AbortSignal!=='undefined'&&typeof AbortSignal.timeout==='function'?AbortSignal.timeout(9000):undefined
   });
   if(!r.ok)throw Error('PhyloPic: HTTP '+r.status);
   return r.json();
@@ -75,7 +76,7 @@
   return null;
  }
  async function objectArt(target){
-  const response=await fetch(target.url,{mode:'cors',credentials:'omit'});
+  const response=await fetch(target.url,{mode:'cors',credentials:'omit',signal:typeof AbortSignal!=='undefined'&&typeof AbortSignal.timeout==='function'?AbortSignal.timeout(9000):undefined});
   if(!response.ok)throw Error('Не удалось получить силуэт SVG');
   const type=(response.headers.get('content-type')||'').toLowerCase();
   const raw=await response.blob();
