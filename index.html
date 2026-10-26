@@ -150,16 +150,25 @@ body.photo-dialog-open{overflow:hidden}
 .magic-side-orbit span:first-child{width:37px;height:37px;background:none;border:0;color:#e4c488;animation:magic-twinkle 3.5s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.magic-side-orbit span:first-child{animation:none}}
 
-</style></head><body><main class="wrap"><nav class="nav"><div class="brand"><i>✦</i> Анимагия</div><span class="label">Арифмантика · Древнегреческая изопсефия</span></nav><section class="hero"><span class="eyebrow">✧ &nbsp; Твоя скрытая форма</span><h1>Какое животное<br>скрыто в <em>имени?</em></h1><p>Открой свою волшебную форму среди животных.</p><div class="ornament" aria-hidden="true"></div>
-<div class="hero-fauna" aria-hidden="true">
- <span class="fauna-orbit fauna-bear" title="">🐻<i>✦</i></span>
- <span class="fauna-orbit fauna-owl" title="">🦉<i>✧</i></span>
- <span class="fauna-orbit fauna-fox" title="">🦊<i>✦</i></span>
- <span class="fauna-orbit fauna-cat" title="">🐆<i>✧</i></span>
- <span class="fauna-spark spark-a">✦</span><span class="fauna-spark spark-b">✧</span><span class="fauna-spark spark-c">✦</span>
+</style><link rel="stylesheet" href="./magic_theme.css?v=astrarium-v1"></head><body><main class="wrap"><nav class="nav"><div class="brand"><i>✦</i> Анимагия</div><span class="label">Арифмантика · Древнегреческая изопсефия</span></nav><section class="hero"><span class="eyebrow">✧ &nbsp; Твоя скрытая форма</span><h1>Какое животное<br>скрыто в <em>имени?</em></h1><p>Открой свою волшебную форму среди животных.</p><div class="ornament" aria-hidden="true"></div>
+<div class="arcane-astrarium" id="arcaneAstrarium" aria-hidden="true">
+ <div class="arcane-halo"></div>
+ <div class="arcane-wheel arcane-wheel-outer"><span class="arcane-rune" style="--a:0deg">Α</span><span class="arcane-rune" style="--a:30deg">Β</span><span class="arcane-rune" style="--a:60deg">Γ</span><span class="arcane-rune" style="--a:90deg">Δ</span><span class="arcane-rune" style="--a:120deg">Ε</span><span class="arcane-rune" style="--a:150deg">Ζ</span><span class="arcane-rune" style="--a:180deg">Η</span><span class="arcane-rune" style="--a:210deg">Θ</span><span class="arcane-rune" style="--a:240deg">Ι</span><span class="arcane-rune" style="--a:270deg">Κ</span><span class="arcane-rune" style="--a:300deg">Λ</span><span class="arcane-rune" style="--a:330deg">Ω</span></div>
+ <div class="arcane-wheel arcane-wheel-inner"></div>
+ <div class="arcane-compass-core">
+  <svg class="arcane-owl" viewBox="0 0 120 120" aria-hidden="true">
+   <path d="M34 40 29 23 45 31 Q60 23 75 31 L91 23 86 40 C92 69 82 90 60 94 C38 90 28 69 34 40Z"/>
+   <path d="M35 48 Q46 41 57 48 M63 48 Q74 41 85 48 M60 50V69"/>
+   <circle cx="46" cy="55" r="10"/><circle cx="74" cy="55" r="10"/>
+   <circle cx="46" cy="55" r="3" fill="#e2c18e" stroke="none"/><circle cx="74" cy="55" r="3" fill="#e2c18e" stroke="none"/>
+   <path d="M55 68 60 74 65 68 M42 76 Q60 88 78 76 M53 91l-4 8 M67 91l4 8"/>
+  </svg>
+  <span class="arcane-core-caption">ANIMAGIA</span>
+ </div>
+ <span class="arcane-glint g1">✧</span><span class="arcane-glint g2">✦</span><span class="arcane-glint g3">✧</span>
 </div></section><div class="layout"><section class="glass form-panel"><div class="section-eyebrow">01 · Начать исследование</div><h2>Узнай свою форму</h2><form id="form"><div class="field"><label for="name">Полное имя на русском</label><input id="name" placeholder="Например: Фрейзер Гарольд Браун" autocomplete="off" required spellcheck="false"><p class="hint">Укажи все имена и фамилию.</p></div><div class="field"><div class="trans-row"><label for="greek">Условная древнегреческая запись</label><button class="small-button" type="button" id="resetGreek">Перевести заново</button></div><input id="greek" lang="el" placeholder="Φρειζερ Χάρολδ Βράουν" autocomplete="off" spellcheck="false" required><p class="hint">При необходимости исправь написание.</p></div>
 <button id="run" class="main-btn" type="submit"><span id="runLabel">Найти животных</span><span aria-hidden="true">✧</span></button><p class="notice" id="error" role="alert"></p></form><p class="hint privacy-note">Без сохранения имён.</p></section><aside class="glass aside magic-side" aria-label="Три шага">
- <div class="magic-side-orbit" aria-hidden="true"><span>✦</span><span>🐻</span><span>🦉</span></div>
+ <div class="magic-side-orbit" aria-hidden="true"><span>☽</span><span>✧</span><span>✦</span></div>
  <h3>Магия начинается с имени</h3>
  <p><b>01</b> Введи полное имя</p>
  <p><b>02</b> Проверь греческую запись</p>
@@ -181,4 +190,4 @@ body.photo-dialog-open{overflow:hidden}
 <p id="photoDialogCredit" class="photo-viewer-credit"></p>
 <a id="photoDialogSource" href="https://www.inaturalist.org/" target="_blank" rel="noopener noreferrer">Источник фотографии и лицензия — iNaturalist</a>
 </div></div>
-<script src="./enhancements.js?v=living-fauna-v2" defer></script><script src="./photo_gallery.js?v=photos-on-click-v3" defer></script></body></html>
+<script src="./enhancements.js?v=living-fauna-v2" defer></script><script src="./photo_gallery.js?v=photos-on-click-v3" defer></script><script src="./magic_ui.js?v=astrarium-v1" defer></script></body></html>
