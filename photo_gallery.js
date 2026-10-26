@@ -215,47 +215,166 @@ function photoStatus(done=false){
       ' Другие совпадения можно скачать полным списком.')+
   (photoGallery.error?' '+photoGallery.error:'');
 }
+function bestiaryIcon(row){
+ const broad=photoBroadGroup(row),ns='http://www.w3.org/2000/svg';
+ const paths={
+  Mammalia:['M14 30Q13 25 18 23Q21 22 24 25Q27 22 30 23Q35 25 34 30Q33 36 24 35Q15 36 14 30Z','M13 18C10 14 8 17 10 21Q12 25 15 23Q17 21 13 18Z','M21 15C18 12 16 15 17 19Q18 23 21 22Q24 20 21 15Z','M29 15C26 12 24 15 25 19Q26 23 29 22Q32 20 29 15Z','M37 18C34 15 31 18 33 22Q35 25 38 22Q40 19 37 18Z'],
+  Aves:['M9 36Q25 36 36 9Q21 14 15 22Q11 28 9 36Z','M11 34Q22 28 35 12','M17 26l-4 0M21 21l-2-5M27 18l-2-6'],
+  Reptilia:['M11 34Q12 22 23 24Q33 26 32 16Q31 12 27 13Q23 14 24 19','M15 30Q20 37 29 32Q37 27 37 18','M33 13l6-3-2 7','M33 22l7 1M20 26l-5-6'],
+  Amphibia:['M14 23Q14 14 24 16Q34 14 34 23Q34 34 24 34Q14 34 14 23Z','M15 26 8 31M33 26l7 5M19 30l-7 8M29 30l7 8','M18 22h2M28 22h2'],
+  Fish:['M7 24Q18 10 33 24Q18 38 7 24Z','M33 24l9-10v20Z','M20 17l3-6 5 7','M20 31l3 6 5-7','M13 22h1'],
+  Insecta:['M18 17Q24 10 30 17L30 31Q24 37 18 31Z','M24 14V34','M16 18 10 14M16 24H8M16 30l-6 5','M32 18l6-4M32 24h8M32 30l6 5','M21 14l-5-7M27 14l5-7'],
+  Other:['M24 12V36M12 24h24M15 15l18 18M33 15 15 33','M24 5l3 7-3 4-3-4Z','M24 43l3-7-3-4-3 4Z']
+ };
+ const icon=document.createElementNS(ns,'svg');
+ icon.setAttribute('viewBox','0 0 48 48');
+ icon.setAttribute('aria-hidden','true');
+ icon.setAttribute('focusable','false');
+ for(const d of paths[broad]||paths.Other){
+  const path=document.createElementNS(ns,'path');path.setAttribute('d',d);icon.append(path);
+ }
+ return icon;
+}
+function bestiaryGroupName(row){
+ return GROUP[row[3]]||CLASS_RU[row[3]]||category(row);
+}
 function photoMakeCard(item,index) {
  const row=item.row,li=document.createElement('li');
- li.className='species-row verified-animal-card';
- const badge=document.createElement('span');badge.className='photo-card-number';
- badge.textContent=String(index+1).padStart(2,'0');
- const body=document.createElement('div');body.className='photo-card-body';
+ li.className='species-row verified-animal-card bestiary-card';
+ li.dataset.animalGroup=photoBroadGroup(row);
+
+ const top=document.createElement('div');top.className='bestiary-card-top';
+ const mark=document.createElement('span');mark.className='bestiary-animal-sigil';mark.append(bestiaryIcon(row));
+ const folio=document.createElement('span');folio.className='bestiary-folio';
+ folio.textContent='ФОЛИАНТ · '+String(index+1).padStart(2,'0');
+ const photoSeal=document.createElement('span');photoSeal.className='bestiary-photo-seal';
+ photoSeal.textContent='✧ Фото проверено';
+ top.append(mark,folio,photoSeal);
+
+ const body=document.createElement('div');body.className='photo-card-body bestiary-card-body';
+ const rank=document.createElement('div');rank.className='bestiary-category-row';
+ const group=document.createElement('span');group.className='bestiary-category';group.textContent=bestiaryGroupName(row);
+ const taxonomyRank=document.createElement('span');taxonomyRank.className='bestiary-rank';
+ taxonomyRank.textContent=(row[2]==='subspecies'?'Подвид':'Вид');
+ rank.append(group,taxonomyRank);
+
  const name=document.createElement('strong');name.className='animal-name';name.textContent=display(row);
- const science=document.createElement('small');science.textContent=row[1];
- const greek=document.createElement('small');greek.textContent='Греческая запись: '+taxonGreek(row[1]);
- const button=document.createElement('button');button.type='button';
- button.className='view-photo-button';
- button.textContent='Посмотреть фотографию';
- button.setAttribute('aria-label','Посмотреть фотографию: '+display(row));
- button.addEventListener('click',()=>photoOpen(item,button));
- const details=document.createElement('details');details.className='animal-detail';
- const toggle=document.createElement('summary');toggle.textContent='Проверить числовое совпадение';
- const info=document.createElement('div');
- info.textContent='Сумма греческой записи: '+taxonGreekScore(row[1])+
-   ' · Сумма имени: '+sum+' · Разница: '+Math.abs(sum-row[0]);
- details.append(toggle,info);body.append(name,science,greek,button,details);
- li.append(badge,body);return li;
+ const origin=document.createElement('span');origin.className='bestiary-name-origin';
+ origin.textContent=Object.prototype.hasOwnProperty.call(SPECIES_NAME_RU,row[1])
+  ?'Известное русское название'
+  :'Условная русская запись; научное название — ниже';
+ const science=document.createElement('small');science.className='bestiary-scientific';science.textContent=row[1];
+
+ const engraving=document.createElement('div');engraving.className='bestiary-engraving';
+ const number=document.createElement('span');number.className='bestiary-number';number.textContent=String(row[0]);
+ const numberLabel=document.createElement('span');numberLabel.textContent='греческая сумма · точное совпадение';
+ engraving.append(number,numberLabel);
+
+ const photoButton=document.createElement('button');photoButton.type='button';
+ photoButton.className='view-photo-button';
+ photoButton.textContent='Посмотреть фотографию';
+ photoButton.setAttribute('aria-label','Посмотреть фотографию: '+display(row));
+ photoButton.addEventListener('click',()=>photoOpen(item,photoButton));
+
+ const details=document.createElement('details');details.className='animal-detail bestiary-verification';
+ const toggle=document.createElement('summary');toggle.textContent='Проверить вычисление и классификацию';
+ const info=document.createElement('div');info.className='bestiary-facts';
+ const taxonGreekName=document.createElement('p');
+ taxonGreekName.textContent='Греческая запись: '+taxonGreek(row[1]);
+ const exact=document.createElement('p');
+ exact.textContent='Сумма животного: '+taxonGreekScore(row[1])+' · Сумма имени: '+sum+
+  ' · Разница: '+Math.abs(sum-row[0]);
+ const classification=document.createElement('p');
+ classification.textContent='Класс: '+bestiaryGroupName(row)+
+  (row[4]?' · Отряд: '+(ORDER_RU[row[4]]||row[4]):'')+
+  ' · Ранг: '+(row[2]==='subspecies'?'подвид':'вид');
+ const proof=document.createElement('a');proof.href=item.photo.source;
+ proof.target='_blank';proof.rel='noopener noreferrer';
+ proof.textContent='Источник проверенной фотографии · iNaturalist';
+ info.append(taxonGreekName,exact,classification,proof);
+ details.append(toggle,info);
+ body.append(rank,name,origin,science,engraving,photoButton,details);
+ li.append(top,body);
+ return li;
+}
+function bestiaryUpdateChapters(selected,groupControl,previous){
+ const available=new Map();
+ for(const item of selected){
+  const cls=item.row[3];
+  if(!available.has(cls))available.set(cls,{count:0,title:bestiaryGroupName(item.row)});
+  available.get(cls).count++;
+ }
+ const opts=document.createDocumentFragment();
+ const root=document.createElement('option');
+ root.value='all';root.textContent='Все найденные · '+selected.length;opts.append(root);
+ for(const [cls,data] of available){
+  const option=document.createElement('option');
+  option.value=cls;option.textContent=data.title+' · '+data.count;opts.append(option);
+ }
+ groupControl.replaceChildren(opts);
+ groupControl.value=available.has(previous)?previous:'all';
+
+ const bar=document.getElementById('bestiaryChapters');
+ if(!bar)return;
+ const buttons=document.createDocumentFragment();
+ const config=[['all','Все формы',selected.length],...[...available].map(([cls,d])=>[cls,d.title,d.count])];
+ const restoreFocus=bar.contains(document.activeElement);
+ for(const [id,label,count] of config){
+  const button=document.createElement('button');
+  button.type='button';button.className='bestiary-chapter-button';
+  button.dataset.group=id;
+  button.setAttribute('aria-pressed',String(groupControl.value===id));
+  button.textContent=label+' · '+count;
+  button.addEventListener('click',()=>{
+   groupControl.value=id;photoDraw();
+   const successor=[...bar.querySelectorAll('button')].find(x=>x.dataset.group===id);
+   if(successor)successor.focus();
+  });
+  buttons.append(button);
+ }
+ bar.replaceChildren(buttons);
+ if(restoreFocus){
+  const focused=[...bar.querySelectorAll('button')].find(x=>x.dataset.group===groupControl.value);
+  if(focused)focused.focus();
+ }
 }
 function photoDraw() {
  const selected=photoGallery.chosen.slice().sort(photoOrder);
  const groupControl=el('groupFilter'),previous=groupControl.value;
- groupControl.replaceChildren();
- const option=document.createElement('option');option.value='all';option.textContent='Все подтверждённые виды';
- groupControl.append(option);
- const available=new Set();
- for(const item of selected){
-  const cls=item.row[3];
-  if(available.has(cls))continue;available.add(cls);
-  const option=document.createElement('option');option.value=cls;
-  option.textContent=GROUP[cls]||category(item.row);
-  groupControl.append(option);
- }
- groupControl.value=available.has(previous)?previous:'all';
- const visible=groupControl.value==='all'?selected:selected.filter(item=>item.row[3]===groupControl.value);
+ bestiaryUpdateChapters(selected,groupControl,previous);
+ const cls=groupControl.value;
+ const search=document.getElementById('bestiarySearch');
+ const query=(search?search.value:'').trim().toLocaleLowerCase('ru');
+ const visible=selected.filter(item=>{
+  const r=item.row;
+  const selectedClass=cls==='all'||r[3]===cls;
+  const text=(display(r)+' '+r[1]+' '+bestiaryGroupName(r)).toLocaleLowerCase('ru');
+  return selectedClass&&(!query||text.includes(query));
+ });
  const fragment=document.createDocumentFragment();
- for(const [i,item] of visible.entries())fragment.append(photoMakeCard(item,i));
+ let lastClass='';
+ for(const item of visible){
+  if(cls==='all'&&lastClass!==item.row[3]){
+   lastClass=item.row[3];
+   const chapter=document.createElement('li');
+   chapter.className='bestiary-chapter-heading';
+   chapter.textContent='✧ '+bestiaryGroupName(item.row);
+   fragment.append(chapter);
+  }
+  fragment.append(photoMakeCard(item,selected.indexOf(item)));
+ }
  el('preview').replaceChildren(fragment);
+ const summary=document.getElementById('bestiarySummary');
+ if(summary){
+  summary.textContent=selected.length
+   ?'Показано '+visible.length+' из '+selected.length+
+      ' подтверждённых животных'+(query?' · поиск по названию':'')
+   :'Подбираем животных с подтверждёнными фотографиями…';
+ }
+ const empty=document.getElementById('bestiaryEmpty');
+ if(empty)empty.hidden=visible.length!==0||selected.length===0;
+ const progress=document.getElementById('bestiaryProgressFill');
+ if(progress)progress.style.width=Math.min(100,selected.length/PHOTO_TARGET*100)+'%';
  el('previewSection').hidden=false;
  el('downloads').hidden=!results.length;
  el('empty').textContent=results.length?'':'Точных совпадений не найдено.';
