@@ -102,12 +102,105 @@
   picker.replaceChildren(frag);
   if(rows.some(r=>r[1]+'|'+r[2]===old))picker.value=old;
  }
+
+ // Recolour a genuine transparent silhouette into a delicate GOLD CONTOUR.
+ // This is deterministic raster edge detection, not generative AI: every
+ // contour comes from a real animal illustration returned by PhyloPic.
+ function goldContour(image,maxW=510,maxH=205){
+  if(!image||!image.naturalWidth||!image.naturalHeight)return null;
+  const scale=Math.min(maxW/image.naturalWidth,maxH/image.naturalHeight);
+  const w=Math.max(1,Math.round(image.naturalWidth*scale));
+  const h=Math.max(1,Math.round(image.naturalHeight*scale));
+  const source=elem('canvas');source.width=w;source.height=h;
+  const sc=source.getContext('2d',{willReadFrequently:true});
+  if(!sc)return null;
+  sc.drawImage(image,0,0,w,h);
+  const raw=sc.getImageData(0,0,w,h);
+  const mask=raw.data,out=elem('canvas');out.width=w;out.height=h;
+  const oc=out.getContext('2d');if(!oc)return null;
+  const dest=oc.createImageData(w,h),result=dest.data;
+  const radius=Math.min(2,Math.max(1,Math.floor(Math.min(w,h)/75)));
+  let ink=0;
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+   const ix=(y*w+x)*4;
+   if(mask[ix+3]<85)continue;
+   const edge=x<radius||x>=w-radius||y<radius||y>=h-radius||
+     mask[(y*w+(x-radius))*4+3]<85||mask[(y*w+(x+radius))*4+3]<85||
+     mask[((y-radius)*w+x)*4+3]<85||mask[((y+radius)*w+x)*4+3]<85;
+   result[ix]=240;result[ix+1]=206;result[ix+2]=149;
+   result[ix+3]=edge?240:17;
+   if(edge)ink++;
+  }
+  if(ink<8)return null;
+  oc.putImageData(dest,0,0);
+  return out;
+ }
+ function silhouetteService(){
+  return window.AnimagiaSilhouettes&&typeof window.AnimagiaSilhouettes.load==='function'
+   ?window.AnimagiaSilhouettes:null;
+ }
+ async function currentSilhouette(row){
+  const provider=silhouetteService();
+  return provider?provider.load(row):null;
+ }
+ function clearIllustration(){
+  const frame=get('relicSilhouetteFrame'),info=get('relicSilhouetteStatus');
+  const link=get('relicSilhouetteSource');
+  if(!frame||!info||!link)return;
+  frame.replaceChildren(elem('span','✧'));
+  info.textContent='Рисунок появится после выбора животного';
+  link.hidden=true;
+ }
+ async function showSilhouette(row,serial){
+  const frame=get('relicSilhouetteFrame'),info=get('relicSilhouetteStatus');
+  const link=get('relicSilhouetteSource');
+  if(!frame||!info||!row)return;
+  frame.replaceChildren(elem('span','✧'));
+  info.textContent='Ищем рисунок по научному названию…';
+  link.hidden=true;
+  let result=null;
+  try{result=await currentSilhouette(row)}catch(_){}
+  if(serial!==currentPictureSerial)return;
+  if(!result){
+   info.textContent='Контур для этого вида пока не найден. Карточка остаётся без выдуманного животного.';
+   return;
+  }
+  const outline=goldContour(result.img);
+  if(outline){
+   outline.className='relic-gold-contour';
+   outline.setAttribute('role','img');
+   outline.setAttribute('aria-label',result.message+' · '+row[1]);
+   frame.replaceChildren(outline);
+  }else{
+   // Source SVG can still be shown on screen when canvas can't outline it.
+   const image=elem('img');
+   image.src=result.src;
+   image.alt=result.message+' · '+row[1];
+   image.className='relic-gold-fallback';
+   frame.replaceChildren(image);
+  }
+  info.textContent=result.message+(result.exact?' · '+row[1]:' (не обязательно этот вид)');
+  link.href=result.link;link.hidden=false;
+ }
+ let currentPictureSerial=0;
+ let previousPictureKey='';
+ function syncSilhouette(picker){
+  const row=selection(picker),key=row?row[1]+'|'+row[2]:'';
+  if(key===previousPictureKey)return;
+  previousPictureKey=key;
+  const serial=++currentPictureSerial;
+  if(!row)clearIllustration();
+  else void showSilhouette(row,serial);
+ }
  async function savePNG(picker,status){
   const row=selection(picker),greek=get('greek').value.trim();
   if(!row||!validGreek(greek)||score(greek)!==sum){
    status.textContent='Сначала выполни поиск точных совпадений.';return;
   }
   try{
+   status.textContent='Готовим иллюстрацию для карточки…';
+   const art=await currentSilhouette(row);
+   const outline=art?goldContour(art.img,610,190):null;
    const canvas=elem('canvas');canvas.width=1200;canvas.height=1600;
    const ctx=canvas.getContext('2d');
    if(!ctx)throw Error('Canvas недоступен');
@@ -121,11 +214,19 @@
    ctx.fillStyle='#C3B1C7';ctx.font='22px Georgia,serif';
    ctx.fillText('АТЛАС СКРЫТЫХ ФОРМ · МАГИЧЕСКАЯ ПЕЧАТЬ',600,201);
    paintSeal(ctx,sum,600,537,289);
-   ctx.fillStyle='#F4E4CB';centered(ctx,greek,925,960,'35px Georgia,serif',3);
-   ctx.fillStyle='#D1B381';ctx.font='24px Georgia,serif';
-   ctx.fillText('ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ',600,1100);
-   ctx.fillStyle='#F5E0BE';centered(ctx,label(row),1168,940,'47px Georgia,serif',2);
-   ctx.fillStyle='#CBBACA';centered(ctx,row[1],1300,950,'italic 28px Georgia,serif',2);
+   ctx.fillStyle='#F4E4CB';centered(ctx,greek,837,960,'34px Georgia,serif',2);
+   if(outline){
+    ctx.drawImage(outline,600-outline.width/2,926);
+    ctx.fillStyle='#BDAAAB';ctx.font='16px Georgia,serif';
+    ctx.fillText(art.exact?'Рисунок вида · PhyloPic':'Обобщённый рисунок рода · PhyloPic',600,1120);
+   }else{
+    ctx.fillStyle='#D9B782';ctx.font='29px Georgia,serif';
+    ctx.fillText('✧',600,1040);
+   }
+   ctx.fillStyle='#D1B381';ctx.font='23px Georgia,serif';
+   ctx.fillText('СКРЫТАЯ ФОРМА · ТОЧНОЕ СОВПАДЕНИЕ',600,1160);
+   ctx.fillStyle='#F5E0BE';centered(ctx,label(row),1210,940,'45px Georgia,serif',2);
+   ctx.fillStyle='#CBBACA';centered(ctx,row[1],1340,950,'italic 26px Georgia,serif',2);
    ctx.strokeStyle='#B69A73';ctx.beginPath();ctx.moveTo(190,1411);ctx.lineTo(1010,1411);ctx.stroke();
    ctx.fillStyle='#E1CCA7';ctx.font='22px Georgia,serif';
    ctx.fillText('Число имени '+sum+' = число животного '+row[0]+' · разница 0',600,1464);
@@ -258,13 +359,16 @@
    if(!ok){
     svg.replaceChildren();picker.replaceChildren(elem('option','Сначала выполни поиск'));
     picker.dataset.signature='';previous=null;
+    syncSilhouette(picker);
     get('sealCaption').textContent='Печать появится после расчёта';
    }else{
     if(previous!==sum){decorateSVG(svg,sum);previous=sum;}
     get('sealCaption').textContent='Число '+sum+' · декоративная магическая печать';
     updatePicker(picker);
+    syncSilhouette(picker);
    }
   }
+  picker.addEventListener('change',()=>syncSilhouette(picker));
   get('downloadRelic').addEventListener('click',()=>{void savePNG(picker,status);});
   get('printRelic').addEventListener('click',()=>printBooklet(status));
   window.printBesteriary=()=>printBooklet(status);
