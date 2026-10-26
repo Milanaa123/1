@@ -1562,3 +1562,144 @@ body.animal-chooser-opened{overflow:hidden!important}
  .relic-preview-heading>strong{font-size:clamp(23px,6.3vw,30px)!important}
  .relic-preview-category{font-size:13px}
 }
+
+
+
+/* Gold archive v2: restrained celestial card based on the approved illustration. */
+.relic-laboratory{
+ --parchment:#f5e4c7;
+ --faded-gold:#d7b880;
+}
+.relic-seal-wrap{
+ background:
+  radial-gradient(circle at 12% 10%,#cba668b0 0 1px,transparent 1.5px),
+  radial-gradient(circle at 91% 23%,#cba66878 0 1px,transparent 1.5px),
+  radial-gradient(circle at 17% 58%,#cba6688d 0 1px,transparent 1.5px),
+  radial-gradient(circle at 77% 70%,#cba66870 0 1px,transparent 1.5px),
+  radial-gradient(circle at 70% 16%,#cba66866 0 1px,transparent 1.5px),
+  radial-gradient(ellipse at 56% 55%,#30223e 0,#1c172a 70%,#100e1b 100%)!important;
+ border:1px solid #d5b078!important;
+ box-shadow:inset 0 0 0 8px #13101f,inset 0 0 0 9px #b99a7069,0 16px 49px #06041085!important;
+ overflow:hidden;
+}
+.relic-seal-wrap::before{
+ content:"✧";position:absolute;top:11px;left:16px;
+ color:#dfba83;font:28px Georgia,serif;opacity:.8;
+ text-shadow:0 0 18px #be915c;
+ pointer-events:none
+}
+.relic-seal-wrap .personal-seal{filter:drop-shadow(0 0 5px #bf9a5844);max-width:350px}
+.relic-seal-wrap .seal-caption{display:none!important}
+.relic-preview-greek{
+ max-width:100%;margin:0 auto 12px;padding:2px 6px;
+ text-align:center;font:clamp(17px,2.5vw,25px)/1.5 Georgia,serif;
+ color:#ead4b5;overflow-wrap:anywhere;letter-spacing:.012em;
+}
+.silhouette-relic{
+ margin:4px auto 9px!important;
+ padding:0!important;width:100%;max-width:440px!important;
+}
+.relic-seal-wrap .silhouette-frame{
+ display:flex;justify-content:center;align-items:center;
+ min-height:208px;max-height:278px;
+ background:none!important;border:none!important;overflow:hidden;
+}
+.relic-seal-wrap .silhouette-frame::before{display:none!important}
+.relic-seal-wrap .silhouette-frame .atlas-art-sprite{
+ display:block;width:min(99%,365px)!important;
+ height:auto;max-height:265px;aspect-ratio:6/5;
+ object-fit:contain;background:none!important;
+ filter:drop-shadow(0 0 8px #eab9673b);
+}
+.relic-seal-wrap .silhouette-relic figcaption{
+ color:#c9b68e;margin:0;
+ font:italic 10px/1.5 Georgia,serif;opacity:.76
+}
+.relic-seal-wrap .relic-preview-heading{
+ margin:13px auto 17px;gap:6px;
+ max-width:370px
+}
+.relic-seal-wrap .relic-preview-heading>span{
+ color:#dbb77f;letter-spacing:.16em;font:11px Georgia,serif
+}
+.relic-seal-wrap .relic-preview-heading>strong{
+ color:#f2e1c8;
+ font:500 clamp(27px,3.1vw,38px)/1.16 Georgia,serif!important;
+ text-wrap:balance
+}
+.relic-seal-wrap .relic-preview-category{
+ color:#d2b88c;font:15px/1.4 Georgia,serif;
+ margin-top:6px
+}
+.relic-seal-wrap .relic-preview-heading>em{
+ color:#c6b7c8;font:italic 14px/1.5 Georgia,serif
+}
+.relic-preview-traits{
+ display:flex;justify-content:center;align-items:center;
+ flex-wrap:wrap;gap:9px;margin:0 auto 23px;
+ max-width:370px;
+}
+.relic-preview-traits[hidden]{display:none!important}
+.relic-preview-traits>span{
+ padding:7px 12px;border:1px solid #b89a6980;
+ border-radius:18px;
+ color:var(--diet-gold);background:#2c22392b;
+ font:12px/1.2 Georgia,serif
+}
+.relic-preview-traits>span:first-child{
+ border-color:var(--diet-gold);
+}
+.relic-seal-wrap .relic-preview-numbers{
+ margin:5px auto 15px;max-width:420px;
+ border-color:#d2a976!important;
+}
+.relic-seal-wrap .relic-preview-numbers>div+div{border-color:#ad8a60}
+.relic-seal-wrap .relic-preview-numbers>div>span{
+ color:#cdb9bc;font:10px/1.5 Georgia,serif
+}
+.relic-seal-wrap .relic-preview-numbers>div>strong{
+ color:#f4d7a8;font:600 clamp(23px,3vw,31px) Georgia,serif
+}
+.relic-seal-wrap .relic-preview-note{
+ font:9px/1.4 Georgia,serif;
+ letter-spacing:.11em;color:#bda989;
+ margin:14px auto 6px;
+}
+.animal-chooser-group-title{
+ color:#d4b88c;font:600 12px Manrope,system-ui,sans-serif;
+ margin:0!important
+}
+.animal-chooser-groups{
+ display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;
+ overscroll-behavior-inline:contain;padding:2px 1px 9px;
+ scrollbar-color:#b39a6e transparent;
+ flex:none;min-height:52px;align-items:start
+}
+.animal-chooser-group{
+ flex:none;white-space:nowrap;
+ border:1px solid #8d795e;padding:10px 13px;
+ color:#d5c5d5;background:#2a2338;
+ border-radius:20px;cursor:pointer;
+ font:600 11px Manrope,system-ui,sans-serif
+}
+.animal-chooser-group[aria-pressed=true]{
+ color:#211b2a;background:#e6c593;border-color:#e6c593
+}
+.animal-chooser-group:focus-visible{
+ outline:2px solid #ffe1ac;outline-offset:3px
+}
+.animal-chooser-panel{gap:12px}
+@media(max-width:680px){
+ .relic-seal-wrap .personal-seal{max-width:305px}
+ .relic-preview-greek{font-size:clamp(17px,5.3vw,22px);margin:0 auto 7px}
+ .relic-seal-wrap .silhouette-frame{min-height:188px;max-height:239px}
+ .relic-seal-wrap .silhouette-frame .atlas-art-sprite{
+  width:min(99%,320px)!important;max-height:232px
+ }
+ .relic-seal-wrap .relic-preview-heading>strong{font-size:clamp(23px,6.5vw,31px)!important}
+ .relic-preview-traits{gap:6px;margin:0 auto 18px}
+ .relic-preview-traits>span{font-size:11px;padding:6px 9px}
+ .relic-seal-wrap .relic-preview-numbers>div>strong{font-size:clamp(21px,6vw,27px)}
+ .relic-seal-wrap .relic-preview-numbers>div>span{font-size:9px}
+ .animal-chooser-panel{gap:10px}
+}
