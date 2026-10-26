@@ -1402,3 +1402,14 @@ body::before{
  .relic-preview-heading>strong{font-size:30px}
  .relic-preview-numbers strong{font-size:28px}
 }
+
+@media print{
+ .print-art-cell{
+  width:85%;max-width:65mm;aspect-ratio:6/5;
+  position:relative;overflow:hidden;margin:6mm auto 2mm;
+  border:1px solid #c1ab8d;background:#151421;
+  print-color-adjust:exact;-webkit-print-color-adjust:exact;
+ }
+ .print-art-cell>img{object-fit:fill;display:block;max-width:none}
+ .print-relic-animal{min-height:83mm}
+}
