@@ -4,7 +4,7 @@
    A genus-level visual match is a representative illustration, not an image
    verified for every subspecies. Unknown species receive no diet guess. */
 (()=>{
- const URL_SHEET='https://d2ol7oe51mr4n9.cloudfront.net/user_3IWontIKp1HpvdwOJQiSSyMEM6K/9617c2f3-64c8-4ed4-81d2-11bc33934bba.png';
+ const URL_SHEET='./art/animals-gold-v1.png';
  const COLS=5,ROWS=4;
  const DIETS={predator:'Хищник',herbivore:'Травоядное',omnivore:'Всеядное'};
  const HABITATS={terrestrial:'Наземное',aquatic:'Водное',aerial:'Воздушное',semiaquatic:'Полуводное',arboreal:'Древесное',subterranean:'Подземное'};
