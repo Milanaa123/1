@@ -80,13 +80,15 @@
   });
   // A class identifies habitat for fish and permanently aquatic invertebrates,
   // but never an individual diet without ecological data.
+  if(['Hippocampus','Orcinus','Physeter','Balaenoptera','Eubalaena'].includes(genus))
+   return make('predator','aquatic');
   if(aquaticClasses.has(cls))return make(null,'aquatic');
   // Only relatively stable, recognisable groups receive dietary labels.
   if(['Cetacea','Sirenia'].includes(order))return make(
    order==='Sirenia'?'herbivore':'predator','aquatic');
   if(order==='Chiroptera')return make(null,'aerial');
   if(order==='Sphenisciformes')return make('predator','semiaquatic');
-  if(order==='Strigiformes')return make('predator','aerial',['arboreal']);
+  if(order==='Strigiformes')return make('predator','aerial');
   if(['Mantodea','Scorpiones'].includes(order))return make('predator','terrestrial');
   if(['Talpa','Heterocephalus','Spalax','Cryptomys','Fukomys'].includes(genus))
    return make(genus==='Talpa'?'predator':'herbivore','subterranean');
@@ -95,8 +97,6 @@
   if(genus==='Ailuropoda')return make('herbivore','terrestrial');
   if(['Crocodylus','Alligator','Caiman','Gavialis'].includes(genus))
    return make('predator','semiaquatic');
-  if(['Hippocampus','Orcinus','Physeter','Balaenoptera','Eubalaena'].includes(genus))
-   return make('predator','aquatic');
   return null;
  }
  function style(profile){
