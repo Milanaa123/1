@@ -1258,3 +1258,108 @@ body::before{
 @media(prefers-reduced-motion:reduce){
  .relic-gold-contour,.relic-gold-fallback{filter:none!important}
 }
+
+
+/* Curated animal atlas · gold illustration is independent from photographs. */
+.relic-laboratory,.bestiary-card{
+ --diet-gold:#d6b881;--diet-glow:#cba57125;
+ --habitat-ornament:radial-gradient(circle at 60% 85%,#bd9f6b10,transparent 65%);
+}
+.relic-laboratory[data-diet=predator],.bestiary-card[data-diet=predator]{
+ --diet-gold:#ecb17b;--diet-glow:#c77a5536;
+}
+.relic-laboratory[data-diet=herbivore],.bestiary-card[data-diet=herbivore]{
+ --diet-gold:#e1cb9e;--diet-glow:#9da87d30;
+}
+.relic-laboratory[data-diet=omnivore],.bestiary-card[data-diet=omnivore]{
+ --diet-gold:#d9bb9a;--diet-glow:#b69aca29;
+}
+.relic-laboratory[data-habitat=aquatic],
+.relic-laboratory[data-habitat=semiaquatic],
+.bestiary-card[data-habitat=aquatic],
+.bestiary-card[data-habitat=semiaquatic]{
+ --habitat-ornament:repeating-radial-gradient(ellipse at 45% 90%,transparent 0 22px,#9eaab016 23px 24px,transparent 25px 45px);
+}
+.relic-laboratory[data-habitat=arboreal],.bestiary-card[data-habitat=arboreal]{
+ --habitat-ornament:linear-gradient(118deg,transparent 40%,#c7b27b13 40.3%,transparent 41%,transparent 64%,#cab77815 64.3%,transparent 65%);
+}
+.relic-laboratory[data-habitat=subterranean],.bestiary-card[data-habitat=subterranean]{
+ --habitat-ornament:repeating-linear-gradient(175deg,transparent 0 20px,#a9997530 21px 22px,transparent 23px 31px);
+}
+.relic-laboratory[data-habitat=aerial],.bestiary-card[data-habitat=aerial]{
+ --habitat-ornament:repeating-linear-gradient(119deg,transparent 0 33px,#ddbf8f16 34px 35px,transparent 36px 61px);
+}
+.relic-laboratory[data-habitat=terrestrial],.bestiary-card[data-habitat=terrestrial]{
+ --habitat-ornament:linear-gradient(0deg,#9c825823 0,transparent 18%);
+}
+.relic-laboratory{
+ background:var(--habitat-ornament),radial-gradient(ellipse 56% 27% at 44% 0%,var(--diet-glow),transparent 79%),#1e2030;
+}
+.relic-laboratory .relic-ornament,.relic-laboratory .relic-seal-wrap~*{color:var(--diet-gold)}
+.silhouette-frame:has(.atlas-art-sprite){
+ display:flex;justify-content:center;align-items:center;
+ min-height:280px;background:none;
+}
+.atlas-art-sprite{
+ width:min(100%,352px);aspect-ratio:6/5;flex-shrink:0;
+ background-repeat:no-repeat;background-size:500% 400%;
+ filter:drop-shadow(0 0 10px #edbc7840);
+}
+.silhouette-frame .atlas-art-sprite{
+ max-width:95%;border-radius:8px;
+}
+.silhouette-frame:has(.atlas-art-sprite)::before{display:none}
+.animal-profile{
+ display:grid;grid-template-columns:1fr 1fr;gap:10px;
+ padding:11px 0 0;border-top:1px solid #aa8b665c;
+}
+.animal-profile-tag{
+ min-width:0;display:flex;gap:5px;flex-direction:column;
+ padding:13px 12px;border:1px solid #b89a6869;border-radius:9px;
+ background:linear-gradient(144deg,var(--diet-glow),#14162480);
+}
+.animal-profile-tag>span{font-size:10px;color:#b8aac4;letter-spacing:.08em}
+.animal-profile-tag>strong{font:600 21px/1.15 'Cormorant Garamond',Georgia,serif;color:var(--diet-gold)}
+.animal-secondary,.animal-profile-caveat{grid-column:1/-1}
+.animal-secondary{color:#efd3a5;font-size:11px;margin:0}
+.animal-secondary:empty{display:none}
+.animal-profile-caveat{font-size:10px;color:#a99fb1;line-height:1.5;margin:0 0 7px}
+.bestiary-card.verified-animal-card{
+ background:var(--habitat-ornament),radial-gradient(ellipse at 50% 5%,var(--diet-glow),transparent 67%),linear-gradient(155deg,#292536,#201e2f)!important;
+}
+.bestiary-card[data-diet=predator] .bestiary-animal-sigil{border-color:#d3a074a4}
+.bestiary-card[data-diet=herbivore] .bestiary-animal-sigil{border-color:#c1b68ca4}
+.bestiary-card .bestiary-illustration{
+ display:flex;align-items:center;justify-content:center;
+ margin:-5px 19px 14px;min-height:135px;max-height:169px;
+ border-radius:8px;overflow:hidden;
+ background:radial-gradient(ellipse,#73536a18,transparent 80%);
+}
+.bestiary-illustration .atlas-art-sprite{
+ width:min(100%,220px);
+}
+.bestiary-card .bestiary-animal-traits{
+ display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 0;
+}
+.bestiary-animal-traits span{
+ border:1px solid #bfa2796b;padding:4px 8px;
+ font-size:9px;color:var(--diet-gold);background:#2520338c;
+ border-radius:20px;line-height:1.35;
+}
+.bestiary-card .bestiary-illustration-label{
+ font-size:9px;color:#b8a7bb;line-height:1.6;
+ margin:-7px 21px 10px;text-align:center;
+}
+@media(max-width:680px){
+ .silhouette-frame:has(.atlas-art-sprite){min-height:230px}
+ .atlas-art-sprite{max-width:292px}
+ .bestiary-card .bestiary-illustration{min-height:134px}
+ .animal-profile-tag>strong{font-size:19px}
+}
+@media print{
+ .bestiary-card .bestiary-illustration,.bestiary-card .bestiary-illustration-label,
+ .bestiary-animal-traits{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .atlas-art-sprite{filter:none!important}
+}
