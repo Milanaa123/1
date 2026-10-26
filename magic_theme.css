@@ -1211,3 +1211,50 @@ body::before{
  .print-relic-animal strong{font:600 12px Georgia,serif;color:#725530}
 }
 @media(prefers-reduced-motion:reduce){.personal-seal{filter:none!important}}
+
+
+/* Public-domain PhyloPic silhouette: gold contour, no photographic backdrop. */
+.silhouette-relic{
+ display:flex;flex-direction:column;align-items:center;
+ margin:12px auto 0;padding:13px 6px 4px;
+ max-width:390px;gap:7px;
+}
+.silhouette-frame{
+ display:grid;place-items:center;position:relative;
+ min-height:143px;width:100%;overflow:hidden;
+ background:radial-gradient(ellipse at 50% 45%,#c2a16b12,transparent 68%);
+}
+.silhouette-frame::before{
+ content:"";position:absolute;inset:10px 12px;
+ border-top:1px solid #b99a6545;border-bottom:1px solid #b99a6545;
+ pointer-events:none;
+}
+.silhouette-frame .silhouette-placeholder{
+ font:34px 'Cormorant Garamond',Georgia,serif;color:#a98a65;
+ text-shadow:0 0 13px #cca87857;
+}
+.relic-gold-contour,.relic-gold-fallback{
+ display:block;object-fit:contain;max-width:min(100%,350px);max-height:170px;
+ width:auto;height:auto;
+ filter:drop-shadow(0 0 8px #d8b77f35);
+}
+.relic-gold-fallback{
+ filter:brightness(0) saturate(100%) invert(84%) sepia(25%) saturate(589%) hue-rotate(345deg)
+  drop-shadow(0 0 8px #d8b77f25);
+}
+.silhouette-relic figcaption{
+ max-width:335px;min-width:0;text-align:center;
+ color:#c9bad0;font-size:10px;line-height:1.65;
+ display:flex;flex-direction:column;align-items:center;gap:3px;
+}
+#relicSilhouetteStatus{overflow-wrap:anywhere}
+#relicSilhouetteSource{color:#ecd09e;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:680px){
+ .silhouette-relic{margin-top:8px;padding-top:9px}
+ .silhouette-frame{min-height:124px}
+ .relic-gold-contour,.relic-gold-fallback{max-height:145px}
+}
+@media print{.silhouette-relic{display:none!important}}
+@media(prefers-reduced-motion:reduce){
+ .relic-gold-contour,.relic-gold-fallback{filter:none!important}
+}
