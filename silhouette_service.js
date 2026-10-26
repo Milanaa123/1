@@ -23,10 +23,11 @@
   return Array.isArray(items)?items:items?[items]:[];
  };
  function exactName(node,name){
-  const possible=[node?.name,node?.scientificName,
-    ...(Array.isArray(node?.names)?node.names:[])];
+  const possible=[node?.name,node?.scientificName,node?.canonicalName,
+    ...(Array.isArray(node?.names)?node.names:[]),
+    ...(Array.isArray(node?._embedded?.names)?node._embedded.names:[])];
   return possible.some(item=>{
-   const s=typeof item==='string'?item:item?.value||item?.name||item?.text||'';
+   const s=typeof item==='string'?item:item?.value||item?.name||item?.text||item?.scientificName||'';
    return String(s).trim().replace(/\s+/g,' ').toLowerCase()===name.toLowerCase();
   });
  }
@@ -71,7 +72,7 @@
   for(const entry of embedded(found)){
    const uuid=imageUuid(entry);
    const href=external(entry?._links?.vectorFile?.href);
-   if(uuid&&href)return {uuid,url:href,exact:!allowClade,name};
+   if(uuid&&href)return {uuid,url:href,name};
   }
   return null;
  }
@@ -94,7 +95,9 @@
    if(!(img.naturalWidth>0&&img.naturalHeight>0))throw Error('Пустое изображение');
    // Object URL remains available for in-page image and PNG, until selection changes.
    return {...target,src:url,img,link:'https://www.phylopic.org/images/'+target.uuid,
-      message:target.exact?'Силуэт точного вида':'Обобщённый силуэт рода '+target.name,
+      message:target.level==='species'?'Силуэт точного вида':
+       'Обобщённый силуэт '+({genus:'рода',order:'отряда',class:'класса'}[target.level]||'группы')+' '+target.name,
+      exact:target.level==='species',
       license:'CC0 / общественное достояние (фильтр PhyloPic)'};
   }catch(e){URL.revokeObjectURL(url);throw e;}
  }
@@ -102,20 +105,33 @@
   if(!Array.isArray(row)||typeof row[1]!=='string')return null;
   const name=row[1].trim();
   if(!/^[A-Z][A-Za-z-]+(?: [a-z-]+){1,2}$/.test(name))return null;
-  const genus=name.split(' ')[0];
-  // Species first; broader taxon is explicitly indicated when substituted.
-  for(const [query,clade] of [[name,false],[genus,true]]){
-   try{const artwork=await lookup(query,clade);
-    if(artwork)return await objectArt(artwork);
-   }catch(_){} // An unavailable external service must never break calculation.
+  const levels=[
+   {name,level:'species',clade:false},
+   {name:name.split(' ')[0],level:'genus',clade:true},
+   {name:row[4],level:'order',clade:true},
+   {name:row[3],level:'class',clade:true}
+  ];
+  const visited=new Set();
+  for(const candidate of levels){
+   if(typeof candidate.name!=='string'||!/^[A-Z][A-Za-z-]+$/.test(candidate.name))continue;
+   if(visited.has(candidate.name.toLowerCase()))continue;
+   visited.add(candidate.name.toLowerCase());
+   try{
+    const artwork=await lookup(candidate.name,candidate.clade);
+    if(artwork)return await objectArt({...artwork,level:candidate.level});
+   }catch(_){}
   }
   return null;
  }
  function load(row){
   const name=Array.isArray(row)?row[1]:'';
   if(!name)return Promise.resolve(null);
-  if(!cache.has(name))cache.set(name,find(row));
-  return cache.get(name);
+  const key=[row[1],row[3],row[4]].join('|');
+  if(!cache.has(key))cache.set(key,find(row).then(found=>{
+   if(!found)cache.delete(key);
+   return found;
+  }));
+  return cache.get(key);
  }
  function release(){
   for(const p of cache.values())void p.then(v=>{if(v?.src)URL.revokeObjectURL(v.src)}).catch(()=>{});
