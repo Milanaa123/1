@@ -135,6 +135,18 @@
   oc.putImageData(dest,0,0);
   return out;
  }
+ function atlas(){return window.AnimagiaAnimalAtlas||null;}
+ function updateEcology(profile){
+  const root=get('relicLaboratory'),box=get('animalProfile');
+  const meta=atlas()?.style(profile)||{diet:'unknown',habitat:'unknown',
+    dietText:'Рацион не установлен',habitatText:'Среда не установлена',secondaryText:[]};
+  if(root){root.dataset.diet=meta.diet;root.dataset.habitat=meta.habitat;}
+  if(box){box.dataset.diet=meta.diet;box.dataset.habitat=meta.habitat;}
+  const d=get('animalDiet'),h=get('animalHabitat'),extra=get('animalSecondary');
+  if(d)d.textContent=meta.dietText;
+  if(h)h.textContent=meta.habitatText;
+  if(extra)extra.textContent=meta.secondaryText.length?'Также: '+meta.secondaryText.join(' · '):'';
+ }
  function silhouetteService(){
   return window.AnimagiaSilhouettes&&typeof window.AnimagiaSilhouettes.load==='function'
    ?window.AnimagiaSilhouettes:null;
@@ -148,6 +160,7 @@
   const link=get('relicSilhouetteSource');
   if(!frame||!info||!link)return;
   frame.replaceChildren(elem('span','✧'));
+  updateEcology(null);
   info.textContent='Рисунок появится после выбора животного';
   link.hidden=true;
  }
@@ -156,8 +169,15 @@
   const link=get('relicSilhouetteSource');
   if(!frame||!info||!row)return;
   frame.replaceChildren(elem('span','✧'));
-  info.textContent='Ищем рисунок по научному названию…';
   link.hidden=true;
+  const gallery=atlas(),profile=gallery?.resolve(row)||null;
+  updateEcology(profile);
+  if(profile){
+   gallery.render(frame,profile);
+   info.textContent=profile.note+' · золотая линейная иллюстрация из библиотеки Анимагии';
+   return;
+  }
+  info.textContent='Ищем подтверждённый контур по научному названию…';
   let result=null;
   try{result=await currentSilhouette(row)}catch(_){}
   if(serial!==currentPictureSerial)return;
@@ -198,51 +218,80 @@
    status.textContent='Сначала выполни поиск точных совпадений.';return;
   }
   try{
-   status.textContent='Готовим иллюстрацию для карточки…';
-   const art=await currentSilhouette(row);
-   const outline=art?goldContour(art.img,610,190):null;
-   const canvas=elem('canvas');canvas.width=1200;canvas.height=1600;
+   status.textContent='Создаём магическую карточку с рисунком животного…';
+   const gallery=atlas(),profile=gallery?.resolve(row)||null;
+   // Cross-origin imagery may be visible in the browser but still blocked
+   // from Canvas. Test actual Canvas read permission before drawing.
+   const sprite=profile?await gallery.drawable():null;
+   const fallBack=!sprite?await currentSilhouette(row):null;
+   const outline=fallBack?goldContour(fallBack.img,650,320):null;
+   const canvas=elem('canvas');canvas.width=1200;canvas.height=1900;
    const ctx=canvas.getContext('2d');
    if(!ctx)throw Error('Canvas недоступен');
-   const bg=ctx.createLinearGradient(0,0,1200,1600);
-   bg.addColorStop(0,'#111321');bg.addColorStop(.58,'#31263B');bg.addColorStop(1,'#121522');
-   ctx.fillStyle=bg;ctx.fillRect(0,0,1200,1600);
-   ctx.strokeStyle='#D3B683';ctx.lineWidth=3;ctx.strokeRect(56,56,1088,1488);
-   ctx.lineWidth=1;ctx.strokeRect(74,74,1052,1452);
+   const styl=gallery?.style(profile)||{};
+   const glow={
+    predator:'#4c283a',herbivore:'#28382f',omnivore:'#39304c',
+    unknown:'#30283e'
+   }[styl.diet]||'#30283e';
+   const bg=ctx.createLinearGradient(0,0,1200,1900);
+   bg.addColorStop(0,'#0b0d1d');bg.addColorStop(.55,glow);bg.addColorStop(1,'#100e1e');
+   ctx.fillStyle=bg;ctx.fillRect(0,0,1200,1900);
+   ctx.strokeStyle='#D3B683';ctx.lineWidth=3;ctx.strokeRect(56,56,1088,1788);
+   ctx.lineWidth=1;ctx.strokeRect(74,74,1052,1752);
    ctx.fillStyle='#F1DDB8';ctx.font='36px Georgia,serif';ctx.textAlign='center';
-   ctx.fillText('✧  А Н И М А Г И Я  ✧',600,151);
+   ctx.fillText('✧  А Н И М А Г И Я  ✧',600,148);
    ctx.fillStyle='#C3B1C7';ctx.font='22px Georgia,serif';
-   ctx.fillText('АТЛАС СКРЫТЫХ ФОРМ · МАГИЧЕСКАЯ ПЕЧАТЬ',600,201);
+   ctx.fillText('АТЛАС СКРЫТЫХ ФОРМ · МАГИЧЕСКАЯ ПЕЧАТЬ',600,198);
+   // Keep the accepted geometric number circle completely unchanged.
    paintSeal(ctx,sum,600,537,289);
-   // The seal ends at y=826; name starts below it, never touching the rim.
-   ctx.fillStyle='#F4E4CB';centered(ctx,greek,898,960,'33px Georgia,serif',2);
-   if(outline){
-    const drawingHeight=Math.min(outline.height,158);
-    const drawingWidth=outline.width*(drawingHeight/outline.height);
-    ctx.drawImage(outline,600-drawingWidth/2,972,drawingWidth,drawingHeight);
-    ctx.fillStyle='#BDAAAB';ctx.font='15px Georgia,serif';
-    ctx.fillText(art.exact?'Рисунок точного вида · PhyloPic':art.message+' · PhyloPic',600,1144);
+   ctx.fillStyle='#F4E4CB';centered(ctx,greek,884,950,'34px Georgia,serif',2);
+   let artNote='';
+   if(sprite&&profile){
+    gallery.drawCanvas(ctx,sprite,profile,333,972,534,444);
+    artNote=profile.exact?'Художественный рисунок выбранного вида':'Обобщённый рисунок родственной группы';
+   }else if(outline){
+    const maxW=560,maxH=395,scale=Math.min(maxW/outline.width,maxH/outline.height);
+    const w=outline.width*scale,h=outline.height*scale;
+    ctx.drawImage(outline,600-w/2,1003+(395-h)/2,w,h);
+    artNote=fallBack.exact?'Контур точного вида · PhyloPic':'Обобщённый контур · PhyloPic';
    }else{
-    ctx.fillStyle='#AD99A6';ctx.font='18px Georgia,serif';
-    ctx.fillText('Иллюстрация животного не найдена',600,1050);
+    artNote='Иллюстрация пока недоступна — данные животного сохранены';
    }
-   ctx.fillStyle='#D1B381';ctx.font='23px Georgia,serif';
-   ctx.fillText('СКРЫТАЯ ФОРМА · ТОЧНОЕ СОВПАДЕНИЕ',600,1179);
-   ctx.fillStyle='#F5E0BE';centered(ctx,label(row),1223,940,'43px Georgia,serif',2);
-   ctx.fillStyle='#CBBACA';centered(ctx,row[1],1350,950,'italic 26px Georgia,serif',1);
-   ctx.strokeStyle='#B69A73';ctx.beginPath();ctx.moveTo(190,1411);ctx.lineTo(1010,1411);ctx.stroke();
-   ctx.fillStyle='#E1CCA7';ctx.font='22px Georgia,serif';
-   ctx.fillText('Число имени '+sum+' = число животного '+row[0]+' · разница 0',600,1464);
-   ctx.font='17px Georgia,serif';ctx.fillText('Декоративная печать, не характеристика вида или личности',600,1508);
-   const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+   ctx.fillStyle='#BDAAC3';ctx.font='17px Georgia,serif';ctx.textAlign='center';
+   ctx.fillText(artNote,600,1438);
+   ctx.fillStyle='#D5B684';ctx.font='22px Georgia,serif';
+   ctx.fillText('✧  С К Р Ы Т А Я   Ф О Р М А  ✧',600,1484);
+   ctx.fillStyle='#F5E0BE';centered(ctx,label(row),1539,1020,'48px Georgia,serif',2);
+   ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1620,1020,'italic 27px Georgia,serif',1);
+   ctx.fillStyle='#E4CA9C';ctx.font='19px Georgia,serif';
+   const traits=[styl.diet!=='unknown'?styl.dietText:null,
+     styl.habitat!=='unknown'?styl.habitatText:null,
+     ...(styl.secondaryText||[])].filter(Boolean).join('   ✧   ');
+   if(traits)ctx.fillText(traits,600,1670);
+   const boxes=[['ЧИСЛО ИМЕНИ',sum],['ЧИСЛО ЖИВОТНОГО',row[0]],['РАЗНИЦА',0]];
+   for(let i=0;i<boxes.length;i++){
+    const x=141+i*307;
+    ctx.strokeStyle='#B6986E';ctx.lineWidth=1.2;ctx.strokeRect(x,1704,307,92);
+    ctx.fillStyle='#C6B3C6';ctx.font='15px Georgia,serif';
+    ctx.fillText(boxes[i][0],x+153.5,1733);
+    ctx.fillStyle='#F5D7A5';ctx.font='600 41px Georgia,serif';
+    ctx.fillText(String(boxes[i][1]),x+153.5,1780);
+   }
+   ctx.fillStyle='#C9B0A0';ctx.font='17px Georgia,serif';
+   ctx.fillText('ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ · ДЕКОРАТИВНАЯ ПЕЧАТЬ',600,1830);
+   const blob=await new Promise((resolve,reject)=>{
+     try{canvas.toBlob(resolve,'image/png');}catch(err){reject(err);}
+   });
    if(!blob)throw Error('Не удалось сформировать PNG');
    const url=URL.createObjectURL(blob),a=elem('a');
-   a.href=url;a.download='Анимагия_печать_'+sum+'.png';
+   a.href=url;a.download='Анимагия_форма_'+sum+'.png';
    document.body.append(a);a.click();a.remove();
    setTimeout(()=>URL.revokeObjectURL(url),5000);
-   status.textContent='Памятная карточка PNG сформирована.';
+   status.textContent='Карточка PNG создана. '+(sprite?'Рисунок включён.':
+     outline?'Использован контур PhyloPic.':'Без рисунка — внешний источник недоступен.');
   }catch(err){status.textContent='Не удалось сохранить PNG: '+err.message;}
  }
+
  async function compareOne(text,manifest,cache){
   const number=score(text),bucket=Math.floor(number/25);
   if(!manifest.available_buckets.includes(bucket))return {number,count:0,examples:[]};
