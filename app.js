@@ -4,7 +4,9 @@ const LATIN_OLD=Object.fromEntries('abcdefghijklmnopqrstuvwxyz'.split('').map((c
 const RU={'а':'α','б':'β','в':'ϝ','г':'γ','д':'δ','е':'ε','ё':'ιο','ж':'ζ','з':'ζ','и':'ι','й':'ι','к':'κ','л':'λ','м':'μ','н':'ν','о':'ο','п':'π','р':'ρ','с':'σ','т':'τ','у':'ου','ф':'φ','х':'χ','ц':'τσ','ч':'τσ','ш':'σ','щ':'στσ','ъ':'','ы':'ι','ь':'','э':'ε','ю':'ιου','я':'ια'};
 // Ancient alphabet convention: modern sounds absent in Ancient Greek use declared approximations.
 // Russian в (/v/) is represented by archaic digamma ϝ (/w/), not beta (/b/).
-const PRONUNCIATION={'гарольд':'Χάρολδ','этан':'Ίθαν','браун':'Βράουν'};
+// No person-specific overrides: always transcribe the Russian written name consistently.
+// The user can edit the Greek rendering before calculating.
+const PRONUNCIATION={};
 const RANK={species:'вид',subspecies:'подвид',variety:'разновидность',form:'форма',natio:'natio'};
 const GROUP={Mammalia:'Млекопитающие',Aves:'Птицы',Reptilia:'Рептилии',Amphibia:'Земноводные',Chondrichthyes:'Акулы и скаты',Actinopterygii:'Рыбы',Actinopteri:'Рыбы',Teleostei:'Рыбы',Arachnida:'Паукообразные',Insecta:'Насекомые',Gastropoda:'Брюхоногие моллюски',Bivalvia:'Двустворчатые моллюски',Malacostraca:'Ракообразные',Cephalopoda:'Головоногие',Chilopoda:'Многоножки'};
 const ORDER={Carnivora:'Хищные млекопитающие',Araneae:'Пауки',Scorpiones:'Скорпионы',Mantodea:'Богомолы',Serpentes:'Змеи',Testudines:'Черепахи',Squamata:'Ящерицы и змеи',Anura:'Лягушки и жабы',Lepidoptera:'Бабочки',Coleoptera:'Жуки'};
