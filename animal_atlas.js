@@ -5,6 +5,43 @@
    verified for every subspecies. Unknown species receive no diet guess. */
 (()=>{
  const URL_SHEET='./art/animals-gold-v1.png';
+ // The visitor's newly approved 100-animal sheet is 10×10, not the old 5×4.
+ // First five ORIGINAL drawings, extracted as alpha PNG without backgrounds.
+ const BATCH_01_URL='./art/animals-approved-01-05.png';
+ const BATCH_01_OFFSETS=[0,150,299,449,598,748],BATCH_01_HEIGHT=98;
+ const BATCH_01_LABELS=['Волк','Лиса','Собака','Кошка','Лев'];
+ const batch01Cutouts=new Map();
+ let batch01Asset=null,approvedImage01=null;
+ function approvedFirstFive(name,genus){
+  // Never replace a tiger/snow leopard with a lion, or a wild wolf with dog.
+  if(name==='Canis familiaris'||name==='Canis lupus familiaris')return 2;
+  if(genus==='Vulpes')return 1;
+  if(genus==='Felis')return 3;
+  if(name==='Panthera leo'||name.startsWith('Panthera leo '))return 4;
+  if(genus==='Canis')return 0;
+  return -1;
+ }
+ function loadBatch01(){
+  if(!batch01Asset)batch01Asset=new Promise(resolve=>{
+   const image=new Image();image.crossOrigin='anonymous';
+   image.onload=()=>{approvedImage01=image;resolve(image)};image.onerror=()=>resolve(null);
+   image.src=BATCH_01_URL;
+  });
+  return batch01Asset;
+ }
+ function approvedCutout(image,index){
+  if(!image||index<0||index>4)return null;
+  if(batch01Cutouts.has(index))return batch01Cutouts.get(index);
+  // Actual bitmap widths are deliberately unequal: use explicit seams,
+  // not naive naturalWidth/5 cuts through paws, ears or tail tips.
+  const x=BATCH_01_OFFSETS[index],w=BATCH_01_OFFSETS[index+1]-x;
+  if(image.naturalWidth!==BATCH_01_OFFSETS[5]||image.naturalHeight!==BATCH_01_HEIGHT)return null;
+  const canvas=document.createElement('canvas');canvas.width=w;canvas.height=BATCH_01_HEIGHT;
+  const context=canvas.getContext('2d');
+  if(!context)return null;
+  context.drawImage(image,x,0,w,BATCH_01_HEIGHT,0,0,w,BATCH_01_HEIGHT);
+  batch01Cutouts.set(index,canvas);return canvas;
+ }
  const COLS=5,ROWS=4;
  const DIETS={predator:'Хищник',herbivore:'Травоядное',omnivore:'Всеядное'};
  const HABITATS={terrestrial:'Наземное',aquatic:'Водное',aerial:'Воздушное',semiaquatic:'Полуводное',arboreal:'Древесное',subterranean:'Подземное'};
@@ -57,7 +94,24 @@
   if(!Array.isArray(row)||typeof row[1]!=='string')return null;
   const name=normalize(row[1]),genus=name.split(' ')[0];
   let candidate=null;
+  const approvedIndex=approvedFirstFive(String(row[1]).trim(),genus);
+  if(approvedIndex>=0){
+   const id=['wolf','fox','dog','cat','lion'][approvedIndex];
+   const props=[
+    ['predator','terrestrial',[]],
+    ['omnivore','terrestrial',['subterranean']],
+    [null,'terrestrial',[]],
+    ['predator','terrestrial',[]],
+    ['predator','terrestrial',[]]
+   ][approvedIndex];
+   // A Labrador engraving is not a zoological species diagnosis:
+   // all such illustrations are clearly labelled as generic.
+   candidate={id,cell:approvedIndex===0?0:approvedIndex===1?5:approvedIndex===3?10:null,
+    label:BATCH_01_LABELS[approvedIndex],diet:props[0],habitat:props[1],
+    secondary:props[2],approvedIndex,exact:false};
+  }
   for(const [id,cell,genera,species,diet,habitat,secondary] of data){
+   if(candidate)break;
    if(species.includes(name)||genera.includes(genus)){
     candidate={id,cell,label:names[cell],diet,habitat,secondary,
       exact:species.includes(name)&&String(row[1]).trim().split(/\s+/).length===2};
@@ -210,54 +264,53 @@
  }
  function render(container,profile){
   if(!container)return;
-  container.replaceChildren();
-  if(!profile)return;
+  container.replaceChildren();if(!profile)return;
   const picture=document.createElement('canvas');
-  picture.className='atlas-art-sprite';
-  picture.setAttribute('role','img');
+  picture.className='atlas-art-sprite';picture.setAttribute('role','img');
   picture.setAttribute('aria-label',profile.note+' — '+profile.scientific);
   container.append(picture);
-  void asset().then(img=>{
-   if(!img||!container.contains(picture))return;
-   const cutout=goldCutout(img,profile.cell);
+  const approved=Number.isInteger(profile.approvedIndex);
+  void (approved?loadBatch01():asset()).then(image=>{
+   if(!image||!container.contains(picture))return;
+   const cutout=approved?approvedCutout(image,profile.approvedIndex):goldCutout(image,profile.cell);
    if(!cutout)return;
    picture.width=cutout.width;picture.height=cutout.height;
    picture.getContext('2d').drawImage(cutout,0,0);
   });
  }
  function asset(){
-  if(!loaded){
-   loaded=new Promise(resolve=>{
-    const image=new Image();image.crossOrigin='anonymous';
-    image.onload=()=>resolve(image);image.onerror=()=>resolve(null);
-    image.src=URL_SHEET;
-   });
-  }
+  if(!loaded)loaded=new Promise(resolve=>{
+   const image=new Image();image.crossOrigin='anonymous';
+   image.onload=()=>resolve(image);image.onerror=()=>resolve(null);
+   image.src=URL_SHEET;
+  });
   return loaded;
  }
  async function drawable(){
-  const image=await asset();if(!image)return null;
+  // Preload BOTH sheets before the shared screen/export Canvas is drawn.
+  const [image]=await Promise.all([asset(),loadBatch01()]);
+  if(!image)return null;
   try{
-   const scratch=document.createElement('canvas');scratch.width=2;scratch.height=2;
+   const scratch=document.createElement('canvas');
+   scratch.width=2;scratch.height=2;
    scratch.getContext('2d').drawImage(image,0,0,2,2);
    scratch.toDataURL('image/png');return image;
   }catch(_){return null;}
  }
  function drawCanvas(ctx,image,profile,x,y,w,h){
-  if(!image||!profile)return false;
-  const cutout=goldCutout(image,profile.cell);
-  if(!cutout)return false;
+  if(!profile)return false;
+  const useBatch=Number.isInteger(profile.approvedIndex);
+  // drawable() awaited loadBatch01() before invoking this sync renderer.
+  // The resolved image is retained separately when it loads.
+  const art=useBatch?approvedCutout(approvedImage01,profile.approvedIndex):
+    image?goldCutout(image,profile.cell):null;
+  if(!art)return false;
   ctx.save();
-  if(profile.id==='frog'){
-   // Contain the COMPLETE original image with unchanged proportions.
-   // The card's animal window stays fixed, no part of the snout or toes
-   // can be trimmed by cover-style scaling on Android or desktop.
-   const fit=Math.min(w/cutout.width,h/cutout.height);
-   const dw=cutout.width*fit,dh=cutout.height*fit;
-   ctx.drawImage(cutout,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
-  }else ctx.drawImage(cutout,x,y,w,h);
-  ctx.restore();
-  return true;
+  // Keep the entire animal, including ear points, tails and paws.
+  const fit=Math.min(w/art.width,h/art.height);
+  const dw=art.width*fit,dh=art.height*fit;
+  ctx.drawImage(art,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
+  ctx.restore();return true;
  }
   window.AnimagiaAnimalAtlas=Object.freeze({
   imageUrl:URL_SHEET,resolve,classify,style,render,drawable,drawCanvas,

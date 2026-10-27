@@ -34,6 +34,19 @@ const context=vm.createContext({window,Image:class{
 vm.runInContext(fs.readFileSync('animal_atlas.js','utf8'),context,{filename:'animal_atlas.js'});
 const atlas=window.AnimagiaAnimalAtlas;
 const row=name=>[123,name,'species','Mammalia','Carnivora','','Chordata'];
+test('approved first batch uses exactly the first five user-selected drawings',()=>{
+ const wolf=atlas.resolve(row('Canis lupus'));
+ const fox=atlas.resolve(row('Vulpes vulpes'));
+ const dog=atlas.resolve(row('Canis familiaris'));
+ const cat=atlas.resolve(row('Felis catus'));
+ const lion=atlas.resolve(row('Panthera leo'));
+ assert.deepEqual([wolf,fox,dog,cat,lion].map(x=>x.approvedIndex),[0,1,2,3,4]);
+ assert.equal(atlas.resolve(row('Panthera tigris')),null);
+ assert.equal(atlas.resolve(row('Panthera uncia')).approvedIndex,undefined);
+ assert.equal(atlas.resolve(row('Canis lupus familiaris')).approvedIndex,2);
+ assert.equal(atlas.resolve(row('Canis latrans')).approvedIndex,0);
+ assert.equal(new Set([wolf,fox,dog,cat,lion].map(x=>x.id)).size,5);
+});
 test('all 20 positions unique and readable',()=>{
  assert.equal(atlas.list.length,20);
  assert.equal(new Set(atlas.list.map(x=>x.cell)).size,20);
@@ -72,6 +85,7 @@ test('transparent watercolor-style ink is isolated on same-origin Canvas',()=>{
  const art=atlas.resolve(row('Canis lupus'));
  assert.equal(art.cell,0);
  assert.ok(atlas.imageUrl.includes('./art/animals-gold-v1.png'));
+ assert.ok(fs.readFileSync('animal_atlas.js','utf8').includes('animals-approved-01-05.png'));
  const node={children:[],replaceChildren(...x){this.children=x},
   append(...x){this.children.push(...x)},contains(x){return this.children.includes(x)}};
  atlas.render(node,art);
@@ -140,4 +154,15 @@ test('Stage 4: source frog face retains full muzzle and drawn nostril',()=>{
  assert.ok(source.includes("if(profile.id==='frog')"));
  assert.ok(source.includes('Math.min(w/cutout.width,h/cutout.height)'));
  assert.ok(!source.includes('localStorage')&&!source.includes('sessionStorage'));
+});
+
+test('approved batch one is shipped as a transparent, not black-backed PNG',()=>{
+ const b=fs.readFileSync('art/animals-approved-01-05.png');
+ assert.deepEqual(Array.from(b.subarray(0,8)),[137,80,78,71,13,10,26,10]);
+ const width=b.readUInt32BE(16),height=b.readUInt32BE(20);
+ assert.equal(width,748);
+ assert.equal(height,98);
+ const a=fs.readFileSync('animal_atlas.js','utf8');
+ assert.ok(a.includes('Math.min(w/art.width,h/art.height)'),'all sprites contain without cropping');
+ assert.ok(a.includes('approvedCutout(approvedImage01'));
 });
