@@ -1,0 +1,45 @@
+name: Independent 4x sharp animal illustrations and artwork regression QA
+on:
+  push:
+    branches: [animagia-sharp-ui-qa-20261028]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check syntax
+        run: |
+          node --check animal_atlas.js
+          node --check animal_atlas_100.js
+          node --check tests/check_sharp_art.cjs
+      - name: Verify all images and species labels, and asset checksums
+        run: node --test tests/test_atlas100.cjs
+      - name: Compare 4x sharp art against original source in Chromium
+        run: node tests/check_sharp_art.cjs
+      - name: Verify all 100 original art sprites remain available
+        run: node tests/check_atlas100.cjs
+      - name: Verify 20 golden animal cards in previous batch
+        run: node tests/check_batch02_twenty.cjs
+      - name: Verify last 15 and species 87
+        run: |
+          node tests/check_batch06_fifteen.cjs
+          node tests/check_snake87.cjs
+      - name: Verify 22 anatomy-specific transparent corrections
+        run: node tests/check_corrected_species.cjs
+      - name: Verify first five original approved animals
+        run: node tests/check_batch1_original_art.cjs
+      - name: Verify integrated source stack in downloaded cards
+        run: node tests/check_complete_animal_stack.cjs
+      - name: Save high-definition versus blurry comparisons
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-all100-sharp-4x-audit
+          path: qa-artifacts/sharp-art-before-after.png
+          retention-days: 14
