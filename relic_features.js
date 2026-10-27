@@ -881,24 +881,94 @@
    waterDrop(side,y+122,size*.46);ripple(side,y+66);
   }
 
+
+  // Wetland ornament: lily-pad outline and moonlit concentric water rings
+  // woven into the rim. This reads as AMPHIBIAN instead of a tiny hand icon.
+  function marshEdge(side,y,scale=1){
+   const left=side==='left',edge=left?53:1147,dir=left?1:-1;
+   ctx.save();ctx.translate(edge,y);ctx.scale(dir*scale,scale);
+   ctx.strokeStyle='#b9c5aa';ctx.lineWidth=2.3;ctx.globalAlpha=.9;
+   for(let n=0;n<4;n++){
+    ctx.beginPath();ctx.ellipse(44+n*14,0,45+n*24,63+n*18,.14,-1.25,1.22);
+    ctx.stroke();
+   }
+   // Two naturally asymmetric floating leaves and their central veins.
+   for(const [x,dy,r] of [[47,-75,25],[90,108,21]]){
+    ctx.beginPath();ctx.moveTo(x-r,dy);
+    ctx.bezierCurveTo(x-r*.6,dy-r,x+r*.7,dy-r*.55,x+r,dy);
+    ctx.bezierCurveTo(x+r*.4,dy+r*.65,x-r*.55,dy+r*.4,x-r,dy);
+    ctx.fillStyle='rgba(90,119,91,.38)';
+    ctx.fill();ctx.strokeStyle='#dbc99a';ctx.lineWidth=1.9;ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x-r,dy);ctx.lineTo(x+r*.8,dy-2);
+    ctx.strokeStyle='#b1c49b';ctx.lineWidth=.9;ctx.stroke();
+   }
+   ctx.restore();
+  }
+  function tideEdge(side,y,scale=1){
+   const edge=side==='left'?53:1147,dir=side==='left'?1:-1;
+   ctx.save();ctx.translate(edge,y);ctx.scale(dir*scale,scale);
+   for(let n=0;n<5;n++){
+    const reach=112+n*17,dy=n*16;
+    ctx.beginPath();ctx.moveTo(-8,-98+dy);
+    ctx.bezierCurveTo(18,-148+dy,reach*.76,-125+dy,reach,-46+dy);
+    ctx.bezierCurveTo(reach+18,26+dy,35,65+dy,2,128+dy);
+    ctx.strokeStyle=n%2?'rgba(181,207,198,.64)':'rgba(218,196,164,.76)';
+    ctx.lineWidth=n%2?1.8:2.5;ctx.stroke();
+   }
+   // Fine spray lies on the same wavefront; not arbitrary buttons.
+   ctx.fillStyle='rgba(228,210,178,.77)';
+   for(const [x,dy,r] of [[114,-109,2],[141,-75,2.5],[171,-19,1.7],
+      [122,59,2.4],[78,122,1.8]]){
+    ctx.beginPath();ctx.arc(x,dy,r,0,2*PI);ctx.fill();
+   }
+   ctx.restore();
+  }
+  function astralEdge(side,y,scale=1){
+   const edge=side==='left'?53:1147,dir=side==='left'?1:-1;
+   ctx.save();ctx.translate(edge,y);ctx.scale(dir*scale,scale);
+   for(let n=0;n<5;n++){
+    const x=28+n*13,shift=n*18;
+    ctx.beginPath();ctx.moveTo(-6,-122+shift);
+    ctx.bezierCurveTo(x+52,-113+shift,x+106,-25+shift,
+      x+25,104+shift);
+    ctx.strokeStyle=n%2?'rgba(215,169,182,.52)':'rgba(231,194,137,.65)';
+    ctx.lineWidth=n%2?1.6:2.2;ctx.stroke();
+   }
+   for(const [x,dy,r] of [[91,-93,6],[131,-8,8],[95,118,5]]){
+    ctx.beginPath();ctx.moveTo(x-r,dy);ctx.lineTo(x+r,dy);
+    ctx.moveTo(x,dy-r*1.7);ctx.lineTo(x,dy+r*1.7);
+    ctx.strokeStyle='#f0c98e';ctx.lineWidth=1.8;ctx.stroke();
+   }
+   ctx.restore();
+  }
   const gentle=[
-   ()=>{webbedFoot('left',450,1.48,-.09);webbedFoot('right',1140,1.34,.08);
-     webbedFoot('left',1500,1.12,.16);waterDrop('right',1380,.82);ripple('right',1205);},
-   ()=>{webbedFoot('right',440,1.48,.05);webbedFoot('left',1080,1.36,-.12);
-     webbedFoot('right',1550,1.14,-.08);waterDrop('left',1325,.83);ripple('left',1090);},
-   ()=>{webbedFoot('left',500,1.46,.10);webbedFoot('right',1010,1.37,-.07);
-     webbedFoot('left',1640,1.09,-.12);waterDrop('right',1450,.82);ripple('right',1390);},
-   ()=>{webbedFoot('right',515,1.42,-.12);webbedFoot('left',1190,1.38,.07);
-     webbedFoot('right',1510,1.1,.08);waterDrop('left',920,.81);ripple('left',880);},
-   ()=>{webbedFoot('left',410,1.5,.06);webbedFoot('right',1220,1.41,.11);
-     webbedFoot('left',1530,1.12,-.12);waterDrop('right',680,.85);ripple('right',690);}
+   ()=>{marshEdge('left',460,1.24);marshEdge('right',1170,1.06);
+     webbedFoot('left',460,1.87,-.09);webbedFoot('right',1160,1.68,.08);
+     webbedFoot('left',1510,1.31,.16);waterDrop('right',1420,.86);},
+   ()=>{marshEdge('right',440,1.25);marshEdge('left',1110,1.08);
+     webbedFoot('right',445,1.9,.06);webbedFoot('left',1090,1.72,-.12);
+     webbedFoot('right',1510,1.28,-.09);waterDrop('left',1320,.9);},
+   ()=>{marshEdge('left',490,1.21);marshEdge('right',1090,1.11);
+     webbedFoot('left',510,1.84,.11);webbedFoot('right',1040,1.7,-.09);
+     webbedFoot('left',1620,1.32,-.1);waterDrop('right',1450,.86);},
+   ()=>{marshEdge('right',530,1.19);marshEdge('left',1210,1.13);
+     webbedFoot('right',520,1.86,-.13);webbedFoot('left',1200,1.7,.08);
+     webbedFoot('right',1500,1.32,.07);waterDrop('left',910,.85);},
+   ()=>{marshEdge('left',410,1.25);marshEdge('right',1210,1.12);
+     webbedFoot('left',420,1.87,.06);webbedFoot('right',1200,1.72,.12);
+     webbedFoot('left',1500,1.32,-.12);waterDrop('right',690,.91);}
   ];
   const aquatic=[
-   ()=>{waterSplash('left',500,.76);waterDrop('right',1420,.83);ripple('right',1120);},
-   ()=>{waterDrop('right',480,.84);waterSplash('left',1300,.65);ripple('left',840);},
-   ()=>{waterSplash('right',490,.7);waterDrop('left',1470,.78);ripple('right',1060);},
-   ()=>{waterDrop('left',560,.85);waterSplash('right',1110,.67);ripple('left',1310);},
-   ()=>{waterSplash('left',570,.71);waterDrop('right',1570,.67);ripple('right',700);}
+   ()=>{tideEdge('left',490,1.08);tideEdge('right',1400,.92);
+     waterSplash('left',510,.82);waterDrop('right',1460,.89);},
+   ()=>{tideEdge('right',460,1.12);tideEdge('left',1270,1);
+     waterDrop('right',520,.87);waterSplash('left',1310,.81);},
+   ()=>{tideEdge('right',490,1.05);tideEdge('left',1390,.95);
+     waterSplash('right',520,.83);waterDrop('left',1440,.85);},
+   ()=>{tideEdge('left',560,1.1);tideEdge('right',1090,1);
+     waterDrop('left',590,.84);waterSplash('right',1130,.87);},
+   ()=>{tideEdge('left',550,1.07);tideEdge('right',1500,1);
+     waterSplash('left',580,.8);waterDrop('right',1540,.86);}
   ];
   // Feather, scales and nocturnal ornaments never mimic violent bites.
 
@@ -954,19 +1024,20 @@
    ()=>{botanical('left',900,1.03,false);cornerStem(false,false);},
    ()=>{cornerStem(true,true);botanical('right',1080,.93,false);}
   ];
+
   const nocturnal=[
-   ()=>{moon('left',490);moon('right',1240);},
-   ()=>{moon('right',520);moon('left',1500);},
-   ()=>{moon('left',870);moon('right',1050);},
-   ()=>{moon('right',710);moon('left',1370);},
-   ()=>{moon('left',610);moon('right',1520);}
+   ()=>{astralEdge('left',490,1.05);astralEdge('right',1230,.91);},
+   ()=>{astralEdge('right',520,1.03);astralEdge('left',1470,.85);},
+   ()=>{astralEdge('left',870,1.12);astralEdge('right',1040,.91);},
+   ()=>{astralEdge('right',710,1.05);astralEdge('left',1350,.93);},
+   ()=>{astralEdge('left',610,1.1);astralEdge('right',1490,.94);}
   ];
   const celestial=[
-   ()=>{moon('left',510);moon('right',1150);},
-   ()=>{moon('right',750);moon('left',1420);},
-   ()=>{moon('left',1140);moon('right',510);},
-   ()=>{moon('right',1350);moon('left',420);},
-   ()=>{moon('left',900);moon('right',1380);}
+   ()=>{astralEdge('left',540,.94);astralEdge('right',1350,.81);},
+   ()=>{astralEdge('right',750,1.06);astralEdge('left',1480,.79);},
+   ()=>{astralEdge('left',1130,1.0);astralEdge('right',470,.91);},
+   ()=>{astralEdge('right',1350,1.07);astralEdge('left',420,.86);},
+   ()=>{astralEdge('left',900,1.08);astralEdge('right',1290,.92);}
   ];
 
   // Full-height botanicals from the supplied reference, not one short twig.
@@ -1064,11 +1135,11 @@
    ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
    for(let i=0;i<9;i++){
     const y=290+i*165+(variant*17+i*11)%29;
-    const inner=edge+sgn*(i%2?45:18),next=edge+sgn*(i%2?18:45);
+    const inner=edge+sgn*(i%2?91:22),next=edge+sgn*(i%2?22:93);
     ctx.beginPath();ctx.moveTo(edge-sgn*7,y-25);
     ctx.bezierCurveTo(inner,y-10,next,y+15,edge+sgn*3,y+28);
     ctx.strokeStyle='rgba(27,18,30,.7)';ctx.lineWidth=10;ctx.stroke();
-    ctx.strokeStyle='#eec58d';ctx.lineWidth=5;
+    ctx.strokeStyle='#eec58d';ctx.lineWidth=6;
     ctx.shadowColor='#ddb37b';ctx.shadowBlur=6;ctx.stroke();
     ctx.shadowBlur=0;ctx.strokeStyle='#78885c';ctx.lineWidth=3;ctx.stroke();
     if((i+variant)%3===0){
