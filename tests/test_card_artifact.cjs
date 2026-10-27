@@ -185,7 +185,7 @@ test('Stage-one reference template uses clean dark stardust and symmetric foil f
  assert.ok(back.includes("base.addColorStop(0,'#090a14')"));
  assert.ok(back.includes("base.addColorStop(.71,'#1a1425')"));
  assert.ok(styles.includes('transform:none!important;object-fit:contain!important;'));
- assert.match(html,/relic_features.js\?v=stage3-reference-spider-silk-20261027/);
+ assert.match(html,/relic_features.js\?v=stage3-reference-lush-silk-20261027/);
 });
 
 // Reference approval: full-circle Greek name; nebula and perimeter are drawn
@@ -219,7 +219,7 @@ test('Cosmic reference background and golden perimeter are actual Canvas decorat
  assert.ok(backdrop.includes('const ornate')||backdrop.includes('Perimeter engraving directly on the card'));
  assert.ok(backdrop.includes('for(let j=0;j<2100;j++)'));
  assert.ok(backdrop.includes("ctx.strokeStyle='#efc38b'"));
- assert.ok(html.includes('stage3-reference-spider-silk-20261027'));
+ assert.ok(html.includes('stage3-reference-lush-silk-20261027'));
 });
 
 // Stage 2: only first given name on the card, full-name calculation unchanged.
