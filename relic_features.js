@@ -536,7 +536,7 @@
   else if(diet==='omnivore'||belongs(mixed))kind='omnivore';
   else if(diet==='predator'||belongs(cat))kind='predator';
   else if(['Insecta','Arachnida'].includes(cls))kind='nocturnal';
-  else if(cls==='Mammalia')kind='woodland';
+  else if(cls==='Mammalia')kind=order==='Carnivora'?'predator':'woodland';
   return {kind,variant:hash%5};
  }
  // All bites/cuts remove the backing color, border, stars AND previously
@@ -934,25 +934,25 @@
    }ctx.restore();
   }
   const avian=[
-   ()=>{feather('left',500,.68);feather('right',1270,.7);},
-   ()=>{feather('right',510,.76);feather('left',1390,.65);},
-   ()=>{feather('left',910,.79);feather('right',1200,.61);},
-   ()=>{feather('right',740,.73);feather('left',1190,.67);},
-   ()=>{feather('left',600,.63);feather('right',1450,.8);}
+   ()=>{feather('left',500,1.15);feather('right',1270,1.08);},
+   ()=>{feather('right',510,1.17);feather('left',1390,1.06);},
+   ()=>{feather('left',910,1.22);feather('right',1200,1.08);},
+   ()=>{feather('right',740,1.18);feather('left',1190,1.09);},
+   ()=>{feather('left',600,1.07);feather('right',1450,1.23);}
   ];
   const reptile=[
-   ()=>{scales('left',370,.74);scales('right',1380,.55);},
-   ()=>{scales('right',430,.75);scales('left',1310,.7);},
-   ()=>{scales('left',690,.83);scales('right',1150,.67);},
-   ()=>{scales('right',640,.68);scales('left',1440,.64);},
-   ()=>{scales('left',490,.66);scales('right',1230,.84);}
+   ()=>{scales('left',310,1.4);scales('right',1190,1.26);},
+   ()=>{scales('right',400,1.35);scales('left',1270,1.23);},
+   ()=>{scales('left',650,1.43);scales('right',1130,1.29);},
+   ()=>{scales('right',640,1.36);scales('left',1410,1.31);},
+   ()=>{scales('left',470,1.31);scales('right',1180,1.41);}
   ];
   const woodland=[
-   ()=>{botanical('left',340,.69,false);botanical('right',1370,.5,false);},
-   ()=>{botanical('right',440,.75,false);cornerStem(true,false);},
-   ()=>{cornerStem(false,true);botanical('left',1220,.6,false);},
-   ()=>{botanical('left',960,.71,false);cornerStem(false,false);},
-   ()=>{cornerStem(true,true);botanical('right',1100,.64,false);}
+   ()=>{botanical('left',340,.96,false);botanical('right',1120,.82,false);},
+   ()=>{botanical('right',440,.98,false);botanical('left',1240,.82,false);cornerStem(true,false);},
+   ()=>{cornerStem(false,true);botanical('left',1110,.92,false);},
+   ()=>{botanical('left',900,1.03,false);cornerStem(false,false);},
+   ()=>{cornerStem(true,true);botanical('right',1080,.93,false);}
   ];
   const nocturnal=[
    ()=>{moon('left',490);moon('right',1240);},
@@ -962,9 +962,11 @@
    ()=>{moon('left',610);moon('right',1520);}
   ];
   const celestial=[
-   ()=>{moon('left',510);},()=>{moon('right',750);},
-   ()=>{moon('left',1140);},()=>{moon('right',1350);},
-   ()=>{moon('left',900);}
+   ()=>{moon('left',510);moon('right',1150);},
+   ()=>{moon('right',750);moon('left',1420);},
+   ()=>{moon('left',1140);moon('right',510);},
+   ()=>{moon('right',1350);moon('left',420);},
+   ()=>{moon('left',900);moon('right',1380);}
   ];
 
   // Full-height botanicals from the supplied reference, not one short twig.
@@ -1053,6 +1055,40 @@
     ()=>{spiderWeb(false,false,3,1.08);spiderWeb(true,true,1,.79);},
     ()=>{spiderWeb(true,true,4,.86);spiderWeb(false,true,0,.91);spiderWeb(false,false,2,.7);}
   ];
+
+  // Ivy sewn THROUGH the old magical parchment: a few small transparent
+  // eyelets, and a gilded stem weaving alternately under and over the rim.
+  // This is intentionally not a thorn / claw design.
+  function vineStitches(side,variant=0){
+   const edge=side==='left'?52:1148,sgn=side==='left'?1:-1;
+   ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+   for(let i=0;i<9;i++){
+    const y=290+i*165+(variant*17+i*11)%29;
+    const inner=edge+sgn*(i%2?45:18),next=edge+sgn*(i%2?18:45);
+    ctx.beginPath();ctx.moveTo(edge-sgn*7,y-25);
+    ctx.bezierCurveTo(inner,y-10,next,y+15,edge+sgn*3,y+28);
+    ctx.strokeStyle='rgba(27,18,30,.7)';ctx.lineWidth=10;ctx.stroke();
+    ctx.strokeStyle='#eec58d';ctx.lineWidth=5;
+    ctx.shadowColor='#ddb37b';ctx.shadowBlur=6;ctx.stroke();
+    ctx.shadowBlur=0;ctx.strokeStyle='#78885c';ctx.lineWidth=3;ctx.stroke();
+    if((i+variant)%3===0){
+     ctx.beginPath();ctx.moveTo(inner,y-5);
+     ctx.quadraticCurveTo(inner+sgn*25,y-23,inner+sgn*37,y-39);
+     ctx.quadraticCurveTo(inner+sgn*5,y-35,inner,y-5);
+     ctx.fillStyle='rgba(111,134,86,.9)';
+     ctx.strokeStyle='#dabb86';ctx.lineWidth=1.5;ctx.fill();ctx.stroke();
+    }
+    for(const offset of [-25,29]){
+     const py=y+offset;
+     ctx.beginPath();ctx.ellipse(edge,py,8,6,.3,0,2*Math.PI);
+     ctx.strokeStyle='#f4d39d';ctx.lineWidth=3;ctx.shadowBlur=3;ctx.stroke();
+     shapes.push(()=>{
+      ctx.beginPath();ctx.ellipse(edge,py,5.5,4,0,0,2*Math.PI);ctx.fill();
+     });
+    }
+   }
+   ctx.restore();
+  }
   // Soft contextual accents without inventing biological classifications.
   if(k==='avian'&&row?.[4]==='Strigiformes')
    moon(v%2?'left':'right',760+v*95);
@@ -1068,8 +1104,8 @@
   else if(k==='woodland')woodland[v]();
   else if(k==='nocturnal')nocturnal[v]();
   else if(k==='celestial')celestial[v]();
-  else if(k==='herbivore')florals[v]();
-  else if(k==='omnivore')hybrids[v]();
+  else if(k==='herbivore'){florals[v]();vineStitches('left',v);vineStitches('right',(v+2)%5);}
+  else if(k==='omnivore'){hybrids[v]();vineStitches(v%2?'right':'left',v);}
   // LAST PASS. No gold strokes are allowed to repaint the deleted space:
   // the alpha of every bite and claw must remain exactly zero.
   if(shapes.length){
