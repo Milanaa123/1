@@ -5,10 +5,19 @@
  const get=id=>document.getElementById(id);
  const NS='http://www.w3.org/2000/svg';
  const LETTERS=[...'αβγδεζηθικλμνξοπρστυφχψω'];
+
+ // Display only the first Greek given name, exactly as entered and verified.
+ // Scoring still uses the complete original name in app.js, untouched.
  function wheelLetters(greekName){
-  // Use the visitor-confirmed Greek transcription, never number-derived glyphs.
-  const s=String(greekName||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-  return [...s].filter(ch=>typeof W!=='undefined'&&W[ch]!==undefined);
+  const first=String(greekName||'').trim().normalize('NFC').split(/\s+/u)[0]||'';
+  if(!first)return [];
+  return typeof Intl!=='undefined'&&Intl.Segmenter
+   ?[...new Intl.Segmenter('el',{granularity:'grapheme'}).segment(first)].map(x=>x.segment)
+   :Array.from(first);
+ }
+ function nameArc(glyphs,font,r){
+  const span=Math.max(.55,Math.min(2.65,glyphs.length*(font/r)*1.15));
+  return i=>-Math.PI/2-span/2+(i+.5)*span/glyphs.length;
  }
  const elem=(tag,value)=>{
   const a=document.createElement(tag);
@@ -38,13 +47,17 @@
    const a=i*Math.PI/24,outer=151,inner=outer-(i%4===0?11:5);
    node('path',{d:'M '+(180+Math.cos(a)*outer)+' '+(180+Math.sin(a)*outer)+' L '+(180+Math.cos(a)*inner)+' '+(180+Math.sin(a)*inner),stroke:'#D7B983','stroke-width':i%4===0?1.5:.7});
   }
+
   const points=[],inscription=wheelLetters(greekName);
-  svg.setAttribute('aria-label','Магическое колесо: '+greekName+'; число '+n);
+  const glyphSize=inscription.length>16?14:inscription.length>11?18:22;
+  const angle=nameArc(inscription,glyphSize,132);
+  svg.setAttribute('aria-label','Магическое колесо: '+inscription.join('')+'; число '+n);
   for(let i=0;i<inscription.length;i++){
-   const a=i*Math.PI*2/inscription.length-Math.PI/2;
-   node('text',{x:180+Math.cos(a)*132,y:185+Math.sin(a)*132,
-    'font-size':inscription.length>34?10:inscription.length>24?12:inscription.length>16?15:17,
-    'font-family':'Georgia,serif','text-anchor':'middle',fill:'#EBD4A4'},inscription[i]);
+   const a=angle(i),px=180+Math.cos(a)*132,py=180+Math.sin(a)*132;
+   node('text',{x:px,y:py,'font-size':glyphSize,
+    'font-family':'Georgia,serif','text-anchor':'middle',
+    transform:'rotate('+((a+Math.PI/2)*180/Math.PI)+' '+px+' '+py+')',
+    fill:'#EBD4A4'},inscription[i]);
   }
   for(let i=0;i<7;i++){
    const q=(n*(i+11)+i*31)%360*Math.PI/180,r=56+(n+i)%20;
@@ -65,11 +78,16 @@
    ctx.lineTo(Math.cos(a)*p,Math.sin(a)*p);ctx.stroke();
   }
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#F4D8A1';ctx.font='27px Georgia,serif';
+
   const inscription=wheelLetters(greekName);
-  ctx.font=(inscription.length>34?17:inscription.length>24?19:inscription.length>16?23:27)+'px Georgia,serif';
+  const font=inscription.length>16?24:inscription.length>11?30:35;
+  ctx.font=font+'px Georgia,serif';
+  const angle=nameArc(inscription,font,r*.82);
   for(let i=0;i<inscription.length;i++){
-   const a=i*Math.PI*2/inscription.length-Math.PI/2;
-   ctx.fillText(inscription[i],Math.cos(a)*r*.82,Math.sin(a)*r*.82);
+   const a=angle(i);
+   ctx.save();ctx.translate(Math.cos(a)*r*.82,Math.sin(a)*r*.82);
+   ctx.rotate(a+Math.PI/2);
+   ctx.fillText(inscription[i],0,0);ctx.restore();
   }
   ctx.beginPath();
   for(let i=0;i<7;i++){
@@ -879,30 +897,23 @@
    const nameY=category?1455:1438;
    for(const [i,line] of nameLines.entries())ctx.fillText(line,600,nameY+i*51);
    ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1544,1020,'italic 29px Georgia,serif',1);
-   // Two independent classifications: diet is never used as an environment.
-   // Unknown means no verified ecological record, not a guessed category.
-   const traits=[
-    ['РАЦИОН',styl.diet!=='unknown'?'✦ '+styl.dietText:'Уточняется'],
-    ['СРЕДА ОБИТАНИЯ',styl.habitat!=='unknown'?'◌ '+styl.habitatText:'Уточняется']
-   ];
-   for(let i=0;i<traits.length;i++){
-    const x=320+i*284;
-    ctx.strokeStyle='#C6A574';ctx.lineWidth=1;
-    ctx.strokeRect(x,1588,268,75);
-    ctx.fillStyle='#BDA99B';ctx.font='15px Georgia,serif';
-    ctx.fillText(traits[i][0],x+134,1614);
-    ctx.fillStyle='#E8CAA0';ctx.font='25px Georgia,serif';
-    ctx.fillText(traits[i][1],x+134,1645);
+
+   // Verified independent ecological labels, without cramped little tables.
+   const ecology=[
+    styl.diet!=='unknown'?styl.dietText:null,
+    styl.habitat!=='unknown'?styl.habitatText:null
+   ].filter(Boolean);
+   if(ecology.length){
+    ctx.fillStyle='#D7BE91';
+    centered(ctx,ecology.join('  ✧  '),1634,950,'26px Georgia,serif',1);
    }
-   const boxes=[['ЧИСЛО ИМЕНИ',cardNumber],['ЧИСЛО ЖИВОТНОГО',cardNumber],['РАЗНИЦА',0]];
-   for(let i=0;i<boxes.length;i++){
-    const x=120+i*320;
-    ctx.strokeStyle='#B6986E';ctx.lineWidth=1.2;ctx.strokeRect(x,1681,320,130);
-    ctx.fillStyle='#C6B3C6';ctx.font='15px Georgia,serif';
-    ctx.fillText(boxes[i][0],x+160,1726);
-    ctx.fillStyle='#F5D7A5';ctx.font='600 41px Georgia,serif';
-    ctx.fillText(String(boxes[i][1]),x+160,1787);
-   }
+   ctx.strokeStyle='#cba777';ctx.lineWidth=1.2;ctx.globalAlpha=.75;
+   ctx.beginPath();ctx.moveTo(460,1700);ctx.lineTo(546,1700);
+   ctx.moveTo(654,1700);ctx.lineTo(740,1700);ctx.stroke();ctx.globalAlpha=1;
+   ctx.fillStyle='#D1BB9C';ctx.font='19px Georgia,serif';
+   ctx.fillText('ЧИСЛО СОВПАДЕНИЯ',600,1722);
+   ctx.fillStyle='#F8DBA4';ctx.font='600 68px Georgia,serif';
+   ctx.fillText(String(cardNumber),600,1800);
    ctx.fillStyle='#C9B0A0';ctx.font='17px Georgia,serif';
    ctx.fillText('✧ ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ ✧',600,1868);
    ctx.fillStyle='#bda68d';ctx.font='15px Georgia,serif';

@@ -334,3 +334,22 @@
 /* 2026-10-27: the only visible decoration is in the SAME card Canvas. */
 .relic-laboratory .relic-seal-wrap.is-poster-rendered::before,
 .relic-laboratory .relic-seal-wrap.is-poster-rendered::after{display:none!important;content:none!important}
+
+/* Final approved composition: no tiny trait or three-number table. */
+.relic-laboratory .relic-seal-wrap>.relic-preview-single-number{
+ position:absolute;top:83.5%;left:15%;width:70%;height:8%;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:1.3cqw;text-align:center;border:0!important;background:none!important;
+}
+.relic-seal-wrap .relic-preview-single-number span{
+ font:400 clamp(9px,2.1cqw,17px)/1.2 Georgia,serif;
+ color:#D1BB9C;letter-spacing:.16em;
+}
+.relic-seal-wrap .relic-preview-single-number strong{
+ font:600 clamp(27px,7.4cqw,61px)/1.12 Georgia,serif;color:#F8DBA4;
+}
+.relic-laboratory .relic-seal-wrap>.relic-preview-traits{top:79%;left:9%;width:82%;height:3.5%;}
+.relic-seal-wrap .relic-preview-traits .relic-trait{
+ padding:0!important;min-width:0!important;max-width:none!important;
+ border:0!important;box-shadow:none!important;background:none!important;
+}

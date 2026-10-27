@@ -32,6 +32,9 @@ test('The favored magic circle remains the established, unchanged algorithm',()=
  assert.ok(js.includes('for(const rad of [156,147,119,109,77])'));
  assert.ok(styles.includes('.relic-seal-wrap>.personal-seal'));
  assert.ok(js.includes('function wheelLetters(greekName)'));
+ assert.ok(js.includes("Intl.Segmenter('el'"));
+ assert.ok(js.includes('function nameArc(glyphs,font,r)'));
+ assert.ok(js.includes("transform:'rotate('"));
  assert.ok(js.includes("decorateSVG(svg,sum,get('greek').value)"));
  assert.ok(html.includes('relic-card-disclaimer'));
 });
@@ -56,7 +59,8 @@ test('Card uses proportional title / figure / ecology / exact matching values',(
  assert.ok(js.includes('function paintDietAdornment(ctx,row,styl,greekName)'));
  assert.ok(js.includes("ctx.globalCompositeOperation='destination-out'"));
  assert.ok(styles.includes('is-poster-rendered'));
- assert.ok(poster.includes("'РАЗНИЦА',0"));
+ assert.ok(poster.includes('ЧИСЛО СОВПАДЕНИЯ'));
+ assert.ok(!poster.includes("'РАЗНИЦА',0"));
 });
 test('Poster background painter draws repeated ornamental motifs and complete background',()=>{
  const start=js.indexOf(' function drawCelestialBorder(ctx,number){');
@@ -76,8 +80,11 @@ test('Poster background painter draws repeated ornamental motifs and complete ba
  assert.deepEqual(rects[0],[0,0,1200,2070]);
  assert.ok(strokes>20);
  assert.ok(js.includes('paintNebula(ctx,number)'));
- assert.ok(poster.includes("'РАЦИОН'"));
- assert.ok(poster.includes("'СРЕДА ОБИТАНИЯ'"));
+ assert.ok(poster.includes('styl.dietText'));
+ assert.ok(!poster.includes('ctx.strokeRect(x,1588'));
+ assert.ok(!html.includes('relic-preview-numbers'));
+ assert.ok(poster.includes('styl.habitatText'));
+ assert.ok(html.includes('relic-preview-single-number'));
  assert.ok(arcs>20);
  assert.equal(saves,restores,'Unbalanced canvas context restores');
 });
