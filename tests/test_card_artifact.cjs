@@ -61,7 +61,8 @@ test('Poster background painter draws repeated ornamental motifs and complete ba
  assert.deepEqual(rects[0],[0,0,1200,2070]);
  assert.ok(strokes>20);
  assert.ok(js.includes('paintNebula(ctx,number)'));
- assert.ok(js.includes('✦ '+"'"+' '+"'"+'))===false ? true : true;
+ assert.ok(download.includes("'РАЦИОН'"));
+ assert.ok(download.includes("'СРЕДА ОБИТАНИЯ'"));
  assert.ok(arcs>20);
  assert.equal(saves,restores,'Unbalanced canvas context restores');
 });
