@@ -6,16 +6,15 @@
  const NS='http://www.w3.org/2000/svg';
  const LETTERS=[...'αβγδεζηθικλμνξοπρστυφχψω'];
 
- // Use the EXACT entire Greek transcription accepted by the calculator.
- // Grapheme segmentation keeps breathings, accents and other combining marks
- // attached to their letters. Spaces receive a slot as a visible word break.
- // This is DISPLAY ONLY: the full-name numerical algorithm is unchanged.
+ // The card shows only the FIRST GIVEN NAME, exactly as transcribed to Greek.
+ // Breathings, accents and combining marks are retained. Calculations still
+ // use ALL names entered in app.js; this is presentation only.
  function wheelLetters(greekName){
-  const full=String(greekName||'').trim().normalize('NFC').replace(/\s+/gu,' ');
-  if(!full)return [];
+  const first=String(greekName||'').trim().normalize('NFC').split(/\s+/u)[0]||'';
+  if(!first)return [];
   return typeof Intl!=='undefined'&&Intl.Segmenter
-   ?[...new Intl.Segmenter('el',{granularity:'grapheme'}).segment(full)].map(x=>x.segment)
-   :Array.from(full);
+   ?[...new Intl.Segmenter('el',{granularity:'grapheme'}).segment(first)].map(x=>x.segment)
+   :Array.from(first);
  }
  // Identical angular slots around the complete 360-degree seal.
  function nameArc(glyphs,font,r){
@@ -1152,7 +1151,7 @@
    ctx.fillText('АТЛАС СКРЫТЫХ ФОРМ · МАГИЧЕСКАЯ ПЕЧАТЬ',600,175);
    // Keep the accepted geometric number circle completely unchanged.
    paintSeal(ctx,cardNumber,600,505,300,greek);
-   // The entire checked Greek owner name is distributed round the wheel.
+   // Only the first Greek given name is displayed; the full name is scored.
    let artNote='';
    if(sprite&&profile){
     gallery.drawCanvas(ctx,sprite,profile,205,760,790,570);
