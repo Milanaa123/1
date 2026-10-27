@@ -172,6 +172,14 @@
   const clamp=n=>Math.min(1,Math.max(0,n));
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){
    const i=(y*w+x)*4;
+   if(index===18){
+    // The source sheet includes a decorative star to the frog's right.
+    // It is NOT part of the animal, so remove it from the transparent
+    // portrait without removing the forelimbs below or the muzzle above.
+    const sx=x*307/w,sy=y*256/h;
+    const strayStar=sx>=213&&sx<=270&&sy>=111&&sy<=138;
+    if(strayStar){data[i+3]=0;continue;}
+   }
    const red=data[i]/255,green=data[i+1]/255,blue=data[i+2]/255;
    const warm=Math.max(0,red-blue);
    const luminosity=(red+green+blue)/3;
