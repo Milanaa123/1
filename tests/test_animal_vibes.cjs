@@ -982,3 +982,15 @@ test('All spiders use genuine-style silk rather than generic nocturnal trims',()
   assert.ok(painter.includes(feature),feature);
  assert.ok(!painter.includes('ctx.fillText("🕸"'));
 });
+
+test('Reference botanical frames cover most of both side rails',()=>{
+ const painter=source.slice(source.indexOf(' function paintDietAdornment('),
+ source.indexOf(' function paintCardBackdropOnScreen('));
+ assert.ok(painter.includes('function vineWall(side,phase=0,flower=true)'));
+ for(const y of ['210','735','1260'])assert.ok(painter.includes(y));
+ const start=painter.indexOf(' const florals=['),end=painter.indexOf(' const hybrids=[',start);
+ const florals=painter.slice(start,end);
+ assert.ok(florals.includes("vineWall('left'")&&florals.includes("vineWall('right'"));
+ const hybrids=painter.slice(end,painter.indexOf('  // Realistic orb-weaver-style silk architecture',end));
+ assert.ok(hybrids.includes('vineWall(')&&hybrids.includes('claw('));
+});

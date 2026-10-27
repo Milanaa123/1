@@ -959,25 +959,32 @@
    ()=>{moon('left',1140);},()=>{moon('right',1350);},
    ()=>{moon('left',900);}
   ];
-  // Herbivores: different arrangements of golden vines, small leaves
-  // and flowers, all respecting the existing celestial card.
 
+  // Full-height botanicals from the supplied reference, not one short twig.
+  // Each garland joins the existing gold frame through interwoven stems.
+  function vineWall(side,phase=0,flower=true){
+   const positions=[210,735,1260];
+   for(let i=0;i<positions.length;i++){
+    const y=positions[i]+(phase%3-1)*33+(i%2)*19;
+    const size=.84+(i===1?.04:0)+(phase%2?.025:0);
+    // Moderate blossoms: dense leaves but no oversized stickers.
+    botanical(side,y,size,flower&&(i+phase)%2===0);
+   }
+  }
   const florals=[
-   ()=>{botanical('left',125,.99,true);botanical('right',1050,.91,true);cornerStem(true,true);},
-   ()=>{botanical('left',190,.95,true);botanical('right',1180,.93,true);cornerStem(false,false);},
-   ()=>{cornerStem(true,true);botanical('left',780,.91,true);botanical('right',175,.98,true);},
-   ()=>{botanical('left',300,1.08,true);botanical('right',850,1.04,true);cornerStem(false,true);},
-   ()=>{cornerStem(true,false);botanical('left',955,.97,true);botanical('right',210,1.05,true);}
+   ()=>{vineWall('left',0,true);vineWall('right',2,true);cornerStem(true,true);},
+   ()=>{vineWall('left',1,true);vineWall('right',3,true);cornerStem(false,false);},
+   ()=>{vineWall('left',2,true);vineWall('right',4,true);cornerStem(true,false);},
+   ()=>{vineWall('left',3,true);vineWall('right',0,true);cornerStem(false,true);},
+   ()=>{vineWall('left',4,true);vineWall('right',1,true);cornerStem(true,true);}
   ];
-
   const hybrids=[
-   ()=>{botanical('left',230,.91,true);claw('right',1130,.8,.04);bite('right',530,106,3);},
-   ()=>{claw('left',465,.75,0);botanical('right',1010,.95,true);cornerStem(false,false);},
-   ()=>{botanical('right',260,.92,true);bite('left',1270,116,4);cornerStem(true,true);},
-   ()=>{botanical('left',850,.88,true);claw('right',465,.67,-.07);cornerStem(false,true);},
-   ()=>{bite('top',910,117,4);botanical('left',235,.94,true);claw('right',1260,.65,.02);}
+   ()=>{vineWall('left',0,true);claw('right',370,.95,.06);bite('right',1520,106,3);},
+   ()=>{vineWall('right',1,true);claw('left',485,.96,-.07);bite('left',1390,109,3);},
+   ()=>{vineWall('left',2,true);bite('right',515,117,4);claw('right',1350,.77,.03);},
+   ()=>{vineWall('right',3,true);claw('left',385,.88,.08);claw('left',1250,.65,-.04);},
+   ()=>{vineWall('left',4,true);bite('right',320,118,4);claw('right',1270,.89,.03);}
   ];
-
   // Realistic orb-weaver-style silk architecture. Off-center hubs, independent
   // structural supports, radial threads, irregular capture spiral, and a few
   // incomplete segments; never a cartoon concentric cobweb icon.
