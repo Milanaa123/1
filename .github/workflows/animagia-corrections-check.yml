@@ -1,0 +1,36 @@
+name: Verify 22 corrected animal artworks independently of Render rollout
+on:
+  push:
+    branches: [animagia-corrected-qa-20261028]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax validation
+        run: |
+          node --check animal_atlas_100.js
+          node --check tests/check_corrected_species.cjs
+      - name: Full static species and artwork regression
+        run: node --test tests/test_atlas100.cjs
+      - name: Inspect all 22 corrected animal artworks on Chromium
+        run: node tests/check_corrected_species.cjs
+      - name: Batch 2 regression
+        run: node tests/check_batch02_twenty.cjs
+      - name: Batch 3 regression
+        run: node tests/check_batch03_twenty.cjs
+      - name: Batch 4 regression
+        run: node tests/check_batch04_twenty.cjs
+      - name: Save comparison of all 22 corrected artwork cells
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-species-fix-22-before-after
+          path: qa-artifacts/corrected-22-in-browser.png
+          retention-days: 14
