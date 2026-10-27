@@ -15,7 +15,7 @@
  isolation:isolate;
  box-sizing:border-box;
  width:100%;
- aspect-ratio:1200 / 2070;
+ aspect-ratio:2 / 3;
  min-height:0;
  margin:0 auto;
  padding:0!important;
@@ -53,9 +53,9 @@
 }
 .relic-laboratory .relic-seal-wrap>.personal-seal{
  position:absolute;z-index:2;
- left:21.6%;top:11.1%;
+ left:26%;top:9.9%;
  display:block;
- width:56.8%!important;
+ width:48%!important;
  height:auto!important;
  max-width:none!important;
  margin:0!important;
@@ -64,7 +64,7 @@
 .relic-seal-wrap>#sealCaption{display:none!important}
 .relic-laboratory .relic-seal-wrap>.relic-preview-greek{
  position:absolute;z-index:2;
- left:8%;top:41.1%;width:84%;height:3.8%;
+ left:8%;top:41.7%;width:84%;height:3.8%;
  box-sizing:border-box;margin:0!important;padding:0 2%!important;
  display:flex;align-items:center;justify-content:center;
  color:#f1ddc3;
@@ -74,7 +74,7 @@
 }
 .relic-laboratory .relic-seal-wrap>.silhouette-relic{
  position:absolute;z-index:2;
- top:46%;left:11%;width:78%!important;height:23%;
+ top:46.2%;left:7%;width:86%!important;height:24%;
  max-width:none!important;min-height:0;
  display:flex;flex-direction:column;
  align-items:center;justify-content:center;
@@ -118,7 +118,7 @@
 }
 .relic-laboratory .relic-seal-wrap>.relic-preview-heading{
  position:absolute;z-index:3;
- left:9%;top:71.9%;width:82%;height:11.6%;
+ left:9%;top:72.2%;width:82%;height:11.6%;
  display:flex;flex-direction:column;justify-content:flex-start;align-items:center;
  gap:.5cqw!important;margin:0!important;padding:0!important;
  max-width:none!important;min-height:0!important;
@@ -157,7 +157,7 @@
  overflow-wrap:anywhere;
 }
 .relic-laboratory .relic-seal-wrap>.relic-preview-traits{
- position:absolute;z-index:3;top:84.7%;left:9%;width:82%;height:3.5%;
+ position:absolute;z-index:3;top:84.4%;left:9%;width:82%;height:4.5%;
  display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;
  gap:1cqw!important;max-width:none!important;
  margin:0!important;padding:0!important;
@@ -175,7 +175,7 @@
  white-space:nowrap;
 }
 .relic-laboratory .relic-seal-wrap>.relic-preview-numbers{
- position:absolute;z-index:3;top:89%;left:10%;width:80%;height:6%;
+ position:absolute;z-index:3;top:89.2%;left:10%;width:80%;height:6%;
  box-sizing:border-box;
  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
  max-width:none!important;
@@ -230,4 +230,44 @@
 }
 @media print{
  .relic-laboratory .relic-seal-wrap{display:none!important}
+}
+
+
+/* Species' independent diet and habitat, labelled visibly in the relic. */
+.relic-seal-wrap .relic-preview-traits{
+ gap:1.4cqw!important;
+ z-index:5!important;
+}
+.relic-seal-wrap .relic-preview-traits .relic-trait{
+ display:flex!important;flex:0 1 auto!important;
+ flex-direction:column!important;
+ justify-content:center;align-items:center;
+ box-sizing:border-box;min-width:28%;max-width:45%;
+ min-height:100%;padding:.85cqw 2cqw!important;
+ border:1px solid #d5af7d78!important;
+ border-radius:1cqw!important;
+ background:radial-gradient(ellipse at top,#3e283d55,#0d0f2018)!important;
+}
+.relic-seal-wrap .relic-preview-traits .relic-trait small{
+ font:400 clamp(8px,1.45cqw,12px)/1.3 Georgia,serif!important;
+ letter-spacing:.08em!important;
+ color:#d3bb9c!important;
+ white-space:nowrap;
+}
+.relic-seal-wrap .relic-preview-traits .relic-trait strong{
+ font:400 clamp(11px,2.3cqw,20px)/1.25 Georgia,serif!important;
+ color:#ffe0ab!important;
+ white-space:nowrap;
+}
+.relic-seal-wrap .relic-preview-traits .relic-trait-unverified{
+ border-color:#887b8050!important;
+ opacity:.7;
+}
+.relic-seal-wrap .silhouette-frame .atlas-art-sprite{
+ transform:scale(1.22);
+ transform-origin:center center;
+}
+@media(max-width:430px){
+ .relic-seal-wrap .relic-preview-traits .relic-trait small{font-size:1.55cqw!important}
+ .relic-seal-wrap .relic-preview-traits .relic-trait strong{font-size:2.35cqw!important}
 }
