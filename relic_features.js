@@ -706,10 +706,8 @@
      ctx.quadraticCurveTo(border+sgn*8,y,border,y+35);
      ctx.stroke();
      if(motif==='silk'){
-      // Filaments of the web join the original gold border.
-      ctx.beginPath();ctx.moveTo(border,y-40);
-      ctx.lineTo(border+sgn*54,y+5);
-      ctx.lineTo(border,y+39);ctx.stroke();
+      // Web silk belongs in the corners, not on the middle rails.
+      continue;
      }else if(motif==='vines'||motif==='branches'||motif==='sprigs'){
       ctx.beginPath();ctx.moveTo(border,y);
       ctx.quadraticCurveTo(border+sgn*17,y-19,border+sgn*36,y-35);
@@ -757,11 +755,7 @@
     ctx.beginPath();ctx.moveTo(0,158+v*4);
     ctx.bezierCurveTo(14,62,83,12,163+v*5,0);ctx.stroke();
     if(motif==='silk'){
-     for(let n=0;n<7;n++){
-      const a=n*PI/12;
-      ctx.beginPath();ctx.moveTo(5,5);
-      ctx.lineTo(154*Math.cos(a),154*Math.sin(a));ctx.stroke();
-     }
+     // The structural web below handles these corners.
     }else if(motif==='spikes'){
      for(let n=0;n<3;n++){
       const t=39+n*37;
@@ -830,32 +824,39 @@
   // Frogs leave splayed WEBBED TOE marks. No solid bite-like black ovals.
   // The central transparent traces are small; antique-gold edges remain.
 
+
   function webbedFoot(side,y,size=1,tilt=0){
+   // Large splayed amphibian toes WITH webbing, attached to foil edge.
+   // Only fine contours are made transparent, not big bite-like holes.
    const left=side==='left',edge=left?51:1149,sign=left?1:-1;
-   // A webbed FOOTPRINT is an open negative-space indentation of the outer
-   // golden border, never a floating palm/hand symbol inside the card.
-   function impression(){
-    ctx.beginPath();ctx.moveTo(-36,11);
-    ctx.bezierCurveTo(-8,7,21,-2,42,-22);
-    // Four slim rays open from the membrane: webbed toes, not fingers.
-    for(const [x,y0] of [[58,-48],[71,-27],[76,0],[61,23]]){
-     ctx.moveTo(13,4);ctx.quadraticCurveTo(x*.60,y0*.55,x,y0);
-    }
-    ctx.moveTo(4,-7);ctx.quadraticCurveTo(32,-29,57,-25);
-    ctx.moveTo(6,13);ctx.quadraticCurveTo(36,30,61,23);
-   }
-   const placed=fn=>{ctx.save();ctx.translate(edge,y);ctx.rotate(tilt);
+   const place=fn=>{ctx.save();ctx.translate(edge,y);ctx.rotate(tilt);
     ctx.scale(sign*size,size);fn();ctx.restore();};
-   placed(()=>{
-    ctx.save();ctx.lineWidth=7;ctx.lineCap='round';
-    ctx.strokeStyle='#e8bd85';ctx.shadowColor='#d9a773';
-    ctx.shadowBlur=4;impression();ctx.stroke();ctx.restore();
+   function footprint(){
+    ctx.beginPath();ctx.moveTo(-30,18);
+    ctx.bezierCurveTo(-4,20,24,26,39,35);
+    ctx.bezierCurveTo(66,48,91,31,89,10);
+    ctx.moveTo(16,24);ctx.quadraticCurveTo(42,-11,60,-37);
+    ctx.moveTo(28,27);ctx.quadraticCurveTo(67,-13,83,-49);
+    ctx.moveTo(43,28);ctx.quadraticCurveTo(91,-3,115,-26);
+    ctx.moveTo(55,37);ctx.quadraticCurveTo(102,29,123,19);
+    ctx.moveTo(53,-22);ctx.quadraticCurveTo(62,-15,72,-25);
+    ctx.moveTo(70,-26);ctx.quadraticCurveTo(86,-5,99,-13);
+    ctx.moveTo(97,5);ctx.quadraticCurveTo(107,20,115,15);
+    for(const [x,y0,rx,ry] of [
+     [60,-37,4,5],[83,-49,4,5],[115,-26,5,4],[123,19,5,4]
+    ]){ctx.moveTo(x+rx,y0);ctx.ellipse(x,y0,rx,ry,0,0,2*PI);}
+   }
+   place(()=>{
+    ctx.save();ctx.strokeStyle='#ebc892';ctx.lineCap='round';
+    ctx.lineJoin='round';ctx.lineWidth=9;
+    ctx.shadowColor='#ffcf97';ctx.shadowBlur=8;footprint();ctx.stroke();
+    ctx.restore();
    });
-   shapes.push(()=>placed(()=>{
-    ctx.lineWidth=3.4;ctx.lineCap='round';impression();ctx.stroke();
+   shapes.push(()=>place(()=>{
+    ctx.lineWidth=4.2;ctx.lineCap='round';ctx.lineJoin='round';
+    footprint();ctx.stroke();
    }));
   }
-
   function waterDrop(side,y,size=1){
    // Dew traces are tangent to the page rim: the gold never looks glued on.
    const edge=side==='left'?51:1149,sign=side==='left'?1:-1;
@@ -879,12 +880,18 @@
    waterDrop(side,y,size);waterDrop(side,y+62,size*.63);
    waterDrop(side,y+122,size*.46);ripple(side,y+66);
   }
+
   const gentle=[
-   ()=>{webbedFoot('left',530,.82,-.08);webbedFoot('left',700,.56,.16);webbedFoot('right',1260,.74,.08);waterDrop('right',1420,.57);ripple('right',1220);},
-   ()=>{webbedFoot('right',490,.82,.07);webbedFoot('left',1020,.64,-.12);webbedFoot('right',1510,.57,-.06);waterDrop('left',1260,.59);ripple('left',1100);},
-   ()=>{webbedFoot('left',450,.77,.08);webbedFoot('right',1020,.8,-.05);webbedFoot('left',1580,.55,-.13);waterDrop('right',1350,.61);ripple('right',1390);},
-   ()=>{webbedFoot('right',440,.74,-.1);webbedFoot('left',1150,.73,.1);webbedFoot('right',1530,.54,.06);waterDrop('left',900,.63);ripple('left',850);},
-   ()=>{webbedFoot('left',405,.79,.06);webbedFoot('right',1170,.71,.12);webbedFoot('left',1450,.58,-.16);waterDrop('right',630,.58);ripple('right',660);}
+   ()=>{webbedFoot('left',450,1.48,-.09);webbedFoot('right',1140,1.34,.08);
+     webbedFoot('left',1500,1.12,.16);waterDrop('right',1380,.82);ripple('right',1205);},
+   ()=>{webbedFoot('right',440,1.48,.05);webbedFoot('left',1080,1.36,-.12);
+     webbedFoot('right',1550,1.14,-.08);waterDrop('left',1325,.83);ripple('left',1090);},
+   ()=>{webbedFoot('left',500,1.46,.10);webbedFoot('right',1010,1.37,-.07);
+     webbedFoot('left',1640,1.09,-.12);waterDrop('right',1450,.82);ripple('right',1390);},
+   ()=>{webbedFoot('right',515,1.42,-.12);webbedFoot('left',1190,1.38,.07);
+     webbedFoot('right',1510,1.1,.08);waterDrop('left',920,.81);ripple('left',880);},
+   ()=>{webbedFoot('left',410,1.5,.06);webbedFoot('right',1220,1.41,.11);
+     webbedFoot('left',1530,1.12,-.12);waterDrop('right',680,.85);ripple('right',690);}
   ];
   const aquatic=[
    ()=>{waterSplash('left',500,.76);waterDrop('right',1420,.83);ripple('right',1120);},
@@ -988,67 +995,54 @@
   // Realistic orb-weaver-style silk architecture. Off-center hubs, independent
   // structural supports, radial threads, irregular capture spiral, and a few
   // incomplete segments; never a cartoon concentric cobweb icon.
+
   function spiderWeb(left,top,variant,scale=1){
-   const baseX=left?56:1144,baseY=top?70:1930;
-   ctx.save();ctx.translate(baseX,baseY);
+   // A partial, irregular orb-weaver net confined to the antique corner.
+   // Real radial support silk + gently sagging non-concentric capture threads.
+   const x0=left?58:1142,y0=top?69:1931;
+   let seed=(variant*16721+(left?827:1019)+(top?7:59))>>>0;
+   const rnd=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+    return seed/4294967296;};
+   ctx.save();ctx.translate(x0,y0);
    ctx.scale(left?scale:-scale,top?scale:-scale);
-   const hubX=162+variant*12,hubY=154+variant*7;
-   const rays=20+variant*2,maxRx=312+variant*10,maxRy=310+variant*14;
-   let seed=(variant*164123+1181+(left?1:2)+(top?0:41))>>>0;
-   const rnd=()=>{seed=(Math.imul(1664525,seed)+1013904223)>>>0;return seed/4294967296;};
-   const directions=Array.from({length:rays},(_,i)=>2*PI*i/rays+
-      (rnd()-.5)*.065);
-   const bounds=directions.map((a,i)=>{
-     const outer=.91+(rnd()-.5)*.16;
-     return [hubX+Math.cos(a)*maxRx*outer,
-       hubY+Math.sin(a)*maxRy*outer];
-   });
-   ctx.lineCap='round';
-   // Anchor the scaffolding to the real frame and corner edges.
-   ctx.strokeStyle='rgba(236,208,169,.63)';ctx.lineWidth=1.4;
-   const anchors=[[0,35],[80,0],[290,0],[0,330]];
-   for(const [ax,ay] of anchors){
-    ctx.beginPath();ctx.moveTo(ax,ay);
-    ctx.lineTo(hubX+(ax>0?25:-16),hubY+(ay>0?13:-8));ctx.stroke();
-   }
-   // Radial support threads, slightly uneven in angle and length.
-   ctx.strokeStyle='rgba(224,204,180,.55)';ctx.lineWidth=1.05;
-   for(let i=0;i<rays;i++){
+   ctx.beginPath();ctx.rect(-4,-4,255,262);ctx.clip();
+   const hubX=7+variant*2,hubY=8+variant,numRays=15+variant;
+   const lengths=Array.from({length:numRays},()=>214+(rnd()-.5)*23);
+   const angles=Array.from({length:numRays},(_,i)=>
+     .04+(Math.PI/2-.08)*i/(numRays-1)+(rnd()-.5)*.022);
+   ctx.lineCap='round';ctx.lineJoin='round';
+   // Load-bearing radials terminate on/near the physical card frame.
+   for(let i=0;i<numRays;i++){
+    const a=angles[i],length=lengths[i];
     ctx.beginPath();ctx.moveTo(hubX,hubY);
-    ctx.lineTo(...bounds[i]);ctx.stroke();
+    ctx.lineTo(hubX+Math.cos(a)*length,hubY+Math.sin(a)*length);
+    ctx.strokeStyle='rgba(218,200,173,.47)';
+    ctx.lineWidth=i%5===0?1.3:.7;ctx.stroke();
    }
-   // A single continuous, irregular capture spiral. Spoke intersections
-   // are displaced a little instead of forming perfect concentric rings.
-   const turns=18+variant*2,steps=turns*rays;
-   ctx.strokeStyle='rgba(232,215,188,.68)';ctx.lineWidth=.94;
-   ctx.beginPath();
-   let pen=false;
-   for(let j=0;j<=steps;j++){
-    const fraction=j/steps;
-    const theta=2*PI*j/rays;
-    const a=directions[j%rays]+2*PI*Math.floor(j/rays);
-    const rough=.96+.025*Math.sin(j*1.71)+.025*Math.sin(j*.43);
-    const r=.12+.83*fraction;
-    const xx=hubX+Math.cos(a)*maxRx*r*rough,
-          yy=hubY+Math.sin(a)*maxRy*r*rough;
-    // A handful of small missing strands make a real, weathered web.
-    const broken=(j>rays*4)&&((j+variant*7)%89===0||(j+11)%131===0);
-    if(!pen||broken){ctx.moveTo(xx,yy);pen=true;}else ctx.lineTo(xx,yy);
+   // Imperfect sticky threads, suspended from the radii.
+   for(let layer=2;layer<=15;layer++){
+    const fraction=layer/17;
+    ctx.strokeStyle=layer%3===0?
+       'rgba(244,220,186,.58)':'rgba(224,204,183,.4)';
+    ctx.lineWidth=layer%3===0?.9:.62;
+    for(let i=0;i<numRays-1;i++){
+     if((layer*19+i*7+variant)%59===0)continue;
+     const a=angles[i],b=angles[i+1];
+     const l1=lengths[i]*fraction,l2=lengths[i+1]*fraction;
+     const ax=hubX+Math.cos(a)*l1,ay=hubY+Math.sin(a)*l1;
+     const bx=hubX+Math.cos(b)*l2,by=hubY+Math.sin(b)*l2;
+     const sag=(3+7*fraction)*(1+.25*Math.sin(i*1.8+layer));
+     ctx.beginPath();ctx.moveTo(ax,ay);
+     ctx.quadraticCurveTo((ax+bx)/2+sag,(ay+by)/2+sag,bx,by);ctx.stroke();
+    }
    }
-   ctx.stroke();
-   // Locally dense hub spiral and tiny catches of light like real silk.
-   ctx.strokeStyle='rgba(255,230,188,.5)';ctx.lineWidth=.8;
-   ctx.beginPath();
-   for(let i=0;i<100;i++){
-    const a=i*PI/10,r=2+i*.12;
-    const xx=hubX+Math.cos(a)*r,yy=hubY+Math.sin(a)*r*.88;
-    if(!i)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);
-   }ctx.stroke();
-   for(let i=0;i<12;i++){
-    const a=directions[(i*7)%rays],r=.38+.5*rnd();
-    const x=hubX+Math.cos(a)*maxRx*r,y=hubY+Math.sin(a)*maxRy*r;
-    ctx.beginPath();ctx.arc(x,y,.95+rnd()*1.1,0,2*PI);
-    ctx.fillStyle='rgba(255,228,186,.58)';ctx.fill();
+   ctx.globalAlpha=.55;
+   for(let i=0;i<10;i++){
+    const a=angles[(i*7)%numRays],t=.16+i*.055;
+    const r=lengths[(i*7)%numRays]*t;
+    const x=hubX+Math.cos(a)*r,y=hubY+Math.sin(a)*r;
+    ctx.beginPath();ctx.arc(x,y,.8+i%3*.25,0,2*PI);
+    ctx.fillStyle='#ffe0ad';ctx.fill();
    }
    ctx.restore();
   }
