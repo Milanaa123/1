@@ -23,7 +23,7 @@ jobs:
           node-version: "22"
       - name: Check JavaScript syntax
         run: |
-          for file in app.js greek_taxa.js enhancements.js photo_gallery.js magic_ui.js ritual_ui.js silhouette_service.js animal_atlas.js relic_features.js; do
+          for file in app.js greek_taxa.js enhancements.js photo_gallery.js magic_ui.js ritual_ui.js silhouette_service.js animal_atlas.js animal_atlas_100.js relic_features.js; do
             node --check "$file"
           done
       - name: Test the full 100-image atlas and representative taxonomy without network
@@ -32,6 +32,14 @@ jobs:
         run: node tests/check_atlas100.cjs
       - name: Check next 20 artist-approved animals on actual Chromium Canvas
         run: node tests/check_batch02_twenty.cjs
+      - name: Check third batch of 20 original animal drawings in real Chromium
+        run: node tests/check_batch03_twenty.cjs
+      - name: Save batch three original/cleaned image pairs
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-batch03-20-before-after
+          path: qa-artifacts/batch03-twenty-before-after.png
+          retention-days: 14
       - name: Save 20 originals and cleaned transparent sprites side by side
         uses: actions/upload-artifact@v4
         with:
