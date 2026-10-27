@@ -177,8 +177,9 @@
     // It is NOT part of the animal, so remove it from the transparent
     // portrait without removing the forelimbs below or the muzzle above.
     const sx=x*307/w,sy=y*256/h;
-    const strayStar=sx>=213&&sx<=270&&sy>=111&&sy<=138;
-    if(strayStar){data[i+3]=0;continue;}
+    const strayStar=sx>=214&&sx<=290&&sy>=93&&sy<=140;
+    const floatingCompass=sx>=133&&sx<=159&&sy<38;
+    if(strayStar||floatingCompass){data[i+3]=0;continue;}
    }
    const red=data[i]/255,green=data[i+1]/255,blue=data[i+2]/255;
    const warm=Math.max(0,red-blue);
