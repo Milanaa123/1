@@ -333,20 +333,26 @@
     'Camelus','Lama','Vicugna','Oryctolagus','Lepus','Macropus',
     'Phascolarctos','Vombatus','Ailuropoda','Hystrix','Testudo','Bos'];
   const mixed=['Vulpes','Procyon','Meles','Sus','Ursus','Sciurus',
-    'Cricetus','Mesocricetus','Mus','Rattus','Marmota','Spermophilus',
-    'Sarcophilus','Dasyurus'];
+    'Cricetus','Mesocricetus','Mus','Rattus','Spermophilus'];
+  // Illustration families account for all 100 approved reference subjects.
+  // Fictional Pegasus is an illustration motif only, never a real taxonomy row.
+  const extraWater=['Zalophus','Eumetopias','Otaria','Arctocephalus',
+    'Neogale','Neovison','Homarus','Cancer','Scyphozoa'];
+  const seaTurtles=['Chelonia','Caretta','Dermochelys','Eretmochelys','Lepidochelys'];
   let kind='celestial';
   if(order==='Anura')kind='soft-predator'; // webbed frog footprints
   else if(order==='Chiroptera'||belongs(['Pteropus','Myotis','Pipistrellus',
       'Rhinolophus','Desmodus','Eptesicus']))kind='nocturnal';
   else if(cls==='Aves')kind=order==='Sphenisciformes'||belongs(['Aptenodytes',
       'Spheniscus','Pygoscelis','Eudyptes'])?'aquatic':'avian';
-  else if(cls==='Reptilia')kind='reptile';
-  else if(water||belongs(['Orcinus','Delphinus','Megaptera','Balaenoptera',
+  else if(cls==='Reptilia')kind=belongs(seaTurtles)?'aquatic':'reptile';
+  else if(water||['Malacostraca','Scyphozoa','Cubozoa','Hydrozoa'].includes(cls)
+      ||belongs(extraWater)||belongs(['Orcinus','Delphinus','Megaptera','Balaenoptera',
       'Hippocampus','Trichechus','Lutra','Lontra','Enhydra',
       'Phoca','Odobenus','Octopus','Loligo','Castor','Carcharodon',
-      'Mobula','Manta']))kind='aquatic';
-  else if(diet==='herbivore'||belongs(flora))kind='herbivore';
+      'Mobula','Manta','Mustela']))kind='aquatic';
+  else if(diet==='herbivore'||belongs(flora)||genus==='Marmota')kind='herbivore';
+  else if(genus==='Sarcophilus'||genus==='Dasyurus')kind='predator';
   else if(diet==='omnivore'||belongs(mixed))kind='omnivore';
   else if(diet==='predator'||belongs(cat))kind='predator';
   else if(['Insecta','Arachnida'].includes(cls))kind='nocturnal';
