@@ -38,6 +38,14 @@ jobs:
           retention-days: 14
       - name: Validate silhouette matching and image licenses without external network
         run: node --test tests/test_silhouette.mjs
+      - name: Check five real first-batch cards use the exact approved atlas sprites
+        run: node tests/check_batch1_integration.cjs
+      - name: Publish screenshot of five selected species on actual card pipeline
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-batch1-five-live-card-pipeline
+          path: qa-artifacts/batch01-integrated-cards.png
+          retention-days: 14
       - name: Verify transparent originals from first five user-approved animal drawings
         run: node tests/check_batch1_original_art.cjs
       - name: Publish real-browser first batch preview
