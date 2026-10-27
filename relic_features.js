@@ -714,12 +714,63 @@
      }
     }
    }
-   // A tiny crown at each of the four gold corners varies by family too.
+   // Family-specific Art-Nouveau corner engraving grows OUT of the frame:
+   // feathers/overlapping scales/water crests/branches replace stick-on icons.
    for(const [x,y,dx,dy] of [[62,64,1,1],[1138,64,-1,1],
      [62,1936,1,-1],[1138,1936,-1,-1]]){
-    ctx.beginPath();ctx.moveTo(x+dx*18,y+dy*2);
-    ctx.quadraticCurveTo(x+dx*(45+v*4),y+dy*(15+v*3),
-      x+dx*(28+v*3),y+dy*(55+v*2));ctx.stroke();
+    ctx.save();ctx.translate(x,y);ctx.scale(dx,dy);
+    ctx.lineWidth=motif==='spikes'?2.8:2.25;
+    ctx.beginPath();ctx.moveTo(0,158+v*4);
+    ctx.bezierCurveTo(14,62,83,12,163+v*5,0);ctx.stroke();
+    if(motif==='spikes'){
+     for(let n=0;n<3;n++){
+      const t=39+n*37;
+      ctx.beginPath();ctx.moveTo(0,t+25);
+      ctx.lineTo(23+n*12,t-7);ctx.lineTo(15+n*12,t+23);ctx.stroke();
+     }
+    }else if(motif==='ripples'||motif==='waves'){
+     for(let n=0;n<3;n++){
+      const radius=23+n*17;
+      ctx.beginPath();ctx.arc(6,6,radius,.06,1.45);ctx.stroke();
+     }
+     if(motif==='ripples'){
+      // Tiny reed veins are attached to the same corner, never a palm icon.
+      for(let n=0;n<3;n++){
+       ctx.beginPath();ctx.moveTo(10,118-n*12);
+       ctx.quadraticCurveTo(38+n*7,99-n*11,41+n*11,70-n*14);
+       ctx.stroke();
+      }
+     }
+    }else if(motif==='vines'||motif==='branches'||motif==='sprigs'){
+     for(let n=0;n<4;n++){
+      const t=28+n*32;
+      ctx.beginPath();ctx.moveTo(6,t+6);
+      ctx.quadraticCurveTo(17+n*3,t-18,44+n*7,t-20);
+      ctx.quadraticCurveTo(43+n*5,t+1,6,t+6);ctx.stroke();
+     }
+    }else if(motif==='feathers'){
+     for(let n=0;n<4;n++){
+      const t=35+n*34;
+      ctx.beginPath();ctx.moveTo(8,t+8);
+      ctx.quadraticCurveTo(43,t-18,71+n*5,t-35);
+      ctx.quadraticCurveTo(48,t-5,8,t+8);ctx.stroke();
+     }
+    }else if(motif==='scales'){
+     for(let n=0;n<4;n++){
+      ctx.beginPath();ctx.arc(15+n*21,12+n*24,27,.08,Math.PI*.82);ctx.stroke();
+     }
+    }else if(motif==='moons'){
+     for(let n=0;n<3;n++){
+      ctx.beginPath();ctx.arc(16+n*13,19+n*25,13,-.85,1.2);ctx.stroke();
+     }
+    }else{
+     for(let n=0;n<3;n++){
+      const t=30+n*38;
+      ctx.beginPath();ctx.moveTo(0,t);ctx.lineTo(25,t);
+      ctx.moveTo(13,t-13);ctx.lineTo(13,t+13);ctx.stroke();
+     }
+    }
+    ctx.restore();
    }
    ctx.restore();
   }
