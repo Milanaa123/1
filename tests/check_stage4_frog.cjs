@@ -29,7 +29,7 @@ const args=['--headless','--no-sandbox','--disable-gpu','--disable-dev-shm-usage
  '--window-size=1200,1160','--force-device-scale-factor=1','--virtual-time-budget=1600'];
 try{
  const r=spawnSync(binary,[...args,'--dump-dom','file://'+file],
-  {encoding:'utf8',timeout:70000,maxBuffer:4*1024*1024});
+  {encoding:'utf8',timeout:70000,maxBuffer:18*1024*1024});
  if(r.error)throw r.error;
  if(r.status!==0)throw Error('Chrome frog inspector exited '+r.status);
  const m=r.stdout.match(/data-stage4="([^"]+)"/);
@@ -37,7 +37,7 @@ try{
  const report=JSON.parse(Buffer.from(m[1],'base64').toString('utf8'));
  if(report.errors.length)throw Error(report.errors.join('; '));
  const screenshot=spawnSync(binary,[...args,'--screenshot='+path.resolve(out),'file://'+file],
-  {encoding:'utf8',timeout:70000,maxBuffer:4*1024*1024});
+  {encoding:'utf8',timeout:70000,maxBuffer:18*1024*1024});
  if(screenshot.error)throw screenshot.error;
  if(screenshot.status!==0)throw Error('Frog screenshot failed');
  if(fs.statSync(out).size<35000)throw Error('Frog screenshot nearly empty');
