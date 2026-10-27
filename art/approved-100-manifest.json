@@ -151,103 +151,123 @@
     {
       "index": 26,
       "name": "Ястреб",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 27,
       "name": "Орёл",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 28,
       "name": "Стервятник",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 29,
       "name": "Чайка",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 30,
       "name": "Колибри",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 31,
       "name": "Олень",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 32,
       "name": "Лось",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 33,
       "name": "Косуля",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 34,
       "name": "Северный олень",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 35,
       "name": "Кабан",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 36,
       "name": "Бизон",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 37,
       "name": "Зубр",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 38,
       "name": "Баран",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 39,
       "name": "Козёл",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 40,
       "name": "Серна",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 41,
       "name": "Лошадь",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 42,
       "name": "Пегас (мифологический)",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review",
-      "note": "mythical art, not a zoological species"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "note": "mythical art, not a zoological species",
+      "batch": 3
     },
     {
       "index": 43,
       "name": "Осёл",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 44,
       "name": "Зебра",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 45,
       "name": "Жираф",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch03-non-destructive-alpha-cleanup",
+      "batch": 3
     },
     {
       "index": 46,
@@ -536,6 +556,12 @@
       "batch": 2,
       "first": 6,
       "last": 25,
+      "state": "runtime alpha cleanup of existing curated art, full-cell containment"
+    },
+    {
+      "batch": 3,
+      "first": 26,
+      "last": 45,
       "state": "runtime alpha cleanup of existing curated art, full-cell containment"
     }
   ]
