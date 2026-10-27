@@ -26,7 +26,7 @@ jobs:
           for file in app.js greek_taxa.js enhancements.js photo_gallery.js magic_ui.js ritual_ui.js silhouette_service.js animal_atlas.js animal_atlas_100.js relic_features.js; do
             node --check "$file"
           done
-      - name: Verify LIVE Render serves batch four animals 46–65
+      - name: Verify LIVE Render serves reviewed batch five, animals 66–85
         run: |
           set -euo pipefail
           url="https://animagia-calculator.onrender.com"
@@ -43,18 +43,18 @@ jobs:
           echo "LIVE_HTML_ATLAS_REFERENCES:"
           grep -oE 'animal_atlas_100\\.js[^"<> ]*' /tmp/animagia-live.html | head -5 || true
           echo "LIVE_JS_BATCH_MARKERS:"
-          grep -oE 'batch0[234]:\\{first:[0-9]+,last:[0-9]+,count:[0-9]+' /tmp/animagia-live.js | sort -u || true
+          grep -oE 'batch0[2345]:\\{first:[0-9]+,last:[0-9]+,count:[0-9]+' /tmp/animagia-live.js | sort -u || true
           echo "LIVE_HTML_START:"
           head -c 180 /tmp/animagia-live.html | tr '\\n' ' '
           echo
           echo "LIVE_JS_START:"
           head -c 120 /tmp/animagia-live.js | tr '\\n' ' '
           echo
-          grep -Fq 'batch04-22-corrected-20261028' /tmp/animagia-live.html || { echo 'RENDER_OLD_HTML_OR_WRONG_SITE'; exit 1; }
-          grep -Fq 'batch04:{first:46,last:65,count:20' /tmp/animagia-live.js || { echo 'RENDER_OLD_JS_OR_WRONG_SITE'; exit 1; }
+          grep -Fq 'batch05-20-reviewed-20261028' /tmp/animagia-live.html || { echo 'RENDER_OLD_HTML_OR_WRONG_SITE'; exit 1; }
+          grep -Fq 'batch05:{first:66,last:85,count:20' /tmp/animagia-live.js || { echo 'RENDER_OLD_JS_OR_WRONG_SITE'; exit 1; }
           test "$(wc -c </tmp/animagia-live.webp)" -gt 20000
           test "$(dd if=/tmp/animagia-live.webp bs=1 count=4 2>/dev/null)" = 'RIFF'
-          echo "LIVE_RENDER_CURRENT_BATCH04_CONFIRMED"
+          echo "LIVE_RENDER_CURRENT_BATCH05_CONFIRMED"
       - name: Test the full 100-image atlas and representative taxonomy without network
         run: node --test tests/test_atlas100.cjs
       - name: Inspect all 100 transparent images in real Chromium
@@ -65,6 +65,14 @@ jobs:
         run: node tests/check_batch03_twenty.cjs
       - name: Check fourth batch of 20 original animal drawings in real Chromium
         run: node tests/check_batch04_twenty.cjs
+      - name: Check fifth batch of 20 animal drawings in real Chromium
+        run: node tests/check_batch05_twenty.cjs
+      - name: Save fifth batch before-and-after transparent art proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-batch05-20-before-after
+          path: qa-artifacts/batch05-twenty-before-after.png
+          retention-days: 14
       - name: Verify 22 anatomical corrections on real browser Canvas
         run: node tests/check_corrected_species.cjs
       - name: Save 22 corrected drawings with original comparisons

@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=batch04-22-corrected-20261028'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=batch05-20-reviewed-20261028'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -313,4 +313,144 @@ test('22 visually corrected species use a real transparent WebP and retain old m
  assert.equal(api.list.length,100);
  const build=fs.readFileSync('build_data.py','utf8');
  assert.ok(build.includes("shutil.copy2(corrected,DEST/'art'/'animagia-corrected-22.webp')"));
+});
+
+
+test('Stage 8: fifth reviewed batch contains exactly 20 named birds, marine mammals, fish and reptiles',()=>{
+ const expected=[
+ [
+  "Dromaius novaehollandiae",
+  65,
+  "Aves",
+  "Casuariiformes"
+ ],
+ [
+  "Struthio camelus",
+  66,
+  "Aves",
+  "Struthioniformes"
+ ],
+ [
+  "Casuarius casuarius",
+  67,
+  "Aves",
+  "Casuariiformes"
+ ],
+ [
+  "Apteryx australis",
+  68,
+  "Aves",
+  "Apterygiformes"
+ ],
+ [
+  "Aptenodytes forsteri",
+  69,
+  "Aves",
+  "Sphenisciformes"
+ ],
+ [
+  "Balaenoptera musculus",
+  70,
+  "Mammalia",
+  "Cetartiodactyla"
+ ],
+ [
+  "Tursiops truncatus",
+  71,
+  "Mammalia",
+  "Cetartiodactyla"
+ ],
+ [
+  "Orcinus orca",
+  72,
+  "Mammalia",
+  "Cetartiodactyla"
+ ],
+ [
+  "Carcharodon carcharias",
+  73,
+  "Chondrichthyes",
+  "Lamniformes"
+ ],
+ [
+  "Mobula birostris",
+  74,
+  "Chondrichthyes",
+  "Myliobatiformes"
+ ],
+ [
+  "Phoca vitulina",
+  75,
+  "Mammalia",
+  "Carnivora"
+ ],
+ [
+  "Zalophus californianus",
+  76,
+  "Mammalia",
+  "Carnivora"
+ ],
+ [
+  "Odobenus rosmarus",
+  77,
+  "Mammalia",
+  "Carnivora"
+ ],
+ [
+  "Trichechus manatus",
+  78,
+  "Mammalia",
+  "Sirenia"
+ ],
+ [
+  "Enhydra lutris",
+  79,
+  "Mammalia",
+  "Carnivora"
+ ],
+ [
+  "Testudo graeca",
+  80,
+  "Reptilia",
+  "Testudines"
+ ],
+ [
+  "Chelonia mydas",
+  81,
+  "Reptilia",
+  "Testudines"
+ ],
+ [
+  "Lacerta agilis",
+  82,
+  "Reptilia",
+  "Squamata"
+ ],
+ [
+  "Iguana iguana",
+  83,
+  "Reptilia",
+  "Squamata"
+ ],
+ [
+  "Chamaeleo chamaeleon",
+  84,
+  "Reptilia",
+  "Squamata"
+ ]
+];
+ assert.equal(expected.length,20);
+ for(const [scientific,i,cls,order] of expected){
+  const p=api.resolve(row(scientific,cls,order));
+  assert.equal(p?.artSet,'atlas100',scientific);
+  assert.equal(p?.cell,i,scientific);
+  assert.equal(p?.reviewedBatch,5,scientific);
+  assert.equal(p?.exact,false,scientific);
+ }
+ assert.deepEqual([api.evidence.batch05.first,api.evidence.batch05.last,api.evidence.batch05.count],[66,85,20]);
+ assert.deepEqual(Array.from(api.evidence.batch05.correctedSpeciesReused),[68,78,81]);
+ for(const i of [68,78,81])assert.ok(Array.from(api.correctedIndices).includes(i));
+ assert.equal(api.list.length,100);
+ assert.equal(api.resolve(row('Canis lupus')).approvedIndex,0);
+ assert.equal(api.resolve(row('Cornufer opisthodon','Amphibia','Anura')).id,'frog');
 });

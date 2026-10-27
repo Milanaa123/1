@@ -410,105 +410,125 @@
     {
       "index": 66,
       "name": "Эму",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 67,
       "name": "Страус",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 68,
       "name": "Казуар",
       "graphicState": "species-specific-gold-engraving-replacement",
-      "visualCorrection": true
+      "visualCorrection": true,
+      "reviewedBatch": 5
     },
     {
       "index": 69,
       "name": "Киви",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 70,
       "name": "Пингвин",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 71,
       "name": "Кит",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 72,
       "name": "Дельфин",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 73,
       "name": "Косатка",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 74,
       "name": "Акула",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 75,
       "name": "Скат",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 76,
       "name": "Тюлень",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 77,
       "name": "Морской лев",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 78,
       "name": "Морж",
       "graphicState": "species-specific-gold-engraving-replacement",
-      "visualCorrection": true
+      "visualCorrection": true,
+      "reviewedBatch": 5
     },
     {
       "index": 79,
       "name": "Ламантин",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 80,
       "name": "Морская выдра",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 81,
       "name": "Черепаха",
       "graphicState": "species-specific-gold-engraving-replacement",
-      "visualCorrection": true
+      "visualCorrection": true,
+      "reviewedBatch": 5
     },
     {
       "index": 82,
       "name": "Морская черепаха",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 83,
       "name": "Ящерица",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 84,
       "name": "Игуана",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 85,
       "name": "Хамелеон",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch05-non-destructive-alpha-cleanup",
+      "reviewedBatch": 5
     },
     {
       "index": 86,
@@ -611,6 +631,12 @@
       "first": 46,
       "last": 65,
       "state": "runtime alpha cleanup of existing curated art, full-cell containment"
+    },
+    {
+      "batch": 5,
+      "first": 66,
+      "last": 85,
+      "state": "runtime transparent-alpha cleanup of 17 existing curated silhouettes; 3 anatomical corrections reused, no numeric changes"
     }
   ],
   "visualCorrections": {
