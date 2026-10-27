@@ -35,7 +35,7 @@ let browser;
 for(const x of [process.env.CHROME_BIN,'/usr/bin/google-chrome','/usr/bin/chromium','google-chrome','chromium'].filter(Boolean))
  if(spawnSync(x,['--version'],{timeout:3000}).status===0){browser=x;break;}
 if(!browser)throw Error('Chromium unavailable');
-const args=['--headless','--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--hide-scrollbars','--window-size=1810,1630','--virtual-time-budget=1200'];
+const args=['--headless','--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--allow-file-access-from-files','--hide-scrollbars','--window-size=1810,1630','--virtual-time-budget=1200'];
 try{
  const dom=spawnSync(browser,[...args,'--dump-dom','file://'+file],{encoding:'utf8',timeout:60000,maxBuffer:4*1024*1024});
  if(dom.status!==0)throw Error('Chromium failed '+dom.status);
