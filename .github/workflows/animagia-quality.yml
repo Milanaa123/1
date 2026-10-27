@@ -44,6 +44,14 @@ jobs:
           name: animagia-stage1-gold-template
           path: qa-artifacts/stage1-card-base.png
           retention-days: 14
+      - name: Capture all ten animal frame families for visual acceptance
+        run: node tests/check_stage3_frame_preview.cjs
+      - name: Publish stage-three border-family visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-stage3-ten-frame-families
+          path: qa-artifacts/stage3-ten-frame-families.png
+          retention-days: 14
       - name: Real-browser Canvas pixel QA for diet-frame cutouts
         run: node tests/check_frame_pixels.cjs
       - name: Check Greek owner seal in Chromium for short and long names
