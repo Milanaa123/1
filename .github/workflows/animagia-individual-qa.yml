@@ -1,0 +1,41 @@
+name: Independently verify all 105 tiny sharp artwork files
+on:
+  push:
+    branches: [animagia-individual-art-20261028]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax-check on-demand export, layout and tests
+        run: |
+          node --check animal_atlas_100.js
+          node --check animal_atlas.js
+          node --check relic_features.js
+          node --check tests/check_individual_art.cjs
+          node --check tests/check_individual_all100.cjs
+      - name: Verify all 105 independent artwork hashes and taxon matching
+        run: node --test tests/test_atlas100.cjs
+      - name: Verify five representative portrait cards download only one sprite
+        run: node tests/check_individual_art.cjs
+      - name: Check all 100 images plus five approved animals in Chromium
+        run: node tests/check_individual_all100.cjs
+      - name: Verify first five still resemble user-approved artwork
+        run: node tests/check_batch1_original_art.cjs
+      - name: Verify downloaded poster renders all five approved species
+        run: node tests/check_complete_animal_stack.cjs
+      - name: Upload visual proof of individual portraits
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-all100-individual-image-proof
+          path: |
+            qa-artifacts/all100-individual.png
+            qa-artifacts/on-demand-artwork.png
+          retention-days: 14
