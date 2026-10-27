@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=sharp-all100-4x-20261028'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=on-demand-100-20261028'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -598,5 +598,25 @@ test('All one hundred portraits, 22 anatomical corrections and five originals ha
  const css=fs.readFileSync('relic_card_stage1.css','utf8');
  assert.ok(css.includes('image-rendering:auto!important'));
  assert.ok(css.includes('filter:none!important'));
+ assert.equal(api.list.length,100);
+});
+
+
+test('105 dedicated crisp images load individually without changing animal numbers',()=>{
+ const crypto=require('node:crypto');
+ const data=JSON.parse(fs.readFileSync('art/individual-4x/manifest.json','utf8'));
+ assert.equal(data.items.length,105);
+ assert.equal(data.count,100);assert.equal(data.approvedCount,5);
+ assert.equal(data.width,640);assert.equal(data.height,440);
+ for(const item of data.items){
+  const bytes=fs.readFileSync('art/individual-4x/'+item.file);
+  assert.equal(bytes.length,item.size,item.file);
+  assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),item.sha256,item.file);
+ }
+ assert.equal(api.individualDir,'./art/individual-4x/');
+ assert.equal(api.individualImageUrl(5),'./art/individual-4x/animal-006.webp');
+ assert.equal(api.individualImageUrl(86),'./art/animagia-grass-snake-87.svg');
+ assert.equal(api.individualImageUrl(99),'./art/individual-4x/animal-100.webp');
+ assert.ok(fs.readFileSync('relic_features.js','utf8').includes('gallery.drawable(profile)'));
  assert.equal(api.list.length,100);
 });
