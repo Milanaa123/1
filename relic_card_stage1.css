@@ -330,3 +330,7 @@
  background:transparent!important;
 }
 .relic-laboratory .relic-layout{isolation:isolate}
+
+/* 2026-10-27: the only visible decoration is in the SAME card Canvas. */
+.relic-laboratory .relic-seal-wrap.is-poster-rendered::before,
+.relic-laboratory .relic-seal-wrap.is-poster-rendered::after{display:none!important;content:none!important}

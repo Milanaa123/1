@@ -85,3 +85,18 @@ test('Stage 1 only changes card: no new animal taxonomy or person-name algorithm
  const data=fs.readFileSync('animal_atlas.js','utf8');
  assert.ok(data.includes("'./art/animals-gold-v1.png'"));
 });
+
+test('Visible diet borders include five unique variants each and true alpha holes',()=>{
+ const a=js.indexOf(' function cardAdornment('),b=js.indexOf(' function paintCardBackdropOnScreen(',a);
+ assert.ok(a>=0&&b>a);
+ const frame=js.slice(a,b);
+ for(const label of ['predator','soft-predator','herbivore','omnivore'])
+  assert.ok(frame.includes(label),'missing '+label);
+ for(const names of ['hunters','gentle','florals','hybrids'])
+  assert.ok(frame.includes('const '+names+'=['),names);
+ for(const feature of ['destination-out','strokeStyle','cornerStem','botanical','bite(','claw('])
+  assert.ok(frame.includes(feature),feature);
+ assert.ok(frame.includes("const x=side==='left'?-11+depth")||frame.includes("const x=side==='left'?-11+depth")||frame.includes("const x=side==='left'?-11+depth"),'bite geometry');
+ assert.ok(frame.includes('if(shapes.length)'),'final cut pass');
+ assert.ok(poster.includes('paintDietAdornment(ctx,row,styl,greek)'));
+});
