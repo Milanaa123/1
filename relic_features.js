@@ -931,13 +931,22 @@
     ctx.beginPath();ctx.moveTo(-6,-122+shift);
     ctx.bezierCurveTo(x+52,-113+shift,x+106,-25+shift,
       x+25,104+shift);
-    ctx.strokeStyle=n%2?'rgba(215,169,182,.52)':'rgba(231,194,137,.65)';
-    ctx.lineWidth=n%2?1.6:2.2;ctx.stroke();
+    ctx.strokeStyle=n%2?'rgba(215,169,182,.72)':'rgba(231,194,137,.84)';
+    ctx.lineWidth=n%2?2.3:3.0;ctx.stroke();
    }
    for(const [x,dy,r] of [[91,-93,6],[131,-8,8],[95,118,5]]){
     ctx.beginPath();ctx.moveTo(x-r,dy);ctx.lineTo(x+r,dy);
     ctx.moveTo(x,dy-r*1.7);ctx.lineTo(x,dy+r*1.7);
     ctx.strokeStyle='#f0c98e';ctx.lineWidth=1.8;ctx.stroke();
+   }
+   // Crescent night-arc and little constellation points attached to a rail.
+   ctx.beginPath();ctx.arc(72,0,46,-1.15,1.1);
+   ctx.strokeStyle='rgba(244,213,166,.78)';ctx.lineWidth=3.2;ctx.stroke();
+   ctx.beginPath();ctx.arc(86,-3,44,-1.15,1.1);
+   ctx.strokeStyle='rgba(214,170,190,.55)';ctx.lineWidth=1.7;ctx.stroke();
+   for(const [x,z] of [[112,-102],[157,54],[99,133]]){
+    ctx.beginPath();ctx.arc(x,z,1.6,0,2*PI);
+    ctx.fillStyle='#f7d99d';ctx.fill();
    }
    ctx.restore();
   }
@@ -986,13 +995,30 @@
     ctx.lineTo(33,h-19);ctx.stroke();
    }ctx.restore();
   }
+
   function scales(side,y,size){
-   const edge=side==='left'?52:1148,sign=side==='left'?1:-1;
-   ctx.save();ctx.translate(edge,y);ctx.scale(sign*size,size);
-   ctx.strokeStyle='#d9b884';ctx.lineWidth=2.4;
-   for(let i=0;i<7;i++){
-    ctx.beginPath();ctx.arc(19+(i%2)*9,i*37,24,-1.25,1.25);ctx.stroke();
+   // Overlapping serpentine scales grow from the engraved rail and
+   // occupy a legible 160px-wide margin, not six tiny isolated parentheses.
+   const edge=side==='left'?52:1148,sgn=side==='left'?1:-1;
+   ctx.save();ctx.translate(edge,y);ctx.scale(sgn*size,size);
+   ctx.strokeStyle='#dfbc89';ctx.lineWidth=2.25;
+   ctx.beginPath();ctx.moveTo(0,-35);
+   ctx.bezierCurveTo(35,72,68,170,0,300);ctx.stroke();
+   for(let row=0;row<8;row++){
+    const offset=row%2?13:0,yy=row*41;
+    for(let col=0;col<4;col++){
+     const xx=17+col*29+offset;
+     ctx.beginPath();ctx.moveTo(xx-14,yy);
+     ctx.quadraticCurveTo(xx,yy-25,xx+15,yy);
+     ctx.quadraticCurveTo(xx+7,yy+20,xx,yy+23);
+     ctx.strokeStyle=col===0?'rgba(242,207,155,.86)':'rgba(196,159,115,.64)';
+     ctx.lineWidth=col===0?2.25:1.55;ctx.stroke();
+    }
    }
+   // Broad S-shaped spine with occasional gilded pores.
+   ctx.strokeStyle='rgba(244,212,165,.55)';ctx.lineWidth=1.1;
+   ctx.beginPath();ctx.moveTo(18,-32);
+   ctx.bezierCurveTo(154,100,18,201,128,324);ctx.stroke();
    ctx.restore();
   }
   function moon(side,y){
