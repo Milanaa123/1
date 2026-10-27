@@ -13,6 +13,99 @@
  const entries=[["wolf","Волк"],["fox","Лиса"],["dog","Собака"],["cat","Кошка"],["lion","Лев"],["tiger","Тигр"],["snow-leopard","Снежный барс"],["cheetah","Гепард"],["jaguar","Ягуар"],["puma","Пума"],["bear","Медведь"],["panda","Панда"],["raccoon","Енот"],["otter","Выдра"],["mink","Норка"],["badger","Барсук"],["wolverine","Росомаха"],["ocelot","Оцелот"],["lynx","Рысь"],["caracal","Каракал"],["owl","Сова"],["eagle-owl","Филин"],["raven","Ворон"],["crow","Ворона"],["falcon","Сокол"],["hawk","Ястреб"],["eagle","Орёл"],["vulture","Стервятник"],["gull","Чайка"],["hummingbird","Колибри"],["deer","Олень"],["moose","Лось"],["roe-deer","Косуля"],["reindeer","Северный олень"],["boar","Кабан"],["bison","Бизон"],["aurochs","Зубр"],["sheep","Баран"],["goat","Козёл"],["chamois","Серна"],["horse","Лошадь"],["pegasus","Пегас (фантазийный)"],["donkey","Осёл"],["zebra","Зебра"],["giraffe","Жираф"],["antelope","Антилопа"],["gazelle","Газель"],["camel","Верблюд"],["llama","Лама"],["alpaca","Альпака"],["rabbit","Кролик"],["hare","Заяц"],["squirrel","Белка"],["beaver","Бобр"],["hamster","Хомяк"],["mouse","Мышь"],["rat","Крыса"],["porcupine","Дикобраз"],["ground-squirrel","Суслик"],["marmot","Сурок"],["kangaroo","Кенгуру"],["koala","Коала"],["wombat","Вомбат"],["dingo","Дикая собака динго"],["tasmanian-devil","Тасманийский дьявол"],["emu","Эму"],["ostrich","Страус"],["cassowary","Казуар"],["kiwi","Киви"],["penguin","Пингвин"],["whale","Кит"],["dolphin","Дельфин"],["orca","Косатка"],["shark","Акула"],["ray","Скат"],["seal","Тюлень"],["sea-lion","Морской лев"],["walrus","Морж"],["manatee","Ламантин"],["sea-otter","Выдра морская"],["turtle","Черепаха"],["sea-turtle","Морская черепаха"],["lizard","Ящерица"],["iguana","Игуана"],["chameleon","Хамелеон"],["gecko","Геккон"],["snake","Змея"],["serpent","Змей (декоративный)"],["cobra","Кобра"],["python","Питон"],["crocodile","Крокодил"],["alligator","Аллигатор"],["spiny-lizard","Черепаховая ящерица"],["bat","Летучая мышь"],["octopus","Осьминог"],["squid","Кальмар"],["jellyfish","Медуза"],["seahorse","Морской конёк"],["crab","Краб"],["lobster","Омар"]];
  const names=entries.map(x=>x[1]);
  const namedEntries=new Map([["Canis lupus",0],["Canis rufus",0],["Canis simensis",0],["Vulpes",1],["Urocyon",1],["Lycalopex",1],["Canis familiaris",2],["Canis lupus familiaris",2],["Felis",3],["Panthera leo",4],["Panthera tigris",5],["Panthera uncia",6],["Uncia uncia",6],["Acinonyx",7],["Panthera onca",8],["Puma",9],["Ursus",10],["Helarctos",10],["Melursus",10],["Tremarctos",10],["Ailuropoda",11],["Procyon",12],["Lutra",13],["Lontra",13],["Lutrogale",13],["Neogale",14],["Mustela lutreola",14],["Neovison",14],["Meles",15],["Taxidea",15],["Gulo",16],["Leopardus pardalis",17],["Lynx",18],["Caracal",19],["Strix",20],["Tyto",20],["Asio",20],["Athene",20],["Bubo",21],["Corvus corax",22],["Corvus cornix",23],["Corvus corone",23],["Corvus brachyrhynchos",23],["Falco",24],["Accipiter",25],["Astur",25],["Aquila",26],["Haliaeetus",26],["Gyps",27],["Aegypius",27],["Neophron",27],["Larus",28],["Chroicocephalus",28],["Archilochus",29],["Calypte",29],["Trochilus",29],["Cervus",30],["Dama",30],["Alces",31],["Capreolus",32],["Rangifer",33],["Sus scrofa",34],["Bison",35],["Bos bonasus",36],["Bison bonasus",36],["Ovis",37],["Capra",38],["Rupicapra",39],["Equus caballus",40],["Equus ferus",40],["Equus przewalskii",40],["Equus asinus",42],["Equus africanus",42],["Equus quagga",43],["Equus zebra",43],["Equus grevyi",43],["Giraffa",44],["Tragelaphus",45],["Hippotragus",45],["Gazella",46],["Eudorcas",46],["Nanger",46],["Camelus",47],["Lama glama",48],["Vicugna pacos",49],["Lama pacos",49],["Oryctolagus",50],["Sylvilagus",50],["Lepus",51],["Sciurus",52],["Tamiasciurus",52],["Castor",53],["Cricetus",54],["Mesocricetus",54],["Phodopus",54],["Mus",55],["Apodemus",55],["Rattus",56],["Hystrix",57],["Erethizon",57],["Spermophilus",58],["Urocitellus",58],["Marmota",59],["Macropus",60],["Osphranter",60],["Phascolarctos",61],["Vombatus",62],["Lasiorhinus",62],["Canis lupus dingo",63],["Canis dingo",63],["Sarcophilus",64],["Dromaius",65],["Struthio",66],["Casuarius",67],["Apteryx",68],["Aptenodytes",69],["Spheniscus",69],["Pygoscelis",69],["Eudyptes",69],["Balaenoptera",70],["Megaptera",70],["Balaena",70],["Eubalaena",70],["Delphinus",71],["Tursiops",71],["Lagenorhynchus",71],["Orcinus",72],["Carcharodon",73],["Carcharhinus",73],["Galeocerdo",73],["Manta",74],["Mobula",74],["Dasyatis",74],["Raja",74],["Phoca",75],["Pusa",75],["Halichoerus",75],["Zalophus",76],["Otaria",76],["Eumetopias",76],["Odobenus",77],["Trichechus",78],["Enhydra",79],["Testudo",80],["Emys",80],["Mauremys",80],["Chelonia",81],["Caretta",81],["Eretmochelys",81],["Dermochelys",81],["Lacerta",82],["Podarcis",82],["Zootoca",82],["Iguana",83],["Chamaeleo",84],["Furcifer",84],["Bradypodion",84],["Gekko",85],["Hemidactylus",85],["Phelsuma",85],["Natrix",86],["Vipera",86],["Thamnophis",86],["Naja",88],["Ophiophagus",88],["Python",89],["Malayopython",89],["Morelia",89],["Crocodylus",90],["Gavialis",90],["Alligator",91],["Caiman",91],["Uromastyx",92],["Saara",92],["Myotis",93],["Pipistrellus",93],["Rhinolophus",93],["Pteropus",93],["Octopus",94],["Enteroctopus",94],["Amphioctopus",94],["Loligo",95],["Doryteuthis",95],["Architeuthis",95],["Aurelia",96],["Cyanea",96],["Chrysaora",96],["Hippocampus",97],["Cancer",98],["Carcinus",98],["Callinectes",98],["Homarus",99],["Palinurus",99],["Panulirus",99]]);
+
+ // The NEXT 20 approved subjects (numbers 6–25, not replacement art).
+ // Work within their original transparent 160x110 cell. No shrinkwrap crop:
+ // every ear, whisker, wingtip, paw and tail keeps the full source canvas.
+ const BATCH_02_START=5,BATCH_02_END=25;
+ const batch02Cutouts=new Map();
+ function cleanBatch02Cell(sheet,index){
+  if(!sheet||index<BATCH_02_START||index>=BATCH_02_END)return null;
+  if(batch02Cutouts.has(index))return batch02Cutouts.get(index);
+  const canvas=document.createElement('canvas');
+  canvas.width=WIDTH;canvas.height=HEIGHT;
+  const c=canvas.getContext('2d',{willReadFrequently:true});
+  if(!c)return null;
+  c.drawImage(sheet,(index%10)*WIDTH,Math.floor(index/10)*HEIGHT,
+   WIDTH,HEIGHT,0,0,WIDTH,HEIGHT);
+  // Work on premade ALPHA artwork only. Never try to cut an opaque
+  // background with a hard polygon around the animal.
+  let pixels;
+  try{pixels=c.getImageData(0,0,WIDTH,HEIGHT);}catch(_){return null;}
+  const {data}=pixels,N=WIDTH*HEIGHT;
+  const seed=new Uint8Array(N);
+  for(let i=0;i<N;i++)if(data[i*4+3]>=44)seed[i]=1;
+  // Bridge only near-neighbour gaps before measuring disconnected flecks.
+  const bridge=new Uint8Array(N);
+  for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){
+   const i=y*WIDTH+x;
+   if(!seed[i])continue;
+   for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){
+    if(dx*dx+dy*dy>5)continue;
+    const xx=x+dx,yy=y+dy;
+    if(xx>=0&&xx<WIDTH&&yy>=0&&yy<HEIGHT)bridge[yy*WIDTH+xx]=1;
+   }
+  }
+  const labels=new Int16Array(N),components=[];
+  let biggest=-1,best=0;
+  for(let i=0;i<N;i++){
+   if(!bridge[i]||labels[i])continue;
+   const label=components.length+1,queue=[i];
+   labels[i]=label;
+   const component={size:0,pixels:0,minX:WIDTH,minY:HEIGHT,maxX:0,maxY:0};
+   for(let head=0;head<queue.length;head++){
+    const at=queue[head],x=at%WIDTH,y=(at/WIDTH)|0;
+    component.size++;
+    if(seed[at])component.pixels++;
+    component.minX=Math.min(component.minX,x);
+    component.maxX=Math.max(component.maxX,x);
+    component.minY=Math.min(component.minY,y);
+    component.maxY=Math.max(component.maxY,y);
+    for(const near of [at-1,at+1,at-WIDTH,at+WIDTH]){
+     if(near<0||near>=N||labels[near]||!bridge[near])continue;
+     // Prevent false wraps between the end and start of adjacent rows.
+     if(Math.abs((near%WIDTH)-x)>1)continue;
+     labels[near]=label;queue.push(near);
+    }
+   }
+   components.push(component);
+   if(component.pixels>best){best=component.pixels;biggest=label;}
+  }
+  if(biggest<0||best<150){
+   // Fail open when the photograph is unexpected; never delete the animal.
+   batch02Cutouts.set(index,canvas);return canvas;
+  }
+  const main=components[biggest-1];
+  const keep=new Uint8Array(components.length+1);keep[biggest]=1;
+  // A disconnected forepaw, ear-tip, whisker or feather is more important
+  // than aggressive removal. Keep every substantial piece and all fragments
+  // near the body. Remove only small, distant decorative sparkles.
+  for(let id=1;id<=components.length;id++){
+   if(id===biggest)continue;
+   const c=components[id-1];
+   const gapX=Math.max(0,main.minX-c.maxX,c.minX-main.maxX);
+   const gapY=Math.max(0,main.minY-c.maxY,c.minY-main.maxY);
+   if(c.pixels>=75||Math.hypot(gapX,gapY)<=14)keep[id]=1;
+  }
+  let cleared=0;
+  for(let i=0;i<N;i++){
+   if(!data[i*4+3])continue;
+   // Allow antialiased gold fringes 2px around every kept structural stroke.
+   let approved=Boolean(keep[labels[i]]);
+   if(!approved){
+    const x=i%WIDTH,y=(i/WIDTH)|0;
+    outer:for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){
+     const xx=x+dx,yy=y+dy;
+     if(xx<0||yy<0||xx>=WIDTH||yy>=HEIGHT)continue;
+     if(keep[labels[yy*WIDTH+xx]]){approved=true;break outer;}
+    }
+   }
+   if(!approved){data[i*4+3]=0;cleared++;}
+  }
+  if(cleared>0)c.putImageData(pixels,0,0);
+  batch02Cutouts.set(index,canvas);
+  return canvas;
+ }
  const fallbackOrder={"Carnivora":1,"Rodentia":55,"Lagomorpha":50,"Chiroptera":93,"Cetacea":70,"Cetartiodactyla":30,"Artiodactyla":30,"Perissodactyla":40,"Sirenia":78,"Diprotodontia":60,"Dasyuromorphia":64,"Strigiformes":20,"Accipitriformes":26,"Falconiformes":24,"Passeriformes":22,"Sphenisciformes":69,"Struthioniformes":66,"Casuariiformes":65,"Apterygiformes":68,"Charadriiformes":28,"Apodiformes":29,"Testudines":80,"Squamata":82,"Crocodylia":90,"Crocodilia":90,"Octopoda":94,"Teuthida":95,"Myliobatiformes":74,"Rajiformes":74,"Decapoda":98};
  const fallbackClass={"Mammalia":1,"Aves":22,"Reptilia":82,"Chondrichthyes":73,"Elasmobranchii":73,"Cephalopoda":94,"Scyphozoa":96,"Cubozoa":96,"Malacostraca":98};
  const scientific=(row)=>String(row?.[1]||'').trim().replace(/\s+/g,' ');
@@ -61,6 +154,7 @@
   return {id:entries[chosen.idx][0],cell:chosen.idx,
    artSet:'atlas100',label:name,scientific:scientific(row),
    exact:false, // the visitor-approved drawing is an artistic archetype
+   reviewedBatch:chosen.idx>=BATCH_02_START&&chosen.idx<BATCH_02_END?2:null,
    diet:old?.diet||null,habitat:old?.habitat||null,
    secondary:old?.secondary||[],
    note:rank==='species'?('Художественный рисунок «'+name+'» · не фотография вида'):
@@ -80,8 +174,12 @@
   const factor=Math.min(w*.90/WIDTH,h*.90/HEIGHT);
   const dw=WIDTH*factor,dh=HEIGHT*factor;
   const dx=x+(w-dw)/2,dy=y+(h-dh)/2;
-  ctx.save();ctx.drawImage(im,(i%10)*WIDTH,Math.floor(i/10)*HEIGHT,
-    WIDTH,HEIGHT,dx,dy,dw,dh);ctx.restore();
+  const refined=profile.reviewedBatch===2?cleanBatch02Cell(im,i):null;
+  ctx.save();
+  if(refined)ctx.drawImage(refined,dx,dy,dw,dh);
+  else ctx.drawImage(im,(i%10)*WIDTH,Math.floor(i/10)*HEIGHT,
+    WIDTH,HEIGHT,dx,dy,dw,dh);
+  ctx.restore();
   return true;
  }
  async function drawable(){
@@ -109,6 +207,7 @@
   render,drawCanvas,drawable,
   list:entries.map(([key],cell)=>({key,cell,name:names[cell]})),
   evidence:{count:100,source:'user-supplied',artistic:true,
+    batch02:{first:6,last:25,count:20,source:'same approved atlas',preserveSourceBounds:true},
     unsupported:'Animals without an applicable biological drawing remain without art.'}
  });
 })();

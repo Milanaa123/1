@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=approved100-first-set-20261027'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=batch02-20-cleansed-20261027'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -94,4 +94,33 @@ test('wrapper prefers five personally reviewed PNG cutouts without changing othe
  const source=fs.readFileSync('build_data.py','utf8');
  assert.ok(source.includes("shutil.copy2(art5,DEST/'art'/'animals-approved-01-05.png')"));
  assert.ok(source.includes('CURATED_FIRST_FIVE_ALPHA_READY'));
+});
+
+test('Stage 5: twenty consecutive images 6–25 are routed to their own artwork',()=>{
+ const cases=[
+ ['Panthera tigris',5],['Panthera uncia',6],['Acinonyx jubatus',7],
+ ['Panthera onca',8],['Puma concolor',9],['Ursus arctos',10],
+ ['Ailuropoda melanoleuca',11],['Procyon lotor',12],['Lutra lutra',13],
+ ['Neovison vison',14],['Meles meles',15],['Gulo gulo',16],
+ ['Leopardus pardalis',17],['Lynx lynx',18],['Caracal caracal',19],
+ ['Strix aluco',20],['Bubo bubo',21],['Corvus corax',22],
+ ['Corvus cornix',23],['Falco peregrinus',24]
+ ];
+ assert.equal(cases.length,20);
+ for(const [scientific,expected] of cases){
+  const p=api.resolve(row(scientific,
+    expected>=20?'Aves':'Mammalia',
+    expected>=20?'Strigiformes':'Carnivora'));
+  assert.equal(p?.cell,expected,scientific);
+  assert.equal(p?.reviewedBatch,2,scientific);
+  assert.equal(p?.artSet,'atlas100',scientific);
+  assert.equal(p?.exact,false,scientific);
+ }
+ assert.equal(api.resolve(row('Cornufer opisthodon','Amphibia','Anura')).id,'frog');
+ assert.equal(api.resolve(row('Canis lupus')).approvedIndex,0);
+ const source=fs.readFileSync('animal_atlas_100.js','utf8');
+ for(const required of ['function cleanBatch02Cell(', 'batch02Cutouts',
+   'cleared>0','Math.hypot(gapX,gapY)<=14',
+   'profile.reviewedBatch===2?cleanBatch02Cell(im,i):null'])
+  assert.ok(source.includes(required),required);
 });
