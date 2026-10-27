@@ -100,3 +100,55 @@ test('Visible diet borders include five unique variants each and true alpha hole
  assert.ok(frame.includes('if(shapes.length)'),'final cut pass');
  assert.ok(poster.includes('paintDietAdornment(ctx,row,styl,greek)'));
 });
+
+test('All twenty frame presets are reachable; cuts erase canvas pixels last',()=>{
+ const begin=js.indexOf(' function cardAdornment(');
+ const end=js.indexOf(' function paintCardBackdropOnScreen(',begin);
+ assert.ok(begin>=0&&end>begin);
+ const {cardAdornment,paintDietAdornment}=new Function(
+  js.slice(begin,end)+'\nreturn {cardAdornment,paintDietAdornment};')();
+ const sample=[1878,'Cornufer opisthodon','species','Amphibia','Anura','','Chordata'];
+ function trace(){
+  const stack=[],cuts={circle:0,gash:0},art={flowers:0},ctx={
+   globalCompositeOperation:'source-over',globalAlpha:1,
+   save(){stack.push({gco:this.globalCompositeOperation,alpha:this.globalAlpha})},
+   restore(){const state=stack.pop();this.globalCompositeOperation=state.gco;this.globalAlpha=state.alpha},
+   translate(){},scale(){},rotate(){},beginPath(){},moveTo(){},lineTo(){},closePath(){},
+   quadraticCurveTo(){},stroke(){},bezierCurveTo(){
+    if(this.globalCompositeOperation==='destination-out')cuts.gash++;
+   },
+   ellipse(){art.flowers++},arc(){
+    if(this.globalCompositeOperation==='destination-out')cuts.circle++;
+   },
+   fill(){},shadowBlur:0
+  };
+  return {ctx,cuts,art,stack};
+ }
+ const categories=[
+  ['predator','Mammalia',true],['soft-predator','Amphibia',true],
+  ['herbivore','Mammalia',false],['omnivore','Mammalia',true]
+ ];
+ for(const [kind,className,needHoles] of categories){
+  const diets={predator:'predator','soft-predator':'predator',herbivore:'herbivore',omnivore:'omnivore'};
+  const styl={diet:diets[kind]},species=[...sample];species[3]=className;
+  const variants=new Map();
+  for(let i=0;i<100&&variants.size<5;i++){
+   const owner='Ελληνικη'+i;
+   const config=cardAdornment(species,styl,owner);
+   assert.equal(config.kind,kind);
+   variants.set(config.variant,owner);
+  }
+  assert.equal(variants.size,5,kind+' has 5 usable designs');
+  for(const [variant,owner] of variants){
+   const {ctx,cuts,art,stack}=trace();
+   const config=paintDietAdornment(ctx,species,styl,owner);
+   assert.equal(config.variant,variant);
+   const count=cuts.circle+cuts.gash;
+   if(needHoles)assert.ok(count>0,kind+' variant '+variant+' has no true cuts');
+   else assert.equal(count,0,'Herbivores must not have bites or claw cuts');
+   if(kind==='herbivore')assert.ok(art.flowers>0,'Herbivores need floral detail');
+   assert.equal(ctx.globalCompositeOperation,'source-over','erase mode leaked');
+   assert.equal(stack.length,0,'canvas save/restore unbalanced');
+  }
+ }
+});
