@@ -211,30 +211,32 @@
     ctx.beginPath();ctx.arc(x,y,.25+random()*1.4,0,Math.PI*2);ctx.fill();
    }
   }
-  // Wispy, winding nebula branches in the approved reference: organic
-  // purple-gold filaments rather than the old mechanical repeated loops.
+  // Fine flowing cosmic dust instead of visible thick loops or pasted
+  // illustrations.  Every wisp is a cloud of translucent pinpricks.
   for(const side of [-1,1]){
-   const origin=side<0?120:1080,sgn=side<0?1:-1;
-   for(let i=0;i<18;i++){
-    const y=220+random()*1580;
-    const reach=45+random()*135;
-    const px=origin+sgn*(18+random()*50);
-    const swing=sgn*(42+random()*90);
-    const dy=95+random()*190;
-    ctx.save();
-    ctx.globalCompositeOperation='screen';
-    ctx.beginPath();ctx.moveTo(px,y);
-    ctx.bezierCurveTo(px+swing,y+dy*.2,
-      px+swing+sgn*reach*.25,y+dy*.72,
-      px+sgn*reach,y+dy);
-    ctx.strokeStyle=i%4===0?'rgba(213,143,200,.12)':'rgba(117,76,168,.12)';
-    ctx.lineWidth=10+random()*19;
-    ctx.shadowColor='#97549b';ctx.shadowBlur=30;
-    ctx.stroke();
-    ctx.lineWidth=.6+random()*.9;ctx.shadowBlur=11;
-    ctx.strokeStyle=i%4===0?'rgba(240,176,191,.20)':'rgba(194,135,213,.16)';
-    ctx.stroke();
-    ctx.restore();
+   const sign=side<0?1:-1,edge=side<0?102:1098;
+   for(let plume=0;plume<9;plume++){
+    const from=185+plume*190+random()*70;
+    const length=150+random()*250;
+    const offset=25+random()*66;
+    const bend=(random()-.5)*95;
+    const particleCount=330;
+    for(let j=0;j<particleCount;j++){
+     const t=random(),y=from+length*t;
+     const sp=sign*(offset+Math.sin(t*Math.PI*1.9+plume*.8)*30+
+       t*bend);
+     const jitter=(random()+random()+random()-1.5)*48;
+     const x=edge+sp+jitter;
+     if(x<72||x>1128||y<88||y>1960)continue;
+     const brightness=.065+random()*.17;
+     const envelope=Math.sin(Math.PI*t);
+     const alpha=brightness*(.35+.65*envelope);
+     ctx.fillStyle=random()>.4
+       ?'rgba(208,132,196,'+alpha.toFixed(3)+')'
+       :'rgba(137,103,200,'+(alpha*.8).toFixed(3)+')';
+     ctx.beginPath();ctx.arc(x,y,.28+random()*1.05,0,Math.PI*2);
+     ctx.fill();
+    }
    }
   }
   // Bright but rare stellar glints, clustered near the page edges.
