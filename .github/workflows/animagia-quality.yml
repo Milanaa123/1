@@ -30,6 +30,14 @@ jobs:
         run: node --test tests/test_atlas100.cjs
       - name: Inspect all 100 transparent images in real Chromium
         run: node tests/check_atlas100.cjs
+      - name: Check next 20 artist-approved animals on actual Chromium Canvas
+        run: node tests/check_batch02_twenty.cjs
+      - name: Save 20 originals and cleaned transparent sprites side by side
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-batch02-twenty-species-visual-proof
+          path: qa-artifacts/batch02-twenty-before-after.png
+          retention-days: 14
       - name: Publish 100-image transparency montage
         uses: actions/upload-artifact@v4
         with:
