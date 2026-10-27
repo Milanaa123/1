@@ -247,6 +247,13 @@ def build():
  assert hashlib.sha256(raw100).hexdigest()==expected100,'Corrupt 100-image atlas'
  shutil.copy2(art100,DEST/'art'/'animagia-100-alpha.webp')
  shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')
+ # Species-specific art corrections: keep approved 100-image master untouched.
+ corrected=BASE/'art'/'animagia-corrected-22.webp'
+ replacement=corrected.read_bytes()
+ assert replacement[:4]==b'RIFF' and replacement[8:12]==b'WEBP'
+ assert hashlib.sha256(replacement).hexdigest()=='9876d77dfcee8e0859581678d5273b13fd1ca77d8a45b5792f334ffb1a07687b','Corrected animal art checksum mismatch'
+ shutil.copy2(corrected,DEST/'art'/'animagia-corrected-22.webp')
+ print('CORRECTED_SPECIES_22_READY',len(replacement),'bytes',flush=True)
  print('CURATED_100_ART_READY',len(raw100),'bytes',expected100,flush=True)
  # First review batch is a separate alpha PNG with five individually cleaned
  # visitor-selected originals; prevent Render from serving an older cached sheet.

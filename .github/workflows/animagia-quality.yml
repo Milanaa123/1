@@ -37,6 +37,8 @@ jobs:
           echo "LIVE_HTML_BYTES=$(wc -c </tmp/animagia-live.html)"
           echo "LIVE_JS_BYTES=$(wc -c </tmp/animagia-live.js)"
           echo "LIVE_WEBP_BYTES=$(wc -c </tmp/animagia-live.webp)"
+          echo "LIVE_CORRECTED_HTTP=$(curl --fail --silent --show-error --location --max-time 45 --write-out '%{http_code}' \"$url/art/animagia-corrected-22.webp\" -o /tmp/animagia-live-corrected.webp)"
+          test "$(wc -c </tmp/animagia-live-corrected.webp)" -gt 60000
           echo "LIVE_HTML_ATLAS_REFERENCES:"
           grep -oE 'animal_atlas_100\\.js[^"<> ]*' /tmp/animagia-live.html | head -5 || true
           echo "LIVE_JS_BATCH_MARKERS:"
@@ -47,7 +49,7 @@ jobs:
           echo "LIVE_JS_START:"
           head -c 120 /tmp/animagia-live.js | tr '\\n' ' '
           echo
-          grep -Fq 'batch04-20-cleansed-20261028' /tmp/animagia-live.html || { echo 'RENDER_OLD_HTML_OR_WRONG_SITE'; exit 1; }
+          grep -Fq 'batch04-22-corrected-20261028' /tmp/animagia-live.html || { echo 'RENDER_OLD_HTML_OR_WRONG_SITE'; exit 1; }
           grep -Fq 'batch04:{first:46,last:65,count:20' /tmp/animagia-live.js || { echo 'RENDER_OLD_JS_OR_WRONG_SITE'; exit 1; }
           test "$(wc -c </tmp/animagia-live.webp)" -gt 20000
           test "$(dd if=/tmp/animagia-live.webp bs=1 count=4 2>/dev/null)" = 'RIFF'

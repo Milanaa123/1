@@ -31,14 +31,16 @@
     {
       "index": 6,
       "name": "Тигр",
-      "graphicState": "batch02-non-destructive-alpha-cleanup",
-      "batch": 2
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 2,
+      "visualCorrection": true
     },
     {
       "index": 7,
       "name": "Снежный барс",
-      "graphicState": "batch02-non-destructive-alpha-cleanup",
-      "batch": 2
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 2,
+      "visualCorrection": true
     },
     {
       "index": 8,
@@ -49,14 +51,16 @@
     {
       "index": 9,
       "name": "Ягуар",
-      "graphicState": "batch02-non-destructive-alpha-cleanup",
-      "batch": 2
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 2,
+      "visualCorrection": true
     },
     {
       "index": 10,
       "name": "Пума",
-      "graphicState": "batch02-non-destructive-alpha-cleanup",
-      "batch": 2
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 2,
+      "visualCorrection": true
     },
     {
       "index": 11,
@@ -79,8 +83,9 @@
     {
       "index": 14,
       "name": "Выдра",
-      "graphicState": "batch02-non-destructive-alpha-cleanup",
-      "batch": 2
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 2,
+      "visualCorrection": true
     },
     {
       "index": 15,
@@ -109,8 +114,9 @@
     {
       "index": 19,
       "name": "Рысь",
-      "graphicState": "batch02-non-destructive-alpha-cleanup",
-      "batch": 2
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 2,
+      "visualCorrection": true
     },
     {
       "index": 20,
@@ -139,8 +145,9 @@
     {
       "index": 24,
       "name": "Ворона",
-      "graphicState": "batch02-non-destructive-alpha-cleanup",
-      "batch": 2
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 2,
+      "visualCorrection": true
     },
     {
       "index": 25,
@@ -169,14 +176,16 @@
     {
       "index": 29,
       "name": "Чайка",
-      "graphicState": "batch03-non-destructive-alpha-cleanup",
-      "batch": 3
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 3,
+      "visualCorrection": true
     },
     {
       "index": 30,
       "name": "Колибри",
-      "graphicState": "batch03-non-destructive-alpha-cleanup",
-      "batch": 3
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 3,
+      "visualCorrection": true
     },
     {
       "index": 31,
@@ -193,8 +202,9 @@
     {
       "index": 33,
       "name": "Косуля",
-      "graphicState": "batch03-non-destructive-alpha-cleanup",
-      "batch": 3
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 3,
+      "visualCorrection": true
     },
     {
       "index": 34,
@@ -205,8 +215,9 @@
     {
       "index": 35,
       "name": "Кабан",
-      "graphicState": "batch03-non-destructive-alpha-cleanup",
-      "batch": 3
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 3,
+      "visualCorrection": true
     },
     {
       "index": 36,
@@ -235,8 +246,9 @@
     {
       "index": 40,
       "name": "Серна",
-      "graphicState": "batch03-non-destructive-alpha-cleanup",
-      "batch": 3
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 3,
+      "visualCorrection": true
     },
     {
       "index": 41,
@@ -272,20 +284,23 @@
     {
       "index": 46,
       "name": "Антилопа",
-      "graphicState": "batch04-non-destructive-alpha-cleanup",
-      "batch": 4
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 4,
+      "visualCorrection": true
     },
     {
       "index": 47,
       "name": "Газель",
-      "graphicState": "batch04-non-destructive-alpha-cleanup",
-      "batch": 4
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 4,
+      "visualCorrection": true
     },
     {
       "index": 48,
       "name": "Верблюд",
-      "graphicState": "batch04-non-destructive-alpha-cleanup",
-      "batch": 4
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 4,
+      "visualCorrection": true
     },
     {
       "index": 49,
@@ -314,14 +329,16 @@
     {
       "index": 53,
       "name": "Белка",
-      "graphicState": "batch04-non-destructive-alpha-cleanup",
-      "batch": 4
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 4,
+      "visualCorrection": true
     },
     {
       "index": 54,
       "name": "Бобр",
-      "graphicState": "batch04-non-destructive-alpha-cleanup",
-      "batch": 4
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 4,
+      "visualCorrection": true
     },
     {
       "index": 55,
@@ -386,8 +403,9 @@
     {
       "index": 65,
       "name": "Тасманийский дьявол",
-      "graphicState": "batch04-non-destructive-alpha-cleanup",
-      "batch": 4
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "batch": 4,
+      "visualCorrection": true
     },
     {
       "index": 66,
@@ -402,7 +420,8 @@
     {
       "index": 68,
       "name": "Казуар",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "visualCorrection": true
     },
     {
       "index": 69,
@@ -452,7 +471,8 @@
     {
       "index": 78,
       "name": "Морж",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "visualCorrection": true
     },
     {
       "index": 79,
@@ -467,7 +487,8 @@
     {
       "index": 81,
       "name": "Черепаха",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "visualCorrection": true
     },
     {
       "index": 82,
@@ -492,7 +513,8 @@
     {
       "index": 86,
       "name": "Геккон",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "species-specific-gold-engraving-replacement",
+      "visualCorrection": true
     },
     {
       "index": 87,
@@ -590,5 +612,34 @@
       "last": 65,
       "state": "runtime alpha cleanup of existing curated art, full-cell containment"
     }
-  ]
+  ],
+  "visualCorrections": {
+    "count": 22,
+    "indices": [
+      6,
+      7,
+      9,
+      10,
+      14,
+      19,
+      24,
+      29,
+      30,
+      33,
+      35,
+      40,
+      46,
+      47,
+      48,
+      53,
+      54,
+      65,
+      68,
+      78,
+      81,
+      86
+    ],
+    "mode": "separate gold transparent WebP overlay; original 100-art file retained",
+    "disclaimer": "Illustrations reflect species anatomy, not documentary photos"
+  }
 }

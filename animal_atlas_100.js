@@ -9,6 +9,8 @@
  const legacy=window.AnimagiaAnimalAtlas;
  if(!legacy)throw Error('100-animal atlas loaded before the original atlas');
  const URI='./art/animagia-100-alpha.webp';
+ const CORRECTED_URI='./art/animagia-corrected-22.webp';
+ const CORRECTED_SET=new Set([5,6,8,9,13,18,23,28,29,32,34,39,45,46,47,52,53,64,67,77,80,85]);
  const WIDTH=160,HEIGHT=110;
  const entries=[["wolf","Волк"],["fox","Лиса"],["dog","Собака"],["cat","Кошка"],["lion","Лев"],["tiger","Тигр"],["snow-leopard","Снежный барс"],["cheetah","Гепард"],["jaguar","Ягуар"],["puma","Пума"],["bear","Медведь"],["panda","Панда"],["raccoon","Енот"],["otter","Выдра"],["mink","Норка"],["badger","Барсук"],["wolverine","Росомаха"],["ocelot","Оцелот"],["lynx","Рысь"],["caracal","Каракал"],["owl","Сова"],["eagle-owl","Филин"],["raven","Ворон"],["crow","Ворона"],["falcon","Сокол"],["hawk","Ястреб"],["eagle","Орёл"],["vulture","Стервятник"],["gull","Чайка"],["hummingbird","Колибри"],["deer","Олень"],["moose","Лось"],["roe-deer","Косуля"],["reindeer","Северный олень"],["boar","Кабан"],["bison","Бизон"],["aurochs","Зубр"],["sheep","Баран"],["goat","Козёл"],["chamois","Серна"],["horse","Лошадь"],["pegasus","Пегас (фантазийный)"],["donkey","Осёл"],["zebra","Зебра"],["giraffe","Жираф"],["antelope","Антилопа"],["gazelle","Газель"],["camel","Верблюд"],["llama","Лама"],["alpaca","Альпака"],["rabbit","Кролик"],["hare","Заяц"],["squirrel","Белка"],["beaver","Бобр"],["hamster","Хомяк"],["mouse","Мышь"],["rat","Крыса"],["porcupine","Дикобраз"],["ground-squirrel","Суслик"],["marmot","Сурок"],["kangaroo","Кенгуру"],["koala","Коала"],["wombat","Вомбат"],["dingo","Дикая собака динго"],["tasmanian-devil","Тасманийский дьявол"],["emu","Эму"],["ostrich","Страус"],["cassowary","Казуар"],["kiwi","Киви"],["penguin","Пингвин"],["whale","Кит"],["dolphin","Дельфин"],["orca","Косатка"],["shark","Акула"],["ray","Скат"],["seal","Тюлень"],["sea-lion","Морской лев"],["walrus","Морж"],["manatee","Ламантин"],["sea-otter","Выдра морская"],["turtle","Черепаха"],["sea-turtle","Морская черепаха"],["lizard","Ящерица"],["iguana","Игуана"],["chameleon","Хамелеон"],["gecko","Геккон"],["snake","Змея"],["serpent","Змей (декоративный)"],["cobra","Кобра"],["python","Питон"],["crocodile","Крокодил"],["alligator","Аллигатор"],["spiny-lizard","Черепаховая ящерица"],["bat","Летучая мышь"],["octopus","Осьминог"],["squid","Кальмар"],["jellyfish","Медуза"],["seahorse","Морской конёк"],["crab","Краб"],["lobster","Омар"]];
  const names=entries.map(x=>x[1]);
@@ -131,7 +133,15 @@
  const fallbackClass={"Mammalia":1,"Aves":22,"Reptilia":82,"Chondrichthyes":73,"Elasmobranchii":73,"Cephalopoda":94,"Scyphozoa":96,"Cubozoa":96,"Malacostraca":98};
  const scientific=(row)=>String(row?.[1]||'').trim().replace(/\s+/g,' ');
  const labelFor=idx=>names[idx];
- let loading=null;
+ let loading=null,correctedLoading=null;
+ function correctedAsset(){
+  if(!correctedLoading)correctedLoading=new Promise(resolve=>{
+   const img=new Image();img.crossOrigin='anonymous';
+   img.onload=()=>resolve(img);img.onerror=()=>resolve(null);
+   img.src=CORRECTED_URI;
+  });
+  return correctedLoading;
+ }
  function asset(){
   if(!loading)loading=new Promise(resolve=>{
    const img=new Image();img.crossOrigin='anonymous';
@@ -197,17 +207,21 @@
   const factor=Math.min(w*.90/WIDTH,h*.90/HEIGHT);
   const dw=WIDTH*factor,dh=HEIGHT*factor;
   const dx=x+(w-dw)/2,dy=y+(h-dh)/2;
-  const refined=(profile.reviewedBatch>=2&&profile.reviewedBatch<=4)?cleanReviewedCell(im,i):null;
+  const replacement=loaded?.corrected;
+  const useCorrection=CORRECTED_SET.has(i);
+  if(useCorrection&&(!replacement||replacement.naturalWidth!==1600||replacement.naturalHeight!==1100))return false;
+  const refined=!useCorrection&&(profile.reviewedBatch>=2&&profile.reviewedBatch<=4)?cleanReviewedCell(im,i):null;
   ctx.save();
-  if(refined)ctx.drawImage(refined,dx,dy,dw,dh);
+  if(useCorrection)ctx.drawImage(replacement,(i%10)*WIDTH,Math.floor(i/10)*HEIGHT,WIDTH,HEIGHT,dx,dy,dw,dh);
+  else if(refined)ctx.drawImage(refined,dx,dy,dw,dh);
   else ctx.drawImage(im,(i%10)*WIDTH,Math.floor(i/10)*HEIGHT,
     WIDTH,HEIGHT,dx,dy,dw,dh);
   ctx.restore();
   return true;
  }
  async function drawable(){
-  const [newSheet,oldSheet]=await Promise.all([asset(),legacy.drawable()]);
-  return newSheet||oldSheet?{newSheet,legacy:oldSheet}:null;
+  const [newSheet,oldSheet,corrected]=await Promise.all([asset(),legacy.drawable(),correctedAsset()]);
+  return newSheet||oldSheet?{newSheet,legacy:oldSheet,corrected}:null;
  }
  function render(container,profile){
   if(!container)return;
@@ -219,13 +233,14 @@
   canvas.setAttribute('role','img');
   canvas.setAttribute('aria-label',profile.note+' · '+profile.scientific);
   container.append(canvas);
-  void asset().then(im=>{
+  void Promise.all([asset(),correctedAsset()]).then(([im,corrected])=>{
    if(!im||!container.contains(canvas))return;
-   drawCanvas(canvas.getContext('2d'),im,profile,0,0,WIDTH,HEIGHT);
+   drawCanvas(canvas.getContext('2d'),{newSheet:im,corrected},profile,0,0,WIDTH,HEIGHT);
   });
  }
  window.AnimagiaAnimalAtlas=Object.freeze({
   ...legacy,imageUrl:URI,legacyImageUrl:legacy.imageUrl,
+  correctedImageUrl:CORRECTED_URI,correctedIndices:Object.freeze([6,7,9,10,14,19,24,29,30,33,35,40,46,47,48,53,54,65,68,78,81,86]),
   resolve,classify:legacy.classify,style:legacy.style,
   render,drawCanvas,drawable,
   list:entries.map(([key],cell)=>({key,cell,name:names[cell]})),
@@ -233,6 +248,7 @@
     batch02:{first:6,last:25,count:20,source:'same approved atlas',preserveSourceBounds:true},
     batch03:{first:26,last:45,count:20,source:'same approved atlas',preserveSourceBounds:true},
     batch04:{first:46,last:65,count:20,source:'same approved atlas',preserveSourceBounds:true},
+    visualCorrections:{count:22,indices:[6,7,9,10,14,19,24,29,30,33,35,40,46,47,48,53,54,65,68,78,81,86],source:'individually corrected anatomy; gold transparent art',photographic:false},
     unsupported:'Animals without an applicable biological drawing remain without art.'}
  });
 })();

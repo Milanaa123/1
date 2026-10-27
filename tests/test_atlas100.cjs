@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=batch04-20-cleansed-20261028'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=batch04-22-corrected-20261028'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -299,4 +299,18 @@ test('Stage 7: 20 more real species 46–65 resolve to the original batch-four s
  assert.equal(api.list.length,100);
  assert.equal(api.resolve(row('Canis lupus')).approvedIndex,0);
  assert.equal(api.resolve(row('Cornufer opisthodon','Amphibia','Anura')).id,'frog');
+});
+
+
+test('22 visually corrected species use a real transparent WebP and retain old master',()=>{
+ const b=fs.readFileSync('art/animagia-corrected-22.webp');
+ const crypto=require('node:crypto');
+ assert.equal(b.toString('ascii',0,4),'RIFF');
+ assert.equal(b.toString('ascii',8,12),'WEBP');
+ assert.equal(crypto.createHash('sha256').update(b).digest('hex'),'9876d77dfcee8e0859581678d5273b13fd1ca77d8a45b5792f334ffb1a07687b');
+ assert.equal(api.evidence.visualCorrections.count,22);
+ assert.deepEqual(Array.from(api.correctedIndices),[6,7,9,10,14,19,24,29,30,33,35,40,46,47,48,53,54,65,68,78,81,86]);
+ assert.equal(api.list.length,100);
+ const build=fs.readFileSync('build_data.py','utf8');
+ assert.ok(build.includes("shutil.copy2(corrected,DEST/'art'/'animagia-corrected-22.webp')"));
 });
