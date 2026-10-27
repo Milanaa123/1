@@ -272,102 +272,122 @@
     {
       "index": 46,
       "name": "Антилопа",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 47,
       "name": "Газель",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 48,
       "name": "Верблюд",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 49,
       "name": "Лама",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 50,
       "name": "Альпака",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 51,
       "name": "Кролик",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 52,
       "name": "Заяц",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 53,
       "name": "Белка",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 54,
       "name": "Бобр",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 55,
       "name": "Хомяк",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 56,
       "name": "Мышь",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 57,
       "name": "Крыса",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 58,
       "name": "Дикобраз",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 59,
       "name": "Суслик",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 60,
       "name": "Сурок",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 61,
       "name": "Кенгуру",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 62,
       "name": "Коала",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 63,
       "name": "Вомбат",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 64,
       "name": "Динго",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 65,
       "name": "Тасманийский дьявол",
-      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
+      "graphicState": "batch04-non-destructive-alpha-cleanup",
+      "batch": 4
     },
     {
       "index": 66,
@@ -562,6 +582,12 @@
       "batch": 3,
       "first": 26,
       "last": 45,
+      "state": "runtime alpha cleanup of existing curated art, full-cell containment"
+    },
+    {
+      "batch": 4,
+      "first": 46,
+      "last": 65,
       "state": "runtime alpha cleanup of existing curated art, full-cell containment"
     }
   ]

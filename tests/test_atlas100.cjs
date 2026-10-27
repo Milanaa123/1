@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=batch03-20-cleansed-20261028'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=batch04-20-cleansed-20261028'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -121,7 +121,7 @@ test('Stage 5: twenty consecutive images 6–25 are routed to their own artwork'
  const source=fs.readFileSync('animal_atlas_100.js','utf8');
  for(const required of ['function cleanReviewedCell(', 'reviewedCutouts',
    'cleared>0','if(closest<=8)keep[id]=1',
-   '(profile.reviewedBatch===2||profile.reviewedBatch===3)?cleanReviewedCell(im,i):null'])
+   '(profile.reviewedBatch>=2&&profile.reviewedBatch<=4)?cleanReviewedCell(im,i):null'])
   assert.ok(source.includes(required),required);
 });
 
@@ -159,4 +159,144 @@ test('Stage 6: next 20 transparent drawings 26–45 preserve exact routing; Pega
  assert.equal(api.resolve(row('Pegasus fictitious','Unknown','Unknown')),null);
  assert.notEqual(api.resolve(row('Equus ferus')).cell,41);
  assert.equal(api.list.length,100);
+});
+
+
+test('Stage 7: 20 more real species 46–65 resolve to the original batch-four silhouettes',()=>{
+ const cases=[
+ [
+  "Tragelaphus strepsiceros",
+  45,
+  "Mammalia",
+  "Artiodactyla"
+ ],
+ [
+  "Gazella gazella",
+  46,
+  "Mammalia",
+  "Artiodactyla"
+ ],
+ [
+  "Camelus dromedarius",
+  47,
+  "Mammalia",
+  "Artiodactyla"
+ ],
+ [
+  "Lama glama",
+  48,
+  "Mammalia",
+  "Artiodactyla"
+ ],
+ [
+  "Vicugna pacos",
+  49,
+  "Mammalia",
+  "Artiodactyla"
+ ],
+ [
+  "Oryctolagus cuniculus",
+  50,
+  "Mammalia",
+  "Lagomorpha"
+ ],
+ [
+  "Lepus europaeus",
+  51,
+  "Mammalia",
+  "Lagomorpha"
+ ],
+ [
+  "Sciurus vulgaris",
+  52,
+  "Mammalia",
+  "Rodentia"
+ ],
+ [
+  "Castor fiber",
+  53,
+  "Mammalia",
+  "Rodentia"
+ ],
+ [
+  "Cricetus cricetus",
+  54,
+  "Mammalia",
+  "Rodentia"
+ ],
+ [
+  "Mus musculus",
+  55,
+  "Mammalia",
+  "Rodentia"
+ ],
+ [
+  "Rattus norvegicus",
+  56,
+  "Mammalia",
+  "Rodentia"
+ ],
+ [
+  "Hystrix cristata",
+  57,
+  "Mammalia",
+  "Rodentia"
+ ],
+ [
+  "Spermophilus citellus",
+  58,
+  "Mammalia",
+  "Rodentia"
+ ],
+ [
+  "Marmota marmota",
+  59,
+  "Mammalia",
+  "Rodentia"
+ ],
+ [
+  "Macropus giganteus",
+  60,
+  "Mammalia",
+  "Diprotodontia"
+ ],
+ [
+  "Phascolarctos cinereus",
+  61,
+  "Mammalia",
+  "Diprotodontia"
+ ],
+ [
+  "Vombatus ursinus",
+  62,
+  "Mammalia",
+  "Diprotodontia"
+ ],
+ [
+  "Canis lupus dingo",
+  63,
+  "Mammalia",
+  "Carnivora"
+ ],
+ [
+  "Sarcophilus harrisii",
+  64,
+  "Mammalia",
+  "Dasyuromorphia"
+ ]
+];
+ assert.equal(cases.length,20);
+ for(const [scientific,index,cls,order] of cases){
+  const p=api.resolve(row(scientific,cls,order));
+  assert.equal(p?.cell,index,scientific);
+  assert.equal(p?.reviewedBatch,4,scientific);
+  assert.equal(p?.artSet,'atlas100',scientific);
+  assert.equal(p?.exact,false,scientific);
+ }
+ assert.equal(api.evidence.batch04.first,46);
+ assert.equal(api.evidence.batch04.last,65);
+ assert.equal(api.evidence.batch04.count,20);
+ assert.equal(api.list.length,100);
+ assert.equal(api.resolve(row('Canis lupus')).approvedIndex,0);
+ assert.equal(api.resolve(row('Cornufer opisthodon','Amphibia','Anura')).id,'frog');
 });
