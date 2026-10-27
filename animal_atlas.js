@@ -294,7 +294,10 @@
   });
   return loaded;
  }
- async function drawable(){
+ async function drawable(profile){
+  // For the approved first five do not download the unrelated 3.6MB legacy
+  // sheet; the exact approved art is already loaded by loadBatch01().
+  if(Number.isInteger(profile?.approvedIndex))return await loadBatch01();
   // Preload BOTH sheets before the shared screen/export Canvas is drawn.
   const [image]=await Promise.all([asset(),loadBatch01()]);
   if(!image)return null;
