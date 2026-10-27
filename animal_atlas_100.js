@@ -11,6 +11,9 @@
  const URI='./art/animagia-100-alpha.webp';
  const CORRECTED_URI='./art/animagia-corrected-22.webp';
  const GRASS_SNAKE_URI='./art/animagia-grass-snake-87.svg';
+ const SHARP_URI='./art/animagia-100-sharp4x.webp';
+ const SHARP_CORRECTED_URI='./art/animagia-corrected-22-sharp4x.webp';
+ const SHARP_SCALE=4;
  const CORRECTED_SET=new Set([5,6,8,9,13,18,23,28,29,32,34,39,45,46,47,52,53,64,67,77,80,85]);
  const WIDTH=160,HEIGHT=110;
  const entries=[["wolf","Волк"],["fox","Лиса"],["dog","Собака"],["cat","Кошка"],["lion","Лев"],["tiger","Тигр"],["snow-leopard","Снежный барс"],["cheetah","Гепард"],["jaguar","Ягуар"],["puma","Пума"],["bear","Медведь"],["panda","Панда"],["raccoon","Енот"],["otter","Выдра"],["mink","Норка"],["badger","Барсук"],["wolverine","Росомаха"],["ocelot","Оцелот"],["lynx","Рысь"],["caracal","Каракал"],["owl","Сова"],["eagle-owl","Филин"],["raven","Ворон"],["crow","Ворона"],["falcon","Сокол"],["hawk","Ястреб"],["eagle","Орёл"],["vulture","Стервятник"],["gull","Чайка"],["hummingbird","Колибри"],["deer","Олень"],["moose","Лось"],["roe-deer","Косуля"],["reindeer","Северный олень"],["boar","Кабан"],["bison","Бизон"],["aurochs","Зубр"],["sheep","Баран"],["goat","Козёл"],["chamois","Серна"],["horse","Лошадь"],["pegasus","Пегас (фантазийный)"],["donkey","Осёл"],["zebra","Зебра"],["giraffe","Жираф"],["antelope","Антилопа"],["gazelle","Газель"],["camel","Верблюд"],["llama","Лама"],["alpaca","Альпака"],["rabbit","Кролик"],["hare","Заяц"],["squirrel","Белка"],["beaver","Бобр"],["hamster","Хомяк"],["mouse","Мышь"],["rat","Крыса"],["porcupine","Дикобраз"],["ground-squirrel","Суслик"],["marmot","Сурок"],["kangaroo","Кенгуру"],["koala","Коала"],["wombat","Вомбат"],["dingo","Дикая собака динго"],["tasmanian-devil","Тасманийский дьявол"],["emu","Эму"],["ostrich","Страус"],["cassowary","Казуар"],["kiwi","Киви"],["penguin","Пингвин"],["whale","Кит"],["dolphin","Дельфин"],["orca","Косатка"],["shark","Акула"],["ray","Скат"],["seal","Тюлень"],["sea-lion","Морской лев"],["walrus","Морж"],["manatee","Ламантин"],["sea-otter","Выдра морская"],["turtle","Черепаха"],["sea-turtle","Морская черепаха"],["lizard","Ящерица"],["iguana","Игуана"],["chameleon","Хамелеон"],["gecko","Геккон"],["snake","Уж (змея)"],["serpent","Змей (декоративный)"],["cobra","Кобра"],["python","Питон"],["crocodile","Крокодил"],["alligator","Аллигатор"],["spiny-lizard","Шипохвост"],["bat","Летучая мышь"],["octopus","Осьминог"],["squid","Кальмар"],["jellyfish","Медуза"],["seahorse","Морской конёк"],["crab","Краб"],["lobster","Омар"]];
@@ -136,7 +139,21 @@
  const fallbackClass={"Mammalia":1,"Aves":22,"Reptilia":82,"Chondrichthyes":73,"Elasmobranchii":73,"Cephalopoda":94,"Scyphozoa":96,"Cubozoa":96,"Malacostraca":98};
  const scientific=(row)=>String(row?.[1]||'').trim().replace(/\s+/g,' ');
  const labelFor=idx=>names[idx];
- let loading=null,correctedLoading=null,snake87Loading=null;
+ let loading=null,correctedLoading=null,snake87Loading=null,sharpLoading=null,sharpCorrectionLoading=null;
+ function sharpAsset(){
+  if(!sharpLoading)sharpLoading=new Promise(resolve=>{
+   const img=new Image();img.crossOrigin='anonymous';
+   img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=SHARP_URI;
+  });
+  return sharpLoading;
+ }
+ function sharpCorrectionAsset(){
+  if(!sharpCorrectionLoading)sharpCorrectionLoading=new Promise(resolve=>{
+   const img=new Image();img.crossOrigin='anonymous';
+   img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=SHARP_CORRECTED_URI;
+  });
+  return sharpCorrectionLoading;
+ }
  function snake87Asset(){
   if(!snake87Loading)snake87Loading=new Promise(resolve=>{
    const img=new Image();img.crossOrigin='anonymous';img.onload=()=>resolve(img);
@@ -211,31 +228,38 @@
    const legacyImage=loaded?.legacy||loaded;
    return legacy.drawCanvas(ctx,legacyImage,profile,x,y,w,h);
   }
-  const im=loaded?.newSheet||loaded;
+  const im=loaded?.sharpSheet?.naturalWidth===6400&&loaded?.sharpSheet?.naturalHeight===4400?
+   loaded.sharpSheet:loaded?.newSheet||loaded;
   if(!im||im.naturalWidth<1600||im.naturalHeight<1100)return false;
+  const sourceScale=im.naturalWidth===6400&&im.naturalHeight===4400?SHARP_SCALE:1;
   const i=profile.cell;
   if(!Number.isInteger(i)||i<0||i>=100)return false;
   // Preserve 160×110 proportions and leave a generous 7% safe inset.
   const factor=Math.min(w*.90/WIDTH,h*.90/HEIGHT);
   const dw=WIDTH*factor,dh=HEIGHT*factor;
   const dx=x+(w-dw)/2,dy=y+(h-dh)/2;
-  const replacement=loaded?.corrected;
+  const replacement=loaded?.sharpCorrected?.naturalWidth===6400&&loaded?.sharpCorrected?.naturalHeight===4400?
+   loaded.sharpCorrected:loaded?.corrected;
+  const correctionScale=replacement?.naturalWidth===6400&&replacement?.naturalHeight===4400?SHARP_SCALE:1;
   const useCorrection=CORRECTED_SET.has(i);
   const specificSnake=i===86?loaded?.grassSnake87:null;
   if(useCorrection&&(!replacement||replacement.naturalWidth!==1600||replacement.naturalHeight!==1100))return false;
-  const refined=!useCorrection&&(profile.reviewedBatch>=2&&profile.reviewedBatch<=6)?cleanReviewedCell(im,i):null;
+  const refined=!useCorrection&&sourceScale===1&&(profile.reviewedBatch>=2&&profile.reviewedBatch<=6)?cleanReviewedCell(im,i):null;
   ctx.save();
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
   if(specificSnake?.naturalWidth>0)ctx.drawImage(specificSnake,dx,dy,dw,dh);
-  else if(useCorrection)ctx.drawImage(replacement,(i%10)*WIDTH,Math.floor(i/10)*HEIGHT,WIDTH,HEIGHT,dx,dy,dw,dh);
+  else if(useCorrection)ctx.drawImage(replacement,(i%10)*WIDTH*correctionScale,Math.floor(i/10)*HEIGHT*correctionScale,WIDTH*correctionScale,HEIGHT*correctionScale,dx,dy,dw,dh);
   else if(refined)ctx.drawImage(refined,dx,dy,dw,dh);
-  else ctx.drawImage(im,(i%10)*WIDTH,Math.floor(i/10)*HEIGHT,
-    WIDTH,HEIGHT,dx,dy,dw,dh);
+  else ctx.drawImage(im,(i%10)*WIDTH*sourceScale,Math.floor(i/10)*HEIGHT*sourceScale,
+    WIDTH*sourceScale,HEIGHT*sourceScale,dx,dy,dw,dh);
   ctx.restore();
   return true;
  }
  async function drawable(){
-  const [newSheet,oldSheet,corrected,grassSnake87]=await Promise.all([asset(),legacy.drawable(),correctedAsset(),snake87Asset()]);
-  return newSheet||oldSheet?{newSheet,legacy:oldSheet,corrected,grassSnake87}:null;
+  const [newSheet,oldSheet,corrected,grassSnake87,sharpSheet,sharpCorrected]=await Promise.all([
+   asset(),legacy.drawable(),correctedAsset(),snake87Asset(),sharpAsset(),sharpCorrectionAsset()
+  ]);
+  return newSheet||oldSheet?{newSheet,legacy:oldSheet,corrected,grassSnake87,sharpSheet,sharpCorrected}:null;
  }
  function render(container,profile){
   if(!container)return;
@@ -243,18 +267,25 @@
   container.replaceChildren();
   const canvas=document.createElement('canvas');
   canvas.className='atlas-art-sprite';
-  canvas.width=WIDTH;canvas.height=HEIGHT;
+  // Retina backing is 4× larger than source artwork CSS dimensions.
+  canvas.width=WIDTH*SHARP_SCALE;canvas.height=HEIGHT*SHARP_SCALE;
   canvas.setAttribute('role','img');
   canvas.setAttribute('aria-label',profile.note+' · '+profile.scientific);
   container.append(canvas);
   void Promise.all([asset(),correctedAsset(),snake87Asset()]).then(([im,corrected,grassSnake87])=>{
    if(!im||!container.contains(canvas))return;
-   drawCanvas(canvas.getContext('2d'),{newSheet:im,corrected,grassSnake87},profile,0,0,WIDTH,HEIGHT);
+   drawCanvas(canvas.getContext('2d'),{newSheet:im,corrected,grassSnake87},profile,0,0,canvas.width,canvas.height);
+  });
+  void Promise.all([asset(),correctedAsset(),snake87Asset(),sharpAsset(),sharpCorrectionAsset()]).then(([im,corrected,grassSnake87,sharpSheet,sharpCorrected])=>{
+   if(!im||!container.contains(canvas))return;
+   const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);
+   drawCanvas(ctx,{newSheet:im,corrected,grassSnake87,sharpSheet,sharpCorrected},profile,0,0,canvas.width,canvas.height);
   });
  }
  window.AnimagiaAnimalAtlas=Object.freeze({
   ...legacy,imageUrl:URI,legacyImageUrl:legacy.imageUrl,
   grassSnake87ImageUrl:GRASS_SNAKE_URI,
+  sharpImageUrl:SHARP_URI,sharpCorrectedImageUrl:SHARP_CORRECTED_URI,sharpArtworkScale:SHARP_SCALE,
   correctedImageUrl:CORRECTED_URI,correctedIndices:Object.freeze([6,7,9,10,14,19,24,29,30,33,35,40,46,47,48,53,54,65,68,78,81,86]),
   resolve,classify:legacy.classify,style:legacy.style,
   render,drawCanvas,drawable,
