@@ -141,62 +141,76 @@
   }
   ctx.restore();
  }
+
  function paintNebula(ctx,number){
-  // Antique purple mist and glowing gold dust on the exact same screen/PNG canvas.
+  // Stage 1: dark celestial vellum, not dozens of opaque purple loops.
+  // Seeded: the visible card and downloaded PNG share identical stars.
   let seed=(number*2246822519+784691)>>>0;
-  const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};
+  const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
   ctx.save();
-  // Color haze is intentionally concentrated at the borders, not over the text.
-  for(const [x,y,rad,color] of [
-   [95,835,320,'#a456a0'],[1040,550,310,'#6a477d'],
-   [1070,1220,300,'#a15c9a'],[105,1630,340,'#9f4778'],
-   [490,1180,380,'#704880'],[900,1530,255,'#573b68']
-  ]){
-   const haze=ctx.createRadialGradient(x,y,0,x,y,rad);
-   haze.addColorStop(0,color+'43');
-   haze.addColorStop(.4,color+'1f');
-   haze.addColorStop(1,color+'00');
-   ctx.fillStyle=haze;ctx.fillRect(x-rad,y-rad,rad*2,rad*2);
+  // Diffuse violet dust exists near the parchment edges; never over lettering.
+  const clouds=[
+   [65,680,300,'#783868',.12],
+   [1125,560,290,'#67417d',.10],
+   [87,1310,330,'#6f3464',.11],
+   [1110,1420,320,'#763e71',.13],
+   [290,1150,290,'#55334f',.065],
+   [915,930,250,'#6c3c73',.055],
+   [625,1790,450,'#65375d',.075]
+  ];
+  for(const [x,y,r,color,alpha] of clouds){
+   const cloud=ctx.createRadialGradient(x,y,12,x,y,r);
+   cloud.addColorStop(0,color+Math.round(alpha*255).toString(16).padStart(2,'0'));
+   cloud.addColorStop(.43,color+Math.round(alpha*110).toString(16).padStart(2,'0'));
+   cloud.addColorStop(1,color+'00');
+   ctx.fillStyle=cloud;ctx.fillRect(x-r,y-r,2*r,2*r);
   }
-  // Organic trails instead of plain, mechanical orbit ellipses.
+  // Constellation dust is concentrated at the edges of the figure, so the
+  // seal, animal engraving, species name and bottom numeral remain readable.
+  for(let i=0;i<1320;i++){
+   let x=65+random()*1070,y=70+random()*1930;
+   const outside=x<235||x>965||y<255||y>1790;
+   if(!outside&&random()<.77)continue;
+   const sparkle=random(),radius=sparkle>.993?1.85:.19+random()*.57;
+   const alpha=outside?.12+random()*.36:.07+random()*.19;
+   ctx.fillStyle=sparkle>.36
+    ?'rgba(238,193,142,'+alpha.toFixed(3)+')'
+    :'rgba(170,116,195,'+(alpha*.68).toFixed(3)+')';
+   ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.fill();
+  }
+  // A few whisper-thin vapor trails (not the former 54 bright side loops).
   for(const side of [-1,1]){
-   const x=side<0?95:1105;
-   for(let i=0;i<27;i++){
-    const y=120+random()*1730,walk=35+random()*220;
-    const opening=side<0?1:-1;
-    ctx.beginPath();
-    ctx.moveTo(x,y);
-    ctx.bezierCurveTo(x+opening*walk*.64,y-87,
-      x+opening*walk,y+95,x+opening*walk*.53,y+230);
-    ctx.strokeStyle=i%4===0?'#cb8ab7':'#87619f';
-    ctx.globalAlpha=.055+random()*.13;ctx.lineWidth=1+random()*4;
-    ctx.shadowColor='#b974bc';ctx.shadowBlur=i%4===0?14:5;
-    ctx.stroke();
+   const x=side<0?82:1118,sign=side<0?1:-1;
+   for(let i=0;i<5;i++){
+    const y=275+i*332+random()*45,reach=55+random()*62;
+    ctx.save();ctx.strokeStyle=i%2?'#7c5a88':'#a4789e';
+    ctx.globalAlpha=.085;ctx.lineWidth=1.2+random()*.5;
+    ctx.beginPath();ctx.moveTo(x,y);
+    ctx.bezierCurveTo(x+sign*reach*.35,y-64,
+       x+sign*reach*.98,y+66,x+sign*reach*.42,y+174);
+    ctx.stroke();ctx.restore();
    }
   }
-  ctx.shadowBlur=0;
-  for(let i=0;i<560;i++){
-   const x=75+random()*1050,y=70+random()*1900;
-   const gold=random()>.35;
-   const brightness=.19+random()*.56;
-   ctx.fillStyle=gold?'rgba(244,190,109,'+brightness.toFixed(2)+')':
-     'rgba(187,133,215,'+(brightness*.65).toFixed(2)+')';
-   ctx.globalAlpha=1;
-   const r=random()>.98?2.1:.2+random()*.7;
-   ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+  // A soft geometric halo ties the selected engraving to the magic wheel.
+  const halo=ctx.createRadialGradient(600,1140,110,600,1140,470);
+  halo.addColorStop(0,'#87649014');
+  halo.addColorStop(.5,'#66466e09');
+  halo.addColorStop(1,'#66466e00');
+  ctx.fillStyle=halo;ctx.fillRect(140,680,920,920);
+  ctx.globalAlpha=.4;ctx.strokeStyle='#cba26c';ctx.lineWidth=1.05;
+  for(const [rx,ry,first,last] of [
+   [380,278,Math.PI*1.07,Math.PI*1.93],
+   [453,341,Math.PI*1.1,Math.PI*1.9],
+   [294,190,Math.PI*1.03,Math.PI*1.97]
+  ]){
+   ctx.beginPath();ctx.ellipse(600,1160,rx,ry,0,first,last);ctx.stroke();
   }
-  // Arcane celestial vault behind the animal; vivid but sufficiently airy.
-  ctx.globalAlpha=.5;ctx.strokeStyle='#c49a66';ctx.lineWidth=1.15;
-  for(const [cx,cy,rx,ry] of [
-   [600,1160,380,290],[600,1160,450,350],
-   [600,1160,295,195],[600,1160,490,405]
-  ]){ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,Math.PI*1.07,Math.PI*1.95);ctx.stroke();}
-  for(const [x,y] of [[600,860],[800,1140],[400,1300],[960,980]]){
-   ctx.globalAlpha=.7;ctx.strokeStyle='#eabf82';
-   ctx.beginPath();ctx.moveTo(x-13,y);ctx.lineTo(x+13,y);
-   ctx.moveTo(x,y-19);ctx.lineTo(x,y+19);ctx.stroke();
-   ctx.globalAlpha=.9;ctx.fillStyle='#f6dba7';
-   ctx.beginPath();ctx.arc(x,y,2.2,0,Math.PI*2);ctx.fill();
+  ctx.globalAlpha=.83;ctx.strokeStyle='#ebc58e';
+  for(const [x,y,size] of [[600,860,14],[780,1020,9],[405,1285,10],[920,1320,7]]){
+   ctx.beginPath();ctx.moveTo(x-size,y);ctx.lineTo(x+size,y);
+   ctx.moveTo(x,y-size*1.4);ctx.lineTo(x,y+size*1.4);ctx.stroke();
+   ctx.beginPath();ctx.arc(x,y,1.8,0,Math.PI*2);
+   ctx.fillStyle='#f6daa7';ctx.fill();
   }
   ctx.restore();
  }
@@ -206,12 +220,12 @@
   ctx.save();
   ctx.scale(1,2000/2070);
   const base=ctx.createLinearGradient(0,0,1120,2070);
-  base.addColorStop(0,'#0b0b16');base.addColorStop(.45,'#171321');
-  base.addColorStop(.71,'#221729');base.addColorStop(1,'#0b0b15');
+  base.addColorStop(0,'#090a14');base.addColorStop(.45,'#12101d');
+  base.addColorStop(.71,'#1a1425');base.addColorStop(1,'#090a14');
   ctx.fillStyle=base;ctx.fillRect(0,0,1200,2070);
   const warmth={predator:'#a0754b',herbivore:'#8b8773',omnivore:'#8d7194'}[diet]||'#87677c';
   const aurora=ctx.createRadialGradient(600,1110,80,600,1110,780);
-  aurora.addColorStop(0,warmth+'1a');aurora.addColorStop(.52,'#9c628216');
+  aurora.addColorStop(0,warmth+'12');aurora.addColorStop(.52,'#9c62820c');
   aurora.addColorStop(1,'#9c628200');
   ctx.fillStyle=aurora;ctx.fillRect(0,0,1200,2070);
   paintNebula(ctx,number);
@@ -234,6 +248,30 @@
     }
     ctx.restore();
   }
+
+
+  // Balanced six-strand gilded Art Nouveau fans behind the species motifs.
+  // All four corners match the reference and retain clear, blank mid-edges
+  // for the animal-specific marks which will be approved separately.
+  ctx.save();
+  ctx.strokeStyle='#d5ad78';ctx.lineWidth=1.08;
+  ctx.globalAlpha=.83;
+  for(const xSign of [1,-1])for(const ySign of [1,-1]){
+   ctx.save();ctx.translate(xSign===1?62:1138,ySign===1?62:2008);
+   ctx.scale(xSign,ySign);
+   for(let i=0;i<6;i++){
+    const out=118+i*15;
+    ctx.beginPath();ctx.moveTo(0,out);
+    ctx.bezierCurveTo(i*5+10,out*.40,out*.4,i*5+10,out,0);
+    ctx.stroke();
+   }
+   ctx.fillStyle='#f2d3a0';
+   for(const x of [0,30,94]){
+    ctx.beginPath();ctx.arc(x,0,1.4,0,Math.PI*2);ctx.fill();
+   }
+   ctx.restore();
+  }
+  ctx.restore();
 
   // Refined gold filigree from the approved reference. Only card geometry;
   // animal artwork and its atlas remain completely untouched.

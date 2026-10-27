@@ -353,3 +353,19 @@
  padding:0!important;min-width:0!important;max-width:none!important;
  border:0!important;box-shadow:none!important;background:none!important;
 }
+
+/* Stage 1 — balanced card template across phone and desktop. The single
+   visible Canvas remains identical to the transparent PNG export. */
+.relic-laboratory .relic-seal-wrap .silhouette-frame .atlas-art-sprite{
+ transform:none!important;object-fit:contain!important;
+}
+.relic-laboratory .relic-seal-wrap:not(.is-poster-rendered){
+ background:linear-gradient(154deg,#0a0a15,#181323 60%,#0a0a15)!important;
+}
+@media(max-width:850px){
+ .relic-laboratory .relic-layout{align-items:start}
+ .relic-laboratory .relic-seal-wrap{width:min(100%,560px)}
+}
+@media(max-width:430px){
+ .relic-laboratory .relic-seal-wrap{max-width:100%;aspect-ratio:3/5}
+}

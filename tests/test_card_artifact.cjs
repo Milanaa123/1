@@ -168,3 +168,21 @@ test('All fifty frame presets are reachable; cuts erase canvas pixels last',()=>
   }
  }
 });
+
+test('Stage-one reference template uses clean dark stardust and symmetric foil fans',()=>{
+ const start=js.indexOf(' function paintNebula(ctx,number){');
+ const end=js.indexOf(' function paintCardBackdrop(ctx,number,diet){',start);
+ assert.ok(start>0&&end>start);
+ const nebula=js.slice(start,end);
+ assert.ok(nebula.includes('const clouds='));
+ assert.ok(nebula.includes('i<1320'));
+ assert.ok(nebula.includes('i<5'));
+ assert.ok(!nebula.includes('i<27'));
+ assert.ok(!nebula.includes('walk=35+random()*220'));
+ const back=js.slice(end,js.indexOf(' function textLines(',end));
+ assert.ok(back.includes('i<6'));
+ assert.ok(back.includes("base.addColorStop(0,'#090a14')"));
+ assert.ok(back.includes("base.addColorStop(.71,'#1a1425')"));
+ assert.ok(styles.includes('transform:none!important;object-fit:contain!important;'));
+ assert.match(html,/relic_features.js\?v=stage1-celestial-20261027/);
+});
