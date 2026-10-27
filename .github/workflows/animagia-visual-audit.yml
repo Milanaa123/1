@@ -64,3 +64,22 @@ jobs:
           emit('FIRSTFIVE',bg)
           PY
           python /tmp/art_audit.py
+
+      - name: Inspect actual cleaned browser Canvas for batches two through four
+        run: |
+          node tests/check_batch02_twenty.cjs
+          node tests/check_batch03_twenty.cjs
+          node tests/check_batch04_twenty.cjs
+          python - <<'PY'
+          import base64,io,textwrap
+          from PIL import Image
+          for batch in [2,3,4]:
+           file=f'qa-artifacts/batch{batch:02d}-twenty-before-after.png'
+           im=Image.open(file).convert('RGB')
+           out=io.BytesIO()
+           im.save(out,'WEBP',quality=80,method=5)
+           data=base64.b64encode(out.getvalue()).decode()
+           print('BROWSER_PREVIEW_BEGIN',batch,'original',im.size,'encoded_bytes',len(out.getvalue()))
+           for i,chunk in enumerate(textwrap.wrap(data,3000)):print('BROWSERPREVIEW_'+str(batch)+'_'+str(i)+'='+chunk)
+           print('BROWSER_PREVIEW_END',batch)
+          PY
