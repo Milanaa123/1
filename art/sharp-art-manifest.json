@@ -5,17 +5,17 @@
     1100
   ],
   "sourceCells": 100,
-  "lossless": true,
+  "lossless": false,
   "results": [
     {
       "file": "animagia-100-sharp4x.webp",
-      "bytes": 12350342,
-      "sha256": "780c4af28dbb4a4ccf6508f6b73be162773de9c90e59261ff3472b906d66b65c"
+      "bytes": 10037844,
+      "sha256": "3e17dce7991f29adba10b5a285edaf19893464f815cde514353ba15e97e9d7cc"
     },
     {
       "file": "animagia-corrected-22-sharp4x.webp",
-      "bytes": 2527164,
-      "sha256": "9e0a8e51b66038a7231519972bc53edb1214b832a5f71f76c0704a3206300f1b"
+      "bytes": 1746190,
+      "sha256": "a6d706fea2c931464157f914914b8a20db7c64b59f6aed31defaa250e94e94a1"
     },
     {
       "file": "animals-approved-01-05-sharp4x.png",
