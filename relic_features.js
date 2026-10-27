@@ -1616,7 +1616,7 @@
   const greek=get('greek').value.trim();
   if(!validGreek(greek)||score(greek)!==row[0]||row[0]!==sum)return false;
   const gallery=atlas(),profile=gallery?.resolve(row)||null;
-  const sprite=profile?await gallery.drawable():null;
+  const sprite=profile?await gallery.drawable(profile):null;
   if(serial!==posterSerial)return false;
   const ctx=canvas.getContext('2d');if(!ctx)return false;
   canvas.width=1200;canvas.height=2000;
