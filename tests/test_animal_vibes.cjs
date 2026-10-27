@@ -941,9 +941,9 @@ test('Frogs have transparent splayed webbed toes and no large filled holes',()=>
  const c=source.indexOf(' function waterSplash(',b);
  assert.ok(a>=0&&b>a&&c>b);
  const paws=source.slice(a,b),drops=source.slice(b,c);
- assert.ok(paws.includes("ctx.lineWidth=3.4;ctx.lineCap='round'"));
- assert.ok(paws.includes("ctx.moveTo(-36,11)"));
- assert.ok(paws.includes("ctx.quadraticCurveTo(x*.60,y0*.55,x,y0)"));
+ assert.ok(paws.includes("ctx.lineWidth=4.2;ctx.lineCap='round'"));
+ assert.ok(paws.includes("ctx.moveTo(-30,18)"));
+ assert.ok(paws.includes("ctx.quadraticCurveTo(67,-13,83,-49)"));
  assert.ok(drops.includes("ctx.lineWidth=5"));
  assert.ok(!paws.includes('ctx.fill()')&&!drops.includes('ctx.fill()'));
  const frog=source.slice(source.indexOf(' const gentle=['),source.indexOf(' const aquatic=['));
@@ -977,8 +977,8 @@ test('All spiders use genuine-style silk rather than generic nocturnal trims',()
  assert.notEqual(scorpion.kind,'spider');
  const painter=source.slice(source.indexOf(' function paintDietAdornment('),
  source.indexOf(' function paintCardBackdropOnScreen('));
- for(const feature of ['function spiderWeb(','const silk=[','const directions=',
-  'structural supports','irregular capture spiral','spiderWeb(true,true'])
+ for(const feature of ['function spiderWeb(','const silk=[','const angles=',
+  'Load-bearing radials','Imperfect sticky threads','spiderWeb(true,true'])
   assert.ok(painter.includes(feature),feature);
  assert.ok(!painter.includes('ctx.fillText("🕸"'));
 });
@@ -993,4 +993,21 @@ test('Reference botanical frames cover most of both side rails',()=>{
  assert.ok(florals.includes("vineWall('left'")&&florals.includes("vineWall('right'"));
  const hybrids=painter.slice(end,painter.indexOf('  // Realistic orb-weaver-style silk architecture',end));
  assert.ok(hybrids.includes('vineWall(')&&hybrids.includes('claw('));
+});
+
+test('True transparent tiny ivy eyelets and restrained spider web remain within frame',()=>{
+ const painter=source.slice(source.indexOf(' function paintDietAdornment('),
+ source.indexOf(' function paintCardBackdropOnScreen('));
+ assert.ok(painter.includes('function vineStitches(side,variant=0)'));
+ assert.ok(painter.includes("vineStitches('left',v)"));
+ assert.ok(painter.includes("vineStitches('right',(v+2)%5)"));
+ assert.ok(painter.includes('ctx.ellipse(edge,py,5.5,4'));
+ const web=painter.slice(painter.indexOf(' function spiderWeb('),
+ painter.indexOf(' const silk=['));
+ assert.ok(web.includes('ctx.clip()'));
+ assert.ok(web.includes('ctx.rect(-4,-4,255,262)'));
+ assert.ok(!web.includes('maxRx=312'));
+ const foot=painter.slice(painter.indexOf(' function webbedFoot('),
+ painter.indexOf(' function waterDrop('));
+ assert.ok(foot.includes('ctx.lineWidth=4.2'));
 });

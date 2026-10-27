@@ -127,7 +127,7 @@ test('All fifty frame presets are reachable; cuts erase canvas pixels last',()=>
    globalCompositeOperation:'source-over',globalAlpha:1,
    save(){stack.push({gco:this.globalCompositeOperation,alpha:this.globalAlpha})},
    restore(){const state=stack.pop();this.globalCompositeOperation=state.gco;this.globalAlpha=state.alpha},
-   translate(){},scale(){},rotate(){},beginPath(){},moveTo(){},lineTo(){},closePath(){},
+   translate(){},scale(){},rotate(){},beginPath(){},moveTo(){},lineTo(){},closePath(){},rect(){},clip(){},
    quadraticCurveTo(){},stroke(){},bezierCurveTo(){
     if(this.globalCompositeOperation==='destination-out')cuts.gash++;
    },
@@ -140,13 +140,13 @@ test('All fifty frame presets are reachable; cuts erase canvas pixels last',()=>
  }
  const categories=[
   ['predator','Mammalia',true],['soft-predator','Amphibia',true],
-  ['herbivore','Mammalia',false],['omnivore','Mammalia',true],
+  ['herbivore','Mammalia',true],['omnivore','Mammalia',true],
   ['aquatic','Mammalia',true],['avian','Aves',false],['reptile','Reptilia',false],['woodland','Mammalia',false],['nocturnal','Mammalia',false],['celestial','unknown',false]
  ];
  for(const [kind,className,needHoles] of categories){
   const diets={predator:'predator','soft-predator':'predator',herbivore:'herbivore',omnivore:'omnivore',aquatic:'predator',avian:'predator',reptile:'predator',woodland:'unknown',nocturnal:'unknown',celestial:'unknown'};
   const styl={diet:diets[kind],habitat:kind==='aquatic'?'aquatic':'terrestrial'},species=[...sample];
-  species[3]=className;species[4]=kind==='soft-predator'?'Anura':kind==='nocturnal'?'Chiroptera':'Carnivora';
+  species[3]=className;species[4]=kind==='soft-predator'?'Anura':kind==='nocturnal'?'Chiroptera':kind==='woodland'?'Eulipotyphla':'Carnivora';
   if(kind==='woodland')species[1]='Sorex araneus';if(kind==='celestial')species[1]='Unknownus mysticus';
   const variants=new Map();
   for(let i=0;i<100&&variants.size<5;i++){
@@ -185,7 +185,7 @@ test('Stage-one reference template uses clean dark stardust and symmetric foil f
  assert.ok(back.includes("base.addColorStop(0,'#090a14')"));
  assert.ok(back.includes("base.addColorStop(.71,'#1a1425')"));
  assert.ok(styles.includes('transform:none!important;object-fit:contain!important;'));
- assert.match(html,/relic_features.js\?v=stage3-reference-lush-silk-20261027/);
+ assert.match(html,/relic_features.js\?v=stage3-ivy-seam-frog-spider-v4/);
 });
 
 // Reference approval: full-circle Greek name; nebula and perimeter are drawn
@@ -219,7 +219,7 @@ test('Cosmic reference background and golden perimeter are actual Canvas decorat
  assert.ok(backdrop.includes('const ornate')||backdrop.includes('Perimeter engraving directly on the card'));
  assert.ok(backdrop.includes('for(let j=0;j<2100;j++)'));
  assert.ok(backdrop.includes("ctx.strokeStyle='#efc38b'"));
- assert.ok(html.includes('stage3-reference-lush-silk-20261027'));
+ assert.ok(html.includes('stage3-ivy-seam-frog-spider-v4'));
 });
 
 // Stage 2: only first given name on the card, full-name calculation unchanged.
