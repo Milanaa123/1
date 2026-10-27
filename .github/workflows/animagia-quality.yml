@@ -38,6 +38,14 @@ jobs:
           retention-days: 14
       - name: Validate silhouette matching and image licenses without external network
         run: node --test tests/test_silhouette.mjs
+      - name: Verify transparent originals from first five user-approved animal drawings
+        run: node tests/check_batch1_original_art.cjs
+      - name: Publish real-browser first batch preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-approved-originals-batch01
+          path: qa-artifacts/batch01-animals.png
+          retention-days: 14
       - name: Check curated animal artwork, genus accuracy and habitats
         run: node --test tests/test_animal_atlas.cjs
       - name: Regression test responsive animal chooser and premium PNG

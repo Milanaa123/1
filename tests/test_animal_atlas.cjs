@@ -151,7 +151,7 @@ test('Stage 4: source frog face retains full muzzle and drawn nostril',()=>{
  const cut=source.slice(start,end);
  assert.ok(cut.includes('[212,29]')&&cut.includes('[225,34]'),'tight mask protects muzzle and excludes background orbit');
  assert.ok(source.includes('ctx.ellipse(219.5,43,2.35,1.6'));
- assert.ok(source.includes("if(profile.id==='frog')"));
+ assert.ok(source.includes("const fit=Math.min(w/art.width,h/art.height)"));
  assert.ok(source.includes('Math.min(w/cutout.width,h/cutout.height)'));
  assert.ok(!source.includes('localStorage')&&!source.includes('sessionStorage'));
 });
