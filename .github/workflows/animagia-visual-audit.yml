@@ -41,6 +41,8 @@ jobs:
           print('ALPHA_SUMMARY',json.dumps({'min':min(x['alpha'] for x in totals),'max':max(x['alpha'] for x in totals),'empty':[x for x in totals if x['alpha']<150],'edgeRisk':[x for x in totals if x['edge']>12]},ensure_ascii=False))
           def emit(label,im):
            out=io.BytesIO();im.save(out,'WEBP',quality=76,method=5)
+           Path('qa-artifacts').mkdir(exist_ok=True)
+           Path('qa-artifacts/'+label+'.webp').write_bytes(out.getvalue())
            data=base64.b64encode(out.getvalue()).decode()
            print('ART_PREVIEW_BEGIN',label,'bytes',len(out.getvalue()),'chunks',len(textwrap.wrap(data,3000)))
            for i,chunk in enumerate(textwrap.wrap(data,3000)):print('ARTPREVIEW_'+label+'_'+str(i)+'='+chunk)
@@ -83,3 +85,14 @@ jobs:
            for i,chunk in enumerate(textwrap.wrap(data,3000)):print('BROWSERPREVIEW_'+str(batch)+'_'+str(i)+'='+chunk)
            print('BROWSER_PREVIEW_END',batch)
           PY
+      - name: Publish visual audit of all 100 artworks and three cleaned batches
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-100-visual-tz-audit
+          path: |
+            qa-artifacts/PANEL*.webp
+            qa-artifacts/FIRSTFIVE.webp
+            qa-artifacts/batch02-twenty-before-after.png
+            qa-artifacts/batch03-twenty-before-after.png
+            qa-artifacts/batch04-twenty-before-after.png
+          retention-days: 14
