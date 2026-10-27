@@ -205,7 +205,8 @@ test('Greek glyphs cover the entire ring at identical angles',()=>{
   assert.ok(positions.length>1&&
    Math.abs((positions.at(-1)-positions[0])+2*Math.PI/name.length-2*Math.PI)<1e-9);
   assert.ok(name.every((_,i)=>Number.isFinite(uprightRingAngle(positions[i]))));
-  const size=new Function(js.slice(begin,end)+'\nreturn ringFontSize;')(name,246,36,15);
+  const ringFontSize=new Function(js.slice(begin,end)+'\nreturn ringFontSize;')();
+  const size=ringFontSize(name,246,36,15);
   assert.ok(size>=15&&size<=36);
  }
  assert.ok(js.includes('ctx.rotate(uprightRingAngle(a));'));
