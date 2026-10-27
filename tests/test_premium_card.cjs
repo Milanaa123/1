@@ -28,7 +28,7 @@ test('Premium export never reaches obsolete PhyloPic silhouettes',()=>{
 test('Card hierarchy and no broken technical empty fields',()=>{
  assert.ok(js.includes('function updatePreviewText'));
  assert.ok(js.includes("original.indexOf(' — ')"));
- assert.ok(js.includes('canvas.height=1800'));
+ assert.ok(js.includes('canvas.height=2000'));
  assert.ok(js.includes("'СРЕДА ОБИТАНИЯ'"));
  assert.ok(js.includes('box.hidden=meta.diet'));
  assert.ok(js.includes("d.parentElement.hidden=meta.diet==='unknown'"));

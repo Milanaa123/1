@@ -5,6 +5,11 @@
  const get=id=>document.getElementById(id);
  const NS='http://www.w3.org/2000/svg';
  const LETTERS=[...'αβγδεζηθικλμνξοπρστυφχψω'];
+ function wheelLetters(greekName){
+  // Use the visitor-confirmed Greek transcription, never number-derived glyphs.
+  const s=String(greekName||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  return [...s].filter(ch=>typeof W!=='undefined'&&W[ch]!==undefined);
+ }
  const elem=(tag,value)=>{
   const a=document.createElement(tag);
   if(value!==undefined)a.textContent=String(value);
@@ -20,7 +25,7 @@
   return (known.length?known:rows).slice(0,30);
  };
  const label=r=>(typeof display==='function'?display(r):r[1]);
- function decorateSVG(svg,n){
+ function decorateSVG(svg,n,greekName){
   svg.replaceChildren();if(!Number.isSafeInteger(n)||n<=0)return;
   function node(tag,attr,txt){
    const x=document.createElementNS(NS,tag);
@@ -33,17 +38,23 @@
    const a=i*Math.PI/24,outer=151,inner=outer-(i%4===0?11:5);
    node('path',{d:'M '+(180+Math.cos(a)*outer)+' '+(180+Math.sin(a)*outer)+' L '+(180+Math.cos(a)*inner)+' '+(180+Math.sin(a)*inner),stroke:'#D7B983','stroke-width':i%4===0?1.5:.7});
   }
-  const points=[];
-  for(let i=0;i<12;i++){
-   const a=i*Math.PI/6-Math.PI/2;
-   node('text',{x:180+Math.cos(a)*132,y:185+Math.sin(a)*132,'font-size':17,'font-family':'Georgia,serif','text-anchor':'middle',fill:'#EBD4A4'},LETTERS[(n+i*7)%LETTERS.length]);
-   if(i<7){const q=(n*(i+11)+i*31)%360*Math.PI/180,r=56+(n+i)%20;points.push((180+Math.cos(q)*r)+','+(180+Math.sin(q)*r));}
+  const points=[],inscription=wheelLetters(greekName);
+  svg.setAttribute('aria-label','Магическое колесо: '+greekName+'; число '+n);
+  for(let i=0;i<inscription.length;i++){
+   const a=i*Math.PI*2/inscription.length-Math.PI/2;
+   node('text',{x:180+Math.cos(a)*132,y:185+Math.sin(a)*132,
+    'font-size':inscription.length>34?10:inscription.length>24?12:inscription.length>16?15:17,
+    'font-family':'Georgia,serif','text-anchor':'middle',fill:'#EBD4A4'},inscription[i]);
+  }
+  for(let i=0;i<7;i++){
+   const q=(n*(i+11)+i*31)%360*Math.PI/180,r=56+(n+i)%20;
+   points.push((180+Math.cos(q)*r)+','+(180+Math.sin(q)*r));
   }
   node('polygon',{points:points.join(' '),stroke:'#EED098','stroke-width':1.5,fill:'#D9B377','fill-opacity':.08});
   node('circle',{cx:180,cy:180,r:47,stroke:'#D7B983',fill:'#241F37'});
   node('text',{x:180,y:189,'font-family':'Georgia,serif','font-size':n>99999?25:34,'text-anchor':'middle',fill:'#FFDEA5'},n);
  }
- function paintSeal(ctx,n,x,y,r){
+ function paintSeal(ctx,n,x,y,r,greekName){
   ctx.save();ctx.translate(x,y);ctx.strokeStyle='#D9BD8A';ctx.lineWidth=2;
   for(const scale of [.97,.91,.72,.68,.46]){
    ctx.beginPath();ctx.arc(0,0,r*scale,0,Math.PI*2);ctx.stroke();
@@ -54,9 +65,11 @@
    ctx.lineTo(Math.cos(a)*p,Math.sin(a)*p);ctx.stroke();
   }
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#F4D8A1';ctx.font='27px Georgia,serif';
-  for(let i=0;i<12;i++){
-   const a=i*Math.PI/6-Math.PI/2;
-   ctx.fillText(LETTERS[(n+i*7)%LETTERS.length],Math.cos(a)*r*.82,Math.sin(a)*r*.82);
+  const inscription=wheelLetters(greekName);
+  ctx.font=(inscription.length>34?17:inscription.length>24?19:inscription.length>16?23:27)+'px Georgia,serif';
+  for(let i=0;i<inscription.length;i++){
+   const a=i*Math.PI*2/inscription.length-Math.PI/2;
+   ctx.fillText(inscription[i],Math.cos(a)*r*.82,Math.sin(a)*r*.82);
   }
   ctx.beginPath();
   for(let i=0;i<7;i++){
@@ -170,10 +183,10 @@
   ctx.restore();
  }
  function paintCardBackdrop(ctx,number,diet){
-  // One 1200x1800 composition for both the screen and downloaded PNG.
-  // Background motifs use legacy art coordinates mapped to the new 2:3 ratio.
+  // One 1200x2000 composition for both the screen and downloaded PNG.
+  // Reference aspect ratio 3:5; frame motifs retain original drawing coordinates.
   ctx.save();
-  ctx.scale(1,1800/2070);
+  ctx.scale(1,2000/2070);
   const base=ctx.createLinearGradient(0,0,1120,2070);
   base.addColorStop(0,'#0e101d');base.addColorStop(.45,'#241a2d');
   base.addColorStop(.71,'#342238');base.addColorStop(1,'#11101e');
@@ -203,6 +216,42 @@
     }
     ctx.restore();
   }
+
+  // Refined gold filigree from the approved reference. Only card geometry;
+  // animal artwork and its atlas remain completely untouched.
+  ctx.save();ctx.globalAlpha=.82;ctx.lineWidth=1.45;ctx.strokeStyle='#d9b37c';
+  for(const sx of [1,-1])for(const sy of [1,-1]){
+   ctx.save();ctx.translate(sx===1?62:1138,sy===1?62:2008);ctx.scale(sx,sy);
+   for(const d of [0,13]){
+    ctx.beginPath();ctx.moveTo(0,195+d);
+    ctx.bezierCurveTo(6,78+d,52+d,22,205+d,0);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,124+d);
+    ctx.bezierCurveTo(15,63+d,60,18+d,129,0);ctx.stroke();
+   }
+   for(const [x,y,r] of [[0,0,13],[44,44,6],[112,10,4]]){
+    ctx.beginPath();ctx.moveTo(x-r*1.7,y);ctx.lineTo(x+r*1.7,y);
+    ctx.moveTo(x,y-r*1.7);ctx.lineTo(x,y+r*1.7);ctx.stroke();
+    ctx.beginPath();ctx.arc(x,y,r*.23,0,Math.PI*2);
+    ctx.fillStyle='#f3d199';ctx.fill();
+   }
+   ctx.restore();
+  }
+  ctx.restore();
+  // Gold hanging threads with diamonds echo the target card's side chains.
+  ctx.save();ctx.globalAlpha=.73;ctx.strokeStyle='#d8b47c';ctx.lineWidth=1.35;
+  for(const x of [106,1094]){
+   ctx.beginPath();ctx.moveTo(x,195);ctx.lineTo(x,825);ctx.stroke();
+   for(const y of [345,427,682,778]){
+    ctx.beginPath();ctx.arc(x,y,4.5,0,Math.PI*2);ctx.stroke();
+   }
+   for(const y of [375,712]){
+    ctx.beginPath();ctx.moveTo(x,y-11);ctx.lineTo(x+7,y);
+    ctx.lineTo(x,y+11);ctx.lineTo(x-7,y);ctx.closePath();ctx.stroke();
+   }
+   ctx.beginPath();ctx.moveTo(x,1530);ctx.lineTo(x,1610);ctx.stroke();
+   ctx.beginPath();ctx.arc(x,1624,12,-1.2,Math.PI*1.22);ctx.stroke();
+  }
+  ctx.restore();
   // The small hanging crescents belong to the frame, never the animal.
   ctx.save();ctx.strokeStyle='#CFAC78';ctx.fillStyle='#D0AE7D';
   ctx.lineWidth=1.5;ctx.globalAlpha=.82;
@@ -528,7 +577,7 @@
    // Cross-origin imagery may be visible in the browser but still blocked
    // from Canvas. Test actual Canvas read permission before drawing.
    const sprite=profile?await gallery.drawable():null;
-   const canvas=elem('canvas');canvas.width=1200;canvas.height=1800;
+   const canvas=elem('canvas');canvas.width=1200;canvas.height=2000;
    const ctx=canvas.getContext('2d');
    if(!ctx)throw Error('Canvas недоступен');
    const styl=gallery?.style(gallery.classify(row))||{};
@@ -538,28 +587,28 @@
    ctx.fillStyle='#C3B1C7';ctx.font='22px Georgia,serif';
    ctx.fillText('АТЛАС СКРЫТЫХ ФОРМ · МАГИЧЕСКАЯ ПЕЧАТЬ',600,175);
    // Keep the accepted geometric number circle completely unchanged.
-   paintSeal(ctx,sum,600,484,255);
-   ctx.fillStyle='#F4E4CB';centered(ctx,greek,780,950,'34px Georgia,serif',2);
+   paintSeal(ctx,sum,600,505,300,greek);
+   // The owner's Greek name is visible inside the wheel, not repeated below.
    let artNote='';
    if(sprite&&profile){
-    gallery.drawCanvas(ctx,sprite,profile,235,841,730,437);
+    gallery.drawCanvas(ctx,sprite,profile,205,760,790,570);
     artNote='';
    }else{
     // A quiet celestial mark is better than a biologically wrong silhouette.
     ctx.save();
     ctx.strokeStyle='#C9A879';ctx.globalAlpha=.48;ctx.lineWidth=1.6;
     for(const radius of [116,154]){
-      ctx.beginPath();ctx.arc(600,1062,radius,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();ctx.arc(600,1085,radius,0,Math.PI*2);ctx.stroke();
     }
     ctx.fillStyle='#E6C48D';ctx.globalAlpha=.9;
-    ctx.font='58px Georgia,serif';ctx.fillText('✧',600,1085);
+    ctx.font='58px Georgia,serif';ctx.fillText('✧',600,1106);
     ctx.restore();
     artNote='Образ скрытой формы ещё создаётся';
    }
    ctx.fillStyle='#BDAAC3';ctx.font='17px Georgia,serif';ctx.textAlign='center';
-   if(artNote)ctx.fillText(artNote,600,1274);
+   if(artNote)ctx.fillText(artNote,600,1324);
    ctx.fillStyle='#D5B684';ctx.font='22px Georgia,serif';
-   ctx.fillText('✧  С К Р Ы Т А Я   Ф О Р М А  ✧',600,1321);
+   ctx.fillText('✧  С К Р Ы Т А Я   Ф О Р М А  ✧',600,1370);
    // Generic Russian category and the species epithet are separate lines.
    // Avoid forcing very long placeholder names into an overflowing headline.
    const fullName=label(row),dash=fullName.indexOf(' — ');
@@ -567,7 +616,7 @@
    const heading=dash>=0?fullName.slice(dash+3):fullName;
    if(category){
     ctx.fillStyle='#D3B385';ctx.font='23px Georgia,serif';
-    ctx.fillText(category,600,1372);
+    ctx.fillText(category,600,1415);
    }
    ctx.fillStyle='#F5E0BE';
    let nameLines=[];
@@ -576,9 +625,9 @@
     nameLines=textLines(ctx,heading,930,2);
     if(!nameLines.some(line=>line.endsWith('…')))break;
    }
-   const nameY=category?1415:1403;
+   const nameY=category?1470:1450;
    for(const [i,line] of nameLines.entries())ctx.fillText(line,600,nameY+i*51);
-   ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1496,1020,'italic 29px Georgia,serif',1);
+   ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1557,1020,'italic 29px Georgia,serif',1);
    // Two independent classifications: diet is never used as an environment.
    // Unknown means no verified ecological record, not a guessed category.
    const traits=[
@@ -588,23 +637,25 @@
    for(let i=0;i<traits.length;i++){
     const x=320+i*284;
     ctx.strokeStyle='#C6A574';ctx.lineWidth=1;
-    ctx.strokeRect(x,1526,268,73);
+    ctx.strokeRect(x,1588,268,75);
     ctx.fillStyle='#BDA99B';ctx.font='15px Georgia,serif';
-    ctx.fillText(traits[i][0],x+134,1551);
+    ctx.fillText(traits[i][0],x+134,1614);
     ctx.fillStyle='#E8CAA0';ctx.font='25px Georgia,serif';
-    ctx.fillText(traits[i][1],x+134,1582);
+    ctx.fillText(traits[i][1],x+134,1645);
    }
    const boxes=[['ЧИСЛО ИМЕНИ',sum],['ЧИСЛО ЖИВОТНОГО',row[0]],['РАЗНИЦА',0]];
    for(let i=0;i<boxes.length;i++){
     const x=120+i*320;
-    ctx.strokeStyle='#B6986E';ctx.lineWidth=1.2;ctx.strokeRect(x,1618,320,112);
+    ctx.strokeStyle='#B6986E';ctx.lineWidth=1.2;ctx.strokeRect(x,1681,320,130);
     ctx.fillStyle='#C6B3C6';ctx.font='15px Georgia,serif';
-    ctx.fillText(boxes[i][0],x+160,1655);
+    ctx.fillText(boxes[i][0],x+160,1726);
     ctx.fillStyle='#F5D7A5';ctx.font='600 41px Georgia,serif';
-    ctx.fillText(String(boxes[i][1]),x+160,1710);
+    ctx.fillText(String(boxes[i][1]),x+160,1787);
    }
    ctx.fillStyle='#C9B0A0';ctx.font='17px Georgia,serif';
-   ctx.fillText('✧ ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ ✧',600,1768);
+   ctx.fillText('✧ ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ ✧',600,1868);
+   ctx.fillStyle='#bda68d';ctx.font='15px Georgia,serif';
+   ctx.fillText('ДЕКОРАТИВНАЯ ПЕЧАТЬ · НЕ ХАРАКТЕРИСТИКА ВИДА ИЛИ ЛИЧНОСТИ',600,1940);
    const blob=await new Promise((resolve,reject)=>{
      try{canvas.toBlob(resolve,'image/png');}catch(err){reject(err);}
    });
@@ -760,7 +811,7 @@
     syncSilhouette(picker);
     get('sealCaption').textContent='Печать появится после расчёта';
    }else{
-    if(previous!==sum){decorateSVG(svg,sum);previous=sum;}
+    if(previous!==sum+'|'+get('greek').value){decorateSVG(svg,sum,get('greek').value);previous=sum+'|'+get('greek').value;}
     get('sealCaption').textContent='Число '+sum+' · декоративная магическая печать';
     updatePicker(picker);
     syncSilhouette(picker);

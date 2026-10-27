@@ -9,25 +9,28 @@ const preview=js.slice(js.indexOf(' function paintCardBackdropOnScreen('),
  js.indexOf(' function textLines('));
 const download=js.slice(js.indexOf(' async function savePNG('),
  js.indexOf(' async function compareOne('));
-test('Screen and downloadable card use one exact frame painter and 1200x1800 portrait geometry',()=>{
- assert.match(html,/id="relicCardBackdrop"[^>]+width="1200" height="1800"/);
+test('Screen and downloadable card use one exact frame painter and 1200x2000 portrait geometry',()=>{
+ assert.match(html,/id="relicCardBackdrop"[^>]+width="1200" height="2000"/);
  assert.ok(html.includes('class="relic-card-masthead"'));
- assert.ok(styles.includes('aspect-ratio:2 / 3'));
+ assert.ok(styles.includes('aspect-ratio:3 / 5'));
  assert.ok(js.includes('function paintCardBackdrop(ctx,number,diet)'));
- assert.ok(js.includes('ctx.scale(1,1800/2070)'));
+ assert.ok(js.includes('ctx.scale(1,2000/2070)'));
  assert.ok(preview.includes('paintCardBackdrop(ctx,typeof sum'));
  assert.ok(download.includes('paintCardBackdrop(ctx,sum,styl.diet)'));
- assert.ok(download.includes('canvas.width=1200;canvas.height=1800'));
+ assert.ok(download.includes('canvas.width=1200;canvas.height=2000'));
  assert.ok(build.includes("copy2(BASE/'relic_card_stage1.css',DEST/'relic_card_stage1.css')"));
  assert.match(html,/relic_card_stage1.css\?v=/);
 });
 test('The favored magic circle remains the established, unchanged algorithm',()=>{
- assert.ok(js.includes('function decorateSVG(svg,n)'));
- assert.ok(js.includes('function paintSeal(ctx,n,x,y,r)'));
+ assert.ok(js.includes('function decorateSVG(svg,n,greekName)'));
+ assert.ok(js.includes('function paintSeal(ctx,n,x,y,r,greekName)'));
  assert.ok(js.includes('for(const scale of [.97,.91,.72,.68,.46])'));
- assert.ok(js.includes("paintSeal(ctx,sum,600,484,255)"));
+ assert.ok(js.includes("paintSeal(ctx,sum,600,505,300,greek)"));
  assert.ok(js.includes('for(const rad of [156,147,119,109,77])'));
  assert.ok(styles.includes('.relic-seal-wrap>.personal-seal'));
+ assert.ok(js.includes('function wheelLetters(greekName)'));
+ assert.ok(js.includes("decorateSVG(svg,sum,get('greek').value)"));
+ assert.ok(html.includes('relic-card-disclaimer'));
 });
 test('Card uses proportional title / figure / ecology / exact matching values',()=>{
  const order=['class="relic-card-masthead"','id="personalSeal"',

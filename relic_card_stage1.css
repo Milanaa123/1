@@ -15,7 +15,7 @@
  isolation:isolate;
  box-sizing:border-box;
  width:100%;
- aspect-ratio:2 / 3;
+ aspect-ratio:3 / 5;
  min-height:0;
  margin:0 auto;
  padding:0!important;
@@ -53,9 +53,9 @@
 }
 .relic-laboratory .relic-seal-wrap>.personal-seal{
  position:absolute;z-index:2;
- left:26%;top:9.9%;
+ left:23%;top:8.5%;
  display:block;
- width:48%!important;
+ width:54%!important;
  height:auto!important;
  max-width:none!important;
  margin:0!important;
@@ -74,7 +74,7 @@
 }
 .relic-laboratory .relic-seal-wrap>.silhouette-relic{
  position:absolute;z-index:2;
- top:46.2%;left:7%;width:86%!important;height:24%;
+ top:38.4%;left:5%;width:90%!important;height:29.3%;
  max-width:none!important;min-height:0;
  display:flex;flex-direction:column;
  align-items:center;justify-content:center;
@@ -118,7 +118,7 @@
 }
 .relic-laboratory .relic-seal-wrap>.relic-preview-heading{
  position:absolute;z-index:3;
- left:9%;top:72.2%;width:82%;height:11.6%;
+ left:9%;top:69%;width:82%;height:9.7%;
  display:flex;flex-direction:column;justify-content:flex-start;align-items:center;
  gap:.5cqw!important;margin:0!important;padding:0!important;
  max-width:none!important;min-height:0!important;
@@ -157,7 +157,7 @@
  overflow-wrap:anywhere;
 }
 .relic-laboratory .relic-seal-wrap>.relic-preview-traits{
- position:absolute;z-index:3;top:84.4%;left:9%;width:82%;height:4.5%;
+ position:absolute;z-index:3;top:79%;left:9%;width:82%;height:3.9%;
  display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;
  gap:1cqw!important;max-width:none!important;
  margin:0!important;padding:0!important;
@@ -175,7 +175,7 @@
  white-space:nowrap;
 }
 .relic-laboratory .relic-seal-wrap>.relic-preview-numbers{
- position:absolute;z-index:3;top:89.2%;left:10%;width:80%;height:6%;
+ position:absolute;z-index:3;top:83.8%;left:10%;width:80%;height:7%;
  box-sizing:border-box;
  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
  max-width:none!important;
@@ -203,7 +203,7 @@
 }
 .relic-laboratory .relic-seal-wrap>.relic-preview-note{
  position:absolute;z-index:2;
- top:96%;left:9%;width:82%;
+ top:92.5%;left:9%;width:82%;
  margin:0!important;padding:0!important;
  color:#c9ae86!important;
  font:400 clamp(7px,1.65cqw,12px)/1.5 Georgia,serif!important;
@@ -270,4 +270,41 @@
 @media(max-width:430px){
  .relic-seal-wrap .relic-preview-traits .relic-trait small{font-size:1.55cqw!important}
  .relic-seal-wrap .relic-preview-traits .relic-trait strong{font-size:2.35cqw!important}
+}
+
+/* Stage 1: match the approved golden celestial card, without new animal art. */
+.relic-laboratory .relic-seal-wrap{
+ aspect-ratio:3/5;background:#110f1b!important;
+ box-shadow:0 22px 44px #03030a7a!important;
+}
+.relic-laboratory .relic-seal-wrap>.relic-preview-greek{display:none!important}
+.relic-card-masthead>strong{letter-spacing:.18em;font-size:clamp(14px,3.75cqw,31px)}
+.relic-card-masthead>span{letter-spacing:.065em;font-size:clamp(8px,1.65cqw,13px)}
+.relic-seal-wrap .silhouette-frame .atlas-art-sprite{transform:scale(1.08);transform-origin:center}
+.relic-seal-wrap .relic-preview-heading>strong{font-size:clamp(18px,5.9cqw,45px)!important;line-height:1.13!important}
+.relic-seal-wrap .relic-preview-category{font-size:clamp(9px,2.1cqw,16px)!important}
+.relic-seal-wrap .relic-preview-heading>em{font-size:clamp(9px,2.65cqw,19px)!important}
+.relic-seal-wrap .relic-preview-traits{gap:1.1cqw!important}
+.relic-seal-wrap .relic-preview-traits .relic-trait{
+ min-width:31%;max-width:48%;padding:.35cqw 1.4cqw!important;
+ background:#17132569!important;border-color:#c5a77b70!important;
+}
+.relic-seal-wrap .relic-preview-traits .relic-trait strong{font-size:clamp(9px,2.15cqw,17px)!important}
+.relic-laboratory .relic-seal-wrap>.relic-preview-numbers{
+ border:1.5px solid #caa779b3!important;
+ outline:1px solid #86674477;outline-offset:3px;
+}
+.relic-seal-wrap .relic-preview-numbers>div{padding:.4cqw .2cqw!important}
+.relic-seal-wrap .relic-preview-numbers strong{font-size:clamp(15px,4.8cqw,39px)!important}
+.relic-laboratory .relic-seal-wrap>.relic-card-disclaimer{
+ position:absolute;z-index:3;top:96.3%;left:5%;width:90%;
+ margin:0!important;padding:0!important;text-align:center;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+ font:400 clamp(6px,1.3cqw,10px)/1.35 Georgia,serif;
+ letter-spacing:.04em;color:#b9a78e;
+}
+@media(max-width:430px){
+ .relic-card-masthead>strong{font-size:3.7cqw}
+ .relic-card-masthead>span{font-size:1.6cqw}
+ .relic-laboratory .relic-seal-wrap>.relic-card-disclaimer{font-size:1.2cqw}
 }
