@@ -9,6 +9,8 @@ const preview=js.slice(js.indexOf(' function paintCardBackdropOnScreen('),
  js.indexOf(' function textLines('));
 const download=js.slice(js.indexOf(' async function savePNG('),
  js.indexOf(' async function compareOne('));
+const poster=js.slice(js.indexOf(' function paintFinishedCard('),
+ js.indexOf(' let posterSerial=',js.indexOf(' function paintFinishedCard(')));
 test('Screen and downloadable card use one exact frame painter and 1200x2000 portrait geometry',()=>{
  assert.match(html,/id="relicCardBackdrop"[^>]+width="1200" height="2000"/);
  assert.ok(html.includes('class="relic-card-masthead"'));
@@ -16,8 +18,9 @@ test('Screen and downloadable card use one exact frame painter and 1200x2000 por
  assert.ok(js.includes('function paintCardBackdrop(ctx,number,diet)'));
  assert.ok(js.includes('ctx.scale(1,2000/2070)'));
  assert.ok(preview.includes('paintCardBackdrop(ctx,typeof sum'));
- assert.ok(download.includes('paintCardBackdrop(ctx,sum,styl.diet)'));
- assert.ok(download.includes('canvas.width=1200;canvas.height=2000'));
+ assert.ok(poster.includes('paintCardBackdrop(ctx,cardNumber,styl.diet)'));
+ assert.ok(js.includes('canvas.width=1200;canvas.height=2000'));
+ assert.ok(download.includes("get('relicCardBackdrop')"));
  assert.ok(build.includes("copy2(BASE/'relic_card_stage1.css',DEST/'relic_card_stage1.css')"));
  assert.match(html,/relic_card_stage1.css\?v=/);
 });
@@ -43,8 +46,12 @@ test('Card uses proportional title / figure / ecology / exact matching values',(
   '.relic-preview-heading>strong','.relic-preview-numbers','@media(max-width:430px)'])
   assert.ok(styles.includes(prop),prop);
  assert.ok(styles.includes('text-wrap:balance'));
- assert.ok(download.includes("row[0]"));
- assert.ok(download.includes("'РАЗНИЦА',0"));
+ assert.ok(poster.includes('row[0]'));
+ assert.ok(js.includes('composeScreenCard(row)'));
+ assert.ok(download.includes('navigator.share'));
+ assert.ok(download.includes('navigator.canShare'));
+ assert.ok(styles.includes('is-poster-rendered'));
+ assert.ok(poster.includes("'РАЗНИЦА',0"));
 });
 test('Poster background painter draws repeated ornamental motifs and complete background',()=>{
  const start=js.indexOf(' function drawCelestialBorder(ctx,number){');
@@ -64,8 +71,8 @@ test('Poster background painter draws repeated ornamental motifs and complete ba
  assert.deepEqual(rects[0],[0,0,1200,2070]);
  assert.ok(strokes>20);
  assert.ok(js.includes('paintNebula(ctx,number)'));
- assert.ok(download.includes("'РАЦИОН'"));
- assert.ok(download.includes("'СРЕДА ОБИТАНИЯ'"));
+ assert.ok(poster.includes("'РАЦИОН'"));
+ assert.ok(poster.includes("'СРЕДА ОБИТАНИЯ'"));
  assert.ok(arcs>20);
  assert.equal(saves,restores,'Unbalanced canvas context restores');
 });

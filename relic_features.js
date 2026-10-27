@@ -188,12 +188,12 @@
   ctx.save();
   ctx.scale(1,2000/2070);
   const base=ctx.createLinearGradient(0,0,1120,2070);
-  base.addColorStop(0,'#0e101d');base.addColorStop(.45,'#241a2d');
-  base.addColorStop(.71,'#342238');base.addColorStop(1,'#11101e');
+  base.addColorStop(0,'#0b0b16');base.addColorStop(.45,'#171321');
+  base.addColorStop(.71,'#221729');base.addColorStop(1,'#0b0b15');
   ctx.fillStyle=base;ctx.fillRect(0,0,1200,2070);
   const warmth={predator:'#a0754b',herbivore:'#8b8773',omnivore:'#8d7194'}[diet]||'#87677c';
   const aurora=ctx.createRadialGradient(600,1110,80,600,1110,780);
-  aurora.addColorStop(0,warmth+'35');aurora.addColorStop(.52,'#9c628222');
+  aurora.addColorStop(0,warmth+'1a');aurora.addColorStop(.52,'#9c628216');
   aurora.addColorStop(1,'#9c628200');
   ctx.fillStyle=aurora;ctx.fillRect(0,0,1200,2070);
   paintNebula(ctx,number);
@@ -263,6 +263,33 @@
     ctx.beginPath();ctx.moveTo(x,571);ctx.lineTo(x+5,578);
     ctx.lineTo(x,585);ctx.lineTo(x-5,578);ctx.closePath();ctx.stroke();
   }
+
+  // Fine starbursts and curved gilded frame tendrils, as on the reference.
+  ctx.save();ctx.strokeStyle='#ddb478';ctx.fillStyle='#ecd09b';
+  ctx.lineWidth=1.35;ctx.globalAlpha=.82;
+  for(const sx of [1,-1]){
+   const x=sx<0?69:1131;
+   for(const y of [505,890,1320,1570]){
+    ctx.beginPath();ctx.moveTo(x,y-11);ctx.lineTo(x+7,y);
+    ctx.lineTo(x,y+11);ctx.lineTo(x-7,y);ctx.closePath();ctx.stroke();
+   }
+  }
+  for(const y of [790,1360]){
+   const cx=600;
+   ctx.beginPath();ctx.moveTo(cx-21,y);ctx.lineTo(cx+21,y);
+   ctx.moveTo(cx,y-29);ctx.lineTo(cx,y+29);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(cx-9,y-9);ctx.lineTo(cx+9,y+9);
+   ctx.moveTo(cx-9,y+9);ctx.lineTo(cx+9,y-9);ctx.stroke();
+  }
+  for(const sx of [1,-1]){
+   ctx.save();ctx.translate(sx<0?80:1120,1800);ctx.scale(sx,1);
+   ctx.beginPath();ctx.moveTo(0,175);
+   ctx.bezierCurveTo(24,76,53,30,163,0);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(0,140);
+   ctx.bezierCurveTo(33,66,79,21,150,17);ctx.stroke();
+   ctx.restore();
+  }
+  ctx.restore();
   // One quiet divider between celestial mechanics and the animal's life.
   ctx.lineWidth=.8;ctx.globalAlpha=.3;
   ctx.beginPath();ctx.moveTo(370,940);ctx.lineTo(470,940);
@@ -474,7 +501,7 @@
   const meta=atlas()?.style(atlas().classify(row)||profile)||{diet:'unknown',habitat:'unknown',
     dietText:'Рацион не установлен',habitatText:'Среда не установлена',secondaryText:[]};
   if(root){root.dataset.diet=meta.diet;root.dataset.habitat=meta.habitat;}
-  paintCardBackdropOnScreen(meta.diet);
+  if(!row)paintCardBackdropOnScreen(meta.diet);
   if(box){
    box.dataset.diet=meta.diet;box.dataset.habitat=meta.habitat;
    box.hidden=meta.diet==='unknown'&&meta.habitat==='unknown'&&!meta.secondaryText.length;
@@ -560,34 +587,27 @@
  function syncSilhouette(picker){
   const row=selection(picker),key=row?row[1]+'|'+row[2]:'';
   updatePreviewText(row);
+  void composeScreenCard(row);
   if(key===previousPictureKey)return;
   previousPictureKey=key;
   const serial=++currentPictureSerial;
   if(!row)clearIllustration();
   else void showSilhouette(row,serial);
  }
- async function savePNG(picker,status){
-  const row=selection(picker),greek=get('greek').value.trim();
-  if(!row||!validGreek(greek)||score(greek)!==sum){
-   status.textContent='Сначала выполни поиск точных совпадений.';return;
-  }
-  try{
-   status.textContent='Создаём магическую карточку с рисунком животного…';
-   const gallery=atlas(),profile=gallery?.resolve(row)||null;
-   // Cross-origin imagery may be visible in the browser but still blocked
-   // from Canvas. Test actual Canvas read permission before drawing.
-   const sprite=profile?await gallery.drawable():null;
-   const canvas=elem('canvas');canvas.width=1200;canvas.height=2000;
-   const ctx=canvas.getContext('2d');
-   if(!ctx)throw Error('Canvas недоступен');
-   const styl=gallery?.style(gallery.classify(row))||{};
-   paintCardBackdrop(ctx,sum,styl.diet);
+
+ // Screen preview and exported file use the SAME finished 1200×2000 Canvas.
+ // Keeping a single source of truth avoids the previous mismatched CSS overlay
+ // and cut-off bottom captions reported on mobile.
+ function paintFinishedCard(ctx,row,greek,profile,sprite,styl){
+   const gallery=atlas();
+   const cardNumber=row[0];
+   paintCardBackdrop(ctx,cardNumber,styl.diet);
    ctx.fillStyle='#F1DDB8';ctx.font='36px Georgia,serif';ctx.textAlign='center';
    ctx.fillText('✧  А Н И М А Г И Я  ✧',600,133);
    ctx.fillStyle='#C3B1C7';ctx.font='22px Georgia,serif';
    ctx.fillText('АТЛАС СКРЫТЫХ ФОРМ · МАГИЧЕСКАЯ ПЕЧАТЬ',600,175);
    // Keep the accepted geometric number circle completely unchanged.
-   paintSeal(ctx,sum,600,505,300,greek);
+   paintSeal(ctx,cardNumber,600,505,300,greek);
    // The owner's Greek name is visible inside the wheel, not repeated below.
    let artNote='';
    if(sprite&&profile){
@@ -608,7 +628,7 @@
    ctx.fillStyle='#BDAAC3';ctx.font='17px Georgia,serif';ctx.textAlign='center';
    if(artNote)ctx.fillText(artNote,600,1324);
    ctx.fillStyle='#D5B684';ctx.font='22px Georgia,serif';
-   ctx.fillText('✧  С К Р Ы Т А Я   Ф О Р М А  ✧',600,1370);
+   ctx.fillText('✧  С К Р Ы Т А Я   Ф О Р М А  ✧',600,1355);
    // Generic Russian category and the species epithet are separate lines.
    // Avoid forcing very long placeholder names into an overflowing headline.
    const fullName=label(row),dash=fullName.indexOf(' — ');
@@ -616,7 +636,7 @@
    const heading=dash>=0?fullName.slice(dash+3):fullName;
    if(category){
     ctx.fillStyle='#D3B385';ctx.font='23px Georgia,serif';
-    ctx.fillText(category,600,1415);
+    ctx.fillText(category,600,1395);
    }
    ctx.fillStyle='#F5E0BE';
    let nameLines=[];
@@ -625,9 +645,9 @@
     nameLines=textLines(ctx,heading,930,2);
     if(!nameLines.some(line=>line.endsWith('…')))break;
    }
-   const nameY=category?1470:1450;
+   const nameY=category?1455:1438;
    for(const [i,line] of nameLines.entries())ctx.fillText(line,600,nameY+i*51);
-   ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1557,1020,'italic 29px Georgia,serif',1);
+   ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1544,1020,'italic 29px Georgia,serif',1);
    // Two independent classifications: diet is never used as an environment.
    // Unknown means no verified ecological record, not a guessed category.
    const traits=[
@@ -643,7 +663,7 @@
     ctx.fillStyle='#E8CAA0';ctx.font='25px Georgia,serif';
     ctx.fillText(traits[i][1],x+134,1645);
    }
-   const boxes=[['ЧИСЛО ИМЕНИ',sum],['ЧИСЛО ЖИВОТНОГО',row[0]],['РАЗНИЦА',0]];
+   const boxes=[['ЧИСЛО ИМЕНИ',cardNumber],['ЧИСЛО ЖИВОТНОГО',cardNumber],['РАЗНИЦА',0]];
    for(let i=0;i<boxes.length;i++){
     const x=120+i*320;
     ctx.strokeStyle='#B6986E';ctx.lineWidth=1.2;ctx.strokeRect(x,1681,320,130);
@@ -655,17 +675,74 @@
    ctx.fillStyle='#C9B0A0';ctx.font='17px Georgia,serif';
    ctx.fillText('✧ ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ ✧',600,1868);
    ctx.fillStyle='#bda68d';ctx.font='15px Georgia,serif';
-   ctx.fillText('ДЕКОРАТИВНАЯ ПЕЧАТЬ · НЕ ХАРАКТЕРИСТИКА ВИДА ИЛИ ЛИЧНОСТИ',600,1940);
+   ctx.fillText('ДЕКОРАТИВНАЯ ПЕЧАТЬ · НЕ ХАРАКТЕРИСТИКА ВИДА ИЛИ ЛИЧНОСТИ',600,1931);
+
+ }
+ let posterSerial=0;
+ async function composeScreenCard(row){
+  const wrap=get('relicCard'),canvas=get('relicCardBackdrop');
+  if(!wrap||!canvas)return false;
+  const serial=++posterSerial;
+  if(!row){
+   wrap.classList.remove('is-poster-rendered');
+   canvas.dataset.posterReady='0';
+   paintCardBackdropOnScreen(null);
+   return false;
+  }
+  const greek=get('greek').value.trim();
+  if(!validGreek(greek)||score(greek)!==row[0]||row[0]!==sum)return false;
+  const gallery=atlas(),profile=gallery?.resolve(row)||null;
+  const sprite=profile?await gallery.drawable():null;
+  if(serial!==posterSerial)return false;
+  const ctx=canvas.getContext('2d');if(!ctx)return false;
+  canvas.width=1200;canvas.height=2000;
+  const styl=gallery?.style(gallery.classify(row))||{};
+  paintFinishedCard(ctx,row,greek,profile,sprite,styl);
+  canvas.dataset.posterReady='1';
+  wrap.classList.add('is-poster-rendered');
+  return true;
+ }
+
+
+ async function savePNG(picker,status){
+  const row=selection(picker),greek=get('greek').value.trim();
+  if(!row||!validGreek(greek)||score(greek)!==sum){
+   status.textContent='Сначала выполни поиск точных совпадений.';return;
+  }
+  try{
+   status.textContent='Подготавливаем карточку для сохранения…';
+   const ok=await composeScreenCard(row);
+   if(!ok)throw Error('Карточка ещё обновляется. Повтори сохранение.');
+   const canvas=get('relicCardBackdrop');
    const blob=await new Promise((resolve,reject)=>{
-     try{canvas.toBlob(resolve,'image/png');}catch(err){reject(err);}
+    try{canvas.toBlob(resolve,'image/png');}catch(err){reject(err);}
    });
    if(!blob)throw Error('Не удалось сформировать PNG');
+   const filename='Анимагия_форма_'+sum+'.png';
+   // A normal web page cannot silently write to Android Gallery.
+   // Web Share opens the native Android sheet with the real PNG file:
+   // the user can choose Photos, Files or another installed application.
+   const photo=new File([blob],filename,{type:'image/png'});
+   if(navigator.share&&navigator.canShare&&navigator.canShare({files:[photo]})){
+    try{
+     await navigator.share({files:[photo],title:'Анимагия · моя форма'});
+     status.textContent='Карточка передана в выбранное приложение.';
+     return;
+    }catch(error){
+     if(error?.name==='AbortError'){
+      status.textContent='Сохранение отменено.';return;
+     }
+     // Some Android browsers reject sharing a file despite canShare().
+    }
+   }
    const url=URL.createObjectURL(blob),a=elem('a');
-   a.href=url;a.download='Анимагия_форма_'+sum+'.png';
+   a.href=url;a.download=filename;
    document.body.append(a);a.click();a.remove();
-   setTimeout(()=>URL.revokeObjectURL(url),5000);
-   status.textContent='Карточка PNG создана. '+(sprite?'Рисунок включён.':'Пока без животного: арт готовится.');
-  }catch(err){status.textContent='Не удалось сохранить PNG: '+err.message;}
+   setTimeout(()=>URL.revokeObjectURL(url),10000);
+   status.textContent='PNG загружен. На этом устройстве браузер не дал открыть меню сохранения в Фото.';
+  }catch(error){
+   status.textContent='Не удалось сохранить карточку: '+error.message;
+  }
  }
 
  async function compareOne(text,manifest,cache){
@@ -807,6 +884,7 @@
     const title=get('animalChosenName');if(title)title.textContent='Сначала выполни расчёт';
     const sci=get('animalChosenScientific');if(sci)sci.textContent='Выбери найденное животное';
     svg.replaceChildren();picker.replaceChildren(elem('option','Сначала выполни поиск'));
+    void composeScreenCard(null);
     picker.dataset.signature='';previous=null;
     syncSilhouette(picker);
     get('sealCaption').textContent='Печать появится после расчёта';

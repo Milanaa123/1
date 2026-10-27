@@ -308,3 +308,15 @@
  .relic-card-masthead>span{font-size:1.6cqw}
  .relic-laboratory .relic-seal-wrap>.relic-card-disclaimer{font-size:1.2cqw}
 }
+
+/* The whole accepted card is drawn once on the visible export canvas.
+   The old DOM pieces remain for accessibility/selection but are hidden
+   from sight to prevent CSS and PNG compositions diverging. */
+.relic-laboratory .relic-seal-wrap.is-poster-rendered> :not(.relic-card-backdrop){
+ visibility:hidden!important;
+ pointer-events:none!important;
+}
+.relic-laboratory .relic-seal-wrap.is-poster-rendered>.relic-card-backdrop{
+ display:block!important;visibility:visible!important;
+ width:100%!important;height:100%!important;object-fit:fill!important;
+}

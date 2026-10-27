@@ -23,7 +23,9 @@ test('Premium export never reaches obsolete PhyloPic silhouettes',()=>{
   assert.ok(!section.includes('goldContour('));
  }
  assert.ok(!html.includes('<script src="./silhouette_service.js'));
- assert.ok(png.includes('Образ скрытой формы ещё создаётся'));
+ assert.ok(js.includes('Образ скрытой формы ещё создаётся'));
+ assert.ok(js.includes('function paintFinishedCard('));
+ assert.ok(png.includes('composeScreenCard(row)'));
 });
 test('Card hierarchy and no broken technical empty fields',()=>{
  assert.ok(js.includes('function updatePreviewText'));
