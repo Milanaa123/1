@@ -20,7 +20,7 @@ for num in range(1,101):
     idx=num-1;x=(idx%10)*W;y=(idx//10)*H
     piece=src.crop((x,y,x+W,y+H))
     path=OUT/f'animal-{num:03d}.webp'
-    piece.save(path,'WEBP',quality=94,method=6,exact=True)
+    piece.save(path,'WEBP',quality=94,method=4,exact=True)
     if num==87: # dedicated hand-drawn SVG remains the preferred source for this species
         source='fallback raster for specific grass-snake SVG'
     else: source='corrected' if num in CORRECTED else 'original'
