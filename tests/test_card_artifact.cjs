@@ -185,7 +185,7 @@ test('Stage-one reference template uses clean dark stardust and symmetric foil f
  assert.ok(back.includes("base.addColorStop(0,'#090a14')"));
  assert.ok(back.includes("base.addColorStop(.71,'#1a1425')"));
  assert.ok(styles.includes('transform:none!important;object-fit:contain!important;'));
- assert.match(html,/relic_features.js\?v=stage2-firstname-only-20261027/);
+ assert.match(html,/relic_features.js\?v=stage3-integrated-families-20261027/);
 });
 
 // Reference approval: full-circle Greek name; nebula and perimeter are drawn
