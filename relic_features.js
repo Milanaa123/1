@@ -190,8 +190,8 @@
     const x=spine+sign*(depth*.55+wander);
     const rad=spread+12*Math.sin(j*1.35);
     const glow=ctx.createRadialGradient(x,y,1,x,y,rad);
-    glow.addColorStop(0,'rgba(187,105,186,.095)');
-    glow.addColorStop(.38,'rgba(119,77,156,.058)');
+    glow.addColorStop(0,'rgba(187,105,186,.16)');
+    glow.addColorStop(.38,'rgba(119,77,156,.085)');
     glow.addColorStop(1,'rgba(74,42,119,0)');
     ctx.fillStyle=glow;ctx.fillRect(x-rad,y-rad,rad*2,rad*2);
    }
@@ -204,11 +204,37 @@
     const x=x0+cross;
     if(x<70||x>1130)continue;
     const centreBoost=.45+.55*Math.sin((y-first)/(last-first)*Math.PI);
-    const a=(.035+random()*.17)*centreBoost;
+    const a=(.055+random()*.20)*centreBoost;
     ctx.fillStyle=random()>.33
        ?'rgba(205,132,194,'+a.toFixed(3)+')'
        :'rgba(140,114,215,'+(a*.7).toFixed(3)+')';
     ctx.beginPath();ctx.arc(x,y,.25+random()*1.4,0,Math.PI*2);ctx.fill();
+   }
+  }
+  // Wispy, winding nebula branches in the approved reference: organic
+  // purple-gold filaments rather than the old mechanical repeated loops.
+  for(const side of [-1,1]){
+   const origin=side<0?120:1080,sgn=side<0?1:-1;
+   for(let i=0;i<18;i++){
+    const y=220+random()*1580;
+    const reach=45+random()*135;
+    const px=origin+sgn*(18+random()*50);
+    const swing=sgn*(42+random()*90);
+    const dy=95+random()*190;
+    ctx.save();
+    ctx.globalCompositeOperation='screen';
+    ctx.beginPath();ctx.moveTo(px,y);
+    ctx.bezierCurveTo(px+swing,y+dy*.2,
+      px+swing+sgn*reach*.25,y+dy*.72,
+      px+sgn*reach,y+dy);
+    ctx.strokeStyle=i%4===0?'rgba(213,143,200,.12)':'rgba(117,76,168,.12)';
+    ctx.lineWidth=10+random()*19;
+    ctx.shadowColor='#97549b';ctx.shadowBlur=30;
+    ctx.stroke();
+    ctx.lineWidth=.6+random()*.9;ctx.shadowBlur=11;
+    ctx.strokeStyle=i%4===0?'rgba(240,176,191,.20)':'rgba(194,135,213,.16)';
+    ctx.stroke();
+    ctx.restore();
    }
   }
   // Bright but rare stellar glints, clustered near the page edges.
