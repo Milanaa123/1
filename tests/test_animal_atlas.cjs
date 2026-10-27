@@ -13,7 +13,9 @@ const context=vm.createContext({window,Image:class{
     setAttribute(k,v){this.attrs[k]=v},
     getContext(){
      return {save(){},restore(){},drawImage(){},putImageData(){},
-      beginPath(){},moveTo(){},lineTo(){},closePath(){},fill(){},
+      scale(){},beginPath(){},moveTo(){},lineTo(){},closePath(){},
+      bezierCurveTo(){},quadraticCurveTo(){},ellipse(){},arc(){},
+      fill(){},stroke(){},
       getImageData(){
        const data=new Uint8ClampedArray(canvas.width*canvas.height*4);
        for(let i=0;i<data.length;i+=4){
@@ -84,8 +86,10 @@ test('transparent watercolor-style ink is isolated on same-origin Canvas',()=>{
  atlas.drawCanvas(ctx,image,part,0,0,300,250);
  assert.equal(calls.length,1);
  assert.equal(calls[0][0].tag,'canvas');
- assert.equal(calls[0][3],300);
- assert.equal(calls[0][4],250);
+ assert.ok(calls[0][3]>290&&calls[0][3]<=300,'frog image width must fit the card');
+ assert.ok(calls[0][4]>240&&calls[0][4]<=250,'frog image height must fit the card');
+ assert.ok(Math.abs(calls[0][3]/calls[0][4]-307/256)<.005,
+  'frog must preserve original source proportions, never stretch the muzzle');
 });
 test('aquatic, arboreal and subterranean tags work without any matching illustration',()=>{
  const fish=[999,'Hippocampus hippocampus','species','Actinopterygii','Syngnathiformes','','Chordata'];
@@ -125,4 +129,15 @@ test('art atlas has no local storage, personal-data uploads or numeric changes',
  const src=fs.readFileSync('animal_atlas.js','utf8');
  for(const forbidden of ['localStorage','sessionStorage','sendBeacon','score(','taxonGreekScore('])
   assert.ok(!src.includes(forbidden),forbidden);
+});
+
+test('Stage 4: source frog face retains full muzzle and drawn nostril',()=>{
+ const source=fs.readFileSync('animal_atlas.js','utf8');
+ const start=source.indexOf('if(index===18){'),end=source.indexOf('const [cx,cy,rx,ry]',start);
+ const cut=source.slice(start,end);
+ assert.ok(cut.includes('[289,84]')&&cut.includes('[294,105]'),'nose mask fully extends over original muzzle');
+ assert.ok(source.includes('ctx.ellipse(270,91,3.6,2.6'));
+ assert.ok(source.includes("if(profile.id==='frog')"));
+ assert.ok(source.includes('Math.min(w/cutout.width,h/cutout.height)'));
+ assert.ok(!source.includes('localStorage')&&!source.includes('sessionStorage'));
 });
