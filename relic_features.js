@@ -151,7 +151,7 @@
     ctx.bezierCurveTo(x+opening*walk*.64,y-87,
       x+opening*walk,y+95,x+opening*walk*.53,y+230);
     ctx.strokeStyle=i%4===0?'#cb8ab7':'#87619f';
-    ctx.globalAlpha=.025+random()*.072;ctx.lineWidth=1+random()*4;
+    ctx.globalAlpha=.055+random()*.13;ctx.lineWidth=1+random()*4;
     ctx.shadowColor='#b974bc';ctx.shadowBlur=i%4===0?14:5;
     ctx.stroke();
    }
@@ -160,7 +160,7 @@
   for(let i=0;i<560;i++){
    const x=75+random()*1050,y=70+random()*1900;
    const gold=random()>.35;
-   const brightness=.1+random()*.5;
+   const brightness=.19+random()*.56;
    ctx.fillStyle=gold?'rgba(244,190,109,'+brightness.toFixed(2)+')':
      'rgba(187,133,215,'+(brightness*.65).toFixed(2)+')';
    ctx.globalAlpha=1;
@@ -198,8 +198,8 @@
   ctx.fillStyle=aurora;ctx.fillRect(0,0,1200,2070);
   paintNebula(ctx,number);
   // Art nouveau double foil border with a restrained glow.
-  ctx.strokeStyle='#CFAB75';ctx.lineWidth=3.1;ctx.strokeRect(48,48,1104,1974);
-  ctx.strokeStyle='#99805e';ctx.lineWidth=1.2;ctx.strokeRect(67,67,1066,1936);
+  ctx.strokeStyle='#E1BD88';ctx.lineWidth=3.35;ctx.strokeRect(48,48,1104,1974);
+  ctx.strokeStyle='#B09168';ctx.lineWidth=1.5;ctx.strokeRect(67,67,1066,1936);
   drawCelestialBorder(ctx,number);
   // Antique corner engravings are mirrored, rather than four competing drawings.
   for(const sx of [1,-1])for(const sy of [1,-1]){
@@ -296,6 +296,110 @@
   ctx.moveTo(730,940);ctx.lineTo(830,940);ctx.stroke();
   ctx.restore();ctx.restore();
  }
+
+ // The approved animal illustration stays intact. Only edges change:
+ // five deterministic variations per diet, and five softer predator variants.
+ function cardAdornment(row,styl){
+  let hash=2166136261;
+  for(const ch of String(row?.[1]||''))hash=Math.imul(hash^ch.charCodeAt(0),16777619)>>>0;
+  const diet=['predator','herbivore','omnivore'].includes(styl?.diet)?styl.diet:'unknown';
+  const smallHunter=diet==='predator'&&row?.[3]==='Amphibia';
+  return {kind:smallHunter?'soft-predator':diet,variant:hash%5};
+ }
+ function paintDietAdornment(ctx,row,styl){
+  const choice=cardAdornment(row,styl),kind=choice.kind,v=choice.variant,pi=Math.PI;
+  const tearSets=[[[460,1],[1030,.78]],[[650,.9]],[],
+   [[265,1],[920,.72]],[[460,.92],[1260,.8]]];
+  const biteSets=[
+   [['right',175,83],['right',1250,72]],[],
+   [['top',1030,66],['right',660,80],['left',1620,69]],
+   [['right',1120,84]],[['top',870,72],['right',1560,71]]
+  ];
+  const softSets=[
+   [['right',1180,44]],[['left',1370,42]],
+   [['top',930,45],['right',850,39]],
+   [['bottom',1010,46]],[['right',980,41],['left',1480,33]]
+  ];
+  function claw(y,scale){
+   ctx.save();ctx.translate(0,y);ctx.scale(scale,scale);
+   ctx.save();ctx.globalCompositeOperation='destination-out';
+   for(let i=0;i<3;i++){
+    const yy=i*55;
+    ctx.beginPath();ctx.moveTo(-24,yy-15);ctx.lineTo(5,yy-7);
+    ctx.bezierCurveTo(60,yy+7,109,yy+39,177,yy+90);
+    ctx.bezierCurveTo(103,yy+52,55,yy+31,5,yy+21);
+    ctx.closePath();ctx.fill();
+   }
+   ctx.restore();
+   ctx.strokeStyle='#e9b97b';ctx.lineWidth=2.4;ctx.shadowColor='#e3a461';ctx.shadowBlur=12;
+   for(let i=0;i<3;i++){
+    const yy=i*55;
+    ctx.beginPath();ctx.moveTo(1,yy-7);ctx.bezierCurveTo(60,yy+7,118,yy+45,177,yy+90);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(1,yy+20);ctx.bezierCurveTo(60,yy+36,118,yy+62,177,yy+90);ctx.stroke();
+   }
+   ctx.restore();
+  }
+  function bite(edge,p,r){
+   const x=edge==='right'?1201:edge==='left'?-1:p;
+   const y=edge==='top'?-1:edge==='bottom'?2001:p;
+   ctx.save();ctx.globalCompositeOperation='destination-out';
+   ctx.beginPath();ctx.arc(x,y,r,0,2*pi);ctx.fill();ctx.restore();
+   ctx.save();ctx.strokeStyle='#e3b67d';ctx.lineWidth=3;
+   ctx.shadowColor='#efb46b';ctx.shadowBlur=13;
+   const start=edge==='right'?pi/2:edge==='left'?-pi/2:edge==='top'?0:pi;
+   ctx.beginPath();ctx.arc(x,y,r,start,start+pi);ctx.stroke();ctx.restore();
+  }
+  function vine(isLeft,y,s,flower){
+   ctx.save();ctx.translate(isLeft?53:1147,y);ctx.scale(isLeft?1:-1,1);
+   ctx.strokeStyle='#d6b881';ctx.lineWidth=2.1;ctx.shadowColor='#bc9053';ctx.shadowBlur=5;
+   ctx.beginPath();ctx.moveTo(0,0);ctx.bezierCurveTo(70*s,96*s,-50*s,197*s,25*s,293*s);
+   ctx.bezierCurveTo(79*s,361*s,-19*s,453*s,35*s,520*s);ctx.stroke();
+   for(let i=0;i<7;i++){
+    const k=i%2?1:-1,h=(45+i*69)*s;
+    ctx.save();ctx.translate((15+k*7)*s,h);ctx.rotate(k*.35);
+    ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(51*s,-12*s,61*s,-62*s);
+    ctx.quadraticCurveTo(12*s,-55*s,0,0);
+    ctx.fillStyle='#5f614d';ctx.globalAlpha=.77;ctx.fill();ctx.strokeStyle='#e4c28b';ctx.lineWidth=1.5;ctx.stroke();ctx.restore();
+   }
+   if(flower)for(const cy of [145*s,390*s]){
+    ctx.save();ctx.translate(30*s,cy);
+    for(let i=0;i<5;i++){
+     const a=i*2*pi/5;ctx.beginPath();
+     ctx.ellipse(Math.cos(a)*12*s,Math.sin(a)*12*s,12*s,7*s,a,0,2*pi);
+     ctx.fillStyle='#cdb397';ctx.globalAlpha=.75;ctx.fill();
+     ctx.strokeStyle='#f1d7a3';ctx.stroke();
+    }
+    ctx.restore();
+   }
+   ctx.restore();
+  }
+  const vines=[
+   [[true,150,.82,true],[false,1230,.69,false]],
+   [[true,1160,.88,true],[false,1280,.8,true]],
+   [[true,85,.73,true],[false,90,.72,true]],
+   [[false,470,.92,false],[true,1100,.78,true]],
+   [[true,390,.84,false],[false,1110,.89,false]]
+  ];
+  if(kind==='predator'){
+   for(const [y,s] of tearSets[v])claw(y,s);
+   for(const [edge,p,r] of biteSets[v])bite(edge,p,r);
+  }else if(kind==='soft-predator'){
+   for(const [edge,p,r] of softSets[v])bite(edge,p,r);
+   // Soft predator variant: no invented tiger claws on amphibians.
+   ctx.save();ctx.strokeStyle='#b8a68d';ctx.lineWidth=1.8;
+   ctx.globalAlpha=.72;
+   for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(v%2?110:1090,1180+i*64,24+i*8,0,pi);ctx.stroke();}
+   ctx.restore();
+  }else if(kind==='herbivore'){
+   for(const [left,y,s,flower] of vines[v])vine(left,y,s,flower);
+  }else if(kind==='omnivore'){
+   if(v===1||v===4)claw(540+v*50,.65);
+   if(v!==1){const edge=v%2?'left':'right';bite(edge,1030+v*100,48);}
+   const [left,y,s,flower]=vines[v][0];vine(left,y,s*.86,flower);
+  }
+  return choice;
+ }
+
  function paintCardBackdropOnScreen(diet){
   const canvas=get('relicCardBackdrop');if(!canvas)return;
   const ctx=canvas.getContext('2d');
@@ -676,6 +780,7 @@
    ctx.fillText('✧ ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ ✧',600,1868);
    ctx.fillStyle='#bda68d';ctx.font='15px Georgia,serif';
    ctx.fillText('ДЕКОРАТИВНАЯ ПЕЧАТЬ · НЕ ХАРАКТЕРИСТИКА ВИДА ИЛИ ЛИЧНОСТИ',600,1931);
+   paintDietAdornment(ctx,row,styl);
 
  }
  let posterSerial=0;
@@ -698,6 +803,8 @@
   canvas.width=1200;canvas.height=2000;
   const styl=gallery?.style(gallery.classify(row))||{};
   paintFinishedCard(ctx,row,greek,profile,sprite,styl);
+  const ornament=cardAdornment(row,styl);
+  wrap.dataset.cardVariant=ornament.kind+'-'+(ornament.variant+1);
   canvas.dataset.posterReady='1';
   wrap.classList.add('is-poster-rendered');
   return true;
@@ -713,33 +820,26 @@
    status.textContent='Подготавливаем карточку для сохранения…';
    const ok=await composeScreenCard(row);
    if(!ok)throw Error('Карточка ещё обновляется. Повтори сохранение.');
-   const canvas=get('relicCardBackdrop');
+   const card=get('relicCardBackdrop');
+   const jpeg=elem('canvas');jpeg.width=card.width;jpeg.height=card.height;
+   const jpgCtx=jpeg.getContext('2d');
+   if(!jpgCtx)throw Error('Нет доступа к Canvas');
+   // JPEG does not support transparency: cut-outs reveal the same dark
+   // page tone on the saved picture, while the on-screen card stays truly cut.
+   jpgCtx.fillStyle='#0b0a16';jpgCtx.fillRect(0,0,jpeg.width,jpeg.height);
+   jpgCtx.drawImage(card,0,0);
    const blob=await new Promise((resolve,reject)=>{
-    try{canvas.toBlob(resolve,'image/png');}catch(err){reject(err);}
+    try{jpeg.toBlob(resolve,'image/jpeg',0.95);}catch(err){reject(err);}
    });
-   if(!blob)throw Error('Не удалось сформировать PNG');
-   const filename='Анимагия_форма_'+sum+'.png';
-   // A normal web page cannot silently write to Android Gallery.
-   // Web Share opens the native Android sheet with the real PNG file:
-   // the user can choose Photos, Files or another installed application.
-   const photo=new File([blob],filename,{type:'image/png'});
-   if(navigator.share&&navigator.canShare&&navigator.canShare({files:[photo]})){
-    try{
-     await navigator.share({files:[photo],title:'Анимагия · моя форма'});
-     status.textContent='Карточка передана в выбранное приложение.';
-     return;
-    }catch(error){
-     if(error?.name==='AbortError'){
-      status.textContent='Сохранение отменено.';return;
-     }
-     // Some Android browsers reject sharing a file despite canShare().
-    }
-   }
+   if(!blob)throw Error('Не удалось сформировать JPEG');
+   const filename='Анимагия_форма_'+sum+'.jpg';
+   // Direct download rather than the Android "Share / Connect" dialog.
    const url=URL.createObjectURL(blob),a=elem('a');
    a.href=url;a.download=filename;
    document.body.append(a);a.click();a.remove();
-   setTimeout(()=>URL.revokeObjectURL(url),10000);
-   status.textContent='PNG загружен. На этом устройстве браузер не дал открыть меню сохранения в Фото.';
+   setTimeout(()=>URL.revokeObjectURL(url),15000);
+   status.textContent='JPEG сохранён через браузер. Обычно он появляется в Загрузках и может отображаться в Галерее.';
+
   }catch(error){
    status.textContent='Не удалось сохранить карточку: '+error.message;
   }

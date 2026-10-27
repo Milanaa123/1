@@ -26,6 +26,10 @@ test('Premium export never reaches obsolete PhyloPic silhouettes',()=>{
  assert.ok(js.includes('Образ скрытой формы ещё создаётся'));
  assert.ok(js.includes('function paintFinishedCard('));
  assert.ok(png.includes('composeScreenCard(row)'));
+ assert.ok(png.includes("'image/jpeg',0.95"));
+ assert.ok(!png.includes('navigator.share'));
+ assert.ok(js.includes('five deterministic variations')||js.includes('five softer predator variants'));
+ assert.ok(js.includes('paintDietAdornment(ctx,row,styl)'));
 });
 test('Card hierarchy and no broken technical empty fields',()=>{
  assert.ok(js.includes('function updatePreviewText'));

@@ -320,3 +320,13 @@
  display:block!important;visibility:visible!important;
  width:100%!important;height:100%!important;object-fit:fill!important;
 }
+
+/* Transparent shape cut-outs are actual alpha holes in the live canvas. */
+.relic-laboratory .relic-seal-wrap.is-poster-rendered{
+ background:transparent!important;border:0!important;outline:0!important;
+ box-shadow:none!important;
+}
+.relic-laboratory .relic-seal-wrap.is-poster-rendered>.relic-card-backdrop{
+ background:transparent!important;
+}
+.relic-laboratory .relic-layout{isolation:isolate}
