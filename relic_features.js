@@ -606,7 +606,7 @@
     ctx.beginPath();ctx.moveTo(0,-r*.23);
     ctx.bezierCurveTo(-r*.5,-r*.53,-r*.34,-r*1.28,-r*.04,-r*1.30);
     ctx.bezierCurveTo(r*.44,-r*1.18,r*.48,-r*.60,0,-r*.23);
-    ctx.fillStyle=j%2?'rgba(197,134,151,.77)':'rgba(225,161,178,.78)';
+    ctx.fillStyle=j%2?'rgba(197,126,164,.88)':'rgba(232,168,192,.88)';
     ctx.fill();ctx.strokeStyle='#f3c798';ctx.lineWidth=1.5;ctx.stroke();
     ctx.restore();
    }
@@ -647,7 +647,7 @@
     ctx.restore();
    }
    if(flower){
-    for(const [x,y,r] of [[36,89,14],[11,226,19],[40,397,14],[14,554,15]]){
+    for(const [x,y,r] of [[36,89,27],[11,226,35],[40,397,28],[14,554,31]]){
      bloom(x,y,r);
     }
    }
