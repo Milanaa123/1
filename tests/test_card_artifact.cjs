@@ -131,7 +131,7 @@ test('All fifty frame presets are reachable; cuts erase canvas pixels last',()=>
    quadraticCurveTo(){},stroke(){},bezierCurveTo(){
     if(this.globalCompositeOperation==='destination-out')cuts.gash++;
    },
-   ellipse(){art.flowers++},arc(){
+   ellipse(){art.flowers++;if(this.globalCompositeOperation==='destination-out')cuts.circle++},arc(){
     if(this.globalCompositeOperation==='destination-out')cuts.circle++;
    },
    fill(){},shadowBlur:0
