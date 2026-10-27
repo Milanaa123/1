@@ -1,0 +1,45 @@
+name: Build and inspect sharper original animal illustrations
+on:
+  push:
+    branches: [animagia-sharp-qa-20261028]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  sharpen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Prepare lossless sharp assets from existing transparent source sprites
+        run: |
+          python -m pip install --disable-pip-version-check Pillow==11.3.0
+          python tools/build_sharp_art.py
+      - name: Confirm all 100 source cells and 22 corrections remain transparent
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          a=Path('art')
+          for name in ('animagia-100-sharp4x.webp','animagia-corrected-22-sharp4x.webp'):
+            im=Image.open(a/name).convert('RGBA')
+            assert im.size==(6400,4400)
+            assert all(im.getpixel(p)[3]==0 for p in [(0,0),(6399,0),(0,4399),(6399,4399)])
+            print('SHARP_ASSET_TRANSPARENT',name,im.size)
+          five=Image.open(a/'animals-approved-01-05-sharp4x.png')
+          assert five.size==(2992,392)
+          PY
+      - name: Commit sharper assets into audit branch for production integration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add art/animagia-100-sharp4x.webp art/animagia-corrected-22-sharp4x.webp art/animals-approved-01-05-sharp4x.png art/sharp-art-manifest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate lossless 4x sharp atlas assets for full animal set"
+            git push origin HEAD:animagia-sharp-qa-20261028
+          fi
