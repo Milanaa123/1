@@ -259,6 +259,16 @@ def build():
  assert hashlib.sha256(snake_raw).hexdigest()=='31a6276434eef7f5a5593f94885fcc40b36cc096e03f0b59f82369571dfaa216','Grass snake SVG checksum mismatch'
  shutil.copy2(snake_art,DEST/'art'/'animagia-grass-snake-87.svg')
  print('CURATED_GRASS_SNAKE_87_READY',len(snake_raw),'bytes',flush=True)
+ # Publish prebuilt high-resolution transparent sprites with SHA256 verification.
+ manifest=json.loads((BASE/'art'/'sharp-art-manifest.json').read_text(encoding='utf8'))
+ assert manifest['scale']==4 and manifest['sourceCells']==100
+ required={'animagia-100-sharp4x.webp','animagia-corrected-22-sharp4x.webp','animals-approved-01-05-sharp4x.png'}
+ assert {e['file'] for e in manifest['results']}==required
+ for e in manifest['results']:
+  name=e['file'];data=(BASE/'art'/name).read_bytes()
+  assert len(data)==e['bytes'] and hashlib.sha256(data).hexdigest()==e['sha256'],'Corrupt sharper art '+name
+  shutil.copy2(BASE/'art'/name,DEST/'art'/name)
+ print('SHARP_ALL_100_ART_READY',[(e['file'],e['bytes']) for e in manifest['results']],flush=True)
  print('CORRECTED_SPECIES_22_READY',len(replacement),'bytes',flush=True)
  print('CURATED_100_ART_READY',len(raw100),'bytes',expected100,flush=True)
  # First review batch is a separate alpha PNG with five individually cleaned

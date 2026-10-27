@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=grass-snake87-illustrated-20261028'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=sharp-all100-4x-20261028'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -578,5 +578,25 @@ test('87 grass snake has an anatomical transparent SVG while preserving master 1
  assert.equal(api.list[86].name,'Уж (змея)');
  assert.equal(api.list[87].name,'Змей (декоративный)');
  assert.ok(fs.readFileSync('build_data.py','utf8').includes("shutil.copy2(snake_art,DEST/'art'/'animagia-grass-snake-87.svg')"));
+ assert.equal(api.list.length,100);
+});
+
+
+test('All one hundred portraits, 22 anatomical corrections and five originals have SHA256-verified 4x artwork',()=>{
+ const meta=JSON.parse(fs.readFileSync('art/sharp-art-manifest.json','utf8'));
+ const crypto=require('node:crypto');
+ assert.equal(meta.scale,4);assert.equal(meta.sourceCells,100);assert.equal(meta.results.length,3);
+ for(const asset of meta.results){
+  const data=fs.readFileSync('art/'+asset.file);
+  assert.equal(data.length,asset.bytes,asset.file);
+  assert.equal(crypto.createHash('sha256').update(data).digest('hex'),asset.sha256,asset.file);
+ }
+ assert.equal(api.sharpArtworkScale,4);
+ assert.equal(api.sharpImageUrl,'./art/animagia-100-sharp4x.webp');
+ assert.equal(api.sharpCorrectedImageUrl,'./art/animagia-corrected-22-sharp4x.webp');
+ assert.ok(fs.readFileSync('animal_atlas.js','utf8').includes('BATCH_01_SHARP_URL'));
+ const css=fs.readFileSync('relic_card_stage1.css','utf8');
+ assert.ok(css.includes('image-rendering:auto!important'));
+ assert.ok(css.includes('filter:none!important'));
  assert.equal(api.list.length,100);
 });

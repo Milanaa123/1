@@ -1,0 +1,27 @@
+{
+  "scale": 4,
+  "sourceSize": [
+    1600,
+    1100
+  ],
+  "sourceCells": 100,
+  "lossless": false,
+  "results": [
+    {
+      "file": "animagia-100-sharp4x.webp",
+      "bytes": 10037844,
+      "sha256": "3e17dce7991f29adba10b5a285edaf19893464f815cde514353ba15e97e9d7cc"
+    },
+    {
+      "file": "animagia-corrected-22-sharp4x.webp",
+      "bytes": 1746190,
+      "sha256": "a6d706fea2c931464157f914914b8a20db7c64b59f6aed31defaa250e94e94a1"
+    },
+    {
+      "file": "animals-approved-01-05-sharp4x.png",
+      "bytes": 689199,
+      "sha256": "fefbcce816e88ddae5852eecf2950de8c9b643ff7b970219306001aba65102ad"
+    }
+  ],
+  "limitations": "Source has 160x110 pixels per art cell. Sharpening can clarify edges but cannot recover original illustration detail that was never present."
+}

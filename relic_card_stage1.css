@@ -99,10 +99,11 @@
  width:100%!important;height:100%!important;
  max-width:100%!important;max-height:100%!important;
  min-width:0!important;flex-shrink:1!important;
- aspect-ratio:auto!important;object-fit:contain!important;
+ aspect-ratio:16/11!important;object-fit:contain!important;
+ image-rendering:auto!important;
  margin:0!important;padding:0!important;border:0!important;
  background:none!important;border-radius:0!important;
- filter:drop-shadow(0 0 6px #e7bc6540)!important;
+ filter:none!important;
 }
 .relic-seal-wrap .relic-card-sr-label{
  position:absolute!important;width:1px!important;height:1px!important;
@@ -264,7 +265,7 @@
  opacity:.7;
 }
 .relic-seal-wrap .silhouette-frame .atlas-art-sprite{
- transform:scale(1.22);
+ transform:none!important;
  transform-origin:center center;
 }
 @media(max-width:430px){
@@ -280,7 +281,7 @@
 .relic-laboratory .relic-seal-wrap>.relic-preview-greek{display:none!important}
 .relic-card-masthead>strong{letter-spacing:.18em;font-size:clamp(14px,3.75cqw,31px)}
 .relic-card-masthead>span{letter-spacing:.065em;font-size:clamp(8px,1.65cqw,13px)}
-.relic-seal-wrap .silhouette-frame .atlas-art-sprite{transform:scale(1.08);transform-origin:center}
+.relic-seal-wrap .silhouette-frame .atlas-art-sprite{transform:none!important;transform-origin:center}
 .relic-seal-wrap .relic-preview-heading>strong{font-size:clamp(18px,5.9cqw,45px)!important;line-height:1.13!important}
 .relic-seal-wrap .relic-preview-category{font-size:clamp(9px,2.1cqw,16px)!important}
 .relic-seal-wrap .relic-preview-heading>em{font-size:clamp(9px,2.65cqw,19px)!important}

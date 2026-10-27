@@ -8,6 +8,7 @@
  // The visitor's newly approved 100-animal sheet is 10×10, not the old 5×4.
  // First five ORIGINAL drawings, extracted as alpha PNG without backgrounds.
  const BATCH_01_URL='./art/animals-approved-01-05.png';
+ const BATCH_01_SHARP_URL='./art/animals-approved-01-05-sharp4x.png';
  const BATCH_01_OFFSETS=[0,150,299,449,598,748],BATCH_01_HEIGHT=98;
  const BATCH_01_LABELS=['Волк','Лиса','Собака','Кошка','Лев'];
  const batch01Cutouts=new Map();
@@ -23,9 +24,14 @@
  }
  function loadBatch01(){
   if(!batch01Asset)batch01Asset=new Promise(resolve=>{
-   const image=new Image();image.crossOrigin='anonymous';
-   image.onload=()=>{approvedImage01=image;resolve(image)};image.onerror=()=>resolve(null);
-   image.src=BATCH_01_URL;
+   const fallback=()=>{
+    const img=new Image();img.crossOrigin='anonymous';
+    img.onload=()=>{approvedImage01=img;resolve(img);};
+    img.onerror=()=>resolve(null);img.src=BATCH_01_URL;
+   };
+   const img=new Image();img.crossOrigin='anonymous';
+   img.onload=()=>{approvedImage01=img;resolve(img);};
+   img.onerror=fallback;img.src=BATCH_01_SHARP_URL;
   });
   return batch01Asset;
  }
@@ -35,11 +41,13 @@
   // Actual bitmap widths are deliberately unequal: use explicit seams,
   // not naive naturalWidth/5 cuts through paws, ears or tail tips.
   const x=BATCH_01_OFFSETS[index],w=BATCH_01_OFFSETS[index+1]-x;
-  if(image.naturalWidth!==BATCH_01_OFFSETS[5]||image.naturalHeight!==BATCH_01_HEIGHT)return null;
-  const canvas=document.createElement('canvas');canvas.width=w;canvas.height=BATCH_01_HEIGHT;
+  const scale=image.naturalWidth===BATCH_01_OFFSETS[5]*4&&image.naturalHeight===BATCH_01_HEIGHT*4?4:1;
+  if(image.naturalWidth!==BATCH_01_OFFSETS[5]*scale||image.naturalHeight!==BATCH_01_HEIGHT*scale)return null;
+  const canvas=document.createElement('canvas');canvas.width=w*scale;canvas.height=BATCH_01_HEIGHT*scale;
   const context=canvas.getContext('2d');
   if(!context)return null;
-  context.drawImage(image,x,0,w,BATCH_01_HEIGHT,0,0,w,BATCH_01_HEIGHT);
+  context.imageSmoothingEnabled=true;context.imageSmoothingQuality='high';
+  context.drawImage(image,x*scale,0,w*scale,BATCH_01_HEIGHT*scale,0,0,w*scale,BATCH_01_HEIGHT*scale);
   batch01Cutouts.set(index,canvas);return canvas;
  }
  const COLS=5,ROWS=4;
@@ -309,6 +317,7 @@
   // Keep the entire animal, including ear points, tails and paws.
   const fit=Math.min(w/art.width,h/art.height);
   const dw=art.width*fit,dh=art.height*fit;
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
   ctx.drawImage(art,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
   ctx.restore();return true;
  }
