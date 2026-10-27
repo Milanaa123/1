@@ -34,5 +34,7 @@ jobs:
         run: node --test tests/test_premium_card.cjs
       - name: Validate antique collectible-card design and shared PNG background
         run: node --test tests/test_card_artifact.cjs
+      - name: Real-browser Canvas pixel QA for diet-frame cutouts
+        run: node tests/check_frame_pixels.cjs
       - name: Run deterministic Python-JavaScript equivalence tests
         run: python -m unittest discover -s tests -v
