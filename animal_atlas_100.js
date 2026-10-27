@@ -14,14 +14,15 @@
  const names=entries.map(x=>x[1]);
  const namedEntries=new Map([["Canis lupus",0],["Canis rufus",0],["Canis simensis",0],["Vulpes",1],["Urocyon",1],["Lycalopex",1],["Canis familiaris",2],["Canis lupus familiaris",2],["Felis",3],["Panthera leo",4],["Panthera tigris",5],["Panthera uncia",6],["Uncia uncia",6],["Acinonyx",7],["Panthera onca",8],["Puma",9],["Ursus",10],["Helarctos",10],["Melursus",10],["Tremarctos",10],["Ailuropoda",11],["Procyon",12],["Lutra",13],["Lontra",13],["Lutrogale",13],["Neogale",14],["Mustela lutreola",14],["Neovison",14],["Meles",15],["Taxidea",15],["Gulo",16],["Leopardus pardalis",17],["Lynx",18],["Caracal",19],["Strix",20],["Tyto",20],["Asio",20],["Athene",20],["Bubo",21],["Corvus corax",22],["Corvus cornix",23],["Corvus corone",23],["Corvus brachyrhynchos",23],["Falco",24],["Accipiter",25],["Astur",25],["Aquila",26],["Haliaeetus",26],["Gyps",27],["Aegypius",27],["Neophron",27],["Larus",28],["Chroicocephalus",28],["Archilochus",29],["Calypte",29],["Trochilus",29],["Cervus",30],["Dama",30],["Alces",31],["Capreolus",32],["Rangifer",33],["Sus scrofa",34],["Bison",35],["Bos bonasus",36],["Bison bonasus",36],["Ovis",37],["Capra",38],["Rupicapra",39],["Equus caballus",40],["Equus ferus",40],["Equus przewalskii",40],["Equus asinus",42],["Equus africanus",42],["Equus quagga",43],["Equus zebra",43],["Equus grevyi",43],["Giraffa",44],["Tragelaphus",45],["Hippotragus",45],["Gazella",46],["Eudorcas",46],["Nanger",46],["Camelus",47],["Lama glama",48],["Vicugna pacos",49],["Lama pacos",49],["Oryctolagus",50],["Sylvilagus",50],["Lepus",51],["Sciurus",52],["Tamiasciurus",52],["Castor",53],["Cricetus",54],["Mesocricetus",54],["Phodopus",54],["Mus",55],["Apodemus",55],["Rattus",56],["Hystrix",57],["Erethizon",57],["Spermophilus",58],["Urocitellus",58],["Marmota",59],["Macropus",60],["Osphranter",60],["Phascolarctos",61],["Vombatus",62],["Lasiorhinus",62],["Canis lupus dingo",63],["Canis dingo",63],["Sarcophilus",64],["Dromaius",65],["Struthio",66],["Casuarius",67],["Apteryx",68],["Aptenodytes",69],["Spheniscus",69],["Pygoscelis",69],["Eudyptes",69],["Balaenoptera",70],["Megaptera",70],["Balaena",70],["Eubalaena",70],["Delphinus",71],["Tursiops",71],["Lagenorhynchus",71],["Orcinus",72],["Carcharodon",73],["Carcharhinus",73],["Galeocerdo",73],["Manta",74],["Mobula",74],["Dasyatis",74],["Raja",74],["Phoca",75],["Pusa",75],["Halichoerus",75],["Zalophus",76],["Otaria",76],["Eumetopias",76],["Odobenus",77],["Trichechus",78],["Enhydra",79],["Testudo",80],["Emys",80],["Mauremys",80],["Chelonia",81],["Caretta",81],["Eretmochelys",81],["Dermochelys",81],["Lacerta",82],["Podarcis",82],["Zootoca",82],["Iguana",83],["Chamaeleo",84],["Furcifer",84],["Bradypodion",84],["Gekko",85],["Hemidactylus",85],["Phelsuma",85],["Natrix",86],["Vipera",86],["Thamnophis",86],["Naja",88],["Ophiophagus",88],["Python",89],["Malayopython",89],["Morelia",89],["Crocodylus",90],["Gavialis",90],["Alligator",91],["Caiman",91],["Uromastyx",92],["Saara",92],["Myotis",93],["Pipistrellus",93],["Rhinolophus",93],["Pteropus",93],["Octopus",94],["Enteroctopus",94],["Amphioctopus",94],["Loligo",95],["Doryteuthis",95],["Architeuthis",95],["Aurelia",96],["Cyanea",96],["Chrysaora",96],["Hippocampus",97],["Cancer",98],["Carcinus",98],["Callinectes",98],["Homarus",99],["Palinurus",99],["Panulirus",99]]);
 
- // The NEXT 20 approved subjects (numbers 6–25, not replacement art).
- // Work within their original transparent 160x110 cell. No shrinkwrap crop:
- // every ear, whisker, wingtip, paw and tail keeps the full source canvas.
+ // Reviewed batches: 6–25 and 26–45, both from the same approved atlas.
+ // Retain each original 160x110 transparent cell: do not crop body, tail,
+ // antlers, hooves, feathers, wingtips or whiskers.
  const BATCH_02_START=5,BATCH_02_END=25;
- const batch02Cutouts=new Map();
- function cleanBatch02Cell(sheet,index){
-  if(!sheet||index<BATCH_02_START||index>=BATCH_02_END)return null;
-  if(batch02Cutouts.has(index))return batch02Cutouts.get(index);
+ const BATCH_03_START=25,BATCH_03_END=45;
+ const reviewedCutouts=new Map();
+ function cleanReviewedCell(sheet,index){
+  if(!sheet||index<BATCH_02_START||index>=BATCH_03_END)return null;
+  if(reviewedCutouts.has(index))return reviewedCutouts.get(index);
   const canvas=document.createElement('canvas');
   canvas.width=WIDTH;canvas.height=HEIGHT;
   const c=canvas.getContext('2d',{willReadFrequently:true});
@@ -73,7 +74,7 @@
   }
   if(biggest<0||best<150){
    // Fail open when the photograph is unexpected; never delete the animal.
-   batch02Cutouts.set(index,canvas);return canvas;
+   reviewedCutouts.set(index,canvas);return canvas;
   }
   const keep=new Uint8Array(components.length+1);keep[biggest]=1;
   // Distance to the ACTUAL body, rather than to a huge bounding rectangle.
@@ -122,7 +123,7 @@
    if(!approved){data[i*4+3]=0;cleared++;}
   }
   if(cleared>0)c.putImageData(pixels,0,0);
-  batch02Cutouts.set(index,canvas);
+  reviewedCutouts.set(index,canvas);
   return canvas;
  }
  const fallbackOrder={"Carnivora":1,"Rodentia":55,"Lagomorpha":50,"Chiroptera":93,"Cetacea":70,"Cetartiodactyla":30,"Artiodactyla":30,"Perissodactyla":40,"Sirenia":78,"Diprotodontia":60,"Dasyuromorphia":64,"Strigiformes":20,"Accipitriformes":26,"Falconiformes":24,"Passeriformes":22,"Sphenisciformes":69,"Struthioniformes":66,"Casuariiformes":65,"Apterygiformes":68,"Charadriiformes":28,"Apodiformes":29,"Testudines":80,"Squamata":82,"Crocodylia":90,"Crocodilia":90,"Octopoda":94,"Teuthida":95,"Myliobatiformes":74,"Rajiformes":74,"Decapoda":98};
@@ -173,7 +174,8 @@
   return {id:entries[chosen.idx][0],cell:chosen.idx,
    artSet:'atlas100',label:name,scientific:scientific(row),
    exact:false, // the visitor-approved drawing is an artistic archetype
-   reviewedBatch:chosen.idx>=BATCH_02_START&&chosen.idx<BATCH_02_END?2:null,
+   reviewedBatch:chosen.idx>=BATCH_02_START&&chosen.idx<BATCH_02_END?2:
+    chosen.idx>=BATCH_03_START&&chosen.idx<BATCH_03_END?3:null,
    diet:old?.diet||null,habitat:old?.habitat||null,
    secondary:old?.secondary||[],
    note:rank==='species'?('Художественный рисунок «'+name+'» · не фотография вида'):
@@ -193,7 +195,7 @@
   const factor=Math.min(w*.90/WIDTH,h*.90/HEIGHT);
   const dw=WIDTH*factor,dh=HEIGHT*factor;
   const dx=x+(w-dw)/2,dy=y+(h-dh)/2;
-  const refined=profile.reviewedBatch===2?cleanBatch02Cell(im,i):null;
+  const refined=(profile.reviewedBatch===2||profile.reviewedBatch===3)?cleanReviewedCell(im,i):null;
   ctx.save();
   if(refined)ctx.drawImage(refined,dx,dy,dw,dh);
   else ctx.drawImage(im,(i%10)*WIDTH,Math.floor(i/10)*HEIGHT,
@@ -227,6 +229,7 @@
   list:entries.map(([key],cell)=>({key,cell,name:names[cell]})),
   evidence:{count:100,source:'user-supplied',artistic:true,
     batch02:{first:6,last:25,count:20,source:'same approved atlas',preserveSourceBounds:true},
+    batch03:{first:26,last:45,count:20,source:'same approved atlas',preserveSourceBounds:true},
     unsupported:'Animals without an applicable biological drawing remain without art.'}
  });
 })();
