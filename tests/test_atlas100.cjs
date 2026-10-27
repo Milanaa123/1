@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=batch05-20-reviewed-20261028'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=batch06-final15-20261028'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -121,7 +121,7 @@ test('Stage 5: twenty consecutive images 6–25 are routed to their own artwork'
  const source=fs.readFileSync('animal_atlas_100.js','utf8');
  for(const required of ['function cleanReviewedCell(', 'reviewedCutouts',
    'cleared>0','if(closest<=8)keep[id]=1',
-   '(profile.reviewedBatch>=2&&profile.reviewedBatch<=5)?cleanReviewedCell(im,i):null'])
+   '(profile.reviewedBatch>=2&&profile.reviewedBatch<=6)?cleanReviewedCell(im,i):null'])
   assert.ok(source.includes(required),required);
 });
 
@@ -450,6 +450,116 @@ test('Stage 8: fifth reviewed batch contains exactly 20 named birds, marine mamm
  assert.deepEqual([api.evidence.batch05.first,api.evidence.batch05.last,api.evidence.batch05.count],[66,85,20]);
  assert.deepEqual(Array.from(api.evidence.batch05.correctedSpeciesReused),[68,78,81]);
  for(const i of [68,78,81])assert.ok(Array.from(api.correctedIndices).includes(i));
+ assert.equal(api.list.length,100);
+ assert.equal(api.resolve(row('Canis lupus')).approvedIndex,0);
+ assert.equal(api.resolve(row('Cornufer opisthodon','Amphibia','Anura')).id,'frog');
+});
+
+
+test('Stage 9: last 15 curated images, 14 biological taxa and one explicitly fantasy serpent, route to correct art',()=>{
+ const cases=[
+ [
+  "Gekko gecko",
+  85,
+  "Reptilia",
+  "Squamata"
+ ],
+ [
+  "Natrix natrix",
+  86,
+  "Reptilia",
+  "Squamata"
+ ],
+ [
+  "Naja naja",
+  88,
+  "Reptilia",
+  "Squamata"
+ ],
+ [
+  "Python regius",
+  89,
+  "Reptilia",
+  "Squamata"
+ ],
+ [
+  "Crocodylus niloticus",
+  90,
+  "Reptilia",
+  "Crocodylia"
+ ],
+ [
+  "Alligator mississippiensis",
+  91,
+  "Reptilia",
+  "Crocodylia"
+ ],
+ [
+  "Uromastyx aegyptia",
+  92,
+  "Reptilia",
+  "Squamata"
+ ],
+ [
+  "Myotis myotis",
+  93,
+  "Mammalia",
+  "Chiroptera"
+ ],
+ [
+  "Octopus vulgaris",
+  94,
+  "Cephalopoda",
+  "Octopoda"
+ ],
+ [
+  "Loligo vulgaris",
+  95,
+  "Cephalopoda",
+  "Teuthida"
+ ],
+ [
+  "Aurelia aurita",
+  96,
+  "Scyphozoa",
+  "Semaeostomeae"
+ ],
+ [
+  "Hippocampus hippocampus",
+  97,
+  "Actinopterygii",
+  "Syngnathiformes"
+ ],
+ [
+  "Cancer pagurus",
+  98,
+  "Malacostraca",
+  "Decapoda"
+ ],
+ [
+  "Homarus gammarus",
+  99,
+  "Malacostraca",
+  "Decapoda"
+ ]
+];
+ assert.equal(cases.length,14);
+ for(const [scientific,index,cls,order] of cases){
+  const p=api.resolve(row(scientific,cls,order));
+  assert.equal(p?.cell,index,scientific);
+  assert.equal(p?.reviewedBatch,6,scientific);
+  assert.equal(p?.artSet,'atlas100',scientific);
+  assert.equal(p?.exact,false,scientific);
+ }
+ assert.equal(api.list[87].name,'Змей (декоративный)');
+ assert.equal(api.resolve(row('Natrix natrix','Reptilia','Squamata')).cell,86);
+ assert.equal(api.list[92].name,'Шипохвост');
+ assert.equal(api.resolve(row('Uromastyx aegyptia','Reptilia','Squamata')).cell,92);
+ assert.equal(api.evidence.batch06.first,86);
+ assert.equal(api.evidence.batch06.last,100);
+ assert.equal(api.evidence.batch06.count,15);
+ assert.deepEqual(Array.from(api.evidence.batch06.correctedSpeciesReused),[86]);
+ assert.deepEqual(Array.from(api.evidence.batch06.fantasyOnly),[88]);
  assert.equal(api.list.length,100);
  assert.equal(api.resolve(row('Canis lupus')).approvedIndex,0);
  assert.equal(api.resolve(row('Cornufer opisthodon','Amphibia','Anura')).id,'frog');
