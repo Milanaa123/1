@@ -157,9 +157,12 @@
    const mask=document.createElement('canvas');mask.width=w;mask.height=h;
    const m=mask.getContext('2d');
    // The original frog is traced once to exclude stars and the large background rings.
-   const points=[[23,158],[43,124],[42,83],[80,91],[76,70],[104,66],[128,46],
-    [155,36],[191,37],[226,57],[239,96],[259,109],[251,154],[237,168],
-    [213,163],[197,179],[183,191],[150,195],[122,212],[85,207],[59,186],[25,187]];
+   // Keep the frog's complete muzzle: the previous upper-right mask ended
+   // at x=259 and cut off its actual nose and upper snout.
+   const points=[[15,164],[30,128],[37,93],[60,88],[72,63],[101,58],[126,42],
+    [154,28],[193,30],[231,48],[259,65],[289,84],[294,105],
+    [285,124],[263,141],[255,160],[238,177],[214,180],[197,188],
+    [181,202],[152,207],[123,223],[82,219],[55,197],[18,192]];
    m.filter='blur(3px)';m.fillStyle='#fff';m.beginPath();
    points.forEach(([x,y],i)=>i?m.lineTo(x*w/307,y*h/256):m.moveTo(x*w/307,y*h/256));
    m.closePath();m.fill();frogAlpha=m.getImageData(0,0,w,h).data;
@@ -181,6 +184,32 @@
    data[i+3]=Math.round(255*intensity);
   }
   ctx.putImageData(pixels,0,0);
+  if(index===18){
+   // Restore the nostril and continuous golden muzzle IN THE ORIGINAL cutout.
+   // All edits use coordinates of the 307x256 source cell, so they scale with
+   // the atlas without changing other species or the calculation.
+   ctx.save();
+   ctx.scale(w/307,h/256);
+   ctx.lineJoin='round';ctx.lineCap='round';
+   // The slope follows the existing right-facing frog head; preserve the eye.
+   ctx.shadowColor='#f6d899';ctx.shadowBlur=2.8;
+   ctx.strokeStyle='rgba(245,205,139,.86)';ctx.lineWidth=2.8;
+   ctx.beginPath();ctx.moveTo(224,57);
+   ctx.bezierCurveTo(252,57,274,75,283,90);
+   ctx.quadraticCurveTo(289,101,279,111);ctx.stroke();
+   // Under-snout contour avoids a straight, unnaturally truncated muzzle.
+   ctx.strokeStyle='rgba(222,165,104,.72)';ctx.lineWidth=1.8;
+   ctx.beginPath();ctx.moveTo(279,111);
+   ctx.quadraticCurveTo(265,124,249,128);ctx.stroke();
+   // Oval nostril, pinprick specular light and very short cheek crease.
+   ctx.shadowBlur=0;ctx.fillStyle='rgba(53,31,38,.96)';
+   ctx.beginPath();ctx.ellipse(270,91,3.6,2.6,-.34,0,Math.PI*2);ctx.fill();
+   ctx.strokeStyle='rgba(255,222,161,.93)';ctx.lineWidth=1.1;
+   ctx.beginPath();ctx.arc(270,91,4.6,-2.85,-1.45);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(255,114);
+   ctx.quadraticCurveTo(246,120,237,117);ctx.stroke();
+   ctx.restore();
+  }
   transparentArtCache.set(index,layer);
   return layer;
  }
@@ -223,7 +252,16 @@
   if(!image||!profile)return false;
   const cutout=goldCutout(image,profile.cell);
   if(!cutout)return false;
-  ctx.save();ctx.drawImage(cutout,x,y,w,h);ctx.restore();
+  ctx.save();
+  if(profile.id==='frog'){
+   // Contain the COMPLETE original image with unchanged proportions.
+   // The card's animal window stays fixed, no part of the snout or toes
+   // can be trimmed by cover-style scaling on Android or desktop.
+   const fit=Math.min(w/cutout.width,h/cutout.height);
+   const dw=cutout.width*fit,dh=cutout.height*fit;
+   ctx.drawImage(cutout,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
+  }else ctx.drawImage(cutout,x,y,w,h);
+  ctx.restore();
   return true;
  }
   window.AnimagiaAnimalAtlas=Object.freeze({
