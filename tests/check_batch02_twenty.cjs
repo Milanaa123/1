@@ -79,7 +79,7 @@ const html='<!doctype html><html lang="ru"><meta charset="utf-8"><title>Checking
  'figcaption{text-align:center;font-size:14px;height:36px;padding:4px}</style>'+
  '<header>АНИМАГИЯ · 20 РИСУНКОВ · ИСХОДНИК / ОЧИЩЕННЫЙ ПРОЗРАЧНЫЙ СЛОЙ</header>'+
  '<main></main>'+
- '<script>window.AnimagiaAnimalAtlas={imageUrl:"",resolve:()=>null,classify:()=>null,'+
+ '<script>window.AnimagiaAnimalAtlas={imageUrl:"",resolve:r=>r?.[4]==="Anura"?{id:"frog",cell:18}:null,classify:()=>null,'+
  'style:()=>({}),render:()=>{},drawCanvas:()=>true,drawable:async()=>null};</script>'+
  '<script src="./animal_atlas_100.js"></script>'+
  '<script>('+src+')();</script>';
