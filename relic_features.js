@@ -15,9 +15,15 @@
    ?[...new Intl.Segmenter('el',{granularity:'grapheme'}).segment(first)].map(x=>x.segment)
    :Array.from(first);
  }
+ // Equal angular spacing over the ENTIRE wheel, even for short names.
+ // The full Greek spelling is preserved by wheelLetters(), including accents.
  function nameArc(glyphs,font,r){
-  const span=Math.max(.55,Math.min(2.65,glyphs.length*(font/r)*1.15));
-  return i=>-Math.PI/2-span/2+(i+.5)*span/glyphs.length;
+  const count=glyphs.length;
+  return i=>count?-Math.PI/2+2*Math.PI*i/count:-Math.PI/2;
+ }
+ function uprightRingAngle(angle){
+  // Tangential letters are flipped on the bottom half so they stay readable.
+  return angle+Math.PI/2+(Math.sin(angle)>0?Math.PI:0);
  }
  const elem=(tag,value)=>{
   const a=document.createElement(tag);
@@ -56,7 +62,7 @@
    const a=angle(i),px=180+Math.cos(a)*132,py=180+Math.sin(a)*132;
    node('text',{x:px,y:py,'font-size':glyphSize,
     'font-family':'Georgia,serif','text-anchor':'middle',
-    transform:'rotate('+((a+Math.PI/2)*180/Math.PI)+' '+px+' '+py+')',
+    transform:'rotate('+(uprightRingAngle(a)*180/Math.PI)+' '+px+' '+py+')',
     fill:'#EBD4A4'},inscription[i]);
   }
   for(let i=0;i<7;i++){
@@ -86,7 +92,7 @@
   for(let i=0;i<inscription.length;i++){
    const a=angle(i);
    ctx.save();ctx.translate(Math.cos(a)*r*.82,Math.sin(a)*r*.82);
-   ctx.rotate(a+Math.PI/2);
+   ctx.rotate(uprightRingAngle(a));
    ctx.fillText(inscription[i],0,0);ctx.restore();
   }
   ctx.beginPath();
@@ -164,6 +170,63 @@
    cloud.addColorStop(.43,color+Math.round(alpha*110).toString(16).padStart(2,'0'));
    cloud.addColorStop(1,color+'00');
    ctx.fillStyle=cloud;ctx.fillRect(x-r,y-r,2*r,2*r);
+  }
+  // Reference-style violet cosmic clouds, not rigid repeated side curls.
+  // Procedural smoke ribbons are translucent and sit in the card background.
+  // No rendered image is substituted for the actual live card canvas.
+  const ribbons=[
+   [-1,190,280,1570,110],[-1,160,650,1630,80],
+   [1,190,240,1600,104],[1,158,750,1720,72]
+  ];
+  for(const [side,depth,first,last,spread] of ribbons){
+   const sign=side<0?1:-1;
+   const centreY=(first+last)/2;
+   // A pair of softly feathered nebula filaments along an organic spine.
+   for(let j=0;j<21;j++){
+    const y=first+(last-first)*j/20;
+    const spine=side<0?92:1108;
+    const wander=Math.sin(y*.006+side*2.1)*40+
+       Math.sin(y*.014+side)*21;
+    const x=spine+sign*(depth*.55+wander);
+    const rad=spread+12*Math.sin(j*1.35);
+    const glow=ctx.createRadialGradient(x,y,1,x,y,rad);
+    glow.addColorStop(0,'rgba(187,105,186,.095)');
+    glow.addColorStop(.38,'rgba(119,77,156,.058)');
+    glow.addColorStop(1,'rgba(74,42,119,0)');
+    ctx.fillStyle=glow;ctx.fillRect(x-rad,y-rad,rad*2,rad*2);
+   }
+   // Threads of colored stardust without a sharp outline or full loops.
+   for(let j=0;j<2100;j++){
+    const y=first+random()*(last-first);
+    const x0=(side<0?92:1108)+sign*
+      (depth*.55+Math.sin(y*.006+side*2.1)*40+Math.sin(y*.014+side)*21);
+    const cross=(random()+random()+random()-1.5)*spread*.6;
+    const x=x0+cross;
+    if(x<70||x>1130)continue;
+    const centreBoost=.45+.55*Math.sin((y-first)/(last-first)*Math.PI);
+    const a=(.035+random()*.17)*centreBoost;
+    ctx.fillStyle=random()>.33
+       ?'rgba(205,132,194,'+a.toFixed(3)+')'
+       :'rgba(140,114,215,'+(a*.7).toFixed(3)+')';
+    ctx.beginPath();ctx.arc(x,y,.25+random()*1.4,0,Math.PI*2);ctx.fill();
+   }
+  }
+  // Bright but rare stellar glints, clustered near the page edges.
+  for(const [x,y,sz] of [
+   [166,320,11],[95,780,8],[200,1115,12],[124,1750,9],
+   [1030,250,10],[1090,635,8],[1028,970,11],[1080,1680,9],
+   [290,1840,7],[940,1860,8]
+  ]){
+   const g=ctx.createRadialGradient(x,y,0,x,y,sz*7);
+   g.addColorStop(0,'rgba(244,196,144,.3)');
+   g.addColorStop(.18,'rgba(163,107,189,.12)');
+   g.addColorStop(1,'rgba(118,69,140,0)');
+   ctx.fillStyle=g;ctx.fillRect(x-sz*7,y-sz*7,sz*14,sz*14);
+   ctx.save();ctx.strokeStyle='rgba(245,199,151,.57)';
+   ctx.lineWidth=.9;ctx.beginPath();
+   ctx.moveTo(x-sz,y);ctx.lineTo(x+sz,y);
+   ctx.moveTo(x,y-sz*1.5);ctx.lineTo(x,y+sz*1.5);
+   ctx.stroke();ctx.restore();
   }
   // Constellation dust is concentrated at the edges of the figure, so the
   // seal, animal engraving, species name and bottom numeral remain readable.
@@ -346,6 +409,47 @@
    ctx.restore();
   }
   ctx.restore();
+  // Perimeter engraving directly on the card: double foil, suspended
+  // crescent finials and tiny four-point gilded intersections as in reference.
+  ctx.save();
+  ctx.strokeStyle='#efc38b';ctx.lineWidth=1.1;ctx.globalAlpha=.88;
+  for(const side of [-1,1]){
+    const anchor=side<0?53:1147;
+    for(const y of [284,880,1250,1785]){
+      ctx.beginPath();
+      ctx.moveTo(anchor-6,y);ctx.lineTo(anchor+6,y);
+      ctx.moveTo(anchor,y-14);ctx.lineTo(anchor,y+14);
+      ctx.stroke();
+      ctx.beginPath();ctx.arc(anchor,y,2.4,0,Math.PI*2);
+      ctx.fillStyle='#f3d099';ctx.fill();
+    }
+    // A softly scalloped engraving visible just inside the gold outer rim.
+    const x=side<0?78:1122,sgn=side<0?1:-1;
+    ctx.globalAlpha=.58;
+    ctx.beginPath();ctx.moveTo(x,255);
+    ctx.bezierCurveTo(x+sgn*12,360,x+sgn*15,475,x,570);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x,1510);
+    ctx.bezierCurveTo(x+sgn*14,1655,x+sgn*15,1800,x,1925);ctx.stroke();
+    ctx.globalAlpha=.88;
+  }
+  // Long filigree chords at top and bottom establish the same antique edge.
+  for(const upper of [true,false]){
+   const y=upper?64:2006,sgn=upper?1:-1;
+   ctx.beginPath();ctx.moveTo(238,y);ctx.lineTo(962,y);ctx.stroke();
+   for(const x of [235,400,600,800,965]){
+    ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);
+    ctx.fillStyle='#f4d29c';ctx.fill();
+   }
+   for(const side of [-1,1]){
+    const x=side<0?70:1130,xSign=side<0?1:-1;
+    ctx.beginPath();ctx.moveTo(x,y+sgn*118);
+    ctx.bezierCurveTo(x+xSign*26,y+sgn*36,
+      x+xSign*83,y+sgn*8,x+xSign*175,y);
+    ctx.stroke();
+   }
+  }
+  ctx.restore();
+
   // One quiet divider between celestial mechanics and the animal's life.
   ctx.lineWidth=.8;ctx.globalAlpha=.3;
   ctx.beginPath();ctx.moveTo(370,940);ctx.lineTo(470,940);

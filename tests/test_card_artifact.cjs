@@ -186,3 +186,34 @@ test('Stage-one reference template uses clean dark stardust and symmetric foil f
  assert.ok(styles.includes('transform:none!important;object-fit:contain!important;'));
  assert.match(html,/relic_features.js\?v=stage1-celestial-20261027/);
 });
+
+// Reference approval: full-circle Greek name; nebula and perimeter are drawn
+// on the existing Canvas, never as a generated replacement photograph.
+test('Greek glyphs cover the entire ring at identical angles',()=>{
+ const begin=js.indexOf(' function wheelLetters(greekName){');
+ const end=js.indexOf(' const elem=',begin);
+ assert.ok(begin>=0&&end>begin);
+ const {wheelLetters,nameArc,uprightRingAngle}=new Function(
+  js.slice(begin,end)+'\nreturn {wheelLetters,nameArc,uprightRingAngle};')();
+ for(const text of ['Φρέιζερ Ἁρολδ Βραουν','Ἀλέξανδρος Μάρκος','Ελλα Μαρια']){
+  const name=wheelLetters(text);
+  const positions=name.map((_,i)=>nameArc(name,32,246)(i));
+  assert.equal(name.join(''),text.split(' ')[0]);
+  assert.equal(positions.length,name.length);
+  for(let i=1;i<positions.length;i++)
+   assert.ok(Math.abs(positions[i]-positions[i-1]-2*Math.PI/name.length)<1e-9);
+  assert.ok(positions.length>1&&
+   Math.abs((positions.at(-1)-positions[0])+2*Math.PI/name.length-2*Math.PI)<1e-9);
+  assert.ok(name.every((_,i)=>Number.isFinite(uprightRingAngle(positions[i]))));
+ }
+ assert.ok(js.includes('ctx.rotate(uprightRingAngle(a));'));
+ assert.ok(js.includes('transform:\'rotate(\'+(uprightRingAngle(a)*180/Math.PI)'));
+});
+test('Cosmic reference background and golden perimeter are actual Canvas decoration',()=>{
+ const backdrop=js.slice(js.indexOf(' function paintNebula('),js.indexOf(' function cardAdornment('));
+ assert.ok(backdrop.includes('const ribbons='));
+ assert.ok(backdrop.includes('const ornate')||backdrop.includes('Perimeter engraving directly on the card'));
+ assert.ok(backdrop.includes('for(let j=0;j<2100;j++)'));
+ assert.ok(backdrop.includes("ctx.strokeStyle='#efc38b'"));
+ assert.ok(html.includes('cosmic-perimeter-full-wheel-20261027'));
+});
