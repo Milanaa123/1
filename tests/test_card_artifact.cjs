@@ -28,7 +28,7 @@ test('The favored magic circle remains the established, unchanged algorithm',()=
  assert.ok(js.includes('function decorateSVG(svg,n,greekName)'));
  assert.ok(js.includes('function paintSeal(ctx,n,x,y,r,greekName)'));
  assert.ok(js.includes('for(const scale of [.97,.91,.72,.68,.46])'));
- assert.ok(js.includes("paintSeal(ctx,sum,600,505,300,greek)"));
+ assert.ok(poster.includes("paintSeal(ctx,cardNumber,600,505,300,greek)"));
  assert.ok(js.includes('for(const rad of [156,147,119,109,77])'));
  assert.ok(styles.includes('.relic-seal-wrap>.personal-seal'));
  assert.ok(js.includes('function wheelLetters(greekName)'));
