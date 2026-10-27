@@ -143,7 +143,8 @@ test('All twenty frame presets are reachable; cuts erase canvas pixels last',()=
  ];
  for(const [kind,className,needHoles] of categories){
   const diets={predator:'predator','soft-predator':'predator',herbivore:'herbivore',omnivore:'omnivore'};
-  const styl={diet:diets[kind],habitat:kind==='aquatic'?'aquatic':'terrestrial'},species=[...sample];species[3]=className;
+  const styl={diet:diets[kind],habitat:kind==='aquatic'?'aquatic':'terrestrial'},species=[...sample];
+  species[3]=className;species[4]=kind==='soft-predator'?'Anura':'Carnivora';
   const variants=new Map();
   for(let i=0;i<100&&variants.size<5;i++){
    const owner='Ελληνικη'+i;
