@@ -26,6 +26,16 @@ jobs:
           for file in app.js greek_taxa.js enhancements.js photo_gallery.js magic_ui.js ritual_ui.js silhouette_service.js animal_atlas.js relic_features.js; do
             node --check "$file"
           done
+      - name: Test the full 100-image atlas and representative taxonomy without network
+        run: node --test tests/test_atlas100.cjs
+      - name: Inspect all 100 transparent images in real Chromium
+        run: node tests/check_atlas100.cjs
+      - name: Publish 100-image transparency montage
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-100-transparent-animals
+          path: qa-artifacts/atlas100-browser.png
+          retention-days: 14
       - name: Validate silhouette matching and image licenses without external network
         run: node --test tests/test_silhouette.mjs
       - name: Check curated animal artwork, genus accuracy and habitats
