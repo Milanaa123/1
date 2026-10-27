@@ -28,8 +28,9 @@ test('Premium export never reaches obsolete PhyloPic silhouettes',()=>{
  assert.ok(png.includes('composeScreenCard(row)'));
  assert.ok(png.includes("'image/jpeg',0.95"));
  assert.ok(!png.includes('navigator.share'));
- assert.ok(js.includes('five deterministic variations')||js.includes('five softer predator variants'));
- assert.ok(js.includes('paintDietAdornment(ctx,row,styl)'));
+ assert.ok(js.includes('Five DETERMINISTIC layouts per diet'));
+ assert.ok(js.includes('paintDietAdornment(ctx,row,styl,greek)'));
+ assert.ok(js.includes("ctx.globalCompositeOperation='destination-out'"));
 });
 test('Card hierarchy and no broken technical empty fields',()=>{
  assert.ok(js.includes('function updatePreviewText'));
