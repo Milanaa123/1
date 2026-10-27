@@ -9,7 +9,7 @@ const src=String(function(){
      "Squamata"
    ],
    [
-     "Змея",
+     "Уж (змея)",
      "Natrix natrix",
      "Reptilia",
      "Squamata"
@@ -139,7 +139,10 @@ const src=String(function(){
   if(atlas.correctedIndices.includes(i+1)&&(!loaded.corrected||loaded.corrected.naturalWidth!==1600))
     errors.push(name+' has no loaded anatomical correction');
   if(old.count<400)errors.push(name+' source disappeared');
-  if(atlas.correctedIndices.includes(i+1)){
+  if(i===86){
+   if(!loaded.grassSnake87||loaded.grassSnake87.naturalWidth!==320)errors.push('Anatomical grass snake SVG missing');
+   if(now.count<1200||now.count>9000||now.sum<50000)errors.push('Species-specific snake portrait unexpectedly blank or opaque');
+  }else if(atlas.correctedIndices.includes(i+1)){
    if(now.count<350||now.sum<23000)errors.push(name+' corrected species artwork missing');
    if(now.count>7000)errors.push(name+' corrected artwork contains opaque background');
   }else{
