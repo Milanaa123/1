@@ -376,16 +376,18 @@
   const inside=get('relicPreviewTraits');
   if(inside){
    inside.replaceChildren();
-   for(const [symbol,label] of [
-    ['✦',meta.diet!=='unknown'?meta.dietText:null],
-    ['◌',meta.habitat!=='unknown'?meta.habitatText:null],
-    ['◇',meta.secondaryText.length?meta.secondaryText.join(' · '):null]
+   for(const [id,title,symbol,value,known] of [
+    ['diet','Рацион','✦',meta.dietText,meta.diet!=='unknown'],
+    ['habitat','Среда обитания','◌',meta.habitatText,meta.habitat!=='unknown']
    ]){
-    if(!label)continue;
-    const element=elem('span',symbol+' '+label);
-    inside.append(element);
+    const item=elem('span');
+    item.className='relic-trait relic-trait-'+id+(known?'':' relic-trait-unverified');
+    const heading=elem('small',title);
+    const detail=elem('strong',known?symbol+' '+value:'Уточняется');
+    item.append(heading,detail);
+    inside.append(item);
    }
-   inside.hidden=!inside.children.length;
+   inside.hidden=false;
   }
  }
  function silhouetteService(){
@@ -516,21 +518,20 @@
    const nameY=category?1596:1586;
    for(const [i,line] of nameLines.entries())ctx.fillText(line,600,nameY+i*51);
    ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1718,1020,'italic 29px Georgia,serif',1);
-   ctx.fillStyle='#E4CA9C';ctx.font='21px Georgia,serif';
-   const traits=[styl.diet!=='unknown'?'✦ '+styl.dietText:null,
-     styl.habitat!=='unknown'?'◌ '+styl.habitatText:null,
-     ...(styl.secondaryText||[]).map(t=>'◇ '+t)].filter(Boolean).slice(0,3);
-   if(traits.length){
-    const widths=traits.map(t=>Math.max(143,ctx.measureText(t).width+44));
-    const total=widths.reduce((sum,n)=>sum+n,0)+12*(traits.length-1);
-    let x=600-total/2;
-    for(let i=0;i<traits.length;i++){
-     ctx.strokeStyle='#C6A574';ctx.lineWidth=1;
-     ctx.strokeRect(x,1755,widths[i],53);
-     ctx.fillStyle='#E8CAA0';
-     ctx.fillText(traits[i],x+widths[i]/2,1789);
-     x+=widths[i]+12;
-    }
+   // Two independent classifications: diet is never used as an environment.
+   // Unknown means no verified ecological record, not a guessed category.
+   const traits=[
+    ['РАЦИОН',styl.diet!=='unknown'?'✦ '+styl.dietText:'Уточняется'],
+    ['СРЕДА ОБИТАНИЯ',styl.habitat!=='unknown'?'◌ '+styl.habitatText:'Уточняется']
+   ];
+   for(let i=0;i<traits.length;i++){
+    const x=320+i*284;
+    ctx.strokeStyle='#C6A574';ctx.lineWidth=1;
+    ctx.strokeRect(x,1736,268,83);
+    ctx.fillStyle='#BDA99B';ctx.font='15px Georgia,serif';
+    ctx.fillText(traits[i][0],x+134,1763);
+    ctx.fillStyle='#E8CAA0';ctx.font='25px Georgia,serif';
+    ctx.fillText(traits[i][1],x+134,1797);
    }
    const boxes=[['ЧИСЛО ИМЕНИ',sum],['ЧИСЛО ЖИВОТНОГО',row[0]],['РАЗНИЦА',0]];
    for(let i=0;i<boxes.length;i++){
