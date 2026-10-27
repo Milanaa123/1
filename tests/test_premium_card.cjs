@@ -41,7 +41,9 @@ test('Card hierarchy and no broken technical empty fields',()=>{
  assert.ok(js.includes('function updatePreviewText'));
  assert.ok(js.includes("original.indexOf(' — ')"));
  assert.ok(js.includes('canvas.height=2000'));
- assert.ok(js.includes("'СРЕДА ОБИТАНИЯ'"));
+ assert.ok(js.includes('styl.habitatText')); // ecological data stays, boxed labels removed
+ assert.ok(js.includes('ЧИСЛО СОВПАДЕНИЯ'));
+ assert.ok(html.includes('relic-preview-single-number'));
  assert.ok(js.includes('box.hidden=meta.diet'));
  assert.ok(js.includes("d.parentElement.hidden=meta.diet==='unknown'"));
  assert.ok(js.includes("h.parentElement.hidden=meta.habitat==='unknown'"));
