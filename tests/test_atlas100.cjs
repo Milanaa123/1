@@ -64,3 +64,11 @@ test('no scoring, name storage or photographic misrepresentation',()=>{
   assert.ok(!SRC.includes(f),f);
  assert.ok(SRC.includes('exact:false'));
 });
+test('Render deployment explicitly includes both curated atlas module and art bytes',()=>{
+ const build=fs.readFileSync('build_data.py','utf8');
+ assert.ok(build.includes("shutil.copy2(art100,DEST/'art'/'animagia-100-alpha.webp')"));
+ assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
+ assert.ok(build.includes('CURATED_100_ART_READY'));
+ const html=fs.readFileSync('index.html','utf8');
+ assert.ok(html.includes('./animal_atlas_100.js?v=approved100-first-set-20261027'));
+});
