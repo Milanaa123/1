@@ -64,6 +64,14 @@ jobs:
         run: node tests/check_batch03_twenty.cjs
       - name: Check fourth batch of 20 original animal drawings in real Chromium
         run: node tests/check_batch04_twenty.cjs
+      - name: Verify 22 anatomical corrections on real browser Canvas
+        run: node tests/check_corrected_species.cjs
+      - name: Save 22 corrected drawings with original comparisons
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-corrected-22-visual-proof
+          path: qa-artifacts/corrected-22-in-browser.png
+          retention-days: 14
       - name: Save batch four original/cleaned image pairs
         uses: actions/upload-artifact@v4
         with:

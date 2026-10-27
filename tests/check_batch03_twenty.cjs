@@ -164,9 +164,14 @@ const src=String(function(){
   item.append(pair,cap);main.append(item);
   const old=coverage(before),now=coverage(after);
   if(old.count<400)errors.push(name+' source disappeared');
-  if(now.count<old.count*.50)errors.push(name+' body was clipped or erased');
-  if(now.count>old.count*1.09)errors.push(name+' background transparency expanded');
-  if(now.sum<old.sum*.49)errors.push(name+' thin gold line lost');
+  if(atlas.correctedIndices.includes(i+1)){
+   if(now.count<350||now.sum<23000)errors.push(name+' corrected species artwork missing');
+   if(now.count>7000)errors.push(name+' corrected artwork contains opaque background');
+  }else{
+   if(now.count<old.count*.50)errors.push(name+' body was clipped or erased');
+   if(now.count>old.count*1.09)errors.push(name+' background transparency expanded');
+   if(now.sum<old.sum*.49)errors.push(name+' thin gold line lost');
+  }
   records.push({number:i+1,name,retained:Math.round(now.sum/Math.max(1,old.sum)*100),
     alphaOld:old.count,alphaNew:now.count});
  }
