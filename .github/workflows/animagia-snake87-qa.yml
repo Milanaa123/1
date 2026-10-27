@@ -1,0 +1,34 @@
+name: Independently inspect new grass snake drawing in real Chromium
+on:
+  push:
+    branches: [animagia-snake87-qa-20261028]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Static syntax check
+        run: |
+          node --check animal_atlas_100.js
+          node --check tests/check_snake87.cjs
+      - name: Validate all one-hundred image routes and the grass snake checksum
+        run: node --test tests/test_atlas100.cjs
+      - name: Render new snake artwork with real browser and check anatomical details
+        run: node tests/check_snake87.cjs
+      - name: Inspect final fifteen figures after addition
+        run: node tests/check_batch06_fifteen.cjs
+      - name: Regression-test earlier hand-corrected species
+        run: node tests/check_corrected_species.cjs
+      - name: Save snake visual comparison
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-snake87-exact-species-before-after
+          path: qa-artifacts/grass-snake87-before-after.png
+          retention-days: 14
