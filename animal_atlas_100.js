@@ -243,7 +243,7 @@
   const correctionScale=replacement?.naturalWidth===6400&&replacement?.naturalHeight===4400?SHARP_SCALE:1;
   const useCorrection=CORRECTED_SET.has(i);
   const specificSnake=i===86?loaded?.grassSnake87:null;
-  if(useCorrection&&(!replacement||replacement.naturalWidth!==1600||replacement.naturalHeight!==1100))return false;
+  if(useCorrection&&(!replacement||replacement.naturalWidth!==1600*correctionScale||replacement.naturalHeight!==1100*correctionScale))return false;
   const refined=!useCorrection&&sourceScale===1&&(profile.reviewedBatch>=2&&profile.reviewedBatch<=6)?cleanReviewedCell(im,i):null;
   ctx.save();
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
