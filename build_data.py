@@ -238,6 +238,16 @@ def build():
   urllib.request.urlretrieve(URL,str(zpath))
  if DATA.exists():shutil.rmtree(DATA)
  DATA.mkdir(exist_ok=True,parents=True);bundle_curated_gold_art();shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'relic_card_stage1.css',DEST/'relic_card_stage1.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'animal_atlas.js',DEST/'animal_atlas.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
+ # Include the approved 100-image asset in the *published* site, not only Git.
+ # Fail the build if the optimized alpha sheet was lost or replaced.
+ art100=BASE/'art'/'animagia-100-alpha.webp'
+ raw100=art100.read_bytes()
+ expected100='2c459c934ae208f1f7c0686575a0f348df1503bf4e6fec32ed0ee1237026e291'
+ assert raw100[:4]==b'RIFF' and raw100[8:12]==b'WEBP'
+ assert hashlib.sha256(raw100).hexdigest()==expected100,'Corrupt 100-image atlas'
+ shutil.copy2(art100,DEST/'art'/'animagia-100-alpha.webp')
+ shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')
+ print('CURATED_100_ART_READY',len(raw100),'bytes',expected100,flush=True)
  stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)
