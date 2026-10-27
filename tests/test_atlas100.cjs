@@ -121,7 +121,7 @@ test('Stage 5: twenty consecutive images 6–25 are routed to their own artwork'
  const source=fs.readFileSync('animal_atlas_100.js','utf8');
  for(const required of ['function cleanReviewedCell(', 'reviewedCutouts',
    'cleared>0','if(closest<=8)keep[id]=1',
-   '(profile.reviewedBatch>=2&&profile.reviewedBatch<=4)?cleanReviewedCell(im,i):null'])
+   '(profile.reviewedBatch>=2&&profile.reviewedBatch<=5)?cleanReviewedCell(im,i):null'])
   assert.ok(source.includes(required),required);
 });
 
