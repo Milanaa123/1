@@ -157,12 +157,13 @@
    const mask=document.createElement('canvas');mask.width=w;mask.height=h;
    const m=mask.getContext('2d');
    // The original frog is traced once to exclude stars and the large background rings.
-   // Keep the frog's complete muzzle: the previous upper-right mask ended
-   // at x=259 and cut off its actual nose and upper snout.
-   const points=[[15,164],[30,128],[37,93],[60,88],[72,63],[101,58],[126,42],
-    [154,28],[193,30],[231,48],[259,65],[289,84],[294,105],
-    [285,124],[263,141],[255,160],[238,177],[214,180],[197,188],
-    [181,202],[152,207],[123,223],[82,219],[55,197],[18,192]];
+   // Follow the real muzzle near (224,43) while excluding the large
+   // ornamental background circle that starts beyond the nose.
+   // All coordinates refer to the original 307x256 cell.
+   const points=[[23,158],[43,124],[42,83],[80,91],[76,70],[104,66],[128,46],
+    [155,35],[190,30],[212,29],[225,34],[233,46],[239,72],
+    [239,96],[259,109],[251,154],[237,168],
+    [213,163],[197,179],[183,191],[150,195],[122,212],[85,207],[59,186],[25,187]];
    m.filter='blur(3px)';m.fillStyle='#fff';m.beginPath();
    points.forEach(([x,y],i)=>i?m.lineTo(x*w/307,y*h/256):m.moveTo(x*w/307,y*h/256));
    m.closePath();m.fill();frogAlpha=m.getImageData(0,0,w,h).data;
@@ -185,29 +186,14 @@
   }
   ctx.putImageData(pixels,0,0);
   if(index===18){
-   // Restore the nostril and continuous golden muzzle IN THE ORIGINAL cutout.
-   // All edits use coordinates of the 307x256 source cell, so they scale with
-   // the atlas without changing other species or the calculation.
-   ctx.save();
-   ctx.scale(w/307,h/256);
-   ctx.lineJoin='round';ctx.lineCap='round';
-   // The slope follows the existing right-facing frog head; preserve the eye.
-   ctx.shadowColor='#f6d899';ctx.shadowBlur=2.8;
-   ctx.strokeStyle='rgba(245,205,139,.86)';ctx.lineWidth=2.8;
-   ctx.beginPath();ctx.moveTo(224,57);
-   ctx.bezierCurveTo(252,57,274,75,283,90);
-   ctx.quadraticCurveTo(289,101,279,111);ctx.stroke();
-   // Under-snout contour avoids a straight, unnaturally truncated muzzle.
-   ctx.strokeStyle='rgba(222,165,104,.72)';ctx.lineWidth=1.8;
-   ctx.beginPath();ctx.moveTo(279,111);
-   ctx.quadraticCurveTo(265,124,249,128);ctx.stroke();
-   // Oval nostril, pinprick specular light and very short cheek crease.
-   ctx.shadowBlur=0;ctx.fillStyle='rgba(53,31,38,.96)';
-   ctx.beginPath();ctx.ellipse(270,91,3.6,2.6,-.34,0,Math.PI*2);ctx.fill();
-   ctx.strokeStyle='rgba(255,222,161,.93)';ctx.lineWidth=1.1;
-   ctx.beginPath();ctx.arc(270,91,4.6,-2.85,-1.45);ctx.stroke();
-   ctx.beginPath();ctx.moveTo(255,114);
-   ctx.quadraticCurveTo(246,120,237,117);ctx.stroke();
+   // A tiny anatomically placed nostril on the ORIGINAL right-facing head.
+   // Do not redraw the muzzle or admit the bright background orbit.
+   ctx.save();ctx.scale(w/307,h/256);
+   ctx.lineCap='round';
+   ctx.fillStyle='rgba(38,24,32,.94)';
+   ctx.beginPath();ctx.ellipse(219.5,43,2.35,1.6,-.32,0,Math.PI*2);ctx.fill();
+   ctx.strokeStyle='rgba(246,209,150,.82)';ctx.lineWidth=.85;
+   ctx.beginPath();ctx.arc(219.5,43,2.9,-2.7,-1.1);ctx.stroke();
    ctx.restore();
   }
   transparentArtCache.set(index,layer);
