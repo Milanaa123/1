@@ -62,5 +62,18 @@ jobs:
           name: animagia-stage2-greek-name-wheel
           path: qa-artifacts/stage2-greek-wheels.png
           retention-days: 14
+      - name: Fetch actual approved gold frog art for browser inspection
+        run: |
+          mkdir -p qa-artifacts
+          curl --fail --location --retry 2 --retry-delay 2 --max-time 100 --silent --show-error "https://animagia-calculator.onrender.com/art/animals-gold-v1.png" --output qa-artifacts/animals-gold-v1.png
+          test "$(stat -c%s qa-artifacts/animals-gold-v1.png)" -gt 50000
+      - name: Verify corrected frog muzzle and nostril in real Chromium
+        run: node tests/check_stage4_frog.cjs
+      - name: Publish stage-four frog artwork visual inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-stage4-frog-nose-and-full-silhouette
+          path: qa-artifacts/stage4-frog-nose.png
+          retention-days: 14
       - name: Run deterministic Python-JavaScript equivalence tests
         run: python -m unittest discover -s tests -v
