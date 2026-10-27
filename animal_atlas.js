@@ -9,6 +9,16 @@
  // First five ORIGINAL drawings, extracted as alpha PNG without backgrounds.
  const BATCH_01_URL='./art/animals-approved-01-05.png';
  const BATCH_01_SHARP_URL='./art/animals-approved-01-05-sharp4x.png';
+ const SOLO_APPROVED_DIR='./art/individual-4x/';
+ const approvedSoloCache=new Map();
+ function loadApprovedSolo(index){
+  if(!approvedSoloCache.has(index))approvedSoloCache.set(index,new Promise(resolve=>{
+   const pic=new Image();pic.crossOrigin='anonymous';
+   pic.onload=()=>resolve(pic);pic.onerror=()=>resolve(null);
+   pic.src=SOLO_APPROVED_DIR+'approved-'+String(index+1).padStart(2,'0')+'.webp';
+  }));
+  return approvedSoloCache.get(index);
+ }
  const BATCH_01_OFFSETS=[0,150,299,449,598,748],BATCH_01_HEIGHT=98;
  const BATCH_01_LABELS=['Волк','Лиса','Собака','Кошка','Лев'];
  const batch01Cutouts=new Map();
@@ -278,9 +288,10 @@
   picture.setAttribute('aria-label',profile.note+' — '+profile.scientific);
   container.append(picture);
   const approved=Number.isInteger(profile.approvedIndex);
-  void (approved?loadBatch01():asset()).then(image=>{
+  void (approved?loadApprovedSolo(profile.approvedIndex).then(pic=>pic||loadBatch01()):asset()).then(image=>{
    if(!image||!container.contains(picture))return;
-   const cutout=approved?approvedCutout(image,profile.approvedIndex):goldCutout(image,profile.cell);
+   const cutout=approved&&image.naturalHeight===392?image:
+    approved?approvedCutout(image,profile.approvedIndex):goldCutout(image,profile.cell);
    if(!cutout)return;
    picture.width=cutout.width;picture.height=cutout.height;
    picture.getContext('2d').drawImage(cutout,0,0);
@@ -294,7 +305,10 @@
   });
   return loaded;
  }
- async function drawable(){
+ async function drawable(profile){
+  // For the approved first five do not download the unrelated 3.6MB legacy
+  // sheet; the exact approved art is already loaded by loadBatch01().
+  if(Number.isInteger(profile?.approvedIndex))return await loadApprovedSolo(profile.approvedIndex)||await loadBatch01();
   // Preload BOTH sheets before the shared screen/export Canvas is drawn.
   const [image]=await Promise.all([asset(),loadBatch01()]);
   if(!image)return null;
@@ -310,7 +324,7 @@
   const useBatch=Number.isInteger(profile.approvedIndex);
   // drawable() awaited loadBatch01() before invoking this sync renderer.
   // The resolved image is retained separately when it loads.
-  const art=useBatch?approvedCutout(approvedImage01,profile.approvedIndex):
+  const art=useBatch?(image?.naturalHeight===392?image:approvedCutout(approvedImage01,profile.approvedIndex)):
     image?goldCutout(image,profile.cell):null;
   if(!art)return false;
   ctx.save();

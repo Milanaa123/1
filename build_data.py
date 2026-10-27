@@ -268,6 +268,17 @@ def build():
   name=e['file'];data=(BASE/'art'/name).read_bytes()
   assert len(data)==e['bytes'] and hashlib.sha256(data).hexdigest()==e['sha256'],'Corrupt sharper art '+name
   shutil.copy2(BASE/'art'/name,DEST/'art'/name)
+ # Copy only verified small per-species sprites; all 100 + first five.
+ solo_dir=BASE/'art'/'individual-4x'
+ solo=json.loads((solo_dir/'manifest.json').read_text(encoding='utf8'))
+ assert solo['count']==100 and solo['approvedCount']==5 and len(solo['items'])==105
+ outdir=DEST/'art'/'individual-4x';outdir.mkdir(parents=True,exist_ok=True)
+ for entry in solo['items']:
+  name=entry['file'];raw=(solo_dir/name).read_bytes()
+  assert len(raw)==entry['size'] and hashlib.sha256(raw).hexdigest()==entry['sha256'] and raw[:4]==b'RIFF','Bad individual sprite '+name
+  shutil.copy2(solo_dir/name,outdir/name)
+ shutil.copy2(solo_dir/'manifest.json',outdir/'manifest.json')
+ print('INDIVIDUAL_105_ART_PUBLISHED',sum(e['size'] for e in solo['items']),flush=True)
  print('SHARP_ALL_100_ART_READY',[(e['file'],e['bytes']) for e in manifest['results']],flush=True)
  print('CORRECTED_SPECIES_22_READY',len(replacement),'bytes',flush=True)
  print('CURATED_100_ART_READY',len(raw100),'bytes',expected100,flush=True)

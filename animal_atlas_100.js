@@ -14,6 +14,18 @@
  const SHARP_URI='./art/animagia-100-sharp4x.webp';
  const SHARP_CORRECTED_URI='./art/animagia-corrected-22-sharp4x.webp';
  const SHARP_SCALE=4;
+ const INDIVIDUAL_DIR='./art/individual-4x/';
+ const individualCache=new Map();
+ const individualUrl=i=>i===86?GRASS_SNAKE_URI:INDIVIDUAL_DIR+'animal-'+String(i+1).padStart(3,'0')+'.webp';
+ function individualAsset(i){
+  if(!Number.isInteger(i)||i<0||i>=100)return Promise.resolve(null);
+  if(!individualCache.has(i))individualCache.set(i,new Promise(resolve=>{
+   const image=new Image();image.crossOrigin='anonymous';
+   image.onload=()=>resolve(image);image.onerror=()=>resolve(null);
+   image.src=individualUrl(i);
+  }));
+  return individualCache.get(i);
+ }
  const CORRECTED_SET=new Set([5,6,8,9,13,18,23,28,29,32,34,39,45,46,47,52,53,64,67,77,80,85]);
  const WIDTH=160,HEIGHT=110;
  const entries=[["wolf","Волк"],["fox","Лиса"],["dog","Собака"],["cat","Кошка"],["lion","Лев"],["tiger","Тигр"],["snow-leopard","Снежный барс"],["cheetah","Гепард"],["jaguar","Ягуар"],["puma","Пума"],["bear","Медведь"],["panda","Панда"],["raccoon","Енот"],["otter","Выдра"],["mink","Норка"],["badger","Барсук"],["wolverine","Росомаха"],["ocelot","Оцелот"],["lynx","Рысь"],["caracal","Каракал"],["owl","Сова"],["eagle-owl","Филин"],["raven","Ворон"],["crow","Ворона"],["falcon","Сокол"],["hawk","Ястреб"],["eagle","Орёл"],["vulture","Стервятник"],["gull","Чайка"],["hummingbird","Колибри"],["deer","Олень"],["moose","Лось"],["roe-deer","Косуля"],["reindeer","Северный олень"],["boar","Кабан"],["bison","Бизон"],["aurochs","Зубр"],["sheep","Баран"],["goat","Козёл"],["chamois","Серна"],["horse","Лошадь"],["pegasus","Пегас (фантазийный)"],["donkey","Осёл"],["zebra","Зебра"],["giraffe","Жираф"],["antelope","Антилопа"],["gazelle","Газель"],["camel","Верблюд"],["llama","Лама"],["alpaca","Альпака"],["rabbit","Кролик"],["hare","Заяц"],["squirrel","Белка"],["beaver","Бобр"],["hamster","Хомяк"],["mouse","Мышь"],["rat","Крыса"],["porcupine","Дикобраз"],["ground-squirrel","Суслик"],["marmot","Сурок"],["kangaroo","Кенгуру"],["koala","Коала"],["wombat","Вомбат"],["dingo","Дикая собака динго"],["tasmanian-devil","Тасманийский дьявол"],["emu","Эму"],["ostrich","Страус"],["cassowary","Казуар"],["kiwi","Киви"],["penguin","Пингвин"],["whale","Кит"],["dolphin","Дельфин"],["orca","Косатка"],["shark","Акула"],["ray","Скат"],["seal","Тюлень"],["sea-lion","Морской лев"],["walrus","Морж"],["manatee","Ламантин"],["sea-otter","Выдра морская"],["turtle","Черепаха"],["sea-turtle","Морская черепаха"],["lizard","Ящерица"],["iguana","Игуана"],["chameleon","Хамелеон"],["gecko","Геккон"],["snake","Уж (змея)"],["serpent","Змей (декоративный)"],["cobra","Кобра"],["python","Питон"],["crocodile","Крокодил"],["alligator","Аллигатор"],["spiny-lizard","Шипохвост"],["bat","Летучая мышь"],["octopus","Осьминог"],["squid","Кальмар"],["jellyfish","Медуза"],["seahorse","Морской конёк"],["crab","Краб"],["lobster","Омар"]];
@@ -228,6 +240,18 @@
    const legacyImage=loaded?.legacy||loaded;
    return legacy.drawCanvas(ctx,legacyImage,profile,x,y,w,h);
   }
+  // On-demand portrait: draw one native 4x cell directly, never stretch a
+  // 160x110 preview or download the full 10MB source atlas for one animal.
+  if(Number.isInteger(profile.cell)&&loaded?.singleArt&&loaded.singleCell===profile.cell){
+   const art=loaded.singleArt;
+   if(art.naturalWidth>0&&art.naturalHeight>0){
+    const factor=Math.min(w*.90/art.naturalWidth,h*.90/art.naturalHeight);
+    const dw=art.naturalWidth*factor,dh=art.naturalHeight*factor;
+    ctx.save();ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+    ctx.drawImage(art,x+(w-dw)/2,y+(h-dh)/2,dw,dh);ctx.restore();
+    return true;
+   }
+  }
   const im=loaded?.sharpSheet?.naturalWidth===6400&&loaded?.sharpSheet?.naturalHeight===4400?
    loaded.sharpSheet:loaded?.newSheet||loaded;
   if(!im||im.naturalWidth<1600||im.naturalHeight<1100)return false;
@@ -255,7 +279,18 @@
   ctx.restore();
   return true;
  }
- async function drawable(){
+ async function drawable(profile){
+  if(profile){
+   if(profile.artSet!=='atlas100'){
+    const image=await legacy.drawable(profile);
+    return image?{legacy:image}:null;
+   }
+   const singleArt=await individualAsset(profile.cell);
+   if(singleArt)return {singleArt,singleCell:profile.cell};
+   const [newSheet,corrected,grassSnake87]=await Promise.all([asset(),correctedAsset(),snake87Asset()]);
+   return newSheet?{newSheet,corrected,grassSnake87}:null;
+  }
+  // Backward-compatible full-sheet mode for QA and atlas-wide reporting.
   const [newSheet,oldSheet,corrected,grassSnake87,sharpSheet,sharpCorrected]=await Promise.all([
    asset(),legacy.drawable(),correctedAsset(),snake87Asset(),sharpAsset(),sharpCorrectionAsset()
   ]);
@@ -272,20 +307,19 @@
   canvas.setAttribute('role','img');
   canvas.setAttribute('aria-label',profile.note+' · '+profile.scientific);
   container.append(canvas);
-  void Promise.all([asset(),correctedAsset(),snake87Asset()]).then(([im,corrected,grassSnake87])=>{
-   if(!im||!container.contains(canvas))return;
-   drawCanvas(canvas.getContext('2d'),{newSheet:im,corrected,grassSnake87},profile,0,0,canvas.width,canvas.height);
-  });
-  void Promise.all([asset(),correctedAsset(),snake87Asset(),sharpAsset(),sharpCorrectionAsset()]).then(([im,corrected,grassSnake87,sharpSheet,sharpCorrected])=>{
-   if(!im||!container.contains(canvas))return;
-   const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);
-   drawCanvas(ctx,{newSheet:im,corrected,grassSnake87,sharpSheet,sharpCorrected},profile,0,0,canvas.width,canvas.height);
+  // Load just this species. Export and preview use the very same file.
+  void drawable(profile).then(art=>{
+   if(!art||!container.contains(canvas))return;
+   const ctx=canvas.getContext('2d');
+   ctx.clearRect(0,0,canvas.width,canvas.height);
+   drawCanvas(ctx,art,profile,0,0,canvas.width,canvas.height);
   });
  }
  window.AnimagiaAnimalAtlas=Object.freeze({
   ...legacy,imageUrl:URI,legacyImageUrl:legacy.imageUrl,
   grassSnake87ImageUrl:GRASS_SNAKE_URI,
   sharpImageUrl:SHARP_URI,sharpCorrectedImageUrl:SHARP_CORRECTED_URI,sharpArtworkScale:SHARP_SCALE,
+  individualDir:INDIVIDUAL_DIR,individualImageUrl:individualUrl,
   correctedImageUrl:CORRECTED_URI,correctedIndices:Object.freeze([6,7,9,10,14,19,24,29,30,33,35,40,46,47,48,53,54,65,68,78,81,86]),
   resolve,classify:legacy.classify,style:legacy.style,
   render,drawCanvas,drawable,
