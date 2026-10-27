@@ -1,0 +1,36 @@
+name: Standalone Chrom(ium) verification for animals 66–85
+on:
+  push:
+    branches: [animagia-batch05-qa-20261028]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check source and fifth batch test syntax
+        run: |
+          node --check animal_atlas_100.js
+          node --check tests/check_batch05_twenty.cjs
+      - name: Verify every species label, routing, old corrections and unchanged first five
+        run: node --test tests/test_atlas100.cjs
+      - name: Inspect 100 original images in Chromium
+        run: node tests/check_atlas100.cjs
+      - name: Verify 20 reviewed sprites 66–85 in Chromium
+        run: node tests/check_batch05_twenty.cjs
+      - name: Verify older batch of 20 (46–65) remains intact
+        run: node tests/check_batch04_twenty.cjs
+      - name: Verify 22 anatomical corrections remain intact
+        run: node tests/check_corrected_species.cjs
+      - name: Save actual fifth batch before-and-after artwork
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-batch05-audit-20-animals
+          path: qa-artifacts/batch05-twenty-before-after.png
+          retention-days: 14
