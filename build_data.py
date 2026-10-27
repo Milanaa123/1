@@ -248,6 +248,15 @@ def build():
  shutil.copy2(art100,DEST/'art'/'animagia-100-alpha.webp')
  shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')
  print('CURATED_100_ART_READY',len(raw100),'bytes',expected100,flush=True)
+ # First review batch is a separate alpha PNG with five individually cleaned
+ # visitor-selected originals; prevent Render from serving an older cached sheet.
+ art5=BASE/'art'/'animals-approved-01-05.png'
+ raw5=art5.read_bytes()
+ expected5='84480643a1b174fb2fc3a7f85f2db25b647ef8720448d0e8ae8d24819558f235'
+ assert raw5[:8]==b'\\x89PNG\\r\\n\\x1a\\n'
+ assert hashlib.sha256(raw5).hexdigest()==expected5,'First-five approved alpha atlas corrupted'
+ shutil.copy2(art5,DEST/'art'/'animals-approved-01-05.png')
+ print('CURATED_FIRST_FIVE_ALPHA_READY',len(raw5),'bytes',expected5,flush=True)
  stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)

@@ -49,6 +49,10 @@
  function resolve(row){
   // Keep specialised legacy frog; the 100-sheet does not contain an amphibian.
   if(row?.[4]==='Anura')return legacy.resolve(row);
+  // The visitor's first five have been individually cleaned and verified:
+  // prefer that exact original drawing to the older 100-up montage cell.
+  const reviewed=legacy.resolve(row);
+  if(Number.isInteger(reviewed?.approvedIndex))return reviewed;
   const chosen=choose(row);
   if(!chosen)return legacy.resolve(row);
   const old=legacy.classify(row);

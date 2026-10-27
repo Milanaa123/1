@@ -3,7 +3,16 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const fs=require('fs'),vm=require('vm');
 const SRC=fs.readFileSync('animal_atlas_100.js','utf8');
 const legacy={imageUrl:'./art/animals-gold-v1.png',list:[],
- resolve(row){return row?.[4]==='Anura'?{id:'frog',cell:18,label:'Лягушка',note:'Обобщённый рисунок лягушки'}:null;},
+ resolve(row){
+  const name=row?.[1];
+  if(row?.[4]==='Anura')return {id:'frog',cell:18,label:'Лягушка',note:'Обобщённый рисунок лягушки'};
+  const picks=new Map([['Canis lupus',0],['Vulpes vulpes',1],
+   ['Canis familiaris',2],['Felis catus',3],['Panthera leo',4]]);
+  if(picks.has(name))return {id:['wolf','fox','dog','cat','lion'][picks.get(name)],
+    cell:picks.get(name),approvedIndex:picks.get(name),exact:false,
+    note:'Обобщённый рисунок группы',scientific:name};
+  return null;
+ },
  classify(){return null;},style(){return {};},render(){},drawCanvas(){return true;},drawable:async()=>null};
 const ctx=vm.createContext({window:{AnimagiaAnimalAtlas:legacy},Image:class{},document:{createElement:()=>({})},Promise});
 vm.runInContext(SRC,ctx,{filename:'animal_atlas_100.js'});
@@ -71,4 +80,18 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
  assert.ok(html.includes('./animal_atlas_100.js?v=approved100-first-set-20261027'));
+});
+
+test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
+ for(const [name,i] of [['Canis lupus',0],['Vulpes vulpes',1],['Canis familiaris',2],
+ ['Felis catus',3],['Panthera leo',4]]){
+  const p=api.resolve(row(name));
+  assert.equal(p.approvedIndex,i,name);
+  assert.notEqual(p.artSet,'atlas100',name);
+ }
+ assert.equal(api.resolve(row('Panthera tigris')).artSet,'atlas100');
+ assert.equal(api.list.length,100);
+ const source=fs.readFileSync('build_data.py','utf8');
+ assert.ok(source.includes("shutil.copy2(art5,DEST/'art'/'animals-approved-01-05.png')"));
+ assert.ok(source.includes('CURATED_FIRST_FIVE_ALPHA_READY'));
 });
