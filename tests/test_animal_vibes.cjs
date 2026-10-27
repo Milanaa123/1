@@ -934,3 +934,19 @@ test('Approved artwork is not replaced and score calculation stays separate',()=
  assert.ok(atlas.includes("'./art/animals-gold-v1.png'"));
  assert.ok(app.includes('function score(s)'));
 });
+
+test('Frogs have transparent splayed webbed toes and no large filled holes',()=>{
+ const a=source.indexOf(' function webbedFoot(');
+ const b=source.indexOf(' function waterDrop(',a);
+ const c=source.indexOf(' function waterSplash(',b);
+ assert.ok(a>=0&&b>a&&c>b);
+ const paws=source.slice(a,b),drops=source.slice(b,c);
+ assert.ok(paws.includes("ctx.lineWidth=5;ctx.lineCap='round'"));
+ assert.ok(paws.includes("ctx.ellipse(0,17,10,12"));
+ assert.ok(paws.includes("ctx.quadraticCurveTo(b[0],b[1],c[0],c[1])"));
+ assert.ok(drops.includes("ctx.lineWidth=4.5"));
+ assert.ok(!paws.includes('ctx.fill()')&&!drops.includes('ctx.fill()'));
+ const frog=source.slice(source.indexOf(' const gentle=['),source.indexOf(' const aquatic=['));
+ assert.ok(frog.includes('webbedFoot('));
+ assert.ok(!frog.includes('bite(')&&!frog.includes('claw('));
+});

@@ -482,37 +482,61 @@
 
 
 
-  // Approved frog theme: fine webbed FOOTPRINTS, not large black bites.
+  // Frogs leave splayed WEBBED TOE marks. No solid bite-like black ovals.
+  // The central transparent traces are small; antique-gold edges remain.
   function webbedFoot(side,y,size=1,tilt=0){
-   const left=side==='left',x=left?62:1138;
-   function outline(){
-    ctx.beginPath();ctx.moveTo(-23,26);ctx.bezierCurveTo(-30,8,-34,-4,-23,-16);
-    ctx.quadraticCurveTo(-36,-55,-28,-57);
-    ctx.quadraticCurveTo(-19,-61,-11,-30);
-    ctx.quadraticCurveTo(-13,-71,-4,-71);
-    ctx.quadraticCurveTo(6,-72,8,-31);
-    ctx.quadraticCurveTo(24,-61,32,-52);
-    ctx.quadraticCurveTo(41,-43,21,-23);
-    ctx.quadraticCurveTo(49,-43,53,-31);
-    ctx.quadraticCurveTo(57,-20,34,-5);
-    ctx.bezierCurveTo(36,37,11,52,-11,45);
-    ctx.quadraticCurveTo(-20,41,-23,26);ctx.closePath();
+   const left=side==='left',x=left?64:1136;
+   function footprint(){
+    ctx.beginPath();
+    ctx.ellipse(0,17,10,12,-.18,0,Math.PI*2);
+    const toes=[
+     [[-5,9],[-17,-2],[-31,-32]],
+     [[-3,7],[-9,-13],[-10,-44]],
+     [[3,7],[10,-14],[17,-43]],
+     [[5,9],[21,-3],[37,-27]]
+    ];
+    for(const [a,b,c] of toes){
+     ctx.moveTo(a[0],a[1]);
+     ctx.quadraticCurveTo(b[0],b[1],c[0],c[1]);
+    }
+    ctx.moveTo(-18,-3);ctx.quadraticCurveTo(-1,-15,17,-5);
+    ctx.moveTo(-7,-13);ctx.quadraticCurveTo(3,-23,11,-11);
    }
-   function place(fn){ctx.save();ctx.translate(x,y);ctx.rotate(tilt);
-    ctx.scale(left?size:-size,size);fn();ctx.restore();}
-   place(()=>{ctx.save();ctx.strokeStyle='#edc995';ctx.lineWidth=2.6;
-    ctx.shadowColor='#d9b785';ctx.shadowBlur=6;outline();ctx.stroke();ctx.restore();});
-   shapes.push(()=>place(()=>{outline();ctx.fill();}));
+   function place(fn){
+    ctx.save();ctx.translate(x,y);ctx.rotate(tilt);
+    ctx.scale(left?size:-size,size);fn();ctx.restore();
+   }
+   place(()=>{
+    ctx.save();ctx.strokeStyle='#e4ba83';ctx.lineWidth=10.5;
+    ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.shadowColor='#e7b87e';ctx.shadowBlur=5;
+    footprint();ctx.stroke();ctx.restore();
+   });
+   shapes.push(()=>place(()=>{
+    ctx.lineWidth=5;ctx.lineCap='round';ctx.lineJoin='round';
+    footprint();ctx.stroke();
+   }));
   }
   function waterDrop(side,y,size=1){
-   const x=side==='left'?82:1118;
-   function shape(){ctx.beginPath();ctx.moveTo(0,-22);
-    ctx.bezierCurveTo(13,-4,21,4,17,17);
-    ctx.bezierCurveTo(10,29,-11,29,-18,17);
-    ctx.bezierCurveTo(-22,4,-12,-7,0,-22);ctx.closePath();}
-   function place(fn){ctx.save();ctx.translate(x,y);ctx.scale(size,size);fn();ctx.restore();}
-   place(()=>{ctx.save();ctx.strokeStyle='#eccfa5';ctx.lineWidth=2.5;shape();ctx.stroke();ctx.restore();});
-   shapes.push(()=>place(()=>{shape();ctx.fill();}));
+   const x=side==='left'?79:1121;
+   function shape(){
+    ctx.beginPath();ctx.moveTo(0,-23);
+    ctx.bezierCurveTo(11,-9,18,3,16,13);
+    ctx.bezierCurveTo(12,25,-12,25,-16,13);
+    ctx.bezierCurveTo(-18,3,-9,-9,0,-23);ctx.closePath();
+   }
+   function place(fn){
+    ctx.save();ctx.translate(x,y);ctx.scale(size,size);fn();ctx.restore();
+   }
+   place(()=>{
+    ctx.save();ctx.strokeStyle='#e8c598';ctx.lineWidth=9;
+    ctx.shadowColor='#dfae7a';ctx.shadowBlur=5;
+    ctx.lineCap='round';shape();ctx.stroke();ctx.restore();
+   });
+   // An outlined transparent droplet, NEVER a filled black teardrop.
+   shapes.push(()=>place(()=>{
+    ctx.lineWidth=4.5;ctx.lineCap='round';shape();ctx.stroke();
+   }));
   }
   function waterSplash(side,y,size=1){
    waterDrop(side,y,size);waterDrop(side,y+62,size*.63);
@@ -610,6 +634,11 @@
    ()=>{botanical('right',270,.76,false);claw('left',1230,.7,.03);},
    ()=>{bite('top',930,118,4);botanical('left',1120,.78,true);claw('right',510,.65,.04);}
   ];
+  // Soft contextual accents without inventing biological classifications.
+  if(k==='avian'&&row?.[4]==='Strigiformes')
+   moon(v%2?'left':'right',760+v*95);
+  if(k==='reptile'&&row?.[4]==='Crocodylia')
+   ripple(v%2?'left':'right',1030+v*65);
   if(k==='predator')hunters[v]();
   else if(k==='soft-predator')gentle[v]();
   else if(k==='aquatic')aquatic[v]();
