@@ -84,7 +84,10 @@
   const approved=resolve(row);
   const name=normalize(row[1]),genus=name.split(' ')[0];
   const verified=habitatVerifiedBySpecies.get(name);
-  if(verified)return {...(approved||{diet:null,secondary:[],scientific:name,id:null,cell:null}),habitat:verified};
+  if(verified)return {...(approved||{
+   diet:row[4]==='Anura'?'predator':genus==='Castor'?'herbivore':null,
+   secondary:[],scientific:name,id:null,cell:null
+  }),habitat:verified};
   if(approved)return approved;
   const cls=row[3],order=row[4];
   const aquaticClasses=new Set(['Actinopterygii','Actinopteri','Teleostei',
