@@ -36,6 +36,14 @@ jobs:
         run: node --test tests/test_card_artifact.cjs
       - name: Validate all 100 approved visual subjects
         run: node --test tests/test_animal_vibes.cjs
+      - name: Check stage-one card base in real Chromium
+        run: node tests/check_stage1_template.cjs
+      - name: Publish stage-one visual proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-stage1-gold-template
+          path: qa-artifacts/stage1-card-base.png
+          retention-days: 14
       - name: Real-browser Canvas pixel QA for diet-frame cutouts
         run: node tests/check_frame_pixels.cjs
       - name: Run deterministic Python-JavaScript equivalence tests
