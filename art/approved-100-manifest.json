@@ -1,508 +1,508 @@
 {
   "version": 1,
-  "source": "User-approved numbered 10×10 artwork sheet, 1536×1024",
-  "handling": "Never equate generic imagery with verified species; preserve whole silhouettes, export with transparent alpha",
+  "source": "User-approved 100-image master (10×10); optimized transparent 1600×1100 WebP already integrated, individually refined images processed in batches",
+  "handling": "Do not equate general artwork with an identified species; every alpha silhouette and its reference-to-taxon routing must be checked independently.",
   "items": [
     {
       "index": 1,
       "name": "Волк",
-      "graphicState": "integrated"
+      "graphicState": "individually-refined-transparent-png"
     },
     {
       "index": 2,
       "name": "Лиса",
-      "graphicState": "integrated"
+      "graphicState": "individually-refined-transparent-png"
     },
     {
       "index": 3,
       "name": "Собака",
-      "graphicState": "integrated"
+      "graphicState": "individually-refined-transparent-png"
     },
     {
       "index": 4,
       "name": "Кошка",
-      "graphicState": "integrated"
+      "graphicState": "individually-refined-transparent-png"
     },
     {
       "index": 5,
       "name": "Лев",
-      "graphicState": "integrated"
+      "graphicState": "individually-refined-transparent-png"
     },
     {
       "index": 6,
       "name": "Тигр",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 7,
       "name": "Снежный барс",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 8,
       "name": "Гепард",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 9,
       "name": "Ягуар",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 10,
       "name": "Пума",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 11,
       "name": "Медведь",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 12,
       "name": "Панда",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 13,
       "name": "Енот",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 14,
       "name": "Выдра",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 15,
       "name": "Норка",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 16,
       "name": "Барсук",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 17,
       "name": "Росомаха",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 18,
       "name": "Оцелот",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 19,
       "name": "Рысь",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 20,
       "name": "Каракал",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 21,
       "name": "Сова",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 22,
       "name": "Филин",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 23,
       "name": "Ворон",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 24,
       "name": "Ворона",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 25,
       "name": "Сокол",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 26,
       "name": "Ястреб",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 27,
       "name": "Орёл",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 28,
       "name": "Стервятник",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 29,
       "name": "Чайка",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 30,
       "name": "Колибри",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 31,
       "name": "Олень",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 32,
       "name": "Лось",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 33,
       "name": "Косуля",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 34,
       "name": "Северный олень",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 35,
       "name": "Кабан",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 36,
       "name": "Бизон",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 37,
       "name": "Зубр",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 38,
       "name": "Баран",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 39,
       "name": "Козёл",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 40,
       "name": "Серна",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 41,
       "name": "Лошадь",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 42,
       "name": "Пегас (мифологический)",
-      "graphicState": "awaiting-transparent-extraction",
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review",
       "note": "mythical art, not a zoological species"
     },
     {
       "index": 43,
       "name": "Осёл",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 44,
       "name": "Зебра",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 45,
       "name": "Жираф",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 46,
       "name": "Антилопа",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 47,
       "name": "Газель",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 48,
       "name": "Верблюд",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 49,
       "name": "Лама",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 50,
       "name": "Альпака",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 51,
       "name": "Кролик",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 52,
       "name": "Заяц",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 53,
       "name": "Белка",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 54,
       "name": "Бобр",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 55,
       "name": "Хомяк",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 56,
       "name": "Мышь",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 57,
       "name": "Крыса",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 58,
       "name": "Дикобраз",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 59,
       "name": "Суслик",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 60,
       "name": "Сурок",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 61,
       "name": "Кенгуру",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 62,
       "name": "Коала",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 63,
       "name": "Вомбат",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 64,
       "name": "Динго",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 65,
       "name": "Тасманийский дьявол",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 66,
       "name": "Эму",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 67,
       "name": "Страус",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 68,
       "name": "Казуар",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 69,
       "name": "Киви",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 70,
       "name": "Пингвин",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 71,
       "name": "Кит",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 72,
       "name": "Дельфин",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 73,
       "name": "Косатка",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 74,
       "name": "Акула",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 75,
       "name": "Скат",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 76,
       "name": "Тюлень",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 77,
       "name": "Морской лев",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 78,
       "name": "Морж",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 79,
       "name": "Ламантин",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 80,
       "name": "Морская выдра",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 81,
       "name": "Черепаха",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 82,
       "name": "Морская черепаха",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 83,
       "name": "Ящерица",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 84,
       "name": "Игуана",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 85,
       "name": "Хамелеон",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 86,
       "name": "Геккон",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 87,
       "name": "Змея",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 88,
       "name": "Змея (второй рисунок)",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 89,
       "name": "Кобра",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 90,
       "name": "Питон",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 91,
       "name": "Крокодил",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 92,
       "name": "Аллигатор",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 93,
       "name": "Черепаховая ящерица",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 94,
       "name": "Летучая мышь",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 95,
       "name": "Осьминог",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 96,
       "name": "Кальмар",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 97,
       "name": "Медуза",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 98,
       "name": "Морской конёк",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 99,
       "name": "Краб",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     },
     {
       "index": 100,
       "name": "Омар",
-      "graphicState": "awaiting-transparent-extraction"
+      "graphicState": "in-existing-100-alpha-webp-needs-individual-review"
     }
   ]
 }
