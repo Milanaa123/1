@@ -539,9 +539,16 @@
     },
     {
       "index": 87,
-      "name": "Змея",
-      "graphicState": "batch06-non-destructive-alpha-cleanup",
-      "reviewedBatch": 6
+      "name": "Уж (змея)",
+      "graphicState": "species-specific-transparent-gold-svg",
+      "reviewedBatch": 6,
+      "visualCorrection": true,
+      "visualFeatures": [
+        "collar",
+        "round pupil",
+        "elongated legless body",
+        "no cobra hood"
+      ]
     },
     {
       "index": 88,
@@ -690,5 +697,14 @@
     ],
     "mode": "separate gold transparent WebP overlay; original 100-art file retained",
     "disclaimer": "Illustrations reflect species anatomy, not documentary photos"
-  }
+  },
+  "speciesSpecificOverrides": [
+    {
+      "index": 87,
+      "taxon": "Natrix natrix",
+      "asset": "art/animagia-grass-snake-87.svg",
+      "source": "original hand-authored transparent gold vector",
+      "originalPreserved": true
+    }
+  ]
 }

@@ -253,6 +253,12 @@ def build():
  assert replacement[:4]==b'RIFF' and replacement[8:12]==b'WEBP'
  assert hashlib.sha256(replacement).hexdigest()=='9876d77dfcee8e0859581678d5273b13fd1ca77d8a45b5792f334ffb1a07687b','Corrected animal art checksum mismatch'
  shutil.copy2(corrected,DEST/'art'/'animagia-corrected-22.webp')
+ snake_art=BASE/'art'/'animagia-grass-snake-87.svg'
+ snake_raw=snake_art.read_bytes()
+ assert snake_raw.startswith(b'<svg ') and b'</svg>' in snake_raw
+ assert hashlib.sha256(snake_raw).hexdigest()=='31a6276434eef7f5a5593f94885fcc40b36cc096e03f0b59f82369571dfaa216','Grass snake SVG checksum mismatch'
+ shutil.copy2(snake_art,DEST/'art'/'animagia-grass-snake-87.svg')
+ print('CURATED_GRASS_SNAKE_87_READY',len(snake_raw),'bytes',flush=True)
  print('CORRECTED_SPECIES_22_READY',len(replacement),'bytes',flush=True)
  print('CURATED_100_ART_READY',len(raw100),'bytes',expected100,flush=True)
  # First review batch is a separate alpha PNG with five individually cleaned

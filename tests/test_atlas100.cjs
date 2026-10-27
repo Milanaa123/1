@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=batch06-final15-20261028'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=grass-snake87-illustrated-20261028'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -563,4 +563,20 @@ test('Stage 9: last 15 curated images, 14 biological taxa and one explicitly fan
  assert.equal(api.list.length,100);
  assert.equal(api.resolve(row('Canis lupus')).approvedIndex,0);
  assert.equal(api.resolve(row('Cornufer opisthodon','Amphibia','Anura')).id,'frog');
+});
+
+
+test('87 grass snake has an anatomical transparent SVG while preserving master 100 sprites and decorative serpent 88',()=>{
+ const crypto=require('node:crypto'),bytes=fs.readFileSync('art/animagia-grass-snake-87.svg');
+ assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),'31a6276434eef7f5a5593f94885fcc40b36cc096e03f0b59f82369571dfaa216');
+ assert.match(bytes.toString(),/viewBox="0 0 160 110"/);
+ assert.match(bytes.toString(),/Distinct pale-yellow collar/);
+ assert.match(api.grassSnake87ImageUrl,/animagia-grass-snake-87\.svg$/);
+ assert.equal(api.evidence.speciesSpecificSvg.number,87);
+ assert.equal(api.evidence.speciesSpecificSvg.scientific,'Natrix natrix');
+ assert.equal(api.resolve(row('Natrix natrix','Reptilia','Squamata')).cell,86);
+ assert.equal(api.list[86].name,'Уж (змея)');
+ assert.equal(api.list[87].name,'Змей (декоративный)');
+ assert.ok(fs.readFileSync('build_data.py','utf8').includes("shutil.copy2(snake_art,DEST/'art'/'animagia-grass-snake-87.svg')"));
+ assert.equal(api.list.length,100);
 });

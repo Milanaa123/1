@@ -39,6 +39,10 @@ jobs:
           echo "LIVE_WEBP_BYTES=$(wc -c </tmp/animagia-live.webp)"
           corrected_code=$(curl --fail --silent --show-error --location --max-time 45 --write-out '%{http_code}' "$url/art/animagia-corrected-22.webp" -o /tmp/animagia-live-corrected.webp)
           echo "LIVE_CORRECTED_HTTP=$corrected_code"
+          snake_http=$(curl --fail --silent --show-error --location --max-time 45 --write-out '%{http_code}' "$url/art/animagia-grass-snake-87.svg" -o /tmp/animagia-live-snake87.svg)
+          echo "LIVE_GRASS_SNAKE_87_HTTP=$snake_http"
+          test "$snake_http" = 200
+          echo '31a6276434eef7f5a5593f94885fcc40b36cc096e03f0b59f82369571dfaa216  /tmp/animagia-live-snake87.svg' | sha256sum --check
           test "$(wc -c </tmp/animagia-live-corrected.webp)" -gt 60000
           echo "LIVE_HTML_ATLAS_REFERENCES:"
           grep -oE 'animal_atlas_100\\.js[^"<> ]*' /tmp/animagia-live.html | head -5 || true
@@ -50,7 +54,7 @@ jobs:
           echo "LIVE_JS_START:"
           head -c 120 /tmp/animagia-live.js | tr '\\n' ' '
           echo
-          grep -Fq 'batch06-final15-20261028' /tmp/animagia-live.html || { echo 'RENDER_OLD_HTML_OR_WRONG_SITE'; exit 1; }
+          grep -Fq 'grass-snake87-illustrated-20261028' /tmp/animagia-live.html || { echo 'RENDER_OLD_HTML_OR_WRONG_SITE'; exit 1; }
           grep -Fq 'batch06:{first:86,last:100,count:15' /tmp/animagia-live.js || { echo 'RENDER_OLD_JS_OR_WRONG_SITE'; exit 1; }
           test "$(wc -c </tmp/animagia-live.webp)" -gt 20000
           test "$(dd if=/tmp/animagia-live.webp bs=1 count=4 2>/dev/null)" = 'RIFF'
@@ -67,6 +71,14 @@ jobs:
         run: node tests/check_batch04_twenty.cjs
       - name: Check fifth batch of 20 animal drawings in real Chromium
         run: node tests/check_batch05_twenty.cjs
+      - name: Verify gold grass snake 87 artwork on Chromium Canvas
+        run: node tests/check_snake87.cjs
+      - name: Publish grass snake 87 artwork before and after
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-grass-snake87-before-after
+          path: qa-artifacts/grass-snake87-before-after.png
+          retention-days: 14
       - name: Check final 15 biological/fantasy figures in Chromium
         run: node tests/check_batch06_fifteen.cjs
       - name: Save last 15 drawings before-and-after proof
