@@ -50,7 +50,7 @@ test('Card uses proportional title / figure / ecology / exact matching values',(
  assert.ok(js.includes('composeScreenCard(row)'));
  assert.ok(download.includes("jpeg.toBlob(resolve,'image/jpeg',0.95)"));
  assert.ok(!download.includes('navigator.share'));
- assert.ok(js.includes('function cardAdornment(row,styl)'));
+ assert.ok(js.includes("function cardAdornment(row,styl,greekName='')"));
  assert.ok(js.includes('function paintDietAdornment(ctx,row,styl)'));
  assert.ok(js.includes("ctx.globalCompositeOperation='destination-out'"));
  assert.ok(styles.includes('is-poster-rendered'));
