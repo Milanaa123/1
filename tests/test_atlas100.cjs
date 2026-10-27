@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=batch02-20-cleansed-20261027'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=batch03-20-cleansed-20261028'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -119,8 +119,44 @@ test('Stage 5: twenty consecutive images 6–25 are routed to their own artwork'
  assert.equal(api.resolve(row('Cornufer opisthodon','Amphibia','Anura')).id,'frog');
  assert.equal(api.resolve(row('Canis lupus')).approvedIndex,0);
  const source=fs.readFileSync('animal_atlas_100.js','utf8');
- for(const required of ['function cleanBatch02Cell(', 'batch02Cutouts',
+ for(const required of ['function cleanReviewedCell(', 'reviewedCutouts',
    'cleared>0','if(closest<=8)keep[id]=1',
-   'profile.reviewedBatch===2?cleanBatch02Cell(im,i):null'])
+   '(profile.reviewedBatch===2||profile.reviewedBatch===3)?cleanReviewedCell(im,i):null'])
   assert.ok(source.includes(required),required);
+});
+
+test('Stage 6: next 20 transparent drawings 26–45 preserve exact routing; Pegasus stays fantasy art',()=>{
+ const cases=[
+  ['Astur gentilis',25,'Aves','Accipitriformes'],
+  ['Aquila chrysaetos',26,'Aves','Accipitriformes'],
+  ['Gyps fulvus',27,'Aves','Accipitriformes'],
+  ['Larus argentatus',28,'Aves','Charadriiformes'],
+  ['Archilochus colubris',29,'Aves','Apodiformes'],
+  ['Cervus elaphus',30,'Mammalia','Artiodactyla'],
+  ['Alces alces',31,'Mammalia','Artiodactyla'],
+  ['Capreolus capreolus',32,'Mammalia','Artiodactyla'],
+  ['Rangifer tarandus',33,'Mammalia','Artiodactyla'],
+  ['Sus scrofa',34,'Mammalia','Artiodactyla'],
+  ['Bison bison',35,'Mammalia','Artiodactyla'],
+  ['Bison bonasus',36,'Mammalia','Artiodactyla'],
+  ['Ovis aries',37,'Mammalia','Artiodactyla'],
+  ['Capra hircus',38,'Mammalia','Artiodactyla'],
+  ['Rupicapra rupicapra',39,'Mammalia','Artiodactyla'],
+  ['Equus ferus',40,'Mammalia','Perissodactyla'],
+  ['Equus asinus',42,'Mammalia','Perissodactyla'],
+  ['Equus quagga',43,'Mammalia','Perissodactyla'],
+  ['Giraffa camelopardalis',44,'Mammalia','Artiodactyla']
+ ];
+ assert.equal(cases.length,19);
+ for(const [scientific,index,cls,order] of cases){
+  const p=api.resolve(row(scientific,cls,order));
+  assert.equal(p?.cell,index,scientific);
+  assert.equal(p?.reviewedBatch,3,scientific);
+  assert.equal(p?.artSet,'atlas100',scientific);
+  assert.equal(p?.exact,false,scientific);
+ }
+ assert.match(api.list[41].name,/Пегас/);
+ assert.equal(api.resolve(row('Pegasus fictitious','Unknown','Unknown')),null);
+ assert.notEqual(api.resolve(row('Equus ferus')).cell,41);
+ assert.equal(api.list.length,100);
 });
