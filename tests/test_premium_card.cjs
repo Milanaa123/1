@@ -28,6 +28,9 @@ test('Premium export never reaches obsolete PhyloPic silhouettes',()=>{
  assert.ok(png.includes('composeScreenCard(row)'));
  assert.ok(png.includes("'image/jpeg',0.95"));
  assert.ok(!png.includes('navigator.share'));
+ assert.ok(js.includes('async function saveTransparentPNG(picker,status)'));
+ assert.ok(js.includes("canvas.toBlob(resolve,'image/png')"));
+ assert.ok(html.includes('id="downloadTransparent"'));
  assert.ok(js.includes('Five DETERMINISTIC layouts per diet'));
  assert.ok(js.includes('paintDietAdornment(ctx,row,styl,greek)'));
  assert.ok(js.includes("ctx.globalCompositeOperation='destination-out'"));

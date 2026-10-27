@@ -914,6 +914,33 @@
   }
  }
 
+
+ // JPEG is Gallery-friendly but cannot keep transparency. A second, optional
+ // PNG download preserves the REAL alpha holes for collectors of the cards.
+ async function saveTransparentPNG(picker,status){
+  const row=selection(picker),greek=get('greek').value.trim();
+  if(!row||!validGreek(greek)||score(greek)!==sum){
+   status.textContent='Сначала выполни поиск точных совпадений.';return;
+  }
+  try{
+   status.textContent='Создаём PNG с прозрачными вырезами…';
+   if(!await composeScreenCard(row))throw Error('Карточка обновляется, повтори сохранение.');
+   const canvas=get('relicCardBackdrop');
+   const blob=await new Promise((resolve,reject)=>{
+    try{canvas.toBlob(resolve,'image/png');}catch(error){reject(error);}
+   });
+   if(!blob)throw Error('PNG не создан');
+   const filename='Анимагия_форма_'+sum+'_прозрачная.png';
+   const url=URL.createObjectURL(blob),link=elem('a');
+   link.href=url;link.download=filename;
+   document.body.append(link);link.click();link.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),15000);
+   status.textContent='PNG сохранён: укусы и следы когтей действительно прозрачны.';
+  }catch(error){
+   status.textContent='Не удалось сохранить PNG: '+error.message;
+  }
+ }
+
  async function compareOne(text,manifest,cache){
   const number=score(text),bucket=Math.floor(number/25);
   if(!manifest.available_buckets.includes(bucket))return {number,count:0,examples:[]};
@@ -1047,6 +1074,7 @@
    const ok=!get('resultPanel').hidden&&safeRows().length>0&&
      score(get('greek').value.trim())===sum;
    get('downloadRelic').disabled=!ok;get('printRelic').disabled=!ok;
+   get('downloadTransparent').disabled=!ok;
    if(!ok){
     if(typeof closeAnimalChooser==='function')closeAnimalChooser();
     const chooser=get('animalChooserOpen');if(chooser)chooser.disabled=true;
@@ -1067,6 +1095,7 @@
   picker.addEventListener('change',()=>syncSilhouette(picker));
   const closeAnimalChooser=setupAnimalChooser(picker);
   get('downloadRelic').addEventListener('click',()=>{void savePNG(picker,status);});
+  get('downloadTransparent').addEventListener('click',()=>{void saveTransparentPNG(picker,status);});
   get('printRelic').addEventListener('click',()=>printBooklet(status));
   window.printBesteriary=()=>printBooklet(status);
   get('compareRun').addEventListener('click',()=>{void compare(get('compareRun'));});
