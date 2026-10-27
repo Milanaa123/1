@@ -110,10 +110,70 @@
   }
   ctx.restore();
  }
- function paintCardBackdrop(ctx,number,diet){
-  // Same pixels behind BOTH the on-screen artifact and its downloadable PNG.
-  // This routine never touches numerology or taxon data.
+ function paintNebula(ctx,number){
+  // Antique purple mist and glowing gold dust on the exact same screen/PNG canvas.
+  let seed=(number*2246822519+784691)>>>0;
+  const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};
   ctx.save();
+  // Color haze is intentionally concentrated at the borders, not over the text.
+  for(const [x,y,rad,color] of [
+   [95,835,320,'#a456a0'],[1040,550,310,'#6a477d'],
+   [1070,1220,300,'#a15c9a'],[105,1630,340,'#9f4778'],
+   [490,1180,380,'#704880'],[900,1530,255,'#573b68']
+  ]){
+   const haze=ctx.createRadialGradient(x,y,0,x,y,rad);
+   haze.addColorStop(0,color+'43');
+   haze.addColorStop(.4,color+'1f');
+   haze.addColorStop(1,color+'00');
+   ctx.fillStyle=haze;ctx.fillRect(x-rad,y-rad,rad*2,rad*2);
+  }
+  // Organic trails instead of plain, mechanical orbit ellipses.
+  for(const side of [-1,1]){
+   const x=side<0?95:1105;
+   for(let i=0;i<27;i++){
+    const y=120+random()*1730,walk=35+random()*220;
+    const opening=side<0?1:-1;
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    ctx.bezierCurveTo(x+opening*walk*.64,y-87,
+      x+opening*walk,y+95,x+opening*walk*.53,y+230);
+    ctx.strokeStyle=i%4===0?'#cb8ab7':'#87619f';
+    ctx.globalAlpha=.025+random()*.072;ctx.lineWidth=1+random()*4;
+    ctx.shadowColor='#b974bc';ctx.shadowBlur=i%4===0?14:5;
+    ctx.stroke();
+   }
+  }
+  ctx.shadowBlur=0;
+  for(let i=0;i<560;i++){
+   const x=75+random()*1050,y=70+random()*1900;
+   const gold=random()>.35;
+   const brightness=.1+random()*.5;
+   ctx.fillStyle=gold?'rgba(244,190,109,'+brightness.toFixed(2)+')':
+     'rgba(187,133,215,'+(brightness*.65).toFixed(2)+')';
+   ctx.globalAlpha=1;
+   const r=random()>.98?2.1:.2+random()*.7;
+   ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+  }
+  // Arcane celestial vault behind the animal; vivid but sufficiently airy.
+  ctx.globalAlpha=.5;ctx.strokeStyle='#c49a66';ctx.lineWidth=1.15;
+  for(const [cx,cy,rx,ry] of [
+   [600,1160,380,290],[600,1160,450,350],
+   [600,1160,295,195],[600,1160,490,405]
+  ]){ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,Math.PI*1.07,Math.PI*1.95);ctx.stroke();}
+  for(const [x,y] of [[600,860],[800,1140],[400,1300],[960,980]]){
+   ctx.globalAlpha=.7;ctx.strokeStyle='#eabf82';
+   ctx.beginPath();ctx.moveTo(x-13,y);ctx.lineTo(x+13,y);
+   ctx.moveTo(x,y-19);ctx.lineTo(x,y+19);ctx.stroke();
+   ctx.globalAlpha=.9;ctx.fillStyle='#f6dba7';
+   ctx.beginPath();ctx.arc(x,y,2.2,0,Math.PI*2);ctx.fill();
+  }
+  ctx.restore();
+ }
+ function paintCardBackdrop(ctx,number,diet){
+  // One 1200x1800 composition for both the screen and downloaded PNG.
+  // Background motifs use legacy art coordinates mapped to the new 2:3 ratio.
+  ctx.save();
+  ctx.scale(1,1800/2070);
   const base=ctx.createLinearGradient(0,0,1120,2070);
   base.addColorStop(0,'#0e101d');base.addColorStop(.45,'#241a2d');
   base.addColorStop(.71,'#342238');base.addColorStop(1,'#11101e');
@@ -123,6 +183,7 @@
   aurora.addColorStop(0,warmth+'35');aurora.addColorStop(.52,'#9c628222');
   aurora.addColorStop(1,'#9c628200');
   ctx.fillStyle=aurora;ctx.fillRect(0,0,1200,2070);
+  paintNebula(ctx,number);
   // Art nouveau double foil border with a restrained glow.
   ctx.strokeStyle='#CFAB75';ctx.lineWidth=3.1;ctx.strokeRect(48,48,1104,1974);
   ctx.strokeStyle='#99805e';ctx.lineWidth=1.2;ctx.strokeRect(67,67,1066,1936);
@@ -467,38 +528,38 @@
    // Cross-origin imagery may be visible in the browser but still blocked
    // from Canvas. Test actual Canvas read permission before drawing.
    const sprite=profile?await gallery.drawable():null;
-   const canvas=elem('canvas');canvas.width=1200;canvas.height=2070;
+   const canvas=elem('canvas');canvas.width=1200;canvas.height=1800;
    const ctx=canvas.getContext('2d');
    if(!ctx)throw Error('Canvas недоступен');
    const styl=gallery?.style(gallery.classify(row))||{};
    paintCardBackdrop(ctx,sum,styl.diet);
    ctx.fillStyle='#F1DDB8';ctx.font='36px Georgia,serif';ctx.textAlign='center';
-   ctx.fillText('✧  А Н И М А Г И Я  ✧',600,148);
+   ctx.fillText('✧  А Н И М А Г И Я  ✧',600,133);
    ctx.fillStyle='#C3B1C7';ctx.font='22px Georgia,serif';
-   ctx.fillText('АТЛАС СКРЫТЫХ ФОРМ · МАГИЧЕСКАЯ ПЕЧАТЬ',600,198);
+   ctx.fillText('АТЛАС СКРЫТЫХ ФОРМ · МАГИЧЕСКАЯ ПЕЧАТЬ',600,175);
    // Keep the accepted geometric number circle completely unchanged.
-   paintSeal(ctx,sum,600,537,289);
-   ctx.fillStyle='#F4E4CB';centered(ctx,greek,884,950,'34px Georgia,serif',2);
+   paintSeal(ctx,sum,600,484,255);
+   ctx.fillStyle='#F4E4CB';centered(ctx,greek,780,950,'34px Georgia,serif',2);
    let artNote='';
    if(sprite&&profile){
-    gallery.drawCanvas(ctx,sprite,profile,333,1012,534,438);
+    gallery.drawCanvas(ctx,sprite,profile,235,841,730,437);
     artNote='';
    }else{
     // A quiet celestial mark is better than a biologically wrong silhouette.
     ctx.save();
     ctx.strokeStyle='#C9A879';ctx.globalAlpha=.48;ctx.lineWidth=1.6;
     for(const radius of [116,154]){
-      ctx.beginPath();ctx.arc(600,1210,radius,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();ctx.arc(600,1062,radius,0,Math.PI*2);ctx.stroke();
     }
     ctx.fillStyle='#E6C48D';ctx.globalAlpha=.9;
-    ctx.font='58px Georgia,serif';ctx.fillText('✧',600,1230);
+    ctx.font='58px Georgia,serif';ctx.fillText('✧',600,1085);
     ctx.restore();
     artNote='Образ скрытой формы ещё создаётся';
    }
    ctx.fillStyle='#BDAAC3';ctx.font='17px Georgia,serif';ctx.textAlign='center';
-   if(artNote)ctx.fillText(artNote,600,1446);
+   if(artNote)ctx.fillText(artNote,600,1274);
    ctx.fillStyle='#D5B684';ctx.font='22px Georgia,serif';
-   ctx.fillText('✧  С К Р Ы Т А Я   Ф О Р М А  ✧',600,1510);
+   ctx.fillText('✧  С К Р Ы Т А Я   Ф О Р М А  ✧',600,1321);
    // Generic Russian category and the species epithet are separate lines.
    // Avoid forcing very long placeholder names into an overflowing headline.
    const fullName=label(row),dash=fullName.indexOf(' — ');
@@ -506,7 +567,7 @@
    const heading=dash>=0?fullName.slice(dash+3):fullName;
    if(category){
     ctx.fillStyle='#D3B385';ctx.font='23px Georgia,serif';
-    ctx.fillText(category,600,1554);
+    ctx.fillText(category,600,1372);
    }
    ctx.fillStyle='#F5E0BE';
    let nameLines=[];
@@ -515,9 +576,9 @@
     nameLines=textLines(ctx,heading,930,2);
     if(!nameLines.some(line=>line.endsWith('…')))break;
    }
-   const nameY=category?1596:1586;
+   const nameY=category?1415:1403;
    for(const [i,line] of nameLines.entries())ctx.fillText(line,600,nameY+i*51);
-   ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1718,1020,'italic 29px Georgia,serif',1);
+   ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1496,1020,'italic 29px Georgia,serif',1);
    // Two independent classifications: diet is never used as an environment.
    // Unknown means no verified ecological record, not a guessed category.
    const traits=[
@@ -527,23 +588,23 @@
    for(let i=0;i<traits.length;i++){
     const x=320+i*284;
     ctx.strokeStyle='#C6A574';ctx.lineWidth=1;
-    ctx.strokeRect(x,1736,268,83);
+    ctx.strokeRect(x,1526,268,73);
     ctx.fillStyle='#BDA99B';ctx.font='15px Georgia,serif';
-    ctx.fillText(traits[i][0],x+134,1763);
+    ctx.fillText(traits[i][0],x+134,1551);
     ctx.fillStyle='#E8CAA0';ctx.font='25px Georgia,serif';
-    ctx.fillText(traits[i][1],x+134,1797);
+    ctx.fillText(traits[i][1],x+134,1582);
    }
    const boxes=[['ЧИСЛО ИМЕНИ',sum],['ЧИСЛО ЖИВОТНОГО',row[0]],['РАЗНИЦА',0]];
    for(let i=0;i<boxes.length;i++){
     const x=120+i*320;
-    ctx.strokeStyle='#B6986E';ctx.lineWidth=1.2;ctx.strokeRect(x,1842,320,124);
+    ctx.strokeStyle='#B6986E';ctx.lineWidth=1.2;ctx.strokeRect(x,1618,320,112);
     ctx.fillStyle='#C6B3C6';ctx.font='15px Georgia,serif';
-    ctx.fillText(boxes[i][0],x+160,1883);
+    ctx.fillText(boxes[i][0],x+160,1655);
     ctx.fillStyle='#F5D7A5';ctx.font='600 41px Georgia,serif';
-    ctx.fillText(String(boxes[i][1]),x+160,1945);
+    ctx.fillText(String(boxes[i][1]),x+160,1710);
    }
    ctx.fillStyle='#C9B0A0';ctx.font='17px Georgia,serif';
-   ctx.fillText('✧ ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ ✧',600,2000);
+   ctx.fillText('✧ ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ ✧',600,1768);
    const blob=await new Promise((resolve,reject)=>{
      try{canvas.toBlob(resolve,'image/png');}catch(err){reject(err);}
    });
