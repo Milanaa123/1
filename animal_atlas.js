@@ -32,6 +32,16 @@
   ['moth',19,['Saturnia','Attacus'],[], null,'aerial',[]],
  ];
  const names=['Волк','Сова','Снежный барс','Кит','Кобра','Лисица','Ворон','Олень','Медведь','Лошадь','Кошка','Кролик','Выдра','Летучая ящерица','Морская черепаха','Акула','Дельфин','Осьминог','Лягушка','Ночная бабочка'];
+ const habitatVerifiedBySpecies=new Map([
+  // Solomons forest stream banks (IUCN 2020), alpine grassland stones etc.
+  ['Cornufer opisthodon','semiaquatic'],
+  ['Microkayla wettsteini','terrestrial'],
+  ['Hyla arborea','arboreal'],
+  ['Rana temporaria','semiaquatic'],
+  ['Bufo bufo','terrestrial'],
+  ['Castor fiber','semiaquatic'],
+  ['Castor canadensis','semiaquatic']
+ ]);
  const exactProfiles=new Map([
   ['Ursus arctos',['omnivore','terrestrial',[]]],['Ursus maritimus',['predator','semiaquatic',['terrestrial']]],
   ['Ursus americanus',['omnivore','terrestrial',[]]],['Chelonia mydas',['herbivore','aquatic',[]]],
@@ -72,8 +82,10 @@
  function classify(row){
   if(!Array.isArray(row)||!row[1])return null;
   const approved=resolve(row);
-  if(approved)return approved;
   const name=normalize(row[1]),genus=name.split(' ')[0];
+  const verified=habitatVerifiedBySpecies.get(name);
+  if(verified)return {...(approved||{diet:null,secondary:[],scientific:name,id:null,cell:null}),habitat:verified};
+  if(approved)return approved;
   const cls=row[3],order=row[4];
   const aquaticClasses=new Set(['Actinopterygii','Actinopteri','Teleostei',
     'Chondrichthyes','Elasmobranchii','Holocephali','Chondrostei',
