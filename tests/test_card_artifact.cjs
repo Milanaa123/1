@@ -99,16 +99,17 @@ test('Visible diet borders include five unique variants each and true alpha hole
  const a=js.indexOf(' function cardAdornment('),b=js.indexOf(' function paintCardBackdropOnScreen(',a);
  assert.ok(a>=0&&b>a);
  const frame=js.slice(a,b);
- for(const label of ['predator','soft-predator','herbivore','omnivore'])
+ for(const label of ['predator','soft-predator','herbivore','omnivore','aquatic'])
   assert.ok(frame.includes(label),'missing '+label);
- for(const names of ['hunters','gentle','florals','hybrids'])
+ for(const names of ['hunters','gentle','florals','hybrids','aquatic'])
   assert.ok(frame.includes('const '+names+'=['),names);
  for(const feature of ['destination-out','strokeStyle','cornerStem','botanical','bite(','claw('])
   assert.ok(frame.includes(feature),feature);
  assert.ok(frame.includes("const x=side==='left'?-11+depth")||frame.includes("const x=side==='left'?-11+depth")||frame.includes("const x=side==='left'?-11+depth"),'bite geometry');
  assert.ok(frame.includes('if(shapes.length)'),'final cut pass');
- assert.ok(frame.includes('function webbedFoot(side,atY,scale=1,tilt=0)'));
+ assert.ok(frame.includes('function waterDrop(side,atY,scale=1)'));
  assert.ok(frame.includes('function waterSplash(side,atY,scale=1)'));
+ assert.ok(frame.includes('const aquatic=['));
  assert.ok(poster.includes('paintDietAdornment(ctx,row,styl,greek)'));
 });
 
@@ -137,11 +138,12 @@ test('All twenty frame presets are reachable; cuts erase canvas pixels last',()=
  }
  const categories=[
   ['predator','Mammalia',true],['soft-predator','Amphibia',true],
-  ['herbivore','Mammalia',false],['omnivore','Mammalia',true]
+  ['herbivore','Mammalia',false],['omnivore','Mammalia',true],
+  ['aquatic','Mammalia',true]
  ];
  for(const [kind,className,needHoles] of categories){
   const diets={predator:'predator','soft-predator':'predator',herbivore:'herbivore',omnivore:'omnivore'};
-  const styl={diet:diets[kind]},species=[...sample];species[3]=className;
+  const styl={diet:diets[kind],habitat:kind==='aquatic'?'aquatic':'terrestrial'},species=[...sample];species[3]=className;
   const variants=new Map();
   for(let i=0;i<100&&variants.size<5;i++){
    const owner='Ελληνικη'+i;

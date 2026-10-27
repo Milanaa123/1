@@ -322,8 +322,12 @@
   for(const ch of String(row?.[1]||'')+'|'+String(greekName||''))
    hash=Math.imul(hash^ch.charCodeAt(0),16777619)>>>0;
   const diet=['predator','herbivore','omnivore'].includes(styl?.diet)?styl.diet:'unknown';
-  const soft=diet==='predator'&&row?.[3]==='Amphibia';
-  return {kind:soft?'soft-predator':diet,variant:hash%5};
+
+  // Decorative water motif is sourced from VERIFIED habitat. It does not
+  // change diet labels and never infers a new ecological classification.
+  const frog=diet==='predator'&&(row?.[4]==='Anura'||row?.[3]==='Amphibia');
+  const water=styl?.habitat==='aquatic'||styl?.habitat==='semiaquatic';
+  return {kind:frog?'soft-predator':water?'aquatic':diet,variant:hash%5};
  }
  // All bites/cuts remove the backing color, border, stars AND previously
  // drawn gilding. An alpha value of zero means a REAL hole in the card.
@@ -446,71 +450,72 @@
    ()=>{claw('right',430,1.08,-.1);bite('top',1025,129,4);bite('left',1630,120,4);}
   ];
 
-  // Frog-like amphibians do not use the predator's claw and bite motifs.
-  // The decorative alpha cuts resemble a webbed hind foot and water splashes.
-  function webbedFoot(side,atY,scale=1,tilt=0){
-   const x=side==='left'?14:1186,flip=side==='left'?1:-1;
-   function footprintPath(){
+
+  // Water falling onto the card leaves transparent drops with golden
+  // concentric ripples. No bite or claw marks for frogs or water animals.
+  function waterDrop(side,atY,scale=1){
+   const left=side==='left',cx=left?8:1192,dir=left?1:-1;
+   function imprint(){
     ctx.beginPath();
-    ctx.moveTo(-45,-64);
-    ctx.bezierCurveTo(10,-64,27,-45,51,-37);
-    ctx.bezierCurveTo(67,-70,90,-103,101,-108);
-    ctx.quadraticCurveTo(121,-116,112,-87);
-    ctx.quadraticCurveTo(99,-58,83,-29);
-    ctx.quadraticCurveTo(125,-70,147,-75);
-    ctx.quadraticCurveTo(161,-70,142,-50);
-    ctx.quadraticCurveTo(127,-29,109,-6);
-    ctx.quadraticCurveTo(162,-14,174,1);
-    ctx.quadraticCurveTo(178,15,150,22);
-    ctx.quadraticCurveTo(127,26,117,33);
-    ctx.quadraticCurveTo(158,63,153,85);
-    ctx.quadraticCurveTo(139,103,125,81);
-    ctx.quadraticCurveTo(94,54,70,55);
-    ctx.bezierCurveTo(39,51,11,84,-45,91);
+    ctx.moveTo(-46,-88);
+    ctx.bezierCurveTo(0,-48,115,-16,138,45);
+    ctx.bezierCurveTo(158,101,112,138,61,137);
+    ctx.bezierCurveTo(24,136,-8,103,-46,77);
     ctx.closePath();
    }
-   function placed(paint){
-    ctx.save();ctx.translate(x,atY);ctx.rotate(tilt);
-    ctx.scale(flip*scale,scale);paint();ctx.restore();
+   function placed(fn){
+    ctx.save();ctx.translate(cx,atY);ctx.scale(dir*scale,scale);
+    fn();ctx.restore();
    }
    placed(()=>{
-    ctx.save();ctx.lineWidth=4;ctx.strokeStyle='#f2c68c';
-    ctx.shadowColor='#eebd80';ctx.shadowBlur=15;
-    footprintPath();ctx.stroke();
-    ctx.translate(7,7);ctx.lineWidth=1.35;ctx.globalAlpha=.55;
-    footprintPath();ctx.stroke();ctx.restore();
+    ctx.save();ctx.strokeStyle='#ead2af';ctx.lineWidth=3.2;
+    ctx.shadowColor='#d5b68e';ctx.shadowBlur=13;
+    imprint();ctx.stroke();ctx.restore();
+    // Small concentric rings are ripples, never false biological marks.
+    ctx.save();ctx.strokeStyle='#d1b38c';ctx.lineWidth=1.85;
+    ctx.globalAlpha=.82;
+    for(const [dx,dy,rx,ry] of [[84,44,95,68],[84,44,132,94]]){
+     ctx.beginPath();ctx.ellipse(dx,dy,rx,ry,0,-.8,1.1);ctx.stroke();
+    }ctx.restore();
    });
-   shapes.push(()=>placed(()=>{footprintPath();ctx.fill();}));
+   shapes.push(()=>placed(()=>{imprint();ctx.fill();}));
   }
   function waterSplash(side,atY,scale=1){
-   const x=side==='left'?6:1194,flip=side==='left'?1:-1;
-   function splashPath(i){
-    const y=i*62;
-    ctx.beginPath();ctx.moveTo(-38,y-33);
-    ctx.bezierCurveTo(18,y-24,73,y-46,110+i*15,y+5);
-    ctx.bezierCurveTo(77,y+45,26,y+25,-38,y+38);
+   const cx=side==='left'?8:1192,dir=side==='left'?1:-1;
+   function dropPath(i){
+    const dy=i*66;
+    ctx.beginPath();ctx.moveTo(-38,dy-29);
+    ctx.bezierCurveTo(28,dy-60,108,dy-31,135,dy+5);
+    ctx.bezierCurveTo(82,dy+47,27,dy+34,-38,dy+39);
     ctx.closePath();
    }
-   function placed(paint){
-    ctx.save();ctx.translate(x,atY);ctx.scale(flip*scale,scale);
-    paint();ctx.restore();
+   function placed(fn){
+    ctx.save();ctx.translate(cx,atY);ctx.scale(dir*scale,scale);
+    fn();ctx.restore();
    }
    placed(()=>{
-    ctx.save();ctx.strokeStyle='#f0c591';ctx.lineWidth=3.3;
-    ctx.shadowColor='#e0ae72';ctx.shadowBlur=13;
-    for(let i=0;i<3;i++){splashPath(i);ctx.stroke();}
+    ctx.save();ctx.strokeStyle='#e7c79c';ctx.lineWidth=3;
+    ctx.shadowColor='#dfb27f';ctx.shadowBlur=11;
+    for(let i=0;i<3;i++){dropPath(i);ctx.stroke();}
     ctx.restore();
    });
-   shapes.push(()=>placed(()=>{for(let i=0;i<3;i++){splashPath(i);ctx.fill();}}));
+   shapes.push(()=>placed(()=>{for(let i=0;i<3;i++){dropPath(i);ctx.fill();}}));
   }
-  // Five frog-pattern compositions: little imprints, splashes and
-  // fine gold ripples. These are not claw scratches or bite marks.
+  // Five distinct water-damaged gold edges. Frog cards look delicate,
+  // while verified aquatic/semiaquatic species receive related motifs.
   const gentle=[
-   ()=>{webbedFoot('left',660,.89,-.08);waterSplash('right',1360,.86);ripple('left',1200);},
-   ()=>{webbedFoot('right',590,.94,.07);webbedFoot('left',1330,.63,-.05);ripple('right',1070);},
-   ()=>{waterSplash('left',390,1);webbedFoot('right',1460,.87,.02);ripple('left',1110);},
-   ()=>{webbedFoot('left',400,.8,.06);waterSplash('right',1070,.99);ripple('right',1540);},
-   ()=>{webbedFoot('right',870,.87,-.06);webbedFoot('left',1480,.65,.07);waterSplash('left',350,.72);}
+   ()=>{waterDrop('left',540,.93);waterSplash('right',1340,.78);ripple('left',1170);},
+   ()=>{waterDrop('right',620,.94);waterDrop('left',1320,.68);ripple('right',1150);},
+   ()=>{waterSplash('left',400,.93);waterDrop('right',1450,.85);ripple('left',1000);},
+   ()=>{waterDrop('left',470,.83);waterSplash('right',990,.92);ripple('right',1570);},
+   ()=>{waterDrop('right',940,.91);waterDrop('left',1520,.7);waterSplash('left',340,.7);}
+  ];
+  const aquatic=[
+   ()=>{waterDrop('right',490,1.03);waterSplash('left',1390,.9);ripple('right',1260);},
+   ()=>{waterSplash('right',320,1.06);waterDrop('left',1100,.85);ripple('left',560);},
+   ()=>{waterDrop('left',670,1.08);waterSplash('right',1460,.9);ripple('right',680);},
+   ()=>{waterSplash('left',550,1.07);waterDrop('right',1060,1.02);ripple('left',1280);},
+   ()=>{waterDrop('right',650,.92);waterDrop('left',1460,.86);waterSplash('right',1330,.79);}
   ];
   // Herbivores: different arrangements of golden vines, small leaves
   // and flowers, all respecting the existing celestial card.
@@ -530,6 +535,7 @@
   ];
   if(k==='predator')hunters[v]();
   else if(k==='soft-predator')gentle[v]();
+  else if(k==='aquatic')aquatic[v]();
   else if(k==='herbivore')florals[v]();
   else if(k==='omnivore')hybrids[v]();
   // LAST PASS. No gold strokes are allowed to repaint the deleted space:
