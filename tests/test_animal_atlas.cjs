@@ -113,8 +113,10 @@ test('screenshot examples: real frog illustration and correct frog/spider diet',
  assert.equal(art.id,'frog');
  assert.equal(art.exact,false);
  assert.equal(atlas.style(atlas.classify(frog)).diet,'predator');
- // Forest frogs may be terrestrial or arboreal; we do not guess habitat.
- assert.equal(atlas.style(atlas.classify(frog)).habitat,'unknown');
+ // Verified source-based exception for stream-associated Faro webbed frog.
+ assert.equal(atlas.style(atlas.classify(frog)).habitat,'semiaquatic');
+ const alpine=[1878,'Microkayla wettsteini','species','Amphibia','Anura','','Chordata'];
+ assert.equal(atlas.style(atlas.classify(alpine)).habitat,'terrestrial');
  const spider=[1878,'Bowie sagittatus','species','Arachnida','Araneae','','Arthropoda'];
  assert.equal(atlas.style(atlas.classify(spider)).diet,'predator');
  assert.equal(atlas.style(atlas.classify(spider)).habitat,'unknown');
