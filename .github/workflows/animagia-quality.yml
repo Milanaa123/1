@@ -26,28 +26,32 @@ jobs:
           for file in app.js greek_taxa.js enhancements.js photo_gallery.js magic_ui.js ritual_ui.js silhouette_service.js animal_atlas.js animal_atlas_100.js relic_features.js; do
             node --check "$file"
           done
-      - name: Verify LIVE Render serves the third batch of 20 images
+      - name: Diagnose current public Render deployment and check batch three
         run: |
           set -euo pipefail
           url="https://animagia-calculator.onrender.com"
-          for attempt in $(seq 1 12); do
-            echo "LIVE_RENDER_ATTEMPT=$attempt"
-            if curl --fail --silent --show-error --location --max-time 55 --retry 1 "$url/" -o /tmp/animagia-live.html \
-              && curl --fail --silent --show-error --location --max-time 45 --retry 1 "$url/animal_atlas_100.js" -o /tmp/animagia-live.js \
-              && grep -Fq 'batch03-20-cleansed-20261028' /tmp/animagia-live.html \
-              && grep -Fq 'batch03:{first:26,last:45,count:20' /tmp/animagia-live.js; then
-              echo "LIVE_RENDER_CURRENT_BATCH03_CONFIRMED"
-              curl --fail --silent --show-error --location --max-time 50 "$url/art/animagia-100-alpha.webp" -o /tmp/animagia-live.webp
-              test "$(wc -c </tmp/animagia-live.webp)" -gt 20000
-              test "$(dd if=/tmp/animagia-live.webp bs=1 count=4 2>/dev/null)" = 'RIFF'
-              echo "LIVE_RENDER_WEBP_ASSET_OK"
-              exit 0
-            fi
-            echo "LIVE_RENDER_STALE_OR_UNREACHABLE_ON_ATTEMPT=$attempt"
-            sleep 12
-          done
-          echo 'LIVE_RENDER_NOT_CONFIRMED: live HTML/JS not latest or network error'
-          exit 1
+          echo "LIVE_RENDER_BASE=$url"
+          echo "LIVE_HTML_HTTP=$(curl --silent --show-error --location --max-time 55 --retry 1 --write-out '%{http_code}' "$url/" -o /tmp/animagia-live.html)"
+          echo "LIVE_JS_HTTP=$(curl --silent --show-error --location --max-time 45 --retry 1 --write-out '%{http_code}' "$url/animal_atlas_100.js" -o /tmp/animagia-live.js)"
+          echo "LIVE_WEBP_HTTP=$(curl --silent --show-error --location --max-time 45 --retry 1 --write-out '%{http_code}' "$url/art/animagia-100-alpha.webp" -o /tmp/animagia-live.webp)"
+          echo "LIVE_HTML_BYTES=$(wc -c </tmp/animagia-live.html)"
+          echo "LIVE_JS_BYTES=$(wc -c </tmp/animagia-live.js)"
+          echo "LIVE_WEBP_BYTES=$(wc -c </tmp/animagia-live.webp)"
+          echo "LIVE_HTML_ATLAS_REFERENCES:"
+          grep -oE 'animal_atlas_100\\.js[^"<> ]*' /tmp/animagia-live.html | head -5 || true
+          echo "LIVE_JS_BATCH_MARKERS:"
+          grep -oE 'batch0[23]:\\{first:[0-9]+,last:[0-9]+,count:[0-9]+' /tmp/animagia-live.js | sort -u || true
+          echo "LIVE_HTML_START:"
+          head -c 180 /tmp/animagia-live.html | tr '\\n' ' '
+          echo
+          echo "LIVE_JS_START:"
+          head -c 120 /tmp/animagia-live.js | tr '\\n' ' '
+          echo
+          grep -Fq 'batch03-20-cleansed-20261028' /tmp/animagia-live.html || { echo 'RENDER_OLD_HTML_OR_WRONG_SITE'; exit 1; }
+          grep -Fq 'batch03:{first:26,last:45,count:20' /tmp/animagia-live.js || { echo 'RENDER_OLD_JS_OR_WRONG_SITE'; exit 1; }
+          test "$(wc -c </tmp/animagia-live.webp)" -gt 20000
+          test "$(dd if=/tmp/animagia-live.webp bs=1 count=4 2>/dev/null)" = 'RIFF'
+          echo "LIVE_RENDER_CURRENT_BATCH03_CONFIRMED"
       - name: Test the full 100-image atlas and representative taxonomy without network
         run: node --test tests/test_atlas100.cjs
       - name: Inspect all 100 transparent images in real Chromium
