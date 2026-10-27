@@ -105,7 +105,8 @@ test('Visible diet borders include five unique variants each and true alpha hole
   assert.ok(frame.includes('const '+names+'=['),names);
  for(const feature of ['destination-out','strokeStyle','cornerStem','botanical','bite(','claw('])
   assert.ok(frame.includes(feature),feature);
- assert.ok(frame.includes("const x=side==='left'?-11+depth")||frame.includes("const x=side==='left'?-11+depth")||frame.includes("const x=side==='left'?-11+depth"),'bite geometry');
+ assert.ok(frame.includes('const radius=Math.min(66'),'small transparent bite geometry');
+ assert.ok(frame.includes('function familyTrim()'),'each family must change the true border');
  assert.ok(frame.includes('if(shapes.length)'),'final cut pass');
  assert.ok(frame.includes('function waterDrop(side,y,size=1)'));
  assert.ok(frame.includes('function waterSplash(side,y,size=1)'));

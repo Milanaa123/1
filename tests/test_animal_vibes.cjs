@@ -941,12 +941,26 @@ test('Frogs have transparent splayed webbed toes and no large filled holes',()=>
  const c=source.indexOf(' function waterSplash(',b);
  assert.ok(a>=0&&b>a&&c>b);
  const paws=source.slice(a,b),drops=source.slice(b,c);
- assert.ok(paws.includes("ctx.lineWidth=5;ctx.lineCap='round'"));
- assert.ok(paws.includes("ctx.ellipse(0,17,10,12"));
- assert.ok(paws.includes("ctx.quadraticCurveTo(b[0],b[1],c[0],c[1])"));
- assert.ok(drops.includes("ctx.lineWidth=4.5"));
+ assert.ok(paws.includes("ctx.lineWidth=2.25;ctx.lineCap='round'"));
+ assert.ok(paws.includes("ctx.moveTo(-36,11)"));
+ assert.ok(paws.includes("ctx.quadraticCurveTo(x*.60,y0*.55,x,y0)"));
+ assert.ok(drops.includes("ctx.lineWidth=2.5"));
  assert.ok(!paws.includes('ctx.fill()')&&!drops.includes('ctx.fill()'));
  const frog=source.slice(source.indexOf(' const gentle=['),source.indexOf(' const aquatic=['));
  assert.ok(frog.includes('webbedFoot('));
  assert.ok(!frog.includes('bite(')&&!frog.includes('claw('));
+});
+
+// Stage 3 acceptance: families reshape continuous border, not floating icons.
+test('Every vibe family has integral edge geometry and five variants',()=>{
+ const p=source.slice(source.indexOf(' function paintDietAdornment('),
+   source.indexOf(' function paintCardBackdropOnScreen('));
+ assert.ok(p.includes('function familyTrim()'));
+ assert.ok(p.includes('  familyTrim();'));
+ for(const role of ['spikes','ripples','waves','vines','branches','feathers','scales','sprigs','moons','stars'])
+  assert.ok(p.includes("'"+role+"'"),role);
+ assert.ok(p.includes("const edge=left?51:1149")||
+           p.includes("edge=left?51:1149"));
+ assert.ok(p.includes('ctx.globalCompositeOperation=\'destination-out\''));
+ assert.ok(!p.includes('const x=side===\'left\'?-11+depth'));
 });

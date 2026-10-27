@@ -546,43 +546,46 @@
   const shapes=[]; // final destructive pass always happens LAST
   const xleft=54,xright=1146;
   const gold='#efc384',shine='#ffe1ac',leaf='#7f8561';
+
   function bite(side,pos,r,depth){
-   // x/y centers placed JUST OUTSIDE the physical card, so the notches
-   // look semicircular rather than floating circles.
-   const x=side==='left'?-11+depth:side==='right'?1211-depth:pos;
-   const y=side==='top'?-11+depth:side==='bottom'?2011-depth:pos;
-   // Stippled antique foil lip: drawn first and erased inside the mouth.
-   ctx.save();ctx.strokeStyle=gold;ctx.lineWidth=5;
-   ctx.shadowColor='#f3ae64';ctx.shadowBlur=15;
-   ctx.beginPath();ctx.arc(x,y,r+3,0,PI*2);ctx.stroke();
-   ctx.lineWidth=1.6;ctx.globalAlpha=.64;ctx.beginPath();
-   ctx.arc(x,y,r+11,0,PI*2);ctx.stroke();ctx.restore();
-   shapes.push(()=>{ctx.beginPath();ctx.arc(x,y,r,0,PI*2);ctx.fill();});
+   // Small three-scallop void where the card border actually meets the tear.
+   // Never make black-looking 150px discs across the illustration.
+   const vertical=side==='left'||side==='right';
+   const x=side==='left'?26:side==='right'?1174:pos;
+   const y=side==='top'?26:side==='bottom'?1974:pos;
+   const radius=Math.min(66,Math.max(39,r*.39));
+   const direction=vertical?(side==='left'?1:-1):(side==='top'?1:-1);
+   for(let i=-1;i<=1;i++){
+    const dx=vertical?0:i*radius*.85,dy=vertical?i*radius*.85:0;
+    const x0=x+dx,y0=y+dy,small=radius*(i===0?1:.72);
+    ctx.save();ctx.strokeStyle=gold;ctx.lineWidth=2.8;
+    ctx.shadowColor='#d9a36e';ctx.shadowBlur=5;
+    ctx.beginPath();ctx.arc(x0,y0,small+2,0,PI*2);ctx.stroke();
+    ctx.restore();
+    shapes.push(()=>{ctx.beginPath();ctx.arc(x0,y0,small,0,PI*2);ctx.fill();});
+   }
   }
+
   function claw(side,atY,scale=1,slant=0){
-   const x=side==='left'?-18:1218;
-   const xdir=side==='left'?1:-1;
-   // The three gouges follow the user's red hand-drawn reference: the
-   // whole background is ripped away, not painted with three gold slashes.
-   function path(i){
-    const d=i*69;
-    ctx.beginPath();ctx.moveTo(-36,d-25);
-    ctx.bezierCurveTo(54,d+6,143,d+37,230,d+132);
-    ctx.bezierCurveTo(165,d+86,72,d+61,-36,d+31);
+   const left=side==='left',anchor=left?10:1190,sign=left?1:-1;
+   // Three fine organic diagonal lacerations, each crossing the gold rim.
+   // Their negative space is small enough not to swallow the card content.
+   function blade(i){
+    const dy=i*36,reach=155-i*9;
+    ctx.beginPath();ctx.moveTo(-26,dy-42);
+    ctx.bezierCurveTo(36,dy-18,87,dy+23,reach,dy+88);
+    ctx.bezierCurveTo(96,dy+44,47,dy+7,-26,dy-26);
     ctx.closePath();
    }
-   function onEdge(render){
-    ctx.save();ctx.translate(x,atY);
-    ctx.rotate(slant);ctx.scale(xdir*scale,scale);
-    render();ctx.restore();
-   }
-   onEdge(()=>{
-    ctx.save();ctx.strokeStyle=gold;ctx.shadowColor='#e8aa62';
-    ctx.shadowBlur=14;ctx.lineWidth=4.3;ctx.lineJoin='round';
-    for(let i=0;i<3;i++){path(i);ctx.stroke();}
+   const place=fn=>{ctx.save();ctx.translate(anchor,atY);
+    ctx.rotate(slant);ctx.scale(sign*scale,scale);fn();ctx.restore();};
+   place(()=>{
+    ctx.save();ctx.strokeStyle=gold;ctx.lineWidth=3;
+    ctx.shadowColor='#eeb77d';ctx.shadowBlur=7;
+    for(let i=0;i<3;i++){blade(i);ctx.stroke();}
     ctx.restore();
    });
-   shapes.push(()=>onEdge(()=>{for(let i=0;i<3;i++){path(i);ctx.fill();}}));
+   shapes.push(()=>place(()=>{for(let i=0;i<3;i++){blade(i);ctx.fill();}}));
   }
   function bloom(x,y,r){
    ctx.save();ctx.translate(x,y);
@@ -647,6 +650,79 @@
     ctx.beginPath();ctx.arc(x,atY+i*60,23+i*8,0,PI);ctx.stroke();
    }ctx.restore();
   }
+  // A REAL family-specific border, not loose emoji-like stickers.
+  // Each family changes the continuous gold perimeter via line rhythm,
+  // edge geometry and material. Five variants modulate placement/density.
+  function familyTrim(){
+   const ink=k==='herbivore'||k==='woodland'?'#cfbe86':
+     k==='aquatic'||k==='soft-predator'?'#c5c9b4':
+     k==='reptile'?'#cda875':'#e7bd86';
+   const shift=(v-2)*32,period=142+(v%3)*23;
+   const orientation=v%2?-1:1;
+   const families={
+    predator:'spikes','soft-predator':'ripples',aquatic:'waves',
+    herbivore:'vines',omnivore:'branches',avian:'feathers',
+    reptile:'scales',woodland:'sprigs',nocturnal:'moons',celestial:'stars'
+   };
+   const motif=families[k]||'stars';
+   ctx.save();ctx.strokeStyle=ink;ctx.fillStyle=ink;
+   ctx.lineWidth=1.8;ctx.globalAlpha=.8;
+   for(const side of [-1,1]){
+    const border=side<0?52:1148,sgn=side<0?1:-1;
+    for(let i=0;i<7;i++){
+     const y=300+i*period+shift+(side*orientation*16);
+     if(y<235||y>1765)continue;
+     // Each motif is rooted into the actual frame at border x.
+     ctx.beginPath();ctx.moveTo(border,y-35);
+     ctx.quadraticCurveTo(border+sgn*8,y,border,y+35);
+     ctx.stroke();
+     if(motif==='vines'||motif==='branches'||motif==='sprigs'){
+      ctx.beginPath();ctx.moveTo(border,y);
+      ctx.quadraticCurveTo(border+sgn*17,y-19,border+sgn*36,y-35);
+      ctx.quadraticCurveTo(border+sgn*30,y-5,border,y);
+      ctx.stroke();
+      if(motif==='vines'){
+       ctx.beginPath();ctx.ellipse(border+sgn*18,y-19,3.5,5,.3,0,PI*2);
+       ctx.fill();
+      }
+     }else if(motif==='feathers'){
+      ctx.beginPath();ctx.moveTo(border,y+20);
+      ctx.quadraticCurveTo(border+sgn*30,y-12,border+sgn*24,y-42);
+      ctx.quadraticCurveTo(border+sgn*56,y-12,border,y+20);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(border,y+20);
+      ctx.lineTo(border+sgn*24,y-42);ctx.stroke();
+     }else if(motif==='scales'){
+      for(let j=0;j<3;j++){
+       ctx.beginPath();ctx.arc(border+sgn*(9+j*13),y-10+j*15,13,-1.2,1.2);
+       ctx.stroke();
+      }
+     }else if(motif==='waves'||motif==='ripples'){
+      for(let n=0;n<2;n++){
+       ctx.beginPath();
+       ctx.ellipse(border+sgn*(8+n*12),y,14+n*9,24+n*9,0,-1.2,1.15);
+       ctx.stroke();
+      }
+     }else if(motif==='moons'){
+      ctx.beginPath();ctx.arc(border+sgn*15,y,14,-1.1,1.1);ctx.stroke();
+     }else if(motif==='spikes'){
+      ctx.beginPath();ctx.moveTo(border,y-18);
+      ctx.lineTo(border+sgn*28,y+5);
+      ctx.lineTo(border,y+25);ctx.stroke();
+     }else{
+      ctx.beginPath();ctx.moveTo(border-8,y);ctx.lineTo(border+8,y);
+      ctx.moveTo(border,y-12);ctx.lineTo(border,y+12);ctx.stroke();
+     }
+    }
+   }
+   // A tiny crown at each of the four gold corners varies by family too.
+   for(const [x,y,dx,dy] of [[62,64,1,1],[1138,64,-1,1],
+     [62,1936,1,-1],[1138,1936,-1,-1]]){
+    ctx.beginPath();ctx.moveTo(x+dx*18,y+dy*2);
+    ctx.quadraticCurveTo(x+dx*(45+v*4),y+dy*(15+v*3),
+      x+dx*(28+v*3),y+dy*(55+v*2));ctx.stroke();
+   }
+   ctx.restore();
+  }
   // Predators: five clearly distinct sets of actual edge damage.
   // Mode 2 is ALL bites. Mode 3 is ALL claws.
   const hunters=[
@@ -661,58 +737,50 @@
 
   // Frogs leave splayed WEBBED TOE marks. No solid bite-like black ovals.
   // The central transparent traces are small; antique-gold edges remain.
+
   function webbedFoot(side,y,size=1,tilt=0){
-   const left=side==='left',x=left?64:1136;
-   function footprint(){
-    ctx.beginPath();
-    ctx.ellipse(0,17,10,12,-.18,0,Math.PI*2);
-    const toes=[
-     [[-5,9],[-17,-2],[-31,-32]],
-     [[-3,7],[-9,-13],[-10,-44]],
-     [[3,7],[10,-14],[17,-43]],
-     [[5,9],[21,-3],[37,-27]]
-    ];
-    for(const [a,b,c] of toes){
-     ctx.moveTo(a[0],a[1]);
-     ctx.quadraticCurveTo(b[0],b[1],c[0],c[1]);
+   const left=side==='left',edge=left?51:1149,sign=left?1:-1;
+   // A webbed FOOTPRINT is an open negative-space indentation of the outer
+   // golden border, never a floating palm/hand symbol inside the card.
+   function impression(){
+    ctx.beginPath();ctx.moveTo(-36,11);
+    ctx.bezierCurveTo(-8,7,21,-2,42,-22);
+    // Four slim rays open from the membrane: webbed toes, not fingers.
+    for(const [x,y0] of [[58,-48],[71,-27],[76,0],[61,23]]){
+     ctx.moveTo(13,4);ctx.quadraticCurveTo(x*.60,y0*.55,x,y0);
     }
-    ctx.moveTo(-18,-3);ctx.quadraticCurveTo(-1,-15,17,-5);
-    ctx.moveTo(-7,-13);ctx.quadraticCurveTo(3,-23,11,-11);
+    ctx.moveTo(4,-7);ctx.quadraticCurveTo(32,-29,57,-25);
+    ctx.moveTo(6,13);ctx.quadraticCurveTo(36,30,61,23);
    }
-   function place(fn){
-    ctx.save();ctx.translate(x,y);ctx.rotate(tilt);
-    ctx.scale(left?size:-size,size);fn();ctx.restore();
-   }
-   place(()=>{
-    ctx.save();ctx.strokeStyle='#e4ba83';ctx.lineWidth=10.5;
-    ctx.lineCap='round';ctx.lineJoin='round';
-    ctx.shadowColor='#e7b87e';ctx.shadowBlur=5;
-    footprint();ctx.stroke();ctx.restore();
+   const placed=fn=>{ctx.save();ctx.translate(edge,y);ctx.rotate(tilt);
+    ctx.scale(sign*size,size);fn();ctx.restore();};
+   placed(()=>{
+    ctx.save();ctx.lineWidth=5.6;ctx.lineCap='round';
+    ctx.strokeStyle='#e8bd85';ctx.shadowColor='#d9a773';
+    ctx.shadowBlur=4;impression();ctx.stroke();ctx.restore();
    });
-   shapes.push(()=>place(()=>{
-    ctx.lineWidth=5;ctx.lineCap='round';ctx.lineJoin='round';
-    footprint();ctx.stroke();
+   shapes.push(()=>placed(()=>{
+    ctx.lineWidth=2.25;ctx.lineCap='round';impression();ctx.stroke();
    }));
   }
+
   function waterDrop(side,y,size=1){
-   const x=side==='left'?79:1121;
-   function shape(){
-    ctx.beginPath();ctx.moveTo(0,-23);
-    ctx.bezierCurveTo(11,-9,18,3,16,13);
-    ctx.bezierCurveTo(12,25,-12,25,-16,13);
-    ctx.bezierCurveTo(-18,3,-9,-9,0,-23);ctx.closePath();
+   // Dew traces are tangent to the page rim: the gold never looks glued on.
+   const edge=side==='left'?51:1149,sign=side==='left'?1:-1;
+   function droplet(){
+    ctx.beginPath();ctx.moveTo(-11,-23);
+    ctx.bezierCurveTo(4,-12,30,4,25,16);
+    ctx.bezierCurveTo(16,34,-8,20,-11,9);ctx.closePath();
    }
-   function place(fn){
-    ctx.save();ctx.translate(x,y);ctx.scale(size,size);fn();ctx.restore();
-   }
-   place(()=>{
-    ctx.save();ctx.strokeStyle='#e8c598';ctx.lineWidth=9;
-    ctx.shadowColor='#dfae7a';ctx.shadowBlur=5;
-    ctx.lineCap='round';shape();ctx.stroke();ctx.restore();
+   const placed=fn=>{ctx.save();ctx.translate(edge,y);
+    ctx.scale(sign*size,size);fn();ctx.restore();};
+   placed(()=>{
+    ctx.save();ctx.strokeStyle='#e8c598';ctx.lineWidth=6;
+    ctx.shadowColor='#dfae7a';ctx.shadowBlur=4;droplet();ctx.stroke();
+    ctx.restore();
    });
-   // An outlined transparent droplet, NEVER a filled black teardrop.
-   shapes.push(()=>place(()=>{
-    ctx.lineWidth=4.5;ctx.lineCap='round';shape();ctx.stroke();
+   shapes.push(()=>placed(()=>{
+    ctx.lineWidth=2.5;ctx.lineJoin='round';droplet();ctx.stroke();
    }));
   }
   function waterSplash(side,y,size=1){
@@ -734,33 +802,37 @@
    ()=>{waterSplash('left',570,.71);waterDrop('right',1570,.67);ripple('right',700);}
   ];
   // Feather, scales and nocturnal ornaments never mimic violent bites.
+
   function feather(side,y,size){
-   const left=side==='left';ctx.save();ctx.translate(left?88:1112,y);
-   ctx.scale(left?size:-size,size);
-   ctx.strokeStyle='#d9ba8a';ctx.lineWidth=2;
-   ctx.beginPath();ctx.moveTo(0,-107);ctx.bezierCurveTo(81,-57,62,46,0,113);
-   ctx.bezierCurveTo(-63,23,-51,-70,0,-107);ctx.stroke();
-   ctx.beginPath();ctx.moveTo(0,115);ctx.quadraticCurveTo(17,0,0,-106);ctx.stroke();
-   for(let i=0;i<5;i++){
-    const t=56-i*30;ctx.beginPath();ctx.moveTo(9,t);
-    ctx.lineTo(34,t-23);ctx.moveTo(-8,t);ctx.lineTo(-29,t-23);ctx.stroke();
+   const edge=side==='left'?52:1148,sign=side==='left'?1:-1;
+   ctx.save();ctx.translate(edge,y);ctx.scale(sign*size,size);
+   ctx.strokeStyle='#e5c390';ctx.lineWidth=2.5;
+   ctx.beginPath();ctx.moveTo(0,95);
+   ctx.bezierCurveTo(32,32,40,-41,0,-95);
+   ctx.bezierCurveTo(70,-39,60,32,0,95);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(0,95);ctx.lineTo(0,-95);ctx.stroke();
+   for(let n=0;n<5;n++){
+    const h=65-n*32;
+    ctx.beginPath();ctx.moveTo(0,h);
+    ctx.lineTo(33,h-19);ctx.stroke();
    }ctx.restore();
   }
   function scales(side,y,size){
-   ctx.save();ctx.translate(side==='left'?93:1107,y);
-   ctx.scale(side==='left'?size:-size,size);
-   ctx.strokeStyle='#dbbb85';ctx.lineWidth=2;ctx.globalAlpha=.84;
-   for(let i=0;i<7;i++)for(let j=0;j<2;j++){
-    ctx.beginPath();ctx.arc(j*38+(i%2)*16,i*44,24,.15,Math.PI-.15);ctx.stroke();}
-   ctx.beginPath();ctx.moveTo(-30,-34);ctx.bezierCurveTo(85,95,-42,175,70,284);ctx.stroke();
+   const edge=side==='left'?52:1148,sign=side==='left'?1:-1;
+   ctx.save();ctx.translate(edge,y);ctx.scale(sign*size,size);
+   ctx.strokeStyle='#d9b884';ctx.lineWidth=2.4;
+   for(let i=0;i<7;i++){
+    ctx.beginPath();ctx.arc(19+(i%2)*9,i*37,24,-1.25,1.25);ctx.stroke();
+   }
    ctx.restore();
   }
   function moon(side,y){
-   ctx.save();ctx.strokeStyle='#cbb18c';ctx.lineWidth=2;ctx.globalAlpha=.76;
-   const x=side==='left'?110:1090;
-   for(let i=0;i<3;i++){ctx.beginPath();
-    ctx.arc(x,y+i*68,28+i*6,-Math.PI*.8,Math.PI*.8);ctx.stroke();}
-   ctx.restore();
+   const edge=side==='left'?52:1148,sign=side==='left'?1:-1;
+   ctx.save();ctx.translate(edge,y);ctx.scale(sign,1);
+   ctx.strokeStyle='#d8b98c';ctx.lineWidth=2;
+   for(let i=0;i<3;i++){
+    ctx.beginPath();ctx.arc(3,y-y+i*47,13,-1.2,1.2);ctx.stroke();
+   }ctx.restore();
   }
   const avian=[
    ()=>{feather('left',500,.68);feather('right',1270,.7);},
@@ -816,6 +888,7 @@
    moon(v%2?'left':'right',760+v*95);
   if(k==='reptile'&&row?.[4]==='Crocodylia')
    ripple(v%2?'left':'right',1030+v*65);
+  familyTrim();
   if(k==='predator')hunters[v]();
   else if(k==='soft-predator')gentle[v]();
   else if(k==='aquatic')aquatic[v]();
