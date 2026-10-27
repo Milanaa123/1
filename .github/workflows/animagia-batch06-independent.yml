@@ -1,0 +1,36 @@
+name: Independent last fifteen Animagia animal artwork audit
+on:
+  push:
+    branches: [animagia-batch06-qa-20261028]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate atlas module and last-fifteen browser script syntax
+        run: |
+          node --check animal_atlas_100.js
+          node --check tests/check_batch06_fifteen.cjs
+      - name: Verify final species routing, decorative serpent distinction and previous 85
+        run: node --test tests/test_atlas100.cjs
+      - name: Inspect all 100 original atlas cells
+        run: node tests/check_atlas100.cjs
+      - name: Inspect last fifteen in Chromium
+        run: node tests/check_batch06_fifteen.cjs
+      - name: Preserve earlier fifth batch
+        run: node tests/check_batch05_twenty.cjs
+      - name: Preserve earlier anatomy replacements
+        run: node tests/check_corrected_species.cjs
+      - name: Export browser screenshot of last fifteen
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-last15-transparent-artwork-audit
+          path: qa-artifacts/batch06-twenty-before-after.png
+          retention-days: 14
