@@ -219,7 +219,7 @@ test('Cosmic reference background and golden perimeter are actual Canvas decorat
  assert.ok(backdrop.includes('const ornate')||backdrop.includes('Perimeter engraving directly on the card'));
  assert.ok(backdrop.includes('for(let j=0;j<2100;j++)'));
  assert.ok(backdrop.includes("ctx.strokeStyle='#efc38b'"));
- assert.ok(html.includes('stage2-firstname-only-20261027'));
+ assert.ok(html.includes('stage3-integrated-families-20261027'));
 });
 
 // Stage 2: only first given name on the card, full-name calculation unchanged.
