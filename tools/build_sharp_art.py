@@ -40,7 +40,7 @@ def grid(src:str,dst:str):
         cell=source.crop((x,y,x+160,y+110))
         crisp=sharpen_cell(cell)
         output.paste(crisp,(x*SCALE,y*SCALE))
-    output.save(ART/dst,'WEBP',lossless=True,method=5,exact=True)
+    output.save(ART/dst,'WEBP',quality=98,method=6,exact=True)
     check=Image.open(ART/dst)
     assert check.size==(6400,4400),(dst,check.size)
     return {'file':dst,'bytes':(ART/dst).stat().st_size,'sha256':hashlib.sha256((ART/dst).read_bytes()).hexdigest()}
@@ -64,7 +64,7 @@ def main():
     results=[grid('animagia-100-alpha.webp','animagia-100-sharp4x.webp'),
              grid('animagia-corrected-22.webp','animagia-corrected-22-sharp4x.webp'),
              first_five()]
-    manifest={'scale':SCALE,'sourceSize':[1600,1100],'sourceCells':100,'lossless':True,'results':results,
+    manifest={'scale':SCALE,'sourceSize':[1600,1100],'sourceCells':100,'lossless':False,'results':results,
       'limitations':'Source has 160x110 pixels per art cell. Sharpening can clarify edges but cannot recover original illustration detail that was never present.'}
     (ART/'sharp-art-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     print('SHARP_100_ASSETS_BUILT '+json.dumps(manifest,ensure_ascii=False),flush=True)
