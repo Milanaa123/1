@@ -39,6 +39,18 @@ jobs:
           echo "LIVE_WEBP_BYTES=$(wc -c </tmp/animagia-live.webp)"
           corrected_code=$(curl --fail --silent --show-error --location --max-time 45 --write-out '%{http_code}' "$url/art/animagia-corrected-22.webp" -o /tmp/animagia-live-corrected.webp)
           echo "LIVE_CORRECTED_HTTP=$corrected_code"
+          for art in animagia-100-sharp4x.webp animagia-corrected-22-sharp4x.webp animals-approved-01-05-sharp4x.png; do
+            curl --fail --silent --show-error --location --max-time 55 "$url/art/$art" -o "/tmp/$art"
+            test "$(wc -c <"/tmp/$art")" -gt 100000
+          done
+          python - <<'PY'
+          import json,hashlib
+          meta=json.load(open('art/sharp-art-manifest.json'))
+          for entry in meta['results']:
+           data=open('/tmp/'+entry['file'],'rb').read()
+           assert len(data)==entry['bytes'] and hashlib.sha256(data).hexdigest()==entry['sha256'],entry['file']
+          print('LIVE_SHARP_ALL_100_ART_BYTES_VERIFIED')
+          PY
           snake_http=$(curl --fail --silent --show-error --location --max-time 45 --write-out '%{http_code}' "$url/art/animagia-grass-snake-87.svg" -o /tmp/animagia-live-snake87.svg)
           echo "LIVE_GRASS_SNAKE_87_HTTP=$snake_http"
           test "$snake_http" = 200
@@ -54,11 +66,19 @@ jobs:
           echo "LIVE_JS_START:"
           head -c 120 /tmp/animagia-live.js | tr '\\n' ' '
           echo
-          grep -Fq 'grass-snake87-illustrated-20261028' /tmp/animagia-live.html || { echo 'RENDER_OLD_HTML_OR_WRONG_SITE'; exit 1; }
+          grep -Fq 'sharp-all100-4x-20261028' /tmp/animagia-live.html || { echo 'RENDER_OLD_HTML_OR_WRONG_SITE'; exit 1; }
           grep -Fq 'batch06:{first:86,last:100,count:15' /tmp/animagia-live.js || { echo 'RENDER_OLD_JS_OR_WRONG_SITE'; exit 1; }
           test "$(wc -c </tmp/animagia-live.webp)" -gt 20000
           test "$(dd if=/tmp/animagia-live.webp bs=1 count=4 2>/dev/null)" = 'RIFF'
           echo "LIVE_RENDER_CURRENT_BATCH06_CONFIRMED"
+      - name: Verify sharper 4× illustrations in actual Chromium at card size
+        run: node tests/check_sharp_art.cjs
+      - name: Save sharp art comparison in browser
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-sharp-all100-4x-before-after
+          path: qa-artifacts/sharp-art-before-after.png
+          retention-days: 14
       - name: Test the full 100-image atlas and representative taxonomy without network
         run: node --test tests/test_atlas100.cjs
       - name: Inspect all 100 transparent images in real Chromium
