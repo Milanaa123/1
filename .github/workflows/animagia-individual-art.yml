@@ -3,6 +3,9 @@ on:
   push:
     branches: [animagia-individual-art-20261028]
   workflow_dispatch:
+concurrency:
+  group: animagia-individual-art-build
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:
@@ -43,5 +46,7 @@ jobs:
           git add art/individual-4x
           if ! git diff --cached --quiet; then
             git commit -m "Add 105 small transparent golden animal images for on-demand 4x display"
-            git push origin HEAD:animagia-individual-art-20261028
+            git fetch origin animagia-individual-art-20261028
+          git rebase origin/animagia-individual-art-20261028
+          git push origin HEAD:animagia-individual-art-20261028
           fi
