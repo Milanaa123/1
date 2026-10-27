@@ -135,8 +135,8 @@ test('Stage 4: source frog face retains full muzzle and drawn nostril',()=>{
  const source=fs.readFileSync('animal_atlas.js','utf8');
  const start=source.indexOf('if(index===18){'),end=source.indexOf('const [cx,cy,rx,ry]',start);
  const cut=source.slice(start,end);
- assert.ok(cut.includes('[289,84]')&&cut.includes('[294,105]'),'nose mask fully extends over original muzzle');
- assert.ok(source.includes('ctx.ellipse(270,91,3.6,2.6'));
+ assert.ok(cut.includes('[212,29]')&&cut.includes('[225,34]'),'tight mask protects muzzle and excludes background orbit');
+ assert.ok(source.includes('ctx.ellipse(219.5,43,2.35,1.6'));
  assert.ok(source.includes("if(profile.id==='frog')"));
  assert.ok(source.includes('Math.min(w/cutout.width,h/cutout.height)'));
  assert.ok(!source.includes('localStorage')&&!source.includes('sessionStorage'));
