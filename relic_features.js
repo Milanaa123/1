@@ -6,23 +6,30 @@
  const NS='http://www.w3.org/2000/svg';
  const LETTERS=[...'αβγδεζηθικλμνξοπρστυφχψω'];
 
- // Display only the first Greek given name, exactly as entered and verified.
- // Scoring still uses the complete original name in app.js, untouched.
+ // Use the EXACT entire Greek transcription accepted by the calculator.
+ // Grapheme segmentation keeps breathings, accents and other combining marks
+ // attached to their letters. Spaces receive a slot as a visible word break.
+ // This is DISPLAY ONLY: the full-name numerical algorithm is unchanged.
  function wheelLetters(greekName){
-  const first=String(greekName||'').trim().normalize('NFC').split(/\s+/u)[0]||'';
-  if(!first)return [];
+  const full=String(greekName||'').trim().normalize('NFC').replace(/\s+/gu,' ');
+  if(!full)return [];
   return typeof Intl!=='undefined'&&Intl.Segmenter
-   ?[...new Intl.Segmenter('el',{granularity:'grapheme'}).segment(first)].map(x=>x.segment)
-   :Array.from(first);
+   ?[...new Intl.Segmenter('el',{granularity:'grapheme'}).segment(full)].map(x=>x.segment)
+   :Array.from(full);
  }
- // Equal angular spacing over the ENTIRE wheel, even for short names.
- // The full Greek spelling is preserved by wheelLetters(), including accents.
+ // Identical angular slots around the complete 360-degree seal.
  function nameArc(glyphs,font,r){
   const count=glyphs.length;
   return i=>count?-Math.PI/2+2*Math.PI*i/count:-Math.PI/2;
  }
+ function ringFontSize(glyphs,r,maximum,minimum){
+  if(!glyphs.length)return maximum;
+  const angularSpace=2*Math.PI*r/glyphs.length;
+  // The average rendered width of a glyph stays below 74% of its slot.
+  return Math.max(minimum,Math.min(maximum,Math.floor(angularSpace*.74)));
+ }
  function uprightRingAngle(angle){
-  // Tangential letters are flipped on the bottom half so they stay readable.
+  // Flip bottom-half glyphs to keep individual characters legible.
   return angle+Math.PI/2+(Math.sin(angle)>0?Math.PI:0);
  }
  const elem=(tag,value)=>{
@@ -55,7 +62,7 @@
   }
 
   const points=[],inscription=wheelLetters(greekName);
-  const glyphSize=inscription.length>16?14:inscription.length>11?18:22;
+  const glyphSize=ringFontSize(inscription,132,22,10);
   const angle=nameArc(inscription,glyphSize,132);
   svg.setAttribute('aria-label','Магическое колесо: '+inscription.join('')+'; число '+n);
   for(let i=0;i<inscription.length;i++){
@@ -63,7 +70,7 @@
    node('text',{x:px,y:py,'font-size':glyphSize,
     'font-family':'Georgia,serif','text-anchor':'middle',
     transform:'rotate('+(uprightRingAngle(a)*180/Math.PI)+' '+px+' '+py+')',
-    fill:'#EBD4A4'},inscription[i]);
+    fill:'#EBD4A4'},inscription[i]===' '?'':inscription[i]);
   }
   for(let i=0;i<7;i++){
    const q=(n*(i+11)+i*31)%360*Math.PI/180,r=56+(n+i)%20;
@@ -86,14 +93,15 @@
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#F4D8A1';ctx.font='27px Georgia,serif';
 
   const inscription=wheelLetters(greekName);
-  const font=inscription.length>16?24:inscription.length>11?30:35;
+  const font=ringFontSize(inscription,r*.82,36,15);
   ctx.font=font+'px Georgia,serif';
   const angle=nameArc(inscription,font,r*.82);
   for(let i=0;i<inscription.length;i++){
    const a=angle(i);
    ctx.save();ctx.translate(Math.cos(a)*r*.82,Math.sin(a)*r*.82);
    ctx.rotate(uprightRingAngle(a));
-   ctx.fillText(inscription[i],0,0);ctx.restore();
+   if(inscription[i]!==' ')ctx.fillText(inscription[i],0,0);
+   ctx.restore();
   }
   ctx.beginPath();
   for(let i=0;i<7;i++){
@@ -1144,7 +1152,7 @@
    ctx.fillText('АТЛАС СКРЫТЫХ ФОРМ · МАГИЧЕСКАЯ ПЕЧАТЬ',600,175);
    // Keep the accepted geometric number circle completely unchanged.
    paintSeal(ctx,cardNumber,600,505,300,greek);
-   // The owner's Greek name is visible inside the wheel, not repeated below.
+   // The entire checked Greek owner name is distributed round the wheel.
    let artNote='';
    if(sprite&&profile){
     gallery.drawCanvas(ctx,sprite,profile,205,760,790,570);
@@ -1181,9 +1189,10 @@
     nameLines=textLines(ctx,heading,930,2);
     if(!nameLines.some(line=>line.endsWith('…')))break;
    }
-   const nameY=category?1455:1438;
-   for(const [i,line] of nameLines.entries())ctx.fillText(line,600,nameY+i*51);
-   ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1544,1020,'italic 29px Georgia,serif',1);
+   const nameY=category?1445:1438;
+   const titleSpacing=nameLines.length>1?48:51;
+   for(const [i,line] of nameLines.entries())ctx.fillText(line,600,nameY+i*titleSpacing);
+   ctx.fillStyle='#D5CAD6';centered(ctx,row[1],1555,1020,'italic 29px Georgia,serif',1);
 
    // Verified independent ecological labels, without cramped little tables.
    const ecology=[
@@ -1192,7 +1201,16 @@
    ].filter(Boolean);
    if(ecology.length){
     ctx.fillStyle='#D7BE91';
-    centered(ctx,ecology.join('  ✧  '),1634,950,'26px Georgia,serif',1);
+    const lifeText=ecology.join('  ✧  ');
+    ctx.font='26px Georgia,serif';
+    if(ctx.measureText(lifeText).width<=950){
+     centered(ctx,lifeText,1634,950,'26px Georgia,serif',1);
+    }else{
+     // Preserve all words when the ecological descriptor is unusually long.
+     ctx.font='21px Georgia,serif';
+     const sections=textLines(ctx,lifeText,950,2);
+     for(const [i,line] of sections.entries())ctx.fillText(line,600,1627+i*34);
+    }
    }
    ctx.strokeStyle='#cba777';ctx.lineWidth=1.2;ctx.globalAlpha=.75;
    ctx.beginPath();ctx.moveTo(460,1700);ctx.lineTo(546,1700);

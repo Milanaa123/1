@@ -184,7 +184,7 @@ test('Stage-one reference template uses clean dark stardust and symmetric foil f
  assert.ok(back.includes("base.addColorStop(0,'#090a14')"));
  assert.ok(back.includes("base.addColorStop(.71,'#1a1425')"));
  assert.ok(styles.includes('transform:none!important;object-fit:contain!important;'));
- assert.match(html,/relic_features.js\?v=cosmic-perimeter-full-wheel-20261027c/);
+ assert.match(html,/relic_features.js\?v=stage2-fullgreek-20261027/);
 });
 
 // Reference approval: full-circle Greek name; nebula and perimeter are drawn
@@ -198,13 +198,15 @@ test('Greek glyphs cover the entire ring at identical angles',()=>{
  for(const text of ['Φρέιζερ Ἁρολδ Βραουν','Ἀλέξανδρος Μάρκος','Ελλα Μαρια']){
   const name=wheelLetters(text);
   const positions=name.map((_,i)=>nameArc(name,32,246)(i));
-  assert.equal(name.join(''),text.split(' ')[0]);
+  assert.equal(name.join(''),text);
   assert.equal(positions.length,name.length);
   for(let i=1;i<positions.length;i++)
    assert.ok(Math.abs(positions[i]-positions[i-1]-2*Math.PI/name.length)<1e-9);
   assert.ok(positions.length>1&&
    Math.abs((positions.at(-1)-positions[0])+2*Math.PI/name.length-2*Math.PI)<1e-9);
   assert.ok(name.every((_,i)=>Number.isFinite(uprightRingAngle(positions[i]))));
+  const size=new Function(js.slice(begin,end)+'\nreturn ringFontSize;')(name,246,36,15);
+  assert.ok(size>=15&&size<=36);
  }
  assert.ok(js.includes('ctx.rotate(uprightRingAngle(a));'));
  assert.ok(js.includes('transform:\'rotate(\'+(uprightRingAngle(a)*180/Math.PI)'));
@@ -215,5 +217,35 @@ test('Cosmic reference background and golden perimeter are actual Canvas decorat
  assert.ok(backdrop.includes('const ornate')||backdrop.includes('Perimeter engraving directly on the card'));
  assert.ok(backdrop.includes('for(let j=0;j<2100;j++)'));
  assert.ok(backdrop.includes("ctx.strokeStyle='#efc38b'"));
- assert.ok(html.includes('cosmic-perimeter-full-wheel-20261027'));
+ assert.ok(html.includes('stage2-fullgreek-20261027'));
+});
+
+// Stage 2: Full transcription, mathematical circle, and legible information.
+test('Complete multi-part Greek names keep word boundaries and combining marks',()=>{
+ const begin=js.indexOf(' function wheelLetters(greekName){'),end=js.indexOf(' const elem=',begin);
+ const {wheelLetters,ringFontSize,nameArc}=new Function(js.slice(begin,end)+
+  '\nreturn {wheelLetters,ringFontSize,nameArc};')();
+ const cases=[
+  'Φρέιζερ Ἁρολδ Μπραουν',
+  'Ἀλέξανδρος   Κρεων   Κραββ',
+  'Ελλα Μαρια Ουιλλοου',
+  'Αστριδ Αβελ Λαβγκουντ'
+ ];
+ for(const raw of cases){
+  const glyphs=wheelLetters(raw),normalized=raw.trim().normalize('NFC').replace(/\s+/gu,' ');
+  assert.equal(glyphs.join(''),normalized);
+  assert.equal(glyphs.filter(x=>x===' ').length,normalized.split(' ').length-1);
+  const font=ringFontSize(glyphs,246,36,15);
+  assert.ok(font>=15&&font<=36);
+  const step=2*Math.PI/glyphs.length,angle=nameArc(glyphs,font,246);
+  for(let i=1;i<glyphs.length;i++)assert.ok(Math.abs(angle(i)-angle(i-1)-step)<1e-9);
+ }
+ const marked=wheelLetters('Αλε\u0301ξανδρος');
+ assert.equal(marked[2],'έ');
+ assert.equal(marked.join(''),'Αλέξανδρος');
+ assert.deepEqual(wheelLetters(''),[]);
+ assert.ok(js.includes('const lifeText=ecology.join'));
+ assert.ok(js.includes('ctx.measureText(lifeText).width<=950'));
+ assert.ok(js.includes("ctx.fillText('ЧИСЛО СОВПАДЕНИЯ',600,1722)"));
+ assert.ok(!js.includes("ctx.fillText('РАЗНИЦА'"));
 });
