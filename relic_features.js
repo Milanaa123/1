@@ -427,14 +427,72 @@
    ()=>{claw('left',180,1,.08);bite('bottom',930,143,9);},
    ()=>{claw('right',430,1.08,-.1);bite('top',1025,129,4);bite('left',1630,120,4);}
   ];
-  // Small predators (frogs): rounded small bites + subtle water symbolism,
-  // still penetrating the inset border. Never use a tiger-sized claw.
+
+  // Frog-like amphibians do not use the predator's claw and bite motifs.
+  // The decorative alpha cuts resemble a webbed hind foot and water splashes.
+  function webbedFoot(side,atY,scale=1,tilt=0){
+   const x=side==='left'?14:1186,flip=side==='left'?1:-1;
+   function footprintPath(){
+    ctx.beginPath();
+    ctx.moveTo(-45,-64);
+    ctx.bezierCurveTo(10,-64,27,-45,51,-37);
+    ctx.bezierCurveTo(67,-70,90,-103,101,-108);
+    ctx.quadraticCurveTo(121,-116,112,-87);
+    ctx.quadraticCurveTo(99,-58,83,-29);
+    ctx.quadraticCurveTo(125,-70,147,-75);
+    ctx.quadraticCurveTo(161,-70,142,-50);
+    ctx.quadraticCurveTo(127,-29,109,-6);
+    ctx.quadraticCurveTo(162,-14,174,1);
+    ctx.quadraticCurveTo(178,15,150,22);
+    ctx.quadraticCurveTo(127,26,117,33);
+    ctx.quadraticCurveTo(158,63,153,85);
+    ctx.quadraticCurveTo(139,103,125,81);
+    ctx.quadraticCurveTo(94,54,70,55);
+    ctx.bezierCurveTo(39,51,11,84,-45,91);
+    ctx.closePath();
+   }
+   function placed(paint){
+    ctx.save();ctx.translate(x,atY);ctx.rotate(tilt);
+    ctx.scale(flip*scale,scale);paint();ctx.restore();
+   }
+   placed(()=>{
+    ctx.save();ctx.lineWidth=4;ctx.strokeStyle='#f2c68c';
+    ctx.shadowColor='#eebd80';ctx.shadowBlur=15;
+    footprintPath();ctx.stroke();
+    ctx.translate(7,7);ctx.lineWidth=1.35;ctx.globalAlpha=.55;
+    footprintPath();ctx.stroke();ctx.restore();
+   });
+   shapes.push(()=>placed(()=>{footprintPath();ctx.fill();}));
+  }
+  function waterSplash(side,atY,scale=1){
+   const x=side==='left'?6:1194,flip=side==='left'?1:-1;
+   function splashPath(i){
+    const y=i*62;
+    ctx.beginPath();ctx.moveTo(-38,y-33);
+    ctx.bezierCurveTo(18,y-24,73,y-46,110+i*15,y+5);
+    ctx.bezierCurveTo(77,y+45,26,y+25,-38,y+38);
+    ctx.closePath();
+   }
+   function placed(paint){
+    ctx.save();ctx.translate(x,atY);ctx.scale(flip*scale,scale);
+    paint();ctx.restore();
+   }
+   placed(()=>{
+    ctx.save();ctx.strokeStyle='#f0c591';ctx.lineWidth=3.3;
+    ctx.shadowColor='#e0ae72';ctx.shadowBlur=13;
+    for(let i=0;i<3;i++){splashPath(i);ctx.stroke();}
+    ctx.restore();
+   });
+   shapes.push(()=>placed(()=>{for(let i=0;i<3;i++){splashPath(i);ctx.fill();}}));
+  }
+  // Five frog-pattern compositions: little imprints, splashes and
+  // fine gold ripples. These are not claw scratches or bite marks.
   const gentle=[
-   ()=>{bite('right',1015,99,3);ripple('left',1060);},
-   ()=>{bite('left',1330,103,6);ripple('right',920);},
-   ()=>{bite('top',920,105,4);bite('right',1550,92,4);},
-   ()=>{bite('bottom',1010,108,7);ripple('right',1180);},
-   ()=>{bite('left',680,103,4);bite('right',1450,92,4);}
+   ()=>{webbedFoot('left',660,.89,-.08);waterSplash('right',1360,.86);ripple('left',1200);},
+   ()=>{webbedFoot('right',590,.94,.07);webbedFoot('left',1330,.63,-.05);ripple('right',1070);},
+   ()=>{waterSplash('left',390,1);webbedFoot('right',1460,.87,.02);ripple('left',1110);},
+   ()=>{webbedFoot('left',400,.8,.06);waterSplash('right',1070,.99);ripple('right',1540);},
+   ()=>{webbedFoot('right',870,.87,-.06);webbedFoot('left',1480,.65,.07);waterSplash('left',350,.72);}
   ];
   // Herbivores: different arrangements of golden vines, small leaves
   // and flowers, all respecting the existing celestial card.
@@ -880,65 +938,27 @@
  }
 
 
+
  async function savePNG(picker,status){
   const row=selection(picker),greek=get('greek').value.trim();
   if(!row||!validGreek(greek)||score(greek)!==sum){
    status.textContent='Сначала выполни поиск точных совпадений.';return;
   }
   try{
-   status.textContent='Подготавливаем карточку для сохранения…';
-   const ok=await composeScreenCard(row);
-   if(!ok)throw Error('Карточка ещё обновляется. Повтори сохранение.');
-   const card=get('relicCardBackdrop');
-   const jpeg=elem('canvas');jpeg.width=card.width;jpeg.height=card.height;
-   const jpgCtx=jpeg.getContext('2d');
-   if(!jpgCtx)throw Error('Нет доступа к Canvas');
-   // JPEG does not support transparency: cut-outs reveal the same dark
-   // page tone on the saved picture, while the on-screen card stays truly cut.
-   jpgCtx.fillStyle='#0b0a16';jpgCtx.fillRect(0,0,jpeg.width,jpeg.height);
-   jpgCtx.drawImage(card,0,0);
-   const blob=await new Promise((resolve,reject)=>{
-    try{jpeg.toBlob(resolve,'image/jpeg',0.95);}catch(err){reject(err);}
-   });
-   if(!blob)throw Error('Не удалось сформировать JPEG');
-   const filename='Анимагия_форма_'+sum+'.jpg';
-   // Direct download rather than the Android "Share / Connect" dialog.
-   const url=URL.createObjectURL(blob),a=elem('a');
-   a.href=url;a.download=filename;
-   document.body.append(a);a.click();a.remove();
-   setTimeout(()=>URL.revokeObjectURL(url),15000);
-   status.textContent='JPEG сохранён через браузер. Обычно он появляется в Загрузках и может отображаться в Галерее.';
-
-  }catch(error){
-   status.textContent='Не удалось сохранить карточку: '+error.message;
-  }
- }
-
-
- // JPEG is Gallery-friendly but cannot keep transparency. A second, optional
- // PNG download preserves the REAL alpha holes for collectors of the cards.
- async function saveTransparentPNG(picker,status){
-  const row=selection(picker),greek=get('greek').value.trim();
-  if(!row||!validGreek(greek)||score(greek)!==sum){
-   status.textContent='Сначала выполни поиск точных совпадений.';return;
-  }
-  try{
-   status.textContent='Создаём PNG с прозрачными вырезами…';
+   status.textContent='Создаём PNG с прозрачной рамкой…';
    if(!await composeScreenCard(row))throw Error('Карточка обновляется, повтори сохранение.');
    const canvas=get('relicCardBackdrop');
    const blob=await new Promise((resolve,reject)=>{
     try{canvas.toBlob(resolve,'image/png');}catch(error){reject(error);}
    });
-   if(!blob)throw Error('PNG не создан');
-   const filename='Анимагия_форма_'+sum+'_прозрачная.png';
+   if(!blob)throw Error('Не удалось создать PNG');
+   const filename='Анимагия_форма_'+sum+'.png';
    const url=URL.createObjectURL(blob),link=elem('a');
    link.href=url;link.download=filename;
    document.body.append(link);link.click();link.remove();
    setTimeout(()=>URL.revokeObjectURL(url),15000);
-   status.textContent='PNG сохранён: укусы и следы когтей действительно прозрачны.';
-  }catch(error){
-   status.textContent='Не удалось сохранить PNG: '+error.message;
-  }
+   status.textContent='Карточка PNG скачана; декоративные вырезы остаются прозрачными.';
+  }catch(error){status.textContent='Не удалось сохранить карточку: '+error.message;}
  }
 
  async function compareOne(text,manifest,cache){
@@ -1074,7 +1094,7 @@
    const ok=!get('resultPanel').hidden&&safeRows().length>0&&
      score(get('greek').value.trim())===sum;
    get('downloadRelic').disabled=!ok;get('printRelic').disabled=!ok;
-   get('downloadTransparent').disabled=!ok;
+
    if(!ok){
     if(typeof closeAnimalChooser==='function')closeAnimalChooser();
     const chooser=get('animalChooserOpen');if(chooser)chooser.disabled=true;
@@ -1095,7 +1115,7 @@
   picker.addEventListener('change',()=>syncSilhouette(picker));
   const closeAnimalChooser=setupAnimalChooser(picker);
   get('downloadRelic').addEventListener('click',()=>{void savePNG(picker,status);});
-  get('downloadTransparent').addEventListener('click',()=>{void saveTransparentPNG(picker,status);});
+
   get('printRelic').addEventListener('click',()=>printBooklet(status));
   window.printBesteriary=()=>printBooklet(status);
   get('compareRun').addEventListener('click',()=>{void compare(get('compareRun'));});

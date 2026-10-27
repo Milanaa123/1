@@ -48,7 +48,9 @@ test('Card uses proportional title / figure / ecology / exact matching values',(
  assert.ok(styles.includes('text-wrap:balance'));
  assert.ok(poster.includes('row[0]'));
  assert.ok(js.includes('composeScreenCard(row)'));
- assert.ok(download.includes("jpeg.toBlob(resolve,'image/jpeg',0.95)"));
+ assert.ok(download.includes("canvas.toBlob(resolve,'image/png')"));
+ assert.ok(!download.includes('image/jpeg'));
+ assert.ok(!html.includes('id="downloadTransparent"'));
  assert.ok(!download.includes('navigator.share'));
  assert.ok(js.includes("function cardAdornment(row,styl,greekName='')"));
  assert.ok(js.includes('function paintDietAdornment(ctx,row,styl,greekName)'));
@@ -98,6 +100,8 @@ test('Visible diet borders include five unique variants each and true alpha hole
   assert.ok(frame.includes(feature),feature);
  assert.ok(frame.includes("const x=side==='left'?-11+depth")||frame.includes("const x=side==='left'?-11+depth")||frame.includes("const x=side==='left'?-11+depth"),'bite geometry');
  assert.ok(frame.includes('if(shapes.length)'),'final cut pass');
+ assert.ok(frame.includes('function webbedFoot(side,atY,scale=1,tilt=0)'));
+ assert.ok(frame.includes('function waterSplash(side,atY,scale=1)'));
  assert.ok(poster.includes('paintDietAdornment(ctx,row,styl,greek)'));
 });
 

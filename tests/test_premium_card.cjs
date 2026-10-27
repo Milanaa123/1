@@ -26,14 +26,16 @@ test('Premium export never reaches obsolete PhyloPic silhouettes',()=>{
  assert.ok(js.includes('Образ скрытой формы ещё создаётся'));
  assert.ok(js.includes('function paintFinishedCard('));
  assert.ok(png.includes('composeScreenCard(row)'));
- assert.ok(png.includes("'image/jpeg',0.95"));
+ assert.ok(png.includes("canvas.toBlob(resolve,'image/png')"));
  assert.ok(!png.includes('navigator.share'));
- assert.ok(js.includes('async function saveTransparentPNG(picker,status)'));
+ assert.ok(!js.includes('async function saveTransparentPNG(picker,status)'));
  assert.ok(js.includes("canvas.toBlob(resolve,'image/png')"));
- assert.ok(html.includes('id="downloadTransparent"'));
+ assert.ok(!html.includes('id="downloadTransparent"'));
  assert.ok(js.includes('Five DETERMINISTIC layouts per diet'));
  assert.ok(js.includes('paintDietAdornment(ctx,row,styl,greek)'));
  assert.ok(js.includes("ctx.globalCompositeOperation='destination-out'"));
+ assert.ok(js.includes('function webbedFoot('));
+ assert.ok(js.includes('function waterSplash('));
 });
 test('Card hierarchy and no broken technical empty fields',()=>{
  assert.ok(js.includes('function updatePreviewText'));
