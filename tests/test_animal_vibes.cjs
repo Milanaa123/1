@@ -941,10 +941,10 @@ test('Frogs have transparent splayed webbed toes and no large filled holes',()=>
  const c=source.indexOf(' function waterSplash(',b);
  assert.ok(a>=0&&b>a&&c>b);
  const paws=source.slice(a,b),drops=source.slice(b,c);
- assert.ok(paws.includes("ctx.lineWidth=2.25;ctx.lineCap='round'"));
+ assert.ok(paws.includes("ctx.lineWidth=3.4;ctx.lineCap='round'"));
  assert.ok(paws.includes("ctx.moveTo(-36,11)"));
  assert.ok(paws.includes("ctx.quadraticCurveTo(x*.60,y0*.55,x,y0)"));
- assert.ok(drops.includes("ctx.lineWidth=2.5"));
+ assert.ok(drops.includes("ctx.lineWidth=5"));
  assert.ok(!paws.includes('ctx.fill()')&&!drops.includes('ctx.fill()'));
  const frog=source.slice(source.indexOf(' const gentle=['),source.indexOf(' const aquatic=['));
  assert.ok(frog.includes('webbedFoot('));

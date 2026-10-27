@@ -755,12 +755,12 @@
    const placed=fn=>{ctx.save();ctx.translate(edge,y);ctx.rotate(tilt);
     ctx.scale(sign*size,size);fn();ctx.restore();};
    placed(()=>{
-    ctx.save();ctx.lineWidth=5.6;ctx.lineCap='round';
+    ctx.save();ctx.lineWidth=7;ctx.lineCap='round';
     ctx.strokeStyle='#e8bd85';ctx.shadowColor='#d9a773';
     ctx.shadowBlur=4;impression();ctx.stroke();ctx.restore();
    });
    shapes.push(()=>placed(()=>{
-    ctx.lineWidth=2.25;ctx.lineCap='round';impression();ctx.stroke();
+    ctx.lineWidth=3.4;ctx.lineCap='round';impression();ctx.stroke();
    }));
   }
 
@@ -775,12 +775,12 @@
    const placed=fn=>{ctx.save();ctx.translate(edge,y);
     ctx.scale(sign*size,size);fn();ctx.restore();};
    placed(()=>{
-    ctx.save();ctx.strokeStyle='#e8c598';ctx.lineWidth=6;
+    ctx.save();ctx.strokeStyle='#e8c598';ctx.lineWidth=9;
     ctx.shadowColor='#dfae7a';ctx.shadowBlur=4;droplet();ctx.stroke();
     ctx.restore();
    });
    shapes.push(()=>placed(()=>{
-    ctx.lineWidth=2.5;ctx.lineJoin='round';droplet();ctx.stroke();
+    ctx.lineWidth=5;ctx.lineJoin='round';droplet();ctx.stroke();
    }));
   }
   function waterSplash(side,y,size=1){
