@@ -318,16 +318,40 @@
  // Approved Animagia frame system. Five DETERMINISTIC layouts per diet.
  // This only changes the edge ornament. Animal art and name scores untouched.
  function cardAdornment(row,styl,greekName=''){
-  let hash=2166136261;
-  for(const ch of String(row?.[1]||'')+'|'+String(greekName||''))
+  let hash=2166136261;for(const ch of String(row?.[1]||'')+'|'+String(greekName||''))
    hash=Math.imul(hash^ch.charCodeAt(0),16777619)>>>0;
+  const genus=String(row?.[1]||'').split(' ')[0],cls=row?.[3],order=row?.[4];
   const diet=['predator','herbivore','omnivore'].includes(styl?.diet)?styl.diet:'unknown';
-
-  // Decorative water motif is sourced from VERIFIED habitat. It does not
-  // change diet labels and never infers a new ecological classification.
-  const frog=diet==='predator'&&(row?.[4]==='Anura'||row?.[3]==='Amphibia');
-  const water=styl?.habitat==='aquatic'||styl?.habitat==='semiaquatic';
-  return {kind:frog?'soft-predator':water?'aquatic':diet,variant:hash%5};
+  const water=['aquatic','semiaquatic'].includes(styl?.habitat);
+  const belongs=(list)=>list.includes(genus);
+  // These are artistic families, NOT scientific diet declarations. They
+  // cover the user's 100 selected species, even where no art is uploaded.
+  const cat=['Panthera','Puma','Acinonyx','Neofelis','Leopardus','Lynx','Caracal',
+    'Felis','Canis','Cuon','Lycaon','Gulo'];
+  const flora=['Cervus','Alces','Capreolus','Rangifer','Bison','Bubalus',
+    'Ovis','Capra','Rupicapra','Equus','Giraffa','Gazella','Antilope',
+    'Camelus','Lama','Vicugna','Oryctolagus','Lepus','Macropus',
+    'Phascolarctos','Vombatus','Ailuropoda','Hystrix','Testudo','Bos'];
+  const mixed=['Vulpes','Procyon','Meles','Sus','Ursus','Sciurus',
+    'Cricetus','Mesocricetus','Mus','Rattus','Marmota','Spermophilus',
+    'Sarcophilus','Dasyurus'];
+  let kind='celestial';
+  if(order==='Anura')kind='soft-predator'; // webbed frog footprints
+  else if(order==='Chiroptera'||belongs(['Pteropus','Myotis','Pipistrellus',
+      'Rhinolophus','Desmodus','Eptesicus']))kind='nocturnal';
+  else if(cls==='Aves')kind=order==='Sphenisciformes'||belongs(['Aptenodytes',
+      'Spheniscus','Pygoscelis','Eudyptes'])?'aquatic':'avian';
+  else if(cls==='Reptilia')kind='reptile';
+  else if(water||belongs(['Orcinus','Delphinus','Megaptera','Balaenoptera',
+      'Hippocampus','Trichechus','Lutra','Lontra','Enhydra',
+      'Phoca','Odobenus','Octopus','Loligo','Castor','Carcharodon',
+      'Mobula','Manta']))kind='aquatic';
+  else if(diet==='herbivore'||belongs(flora))kind='herbivore';
+  else if(diet==='omnivore'||belongs(mixed))kind='omnivore';
+  else if(diet==='predator'||belongs(cat))kind='predator';
+  else if(['Insecta','Arachnida'].includes(cls))kind='nocturnal';
+  else if(cls==='Mammalia')kind='woodland';
+  return {kind,variant:hash%5};
  }
  // All bites/cuts remove the backing color, border, stars AND previously
  // drawn gilding. An alpha value of zero means a REAL hole in the card.
@@ -451,71 +475,118 @@
   ];
 
 
-  // Water falling onto the card leaves transparent drops with golden
-  // concentric ripples. No bite or claw marks for frogs or water animals.
-  function waterDrop(side,atY,scale=1){
-   const left=side==='left',cx=left?8:1192,dir=left?1:-1;
-   function imprint(){
-    ctx.beginPath();
-    ctx.moveTo(-46,-88);
-    ctx.bezierCurveTo(0,-48,115,-16,138,45);
-    ctx.bezierCurveTo(158,101,112,138,61,137);
-    ctx.bezierCurveTo(24,136,-8,103,-46,77);
-    ctx.closePath();
+
+  // Approved frog theme: fine webbed FOOTPRINTS, not large black bites.
+  function webbedFoot(side,y,size=1,tilt=0){
+   const left=side==='left',x=left?62:1138;
+   function outline(){
+    ctx.beginPath();ctx.moveTo(-23,26);ctx.bezierCurveTo(-30,8,-34,-4,-23,-16);
+    ctx.quadraticCurveTo(-36,-55,-28,-57);
+    ctx.quadraticCurveTo(-19,-61,-11,-30);
+    ctx.quadraticCurveTo(-13,-71,-4,-71);
+    ctx.quadraticCurveTo(6,-72,8,-31);
+    ctx.quadraticCurveTo(24,-61,32,-52);
+    ctx.quadraticCurveTo(41,-43,21,-23);
+    ctx.quadraticCurveTo(49,-43,53,-31);
+    ctx.quadraticCurveTo(57,-20,34,-5);
+    ctx.bezierCurveTo(36,37,11,52,-11,45);
+    ctx.quadraticCurveTo(-20,41,-23,26);ctx.closePath();
    }
-   function placed(fn){
-    ctx.save();ctx.translate(cx,atY);ctx.scale(dir*scale,scale);
-    fn();ctx.restore();
-   }
-   placed(()=>{
-    ctx.save();ctx.strokeStyle='#ead2af';ctx.lineWidth=3.2;
-    ctx.shadowColor='#d5b68e';ctx.shadowBlur=13;
-    imprint();ctx.stroke();ctx.restore();
-    // Small concentric rings are ripples, never false biological marks.
-    ctx.save();ctx.strokeStyle='#d1b38c';ctx.lineWidth=1.85;
-    ctx.globalAlpha=.82;
-    for(const [dx,dy,rx,ry] of [[84,44,95,68],[84,44,132,94]]){
-     ctx.beginPath();ctx.ellipse(dx,dy,rx,ry,0,-.8,1.1);ctx.stroke();
-    }ctx.restore();
-   });
-   shapes.push(()=>placed(()=>{imprint();ctx.fill();}));
+   function place(fn){ctx.save();ctx.translate(x,y);ctx.rotate(tilt);
+    ctx.scale(left?size:-size,size);fn();ctx.restore();}
+   place(()=>{ctx.save();ctx.strokeStyle='#edc995';ctx.lineWidth=2.6;
+    ctx.shadowColor='#d9b785';ctx.shadowBlur=6;outline();ctx.stroke();ctx.restore();});
+   shapes.push(()=>place(()=>{outline();ctx.fill();}));
   }
-  function waterSplash(side,atY,scale=1){
-   const cx=side==='left'?8:1192,dir=side==='left'?1:-1;
-   function dropPath(i){
-    const dy=i*66;
-    ctx.beginPath();ctx.moveTo(-38,dy-29);
-    ctx.bezierCurveTo(28,dy-60,108,dy-31,135,dy+5);
-    ctx.bezierCurveTo(82,dy+47,27,dy+34,-38,dy+39);
-    ctx.closePath();
-   }
-   function placed(fn){
-    ctx.save();ctx.translate(cx,atY);ctx.scale(dir*scale,scale);
-    fn();ctx.restore();
-   }
-   placed(()=>{
-    ctx.save();ctx.strokeStyle='#e7c79c';ctx.lineWidth=3;
-    ctx.shadowColor='#dfb27f';ctx.shadowBlur=11;
-    for(let i=0;i<3;i++){dropPath(i);ctx.stroke();}
-    ctx.restore();
-   });
-   shapes.push(()=>placed(()=>{for(let i=0;i<3;i++){dropPath(i);ctx.fill();}}));
+  function waterDrop(side,y,size=1){
+   const x=side==='left'?82:1118;
+   function shape(){ctx.beginPath();ctx.moveTo(0,-22);
+    ctx.bezierCurveTo(13,-4,21,4,17,17);
+    ctx.bezierCurveTo(10,29,-11,29,-18,17);
+    ctx.bezierCurveTo(-22,4,-12,-7,0,-22);ctx.closePath();}
+   function place(fn){ctx.save();ctx.translate(x,y);ctx.scale(size,size);fn();ctx.restore();}
+   place(()=>{ctx.save();ctx.strokeStyle='#eccfa5';ctx.lineWidth=2.5;shape();ctx.stroke();ctx.restore();});
+   shapes.push(()=>place(()=>{shape();ctx.fill();}));
   }
-  // Five distinct water-damaged gold edges. Frog cards look delicate,
-  // while verified aquatic/semiaquatic species receive related motifs.
+  function waterSplash(side,y,size=1){
+   waterDrop(side,y,size);waterDrop(side,y+62,size*.63);
+   waterDrop(side,y+122,size*.46);ripple(side,y+66);
+  }
   const gentle=[
-   ()=>{waterDrop('left',540,.93);waterSplash('right',1340,.78);ripple('left',1170);},
-   ()=>{waterDrop('right',620,.94);waterDrop('left',1320,.68);ripple('right',1150);},
-   ()=>{waterSplash('left',400,.93);waterDrop('right',1450,.85);ripple('left',1000);},
-   ()=>{waterDrop('left',470,.83);waterSplash('right',990,.92);ripple('right',1570);},
-   ()=>{waterDrop('right',940,.91);waterDrop('left',1520,.7);waterSplash('left',340,.7);}
+   ()=>{webbedFoot('left',530,.82,-.08);webbedFoot('left',700,.56,.16);webbedFoot('right',1260,.74,.08);waterDrop('right',1420,.57);ripple('right',1220);},
+   ()=>{webbedFoot('right',490,.82,.07);webbedFoot('left',1020,.64,-.12);webbedFoot('right',1510,.57,-.06);waterDrop('left',1260,.59);ripple('left',1100);},
+   ()=>{webbedFoot('left',450,.77,.08);webbedFoot('right',1020,.8,-.05);webbedFoot('left',1580,.55,-.13);waterDrop('right',1350,.61);ripple('right',1390);},
+   ()=>{webbedFoot('right',440,.74,-.1);webbedFoot('left',1150,.73,.1);webbedFoot('right',1530,.54,.06);waterDrop('left',900,.63);ripple('left',850);},
+   ()=>{webbedFoot('left',405,.79,.06);webbedFoot('right',1170,.71,.12);webbedFoot('left',1450,.58,-.16);waterDrop('right',630,.58);ripple('right',660);}
   ];
   const aquatic=[
-   ()=>{waterDrop('right',490,1.03);waterSplash('left',1390,.9);ripple('right',1260);},
-   ()=>{waterSplash('right',320,1.06);waterDrop('left',1100,.85);ripple('left',560);},
-   ()=>{waterDrop('left',670,1.08);waterSplash('right',1460,.9);ripple('right',680);},
-   ()=>{waterSplash('left',550,1.07);waterDrop('right',1060,1.02);ripple('left',1280);},
-   ()=>{waterDrop('right',650,.92);waterDrop('left',1460,.86);waterSplash('right',1330,.79);}
+   ()=>{waterSplash('left',500,.76);waterDrop('right',1420,.83);ripple('right',1120);},
+   ()=>{waterDrop('right',480,.84);waterSplash('left',1300,.65);ripple('left',840);},
+   ()=>{waterSplash('right',490,.7);waterDrop('left',1470,.78);ripple('right',1060);},
+   ()=>{waterDrop('left',560,.85);waterSplash('right',1110,.67);ripple('left',1310);},
+   ()=>{waterSplash('left',570,.71);waterDrop('right',1570,.67);ripple('right',700);}
+  ];
+  // Feather, scales and nocturnal ornaments never mimic violent bites.
+  function feather(side,y,size){
+   const left=side==='left';ctx.save();ctx.translate(left?88:1112,y);
+   ctx.scale(left?size:-size,size);
+   ctx.strokeStyle='#d9ba8a';ctx.lineWidth=2;
+   ctx.beginPath();ctx.moveTo(0,-107);ctx.bezierCurveTo(81,-57,62,46,0,113);
+   ctx.bezierCurveTo(-63,23,-51,-70,0,-107);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(0,115);ctx.quadraticCurveTo(17,0,0,-106);ctx.stroke();
+   for(let i=0;i<5;i++){
+    const t=56-i*30;ctx.beginPath();ctx.moveTo(9,t);
+    ctx.lineTo(34,t-23);ctx.moveTo(-8,t);ctx.lineTo(-29,t-23);ctx.stroke();
+   }ctx.restore();
+  }
+  function scales(side,y,size){
+   ctx.save();ctx.translate(side==='left'?93:1107,y);
+   ctx.scale(side==='left'?size:-size,size);
+   ctx.strokeStyle='#dbbb85';ctx.lineWidth=2;ctx.globalAlpha=.84;
+   for(let i=0;i<7;i++)for(let j=0;j<2;j++){
+    ctx.beginPath();ctx.arc(j*38+(i%2)*16,i*44,24,.15,Math.PI-.15);ctx.stroke();}
+   ctx.beginPath();ctx.moveTo(-30,-34);ctx.bezierCurveTo(85,95,-42,175,70,284);ctx.stroke();
+   ctx.restore();
+  }
+  function moon(side,y){
+   ctx.save();ctx.strokeStyle='#cbb18c';ctx.lineWidth=2;ctx.globalAlpha=.76;
+   const x=side==='left'?110:1090;
+   for(let i=0;i<3;i++){ctx.beginPath();
+    ctx.arc(x,y+i*68,28+i*6,-Math.PI*.8,Math.PI*.8);ctx.stroke();}
+   ctx.restore();
+  }
+  const avian=[
+   ()=>{feather('left',500,.68);feather('right',1270,.7);},
+   ()=>{feather('right',510,.76);feather('left',1390,.65);},
+   ()=>{feather('left',910,.79);feather('right',1200,.61);},
+   ()=>{feather('right',740,.73);feather('left',1190,.67);},
+   ()=>{feather('left',600,.63);feather('right',1450,.8);}
+  ];
+  const reptile=[
+   ()=>{scales('left',370,.74);scales('right',1380,.55);},
+   ()=>{scales('right',430,.75);scales('left',1310,.7);},
+   ()=>{scales('left',690,.83);scales('right',1150,.67);},
+   ()=>{scales('right',640,.68);scales('left',1440,.64);},
+   ()=>{scales('left',490,.66);scales('right',1230,.84);}
+  ];
+  const woodland=[
+   ()=>{botanical('left',340,.69,false);botanical('right',1370,.5,false);},
+   ()=>{botanical('right',440,.75,false);cornerStem(true,false);},
+   ()=>{cornerStem(false,true);botanical('left',1220,.6,false);},
+   ()=>{botanical('left',960,.71,false);cornerStem(false,false);},
+   ()=>{cornerStem(true,true);botanical('right',1100,.64,false);}
+  ];
+  const nocturnal=[
+   ()=>{moon('left',490);moon('right',1240);},
+   ()=>{moon('right',520);moon('left',1500);},
+   ()=>{moon('left',870);moon('right',1050);},
+   ()=>{moon('right',710);moon('left',1370);},
+   ()=>{moon('left',610);moon('right',1520);}
+  ];
+  const celestial=[
+   ()=>{moon('left',510);},()=>{moon('right',750);},
+   ()=>{moon('left',1140);},()=>{moon('right',1350);},
+   ()=>{moon('left',900);}
   ];
   // Herbivores: different arrangements of golden vines, small leaves
   // and flowers, all respecting the existing celestial card.
@@ -536,6 +607,11 @@
   if(k==='predator')hunters[v]();
   else if(k==='soft-predator')gentle[v]();
   else if(k==='aquatic')aquatic[v]();
+  else if(k==='avian')avian[v]();
+  else if(k==='reptile')reptile[v]();
+  else if(k==='woodland')woodland[v]();
+  else if(k==='nocturnal')nocturnal[v]();
+  else if(k==='celestial')celestial[v]();
   else if(k==='herbivore')florals[v]();
   else if(k==='omnivore')hybrids[v]();
   // LAST PASS. No gold strokes are allowed to repaint the deleted space:
