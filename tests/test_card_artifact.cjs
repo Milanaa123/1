@@ -99,21 +99,22 @@ test('Visible diet borders include five unique variants each and true alpha hole
  const a=js.indexOf(' function cardAdornment('),b=js.indexOf(' function paintCardBackdropOnScreen(',a);
  assert.ok(a>=0&&b>a);
  const frame=js.slice(a,b);
- for(const label of ['predator','soft-predator','herbivore','omnivore','aquatic'])
+ for(const label of ['predator','soft-predator','herbivore','omnivore','aquatic','avian','reptile','woodland','nocturnal','celestial'])
   assert.ok(frame.includes(label),'missing '+label);
- for(const names of ['hunters','gentle','florals','hybrids','aquatic'])
+ for(const names of ['hunters','gentle','florals','hybrids','aquatic','avian','reptile','woodland','nocturnal','celestial'])
   assert.ok(frame.includes('const '+names+'=['),names);
  for(const feature of ['destination-out','strokeStyle','cornerStem','botanical','bite(','claw('])
   assert.ok(frame.includes(feature),feature);
  assert.ok(frame.includes("const x=side==='left'?-11+depth")||frame.includes("const x=side==='left'?-11+depth")||frame.includes("const x=side==='left'?-11+depth"),'bite geometry');
  assert.ok(frame.includes('if(shapes.length)'),'final cut pass');
- assert.ok(frame.includes('function waterDrop(side,atY,scale=1)'));
- assert.ok(frame.includes('function waterSplash(side,atY,scale=1)'));
+ assert.ok(frame.includes('function waterDrop(side,y,size=1)'));
+ assert.ok(frame.includes('function waterSplash(side,y,size=1)'));
  assert.ok(frame.includes('const aquatic=['));
+ assert.ok(frame.includes('function webbedFoot('));
  assert.ok(poster.includes('paintDietAdornment(ctx,row,styl,greek)'));
 });
 
-test('All twenty frame presets are reachable; cuts erase canvas pixels last',()=>{
+test('All fifty frame presets are reachable; cuts erase canvas pixels last',()=>{
  const begin=js.indexOf(' function cardAdornment(');
  const end=js.indexOf(' function paintCardBackdropOnScreen(',begin);
  assert.ok(begin>=0&&end>begin);
@@ -139,12 +140,13 @@ test('All twenty frame presets are reachable; cuts erase canvas pixels last',()=
  const categories=[
   ['predator','Mammalia',true],['soft-predator','Amphibia',true],
   ['herbivore','Mammalia',false],['omnivore','Mammalia',true],
-  ['aquatic','Mammalia',true]
+  ['aquatic','Mammalia',true],['avian','Aves',false],['reptile','Reptilia',false],['woodland','Mammalia',false],['nocturnal','Mammalia',false],['celestial','unknown',false]
  ];
  for(const [kind,className,needHoles] of categories){
-  const diets={predator:'predator','soft-predator':'predator',herbivore:'herbivore',omnivore:'omnivore'};
+  const diets={predator:'predator','soft-predator':'predator',herbivore:'herbivore',omnivore:'omnivore',aquatic:'predator',avian:'predator',reptile:'predator',woodland:'unknown',nocturnal:'unknown',celestial:'unknown'};
   const styl={diet:diets[kind],habitat:kind==='aquatic'?'aquatic':'terrestrial'},species=[...sample];
-  species[3]=className;species[4]=kind==='soft-predator'?'Anura':'Carnivora';
+  species[3]=className;species[4]=kind==='soft-predator'?'Anura':kind==='nocturnal'?'Chiroptera':'Carnivora';
+  if(kind==='woodland')species[1]='Meles meles';if(kind==='celestial')species[1]='Unknownus mysticus';
   const variants=new Map();
   for(let i=0;i<100&&variants.size<5;i++){
    const owner='Ελληνικη'+i;
@@ -159,7 +161,7 @@ test('All twenty frame presets are reachable; cuts erase canvas pixels last',()=
    assert.equal(config.variant,variant);
    const count=cuts.circle+cuts.gash;
    if(needHoles)assert.ok(count>0,kind+' variant '+variant+' has no true cuts');
-   else assert.equal(count,0,'Herbivores must not have bites or claw cuts');
+   else assert.equal(count,0,kind+' must not have destructive cuts');
    if(kind==='herbivore')assert.ok(art.flowers>0,'Herbivores need floral detail');
    assert.equal(ctx.globalCompositeOperation,'source-over','erase mode leaked');
    assert.equal(stack.length,0,'canvas save/restore unbalanced');

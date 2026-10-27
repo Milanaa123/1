@@ -35,6 +35,9 @@ test('Premium export never reaches obsolete PhyloPic silhouettes',()=>{
  assert.ok(js.includes('paintDietAdornment(ctx,row,styl,greek)'));
  assert.ok(js.includes("ctx.globalCompositeOperation='destination-out'"));
  assert.ok(js.includes('function waterDrop('));
+ assert.ok(js.includes('function webbedFoot('));
+ assert.ok(js.includes('const avian=['));
+ assert.ok(js.includes('const reptile=['));
  assert.ok(js.includes('function waterSplash('));
 });
 test('Card hierarchy and no broken technical empty fields',()=>{
