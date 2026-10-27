@@ -964,3 +964,21 @@ test('Every vibe family has integral edge geometry and five variants',()=>{
  assert.ok(p.includes('ctx.globalCompositeOperation=\'destination-out\''));
  assert.ok(!p.includes('const x=side===\'left\'?-11+depth'));
 });
+
+test('All spiders use genuine-style silk rather than generic nocturnal trims',()=>{
+ const row=(genus,order,cls)=>[1878,genus+' exemplaris','species',cls,order,'','Arthropoda'];
+ for(const genus of ['Araneus','Argiope','Latrodectus','Steatoda','Tegenaria','Salticus']){
+  const style=cardAdornment(row(genus,'Araneae','Arachnida'),
+    {diet:'predator',habitat:'terrestrial'},'Φρέιζερ');
+  assert.equal(style.kind,'spider',genus);
+ }
+ const scorpion=cardAdornment(row('Androctonus','Scorpiones','Arachnida'),
+  {diet:'predator',habitat:'terrestrial'},'Φρέιζερ');
+ assert.notEqual(scorpion.kind,'spider');
+ const painter=source.slice(source.indexOf(' function paintDietAdornment('),
+ source.indexOf(' function paintCardBackdropOnScreen('));
+ for(const feature of ['function spiderWeb(','const silk=[','const directions=',
+  'structural supports','irregular capture spiral','spiderWeb(true,true'])
+  assert.ok(painter.includes(feature),feature);
+ assert.ok(!painter.includes('ctx.fillText("🕸"'));
+});

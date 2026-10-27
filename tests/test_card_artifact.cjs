@@ -99,13 +99,13 @@ test('Visible diet borders include five unique variants each and true alpha hole
  const a=js.indexOf(' function cardAdornment('),b=js.indexOf(' function paintCardBackdropOnScreen(',a);
  assert.ok(a>=0&&b>a);
  const frame=js.slice(a,b);
- for(const label of ['predator','soft-predator','herbivore','omnivore','aquatic','avian','reptile','woodland','nocturnal','celestial'])
+ for(const label of ['predator','soft-predator','herbivore','omnivore','aquatic','avian','reptile','woodland','nocturnal','celestial','spider'])
   assert.ok(frame.includes(label),'missing '+label);
- for(const names of ['hunters','gentle','florals','hybrids','aquatic','avian','reptile','woodland','nocturnal','celestial'])
+ for(const names of ['hunters','gentle','florals','hybrids','aquatic','avian','reptile','woodland','nocturnal','celestial','silk'])
   assert.ok(frame.includes('const '+names+'=['),names);
  for(const feature of ['destination-out','strokeStyle','cornerStem','botanical','bite(','claw('])
   assert.ok(frame.includes(feature),feature);
- assert.ok(frame.includes('const radius=Math.min(66'),'small transparent bite geometry');
+ assert.ok(frame.includes('const radius=Math.min(88'),'transparent scalloped bite geometry');
  assert.ok(frame.includes('function familyTrim()'),'each family must change the true border');
  assert.ok(frame.includes('if(shapes.length)'),'final cut pass');
  assert.ok(frame.includes('function waterDrop(side,y,size=1)'));
@@ -185,7 +185,7 @@ test('Stage-one reference template uses clean dark stardust and symmetric foil f
  assert.ok(back.includes("base.addColorStop(0,'#090a14')"));
  assert.ok(back.includes("base.addColorStop(.71,'#1a1425')"));
  assert.ok(styles.includes('transform:none!important;object-fit:contain!important;'));
- assert.match(html,/relic_features.js\?v=stage3-integrated-families-20261027/);
+ assert.match(html,/relic_features.js\?v=stage3-reference-spider-silk-20261027/);
 });
 
 // Reference approval: full-circle Greek name; nebula and perimeter are drawn
@@ -219,7 +219,7 @@ test('Cosmic reference background and golden perimeter are actual Canvas decorat
  assert.ok(backdrop.includes('const ornate')||backdrop.includes('Perimeter engraving directly on the card'));
  assert.ok(backdrop.includes('for(let j=0;j<2100;j++)'));
  assert.ok(backdrop.includes("ctx.strokeStyle='#efc38b'"));
- assert.ok(html.includes('stage3-integrated-families-20261027'));
+ assert.ok(html.includes('stage3-reference-spider-silk-20261027'));
 });
 
 // Stage 2: only first given name on the card, full-name calculation unchanged.

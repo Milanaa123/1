@@ -517,7 +517,10 @@
     'Neogale','Neovison','Homarus','Cancer','Scyphozoa'];
   const seaTurtles=['Chelonia','Caretta','Dermochelys','Eretmochelys','Lepidochelys'];
   let kind='celestial';
-  if(order==='Anura')kind='soft-predator'; // webbed frog footprints
+  if(order==='Araneae'||belongs(['Araneus','Argiope','Nephila','Trichonephila',
+    'Latrodectus','Loxosceles','Steatoda','Tegenaria','Eratigena','Pholcus',
+    'Theridion','Tetragnatha','Salticus','Pardosa']))kind='spider';
+  else if(order==='Anura')kind='soft-predator'; // webbed frog footprints
   else if(order==='Chiroptera'||belongs(['Pteropus','Myotis','Pipistrellus',
       'Rhinolophus','Desmodus','Eptesicus']))kind='nocturnal';
   else if(cls==='Aves')kind=order==='Sphenisciformes'||belongs(['Aptenodytes',
@@ -547,81 +550,107 @@
   const xleft=54,xright=1146;
   const gold='#efc384',shine='#ffe1ac',leaf='#7f8561';
 
+
   function bite(side,pos,r,depth){
-   // Small three-scallop void where the card border actually meets the tear.
-   // Never make black-looking 150px discs across the illustration.
-   const vertical=side==='left'||side==='right';
-   const x=side==='left'?26:side==='right'?1174:pos;
-   const y=side==='top'?26:side==='bottom'?1974:pos;
-   const radius=Math.min(66,Math.max(39,r*.39));
-   const direction=vertical?(side==='left'?1:-1):(side==='top'?1:-1);
-   for(let i=-1;i<=1;i++){
-    const dx=vertical?0:i*radius*.85,dy=vertical?i*radius*.85:0;
-    const x0=x+dx,y0=y+dy,small=radius*(i===0?1:.72);
-    ctx.save();ctx.strokeStyle=gold;ctx.lineWidth=2.8;
-    ctx.shadowColor='#d9a36e';ctx.shadowBlur=5;
-    ctx.beginPath();ctx.arc(x0,y0,small+2,0,PI*2);ctx.stroke();
-    ctx.restore();
-    shapes.push(()=>{ctx.beginPath();ctx.arc(x0,y0,small,0,PI*2);ctx.fill();});
+   const vert=side==='left'||side==='right';
+   const x=side==='left'?4:side==='right'?1196:pos;
+   const y=side==='top'?4:side==='bottom'?1996:pos;
+   const radius=Math.min(88,Math.max(54,r*.54));
+   for(let n=-1;n<=1;n++){
+    const dx=vert?0:n*radius*.84,dy=vert?n*radius*.84:0;
+    const cx=x+dx,cy=y+dy,rr=radius*(n===0?1:.74);
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,rr+3,0,2*PI);
+    ctx.strokeStyle='#ffcd91';ctx.lineWidth=4.3;
+    ctx.shadowColor='#ef9c68';ctx.shadowBlur=14;ctx.stroke();ctx.restore();
+    shapes.push(()=>{ctx.beginPath();ctx.arc(cx,cy,rr,0,2*PI);ctx.fill();});
    }
   }
-
   function claw(side,atY,scale=1,slant=0){
-   const left=side==='left',anchor=left?10:1190,sign=left?1:-1;
-   // Three fine organic diagonal lacerations, each crossing the gold rim.
-   // Their negative space is small enough not to swallow the card content.
-   function blade(i){
-    const dy=i*36,reach=155-i*9;
-    ctx.beginPath();ctx.moveTo(-26,dy-42);
-    ctx.bezierCurveTo(36,dy-18,87,dy+23,reach,dy+88);
-    ctx.bezierCurveTo(96,dy+44,47,dy+7,-26,dy-26);
-    ctx.closePath();
-   }
-   const place=fn=>{ctx.save();ctx.translate(anchor,atY);
-    ctx.rotate(slant);ctx.scale(sign*scale,scale);fn();ctx.restore();};
-   place(()=>{
-    ctx.save();ctx.strokeStyle=gold;ctx.lineWidth=3;
-    ctx.shadowColor='#eeb77d';ctx.shadowBlur=7;
-    for(let i=0;i<3;i++){blade(i);ctx.stroke();}
+   const left=side==='left',sign=left?1:-1;
+   const edge=left?13:1187;
+   // Three asymmetric long, tapered actual cuts with foil-lit ragged lips.
+   // They enter the artwork from OUTSIDE the frame, as in the reference.
+   const placed=(fn)=>{ctx.save();ctx.translate(edge,atY);
+      ctx.rotate(slant);ctx.scale(sign*scale,scale);fn();ctx.restore();};
+   const wound=i=>{
+    const y=i*73,w=265-i*22;
+    ctx.beginPath();ctx.moveTo(-55,y-69);
+    ctx.bezierCurveTo(53,y-43,135,y-10,w+8,y+114);
+    ctx.bezierCurveTo(w-24,y+93,w-70,y+60,w-95,y+32);
+    ctx.bezierCurveTo(105,y+15,23,y-6,-55,y-33);ctx.closePath();
+   };
+   placed(()=>{
+    ctx.save();ctx.lineJoin='round';
+    ctx.shadowColor='#ffbc7a';ctx.shadowBlur=19;
+    ctx.strokeStyle='#f6c78c';ctx.lineWidth=7.5;
+    for(let i=0;i<3;i++){wound(i);ctx.stroke();}
+    ctx.restore();
+    ctx.save();ctx.strokeStyle='rgba(255,223,167,.82)';
+    ctx.lineWidth=1.5;
+    for(let i=0;i<3;i++){
+      ctx.beginPath();ctx.moveTo(12,i*73-78);
+      ctx.quadraticCurveTo(132,i*73-34,220-i*20,i*73+43);
+      ctx.stroke();
+    }
     ctx.restore();
    });
-   shapes.push(()=>place(()=>{for(let i=0;i<3;i++){blade(i);ctx.fill();}}));
+   shapes.push(()=>placed(()=>{for(let i=0;i<3;i++){wound(i);ctx.fill();}}));
   }
+
   function bloom(x,y,r){
-   ctx.save();ctx.translate(x,y);
+   // Hand-drawn five-petal flowers: luminous gold edges, muted pink petals,
+   // separate centers and tiny asymmetry. No neon-cartoon floral stickers.
+   ctx.save();ctx.translate(x,y);ctx.rotate(.2);
    for(let j=0;j<5;j++){
-    const a=2*PI*j/5;
-    ctx.save();ctx.rotate(a);ctx.beginPath();
-    ctx.ellipse(0,-r*.94,r*.42,r*.8,0,0,2*PI);
-    ctx.fillStyle='#cdbba7';ctx.globalAlpha=.85;ctx.fill();
-    ctx.strokeStyle='#f8dcb0';ctx.lineWidth=1.25;ctx.stroke();
+    ctx.save();ctx.rotate(2*PI*j/5);
+    ctx.beginPath();ctx.moveTo(0,-r*.23);
+    ctx.bezierCurveTo(-r*.5,-r*.53,-r*.34,-r*1.28,-r*.04,-r*1.30);
+    ctx.bezierCurveTo(r*.44,-r*1.18,r*.48,-r*.60,0,-r*.23);
+    ctx.fillStyle=j%2?'rgba(197,134,151,.77)':'rgba(225,161,178,.78)';
+    ctx.fill();ctx.strokeStyle='#f3c798';ctx.lineWidth=1.5;ctx.stroke();
     ctx.restore();
    }
-   ctx.globalAlpha=1;ctx.fillStyle='#f5d298';
-   ctx.beginPath();ctx.arc(0,0,r*.32,0,2*PI);ctx.fill();ctx.restore();
+   ctx.beginPath();ctx.arc(0,0,r*.26,0,2*PI);
+   ctx.fillStyle='#ffdb97';ctx.shadowBlur=4;ctx.shadowColor='#f4c998';
+   ctx.fill();ctx.restore();
   }
   function botanical(side,atY,scale=1,flower=true){
-   const mirror=side==='left'?1:-1,atX=side==='left'?57:1143;
-   ctx.save();ctx.translate(atX,atY);ctx.scale(mirror*scale,scale);
-   ctx.strokeStyle='#d6b783';ctx.lineWidth=3.3;
-   ctx.shadowColor='#d5a670';ctx.shadowBlur=6;
-   ctx.beginPath();ctx.moveTo(0,-46);
-   ctx.bezierCurveTo(70,44,-49,153,27,258);
-   ctx.bezierCurveTo(117,384,-45,456,25,600);ctx.stroke();
-   for(let i=0;i<9;i++){
-    const at=i*62,direction=i%2?-1:1;
-    const px=18+8*Math.sin(i*.8);
-    ctx.save();ctx.translate(px,at);ctx.rotate(direction*.45);
-    ctx.beginPath();ctx.moveTo(0,0);
-    ctx.bezierCurveTo(12*direction,-31,72*direction,-52,76*direction,-87);
-    ctx.bezierCurveTo(26*direction,-83,6*direction,-45,0,0);
-    ctx.closePath();ctx.fillStyle=leaf;ctx.globalAlpha=.83;ctx.fill();
-    ctx.strokeStyle='#edc58d';ctx.lineWidth=2;ctx.stroke();
-    ctx.beginPath();ctx.moveTo(0,0);
-    ctx.quadraticCurveTo(34*direction,-47,76*direction,-87);
-    ctx.strokeStyle='#edcc95';ctx.lineWidth=1;ctx.stroke();ctx.restore();
+   const sign=side==='left'?1:-1,edge=side==='left'?55:1145;
+   ctx.save();ctx.translate(edge,atY);ctx.scale(sign*scale,scale);
+   ctx.lineJoin='round';ctx.lineCap='round';
+   const stems=[
+     [[-3,-65],[90,80],[-41,182],[28,375],[39,640]],
+     [[-8,90],[65,192],[-32,303],[58,477],[-2,625]]
+   ];
+   // Two stems intertwine with the real golden rim for most of its height.
+   ctx.strokeStyle='#d3ad7a';ctx.lineWidth=2.8;
+   for(const stem of stems){
+    ctx.beginPath();ctx.moveTo(stem[0][0],stem[0][1]);
+    ctx.bezierCurveTo(stem[1][0],stem[1][1],stem[2][0],stem[2][1],
+      stem[3][0],stem[3][1]);
+    ctx.quadraticCurveTo(stem[4][0],stem[4][1]-40,stem[4][0],stem[4][1]);
+    ctx.stroke();
    }
-   if(flower){bloom(43,150,22);bloom(28,445,16);}
+   // Twenty alternating metallic leaves, tapered with actual golden veins.
+   for(let j=0;j<20;j++){
+    const y=j*31-20,phase=j*.92;
+    const x=12+15*Math.sin(phase),direction=j%2?1:-1;
+    ctx.save();ctx.translate(x,y);ctx.scale(direction,1);
+    ctx.rotate(.05+Math.sin(phase)*.16);
+    ctx.beginPath();ctx.moveTo(0,0);
+    ctx.bezierCurveTo(13,-21,42,-43,71,-53);
+    ctx.bezierCurveTo(55,-12,24,9,0,0);
+    ctx.closePath();ctx.fillStyle=j%4===0?'rgba(102,129,86,.83)':'rgba(106,118,76,.82)';
+    ctx.fill();ctx.strokeStyle='#e4b77b';ctx.lineWidth=1.75;ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(38,-24,71,-53);
+    ctx.strokeStyle='rgba(246,203,139,.67)';ctx.lineWidth=.8;ctx.stroke();
+    ctx.restore();
+   }
+   if(flower){
+    for(const [x,y,r] of [[36,89,14],[11,226,19],[40,397,14],[14,554,15]]){
+     bloom(x,y,r);
+    }
+   }
    ctx.restore();
   }
   function cornerStem(left,upper){
@@ -662,7 +691,7 @@
    const families={
     predator:'spikes','soft-predator':'ripples',aquatic:'waves',
     herbivore:'vines',omnivore:'branches',avian:'feathers',
-    reptile:'scales',woodland:'sprigs',nocturnal:'moons',celestial:'stars'
+    reptile:'scales',woodland:'sprigs',nocturnal:'moons',celestial:'stars',spider:'silk'
    };
    const motif=families[k]||'stars';
    ctx.save();ctx.strokeStyle=ink;ctx.fillStyle=ink;
@@ -676,7 +705,12 @@
      ctx.beginPath();ctx.moveTo(border,y-35);
      ctx.quadraticCurveTo(border+sgn*8,y,border,y+35);
      ctx.stroke();
-     if(motif==='vines'||motif==='branches'||motif==='sprigs'){
+     if(motif==='silk'){
+      // Filaments of the web join the original gold border.
+      ctx.beginPath();ctx.moveTo(border,y-40);
+      ctx.lineTo(border+sgn*54,y+5);
+      ctx.lineTo(border,y+39);ctx.stroke();
+     }else if(motif==='vines'||motif==='branches'||motif==='sprigs'){
       ctx.beginPath();ctx.moveTo(border,y);
       ctx.quadraticCurveTo(border+sgn*17,y-19,border+sgn*36,y-35);
       ctx.quadraticCurveTo(border+sgn*30,y-5,border,y);
@@ -722,7 +756,13 @@
     ctx.lineWidth=motif==='spikes'?2.8:2.25;
     ctx.beginPath();ctx.moveTo(0,158+v*4);
     ctx.bezierCurveTo(14,62,83,12,163+v*5,0);ctx.stroke();
-    if(motif==='spikes'){
+    if(motif==='silk'){
+     for(let n=0;n<7;n++){
+      const a=n*PI/12;
+      ctx.beginPath();ctx.moveTo(5,5);
+      ctx.lineTo(154*Math.cos(a),154*Math.sin(a));ctx.stroke();
+     }
+    }else if(motif==='spikes'){
      for(let n=0;n<3;n++){
       const t=39+n*37;
       ctx.beginPath();ctx.moveTo(0,t+25);
@@ -774,6 +814,7 @@
    }
    ctx.restore();
   }
+  // Five spider layouts have genuinely different asymmetric silk geometry.
   // Predators: five clearly distinct sets of actual edge damage.
   // Mode 2 is ALL bites. Mode 3 is ALL claws.
   const hunters=[
@@ -920,19 +961,96 @@
   ];
   // Herbivores: different arrangements of golden vines, small leaves
   // and flowers, all respecting the existing celestial card.
+
   const florals=[
-   ()=>{botanical('left',130,.9,true);botanical('right',1160,.78,true);},
-   ()=>{cornerStem(true,false);cornerStem(false,false);botanical('right',1230,.58,true);},
-   ()=>{cornerStem(true,true);cornerStem(false,true);botanical('left',1150,.62,false);},
-   ()=>{botanical('left',300,1.1,true);botanical('right',790,.88,false);},
-   ()=>{cornerStem(true,false);botanical('right',220,.76,true);cornerStem(false,true);}
+   ()=>{botanical('left',125,.99,true);botanical('right',1050,.91,true);cornerStem(true,true);},
+   ()=>{botanical('left',190,.95,true);botanical('right',1180,.93,true);cornerStem(false,false);},
+   ()=>{cornerStem(true,true);botanical('left',780,.91,true);botanical('right',175,.98,true);},
+   ()=>{botanical('left',300,1.08,true);botanical('right',850,1.04,true);cornerStem(false,true);},
+   ()=>{cornerStem(true,false);botanical('left',955,.97,true);botanical('right',210,1.05,true);}
   ];
+
   const hybrids=[
-   ()=>{botanical('left',195,.83,true);bite('right',1180,114,4);},
-   ()=>{claw('left',490,.79,0);botanical('right',1150,.76,true);},
-   ()=>{cornerStem(true,true);bite('right',460,112,5);},
-   ()=>{botanical('right',270,.76,false);claw('left',1230,.7,.03);},
-   ()=>{bite('top',930,118,4);botanical('left',1120,.78,true);claw('right',510,.65,.04);}
+   ()=>{botanical('left',230,.91,true);claw('right',1130,.8,.04);bite('right',530,106,3);},
+   ()=>{claw('left',465,.75,0);botanical('right',1010,.95,true);cornerStem(false,false);},
+   ()=>{botanical('right',260,.92,true);bite('left',1270,116,4);cornerStem(true,true);},
+   ()=>{botanical('left',850,.88,true);claw('right',465,.67,-.07);cornerStem(false,true);},
+   ()=>{bite('top',910,117,4);botanical('left',235,.94,true);claw('right',1260,.65,.02);}
+  ];
+
+  // Realistic orb-weaver-style silk architecture. Off-center hubs, independent
+  // structural supports, radial threads, irregular capture spiral, and a few
+  // incomplete segments; never a cartoon concentric cobweb icon.
+  function spiderWeb(left,top,variant,scale=1){
+   const baseX=left?56:1144,baseY=top?70:1930;
+   ctx.save();ctx.translate(baseX,baseY);
+   ctx.scale(left?scale:-scale,top?scale:-scale);
+   const hubX=162+variant*12,hubY=154+variant*7;
+   const rays=20+variant*2,maxRx=312+variant*10,maxRy=310+variant*14;
+   let seed=(variant*164123+1181+(left?1:2)+(top?0:41))>>>0;
+   const rnd=()=>{seed=(Math.imul(1664525,seed)+1013904223)>>>0;return seed/4294967296;};
+   const directions=Array.from({length:rays},(_,i)=>2*PI*i/rays+
+      (rnd()-.5)*.065);
+   const bounds=directions.map((a,i)=>{
+     const outer=.91+(rnd()-.5)*.16;
+     return [hubX+Math.cos(a)*maxRx*outer,
+       hubY+Math.sin(a)*maxRy*outer];
+   });
+   ctx.lineCap='round';
+   // Anchor the scaffolding to the real frame and corner edges.
+   ctx.strokeStyle='rgba(236,208,169,.63)';ctx.lineWidth=1.4;
+   const anchors=[[0,35],[80,0],[290,0],[0,330]];
+   for(const [ax,ay] of anchors){
+    ctx.beginPath();ctx.moveTo(ax,ay);
+    ctx.lineTo(hubX+(ax>0?25:-16),hubY+(ay>0?13:-8));ctx.stroke();
+   }
+   // Radial support threads, slightly uneven in angle and length.
+   ctx.strokeStyle='rgba(224,204,180,.55)';ctx.lineWidth=1.05;
+   for(let i=0;i<rays;i++){
+    ctx.beginPath();ctx.moveTo(hubX,hubY);
+    ctx.lineTo(...bounds[i]);ctx.stroke();
+   }
+   // A single continuous, irregular capture spiral. Spoke intersections
+   // are displaced a little instead of forming perfect concentric rings.
+   const turns=18+variant*2,steps=turns*rays;
+   ctx.strokeStyle='rgba(232,215,188,.68)';ctx.lineWidth=.94;
+   ctx.beginPath();
+   let pen=false;
+   for(let j=0;j<=steps;j++){
+    const fraction=j/steps;
+    const theta=2*PI*j/rays;
+    const a=directions[j%rays]+2*PI*Math.floor(j/rays);
+    const rough=.96+.025*Math.sin(j*1.71)+.025*Math.sin(j*.43);
+    const r=.12+.83*fraction;
+    const xx=hubX+Math.cos(a)*maxRx*r*rough,
+          yy=hubY+Math.sin(a)*maxRy*r*rough;
+    // A handful of small missing strands make a real, weathered web.
+    const broken=(j>rays*4)&&((j+variant*7)%89===0||(j+11)%131===0);
+    if(!pen||broken){ctx.moveTo(xx,yy);pen=true;}else ctx.lineTo(xx,yy);
+   }
+   ctx.stroke();
+   // Locally dense hub spiral and tiny catches of light like real silk.
+   ctx.strokeStyle='rgba(255,230,188,.5)';ctx.lineWidth=.8;
+   ctx.beginPath();
+   for(let i=0;i<100;i++){
+    const a=i*PI/10,r=2+i*.12;
+    const xx=hubX+Math.cos(a)*r,yy=hubY+Math.sin(a)*r*.88;
+    if(!i)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);
+   }ctx.stroke();
+   for(let i=0;i<12;i++){
+    const a=directions[(i*7)%rays],r=.38+.5*rnd();
+    const x=hubX+Math.cos(a)*maxRx*r,y=hubY+Math.sin(a)*maxRy*r;
+    ctx.beginPath();ctx.arc(x,y,.95+rnd()*1.1,0,2*PI);
+    ctx.fillStyle='rgba(255,228,186,.58)';ctx.fill();
+   }
+   ctx.restore();
+  }
+  const silk=[
+    ()=>{spiderWeb(true,true,0,1);spiderWeb(false,false,2,.79);},
+    ()=>{spiderWeb(false,true,1,1.08);spiderWeb(true,false,3,.76);},
+    ()=>{spiderWeb(true,false,2,1.08);spiderWeb(false,true,4,.82);},
+    ()=>{spiderWeb(false,false,3,1.08);spiderWeb(true,true,1,.79);},
+    ()=>{spiderWeb(true,true,4,.86);spiderWeb(false,true,0,.91);spiderWeb(false,false,2,.7);}
   ];
   // Soft contextual accents without inventing biological classifications.
   if(k==='avian'&&row?.[4]==='Strigiformes')
@@ -940,7 +1058,8 @@
   if(k==='reptile'&&row?.[4]==='Crocodylia')
    ripple(v%2?'left':'right',1030+v*65);
   familyTrim();
-  if(k==='predator')hunters[v]();
+  if(k==='spider')silk[v]();
+  else if(k==='predator')hunters[v]();
   else if(k==='soft-predator')gentle[v]();
   else if(k==='aquatic')aquatic[v]();
   else if(k==='avian')avian[v]();
