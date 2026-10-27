@@ -1,0 +1,47 @@
+name: Build per-species sharp art to reduce mobile downloads
+on:
+  push:
+    branches: [animagia-individual-art-20261028]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install lossless-alpha aware WebP converter
+        run: python -m pip install --disable-pip-version-check Pillow==11.3.0
+      - name: Create 100 sharp individual sprites and approved first five
+        run: python tools/build_individual_art.py
+      - name: Verify alpha, dimensions, source corrections and byte manifest
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          import json,hashlib
+          d=Path('art/individual-4x')
+          m=json.loads((d/'manifest.json').read_text())
+          assert m['count']==100 and m['approvedCount']==5 and len(m['items'])==105
+          for item in m['items']:
+           p=d/item['file'];raw=p.read_bytes();im=Image.open(p).convert('RGBA')
+           assert raw[:4]==b'RIFF' and raw[8:12]==b'WEBP'
+           assert hashlib.sha256(raw).hexdigest()==item['sha256']
+           assert len(raw)==item['size'] and len(raw)<170000
+           assert im.size==(640,440) if 'index' in item else im.height==392
+           assert im.getpixel((0,0))[3]==0
+          print('INDIVIDUAL_105_ALPHA_MANIFEST_VALIDATED')
+          PY
+      - name: Commit small individual images for loading on demand
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add art/individual-4x
+          if ! git diff --cached --quiet; then
+            git commit -m "Add 105 small transparent golden animal images for on-demand 4x display"
+            git push origin HEAD:animagia-individual-art-20261028
+          fi
