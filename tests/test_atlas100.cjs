@@ -120,7 +120,7 @@ test('Stage 5: twenty consecutive images 6–25 are routed to their own artwork'
  assert.equal(api.resolve(row('Canis lupus')).approvedIndex,0);
  const source=fs.readFileSync('animal_atlas_100.js','utf8');
  for(const required of ['function cleanBatch02Cell(', 'batch02Cutouts',
-   'cleared>0','Math.hypot(gapX,gapY)<=14',
+   'cleared>0','if(closest<=8)keep[id]=1',
    'profile.reviewedBatch===2?cleanBatch02Cell(im,i):null'])
   assert.ok(source.includes(required),required);
 });

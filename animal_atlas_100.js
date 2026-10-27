@@ -75,17 +75,36 @@
    // Fail open when the photograph is unexpected; never delete the animal.
    batch02Cutouts.set(index,canvas);return canvas;
   }
-  const main=components[biggest-1];
   const keep=new Uint8Array(components.length+1);keep[biggest]=1;
-  // A disconnected forepaw, ear-tip, whisker or feather is more important
-  // than aggressive removal. Keep every substantial piece and all fragments
-  // near the body. Remove only small, distant decorative sparkles.
+  // Distance to the ACTUAL body, rather than to a huge bounding rectangle.
+  // Floating stars often sit inside the body's bounding rectangle but are
+  // still separated from every real gold stroke by 15–30 pixels.
+  const distance=new Uint8Array(N);distance.fill(255);
+  const queue=new Int32Array(N);let qHead=0,qTail=0;
+  for(let i=0;i<N;i++)if(labels[i]===biggest){
+   distance[i]=0;queue[qTail++]=i;
+  }
+  while(qHead<qTail){
+   const i=queue[qHead++],x=i%WIDTH,step=distance[i]+1;
+   if(step>10)continue;
+   const near=[x?i-1:-1,x<WIDTH-1?i+1:-1,
+     i>=WIDTH?i-WIDTH:-1,i<N-WIDTH?i+WIDTH:-1];
+   for(const next of near)if(next>=0&&distance[next]>step){
+    distance[next]=step;queue[qTail++]=next;
+   }
+  }
+  // Never erase a substantial paw, wingtip or whisker bundle; keep smaller
+  // features that are connected by ≤8px to the body. Distant single stars
+  // and ornamental particles are the only eligible deletions.
   for(let id=1;id<=components.length;id++){
    if(id===biggest)continue;
-   const c=components[id-1];
-   const gapX=Math.max(0,main.minX-c.maxX,c.minX-main.maxX);
-   const gapY=Math.max(0,main.minY-c.maxY,c.minY-main.maxY);
-   if(c.pixels>=75||Math.hypot(gapX,gapY)<=14)keep[id]=1;
+   const component=components[id-1];
+   if(component.pixels>=65){keep[id]=1;continue;}
+   let closest=255;
+   for(let i=0;i<N;i++)if(labels[i]===id&&distance[i]<closest){
+    closest=distance[i];if(closest<=8)break;
+   }
+   if(closest<=8)keep[id]=1;
   }
   let cleared=0;
   for(let i=0;i<N;i++){
