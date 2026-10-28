@@ -267,14 +267,39 @@
   }
   ctx.putImageData(pixels,0,0);
   if(index===18){
-   // A tiny anatomically placed nostril on the ORIGINAL right-facing head.
-   // Do not redraw the muzzle or admit the bright background orbit.
+   // Local anatomical correction on the user's ORIGINAL right-facing frog.
+   // The previous pointed, stretched snout looked reptilian. Preserve the
+   // torso, eye position, folded hind limbs, fingers and original engraving;
+   // only redraw the nose bridge, jaw and eye/nostril detailing.
    ctx.save();ctx.scale(w/307,h/256);
-   ctx.lineCap='round';
-   ctx.fillStyle='rgba(38,24,32,.94)';
-   ctx.beginPath();ctx.ellipse(219.5,43,2.35,1.6,-.32,0,Math.PI*2);ctx.fill();
-   ctx.strokeStyle='rgba(246,209,150,.82)';ctx.lineWidth=.85;
-   ctx.beginPath();ctx.arc(219.5,43,2.9,-2.7,-1.1);ctx.stroke();
+   ctx.globalCompositeOperation='destination-out';
+   ctx.fillStyle='#fff';ctx.beginPath();
+   ctx.moveTo(207,29);
+   ctx.quadraticCurveTo(242,24,248,46);
+   ctx.quadraticCurveTo(247,72,216,80);
+   ctx.lineTo(206,68);
+   ctx.closePath();ctx.fill();
+   ctx.restore();
+   ctx.save();ctx.scale(w/307,h/256);
+   ctx.lineCap='round';ctx.lineJoin='round';
+   ctx.strokeStyle='rgba(245,210,156,.94)';ctx.lineWidth=2.0;
+   // Blunt, rounded adult-frog snout instead of the sharp anterior projection.
+   ctx.beginPath();ctx.moveTo(195,39);
+   ctx.bezierCurveTo(207,33,216,38,219,46);
+   ctx.bezierCurveTo(222,54,217,62,207,65);
+   ctx.stroke();
+   // The upper lip and curved jaw remain short, without a reptile-like beak.
+   ctx.strokeStyle='rgba(224,177,116,.86)';ctx.lineWidth=1.3;
+   ctx.beginPath();ctx.moveTo(196,64);
+   ctx.quadraticCurveTo(208,66,216,58);ctx.stroke();
+   // Gold eye rim, dark round pupil and subtle nostril in proper positions.
+   ctx.strokeStyle='rgba(246,211,157,.90)';ctx.lineWidth=1.3;
+   ctx.beginPath();ctx.ellipse(191,52,9,8,-.16,0,Math.PI*2);ctx.stroke();
+   ctx.fillStyle='rgba(35,24,37,.94)';
+   ctx.beginPath();ctx.ellipse(193,52,3.0,3.1,0,0,Math.PI*2);ctx.fill();
+   ctx.beginPath();ctx.ellipse(213,47,1.8,1.3,-.22,0,Math.PI*2);ctx.fill();
+   ctx.strokeStyle='rgba(246,209,150,.78)';ctx.lineWidth=.75;
+   ctx.beginPath();ctx.arc(213,47,2.4,-2.7,-1.0);ctx.stroke();
    ctx.restore();
   }
   transparentArtCache.set(index,layer);

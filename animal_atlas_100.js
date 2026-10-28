@@ -267,7 +267,11 @@
       ' · '+name+' · не изображение указанного вида')};
  }
  function drawExactReference(ctx,art,cell,x,y,w,h){
-  if(!art||!Number.isInteger(cell)||cell<0||cell>=40||
+  if(!Number.isInteger(cell)||cell<0||cell>=40)return false;
+  // First choice: draw the artist's traced gold strokes as resolution-independent
+  // vector outlines, instead of enlarging 145px raster cutouts.
+  if(window.AnimagiaGoldContour40?.draw(ctx,cell,x,y,w,h))return true;
+  if(!art||
      art.naturalWidth!==1536||art.naturalHeight!==424)return false;
   // Cut out only the existing gold animal. The frog follows this same
   // transparent-canvas approach; a rectangle or caption must never be drawn.

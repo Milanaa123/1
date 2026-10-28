@@ -299,6 +299,7 @@ def build():
  assert raw5[:8]==bytes([137,80,78,71,13,10,26,10])
  assert hashlib.sha256(raw5).hexdigest()==expected5,'First-five approved alpha atlas corrupted'
  shutil.copy2(BASE/'animal_cutout_40.js',DEST/'animal_cutout_40.js')
+ shutil.copy2(BASE/'gold_contour_40.js',DEST/'gold_contour_40.js')
  shutil.copy2(art5,DEST/'art'/'animals-approved-01-05.png')
  print('CURATED_FIRST_FIVE_ALPHA_READY',len(raw5),'bytes',expected5,flush=True)
  stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();t0=time.time()
