@@ -1,0 +1,42 @@
+name: Build verified vector SVG portraits for animals 6–25
+on:
+  push:
+    branches: [animagia-vector-batch07-20261028]
+    paths:
+      - 'tools/vectorize_gold_batch07.py'
+      - '.github/workflows/animagia-vector-batch07-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: animagia-vector-batch07-generate
+  cancel-in-progress: true
+jobs:
+  trace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install vector tracing and SVG raster verification dependencies
+        run: python -m pip install --disable-pip-version-check Pillow==11.3.0 opencv-python-headless==4.11.0.86 CairoSVG==2.7.1
+      - name: Generate true transparent gold vector paths with >=84% source-mask overlap
+        run: python tools/vectorize_gold_batch07.py
+      - name: Save before and after gold art for human inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-vector07-before-and-after-20
+          path: qa-artifacts/vector07-original-vs-svg.png
+          retention-days: 14
+      - name: Commit validated SVG paths to artwork review branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add art/vector-ink/
+          git diff --cached --quiet && exit 0
+          git commit -m 'Trace verified gold animal contours 6 through 25 into 20 transparent SVG paths'
+          git fetch origin animagia-vector-batch07-20261028
+          git rebase origin/animagia-vector-batch07-20261028
+          git push origin HEAD:animagia-vector-batch07-20261028
