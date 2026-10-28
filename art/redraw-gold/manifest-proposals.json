@@ -1,0 +1,23 @@
+{
+  "status": "candidate-only",
+  "items": [
+    {
+      "index": 6,
+      "file": "animal-006.svg",
+      "bytes": 5004,
+      "sha256": "f3fe6cf82b68b581619cf5e0bbfb4c532f855924ef3c2606cc441c167dd06895",
+      "anatomy_reviewed": false,
+      "published": false,
+      "source": "newly generated feline figure, simplified as source-independent vector; detailed morphology manual approval required"
+    },
+    {
+      "index": 10,
+      "file": "animal-010.svg",
+      "bytes": 1405,
+      "sha256": "f599d6d6893ccd3e5e01c3f612d58033915b0afc863f48c856ce7257f906d5d9",
+      "anatomy_reviewed": false,
+      "published": false,
+      "source": "newly generated feline figure, simplified as source-independent vector; detailed morphology manual approval required"
+    }
+  ]
+}
