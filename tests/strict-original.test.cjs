@@ -94,7 +94,8 @@ test('only one large catalogue; data files disclose their Greek basis',()=>{
   assert.match(html,/Автоматическая запись приблизительна/);
   assert.match(html,/а не единственный перевод/);
   assert.match(python,/n=taxon_score\(name\)/);
-  assert.match(python,/taxon_score\(r\[1\]\)/);
+  const audit=fs.readFileSync(path.join(root,'audit_index.py'),'utf8');
+  assert.match(audit,/taxon_score\(name\) != value/,'Every indexed row must be audited against its Greek numeral score');
   assert.match(python,/algorithm_id/);
   assert.match(b,/taxonGreekScore\(row\[1\]\)/);
   assert.doesNotMatch(b,/scoreLatin\(row\[1\]\)/);
