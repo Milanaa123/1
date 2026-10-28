@@ -81,7 +81,7 @@ jobs:
           echo "LIVE_JS_START:"
           head -c 120 /tmp/animagia-live.js | tr '\\n' ' '
           echo
-          expected_atlas_version=$(grep -oE 'animal_atlas_100\\.js\\?v=[a-zA-Z0-9-]+' index.html | head -1)
+          expected_atlas_version=$(grep -oE 'animal_atlas_100[.]js[?]v=[a-zA-Z0-9-]+' index.html | head -1)
           test -n "$expected_atlas_version"
           grep -Fq "$expected_atlas_version" /tmp/animagia-live.html || { echo 'RENDER_OLD_HTML_OR_WRONG_SITE'; exit 1; }
           grep -Fq 'batch06:{first:86,last:100,count:15' /tmp/animagia-live.js || { echo 'RENDER_OLD_JS_OR_WRONG_SITE'; exit 1; }
