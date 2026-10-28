@@ -266,6 +266,19 @@
     ('Обобщённый рисунок '+(rank==='genus'?'рода':rank==='order'?'отряда':'класса')+
       ' · '+name+' · не изображение указанного вида')};
  }
+ function drawExactReference(ctx,art,cell,x,y,w,h){
+  if(!art||!Number.isInteger(cell)||cell<0||cell>=40||
+     art.naturalWidth!==1536||art.naturalHeight!==424)return false;
+  const col=cell%10,row=Math.floor(cell/10);
+  const sx=REF_X0[col],sy=REF_Y0[row];
+  const sw=REF_X1[col]-sx,sh=REF_Y1[row]-sy;
+  const scale=Math.min(w*.94/sw,h*.94/sh);
+  const dw=sw*scale,dh=sh*scale;
+  ctx.save();ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  ctx.drawImage(art,sx,sy,sw,sh,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
+  ctx.restore();
+  return true;
+ }
  function drawCanvas(ctx,loaded,profile,x,y,w,h){
   if(profile?.artSet!=='atlas100'){
    const legacyImage=loaded?.legacy||loaded;
@@ -275,19 +288,7 @@
   // 160x110 preview or download the full 10MB source atlas for one animal.
   if(Number.isInteger(profile.cell)&&loaded?.singleArt&&loaded.singleCell===profile.cell){
    const art=loaded.singleArt;
-   if(profile.cell<40&&art.naturalWidth===1536&&art.naturalHeight===424){
-    // The original pixels remain untouched; each canvas view crops the
-    // corresponding cell. Only display scaling depends on card dimensions.
-    const col=profile.cell%10,row=Math.floor(profile.cell/10);
-    const sx=REF_X0[col],sy=REF_Y0[row];
-    const sw=REF_X1[col]-sx,sh=REF_Y1[row]-sy;
-    const scale=Math.min(w*.94/sw,h*.94/sh);
-    const dw=sw*scale,dh=sh*scale;
-    ctx.save();ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
-    ctx.drawImage(art,sx,sy,sw,sh,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
-    ctx.restore();
-    return true;
-   }
+   if(drawExactReference(ctx,art,profile.cell,x,y,w,h))return true;
    if(art.naturalWidth>0&&art.naturalHeight>0){
     const factor=Math.min(w*.90/art.naturalWidth,h*.90/art.naturalHeight);
     const dw=art.naturalWidth*factor,dh=art.naturalHeight*factor;
@@ -296,6 +297,9 @@
     return true;
    }
   }
+  if(drawExactReference(ctx,loaded?.exactReference,profile.cell,x,y,w,h))return true;
+  // Never fall through to the old atlas for one of the 40 exact originals.
+  if(Number.isInteger(profile.cell)&&profile.cell<40)return false;
   const im=loaded?.sharpSheet?.naturalWidth===6400&&loaded?.sharpSheet?.naturalHeight===4400?
    loaded.sharpSheet:loaded?.newSheet||loaded;
   if(!im||im.naturalWidth<1600||im.naturalHeight<1100)return false;
@@ -335,10 +339,10 @@
    return newSheet?{newSheet,corrected,grassSnake87}:null;
   }
   // Backward-compatible full-sheet mode for QA and atlas-wide reporting.
-  const [newSheet,oldSheet,corrected,grassSnake87,sharpSheet,sharpCorrected]=await Promise.all([
-   asset(),legacy.drawable(),correctedAsset(),snake87Asset(),sharpAsset(),sharpCorrectionAsset()
+  const [newSheet,oldSheet,corrected,grassSnake87,sharpSheet,sharpCorrected,exactReference]=await Promise.all([
+   asset(),legacy.drawable(),correctedAsset(),snake87Asset(),sharpAsset(),sharpCorrectionAsset(),individualAsset(0)
   ]);
-  return newSheet||oldSheet?{newSheet,legacy:oldSheet,corrected,grassSnake87,sharpSheet,sharpCorrected}:null;
+  return newSheet||oldSheet||exactReference?{newSheet,legacy:oldSheet,corrected,grassSnake87,sharpSheet,sharpCorrected,exactReference}:null;
  }
  function render(container,profile){
   if(!container)return;
