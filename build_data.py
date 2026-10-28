@@ -268,90 +268,35 @@ def build():
   name=e['file'];data=(BASE/'art'/name).read_bytes()
   assert len(data)==e['bytes'] and hashlib.sha256(data).hexdigest()==e['sha256'],'Corrupt sharper art '+name
   shutil.copy2(BASE/'art'/name,DEST/'art'/name)
- # Copy only verified small per-species sprites; all 100 + first five.
+ # New image layout: batch 01–20 is separately redrawn, all remaining
+ # older portraits 21–100 remain available until replaced in later batches.
  solo_dir=BASE/'art'/'individual-4x'
  solo=json.loads((solo_dir/'manifest.json').read_text(encoding='utf8'))
- assert solo['count']==100 and solo['approvedCount']==5 and len(solo['items'])==105
+ assert solo['count']==80 and solo['approvedCount']==5 and len(solo['items'])==85
  outdir=DEST/'art'/'individual-4x';outdir.mkdir(parents=True,exist_ok=True)
+ legacy_bytes=0
  for entry in solo['items']:
   name=entry['file'];raw=(solo_dir/name).read_bytes()
-  assert len(raw)==entry['size'] and hashlib.sha256(raw).hexdigest()==entry['sha256'] and raw[:4]==b'RIFF','Bad individual sprite '+name
+  assert len(raw)==entry['size'] and hashlib.sha256(raw).hexdigest()==entry['sha256'] and raw[:4]==b'RIFF','Bad retained individual artwork '+name
   shutil.copy2(solo_dir/name,outdir/name)
+  legacy_bytes+=len(raw)
  shutil.copy2(solo_dir/'manifest.json',outdir/'manifest.json')
- # Verified, independently traceable real SVG paths for animal images 6–25.
- vector_dir=BASE/'art'/'vector-ink'
- vector_meta=json.loads((vector_dir/'manifest.json').read_text(encoding='utf8'))
- assert vector_meta['range']==[6,25] and len(vector_meta['items'])==20
- svg_out=DEST/'art'/'vector-ink';svg_out.mkdir(parents=True,exist_ok=True)
- for vector in vector_meta['items']:
-  num=vector['index'];name=vector['file'];data=(vector_dir/name).read_bytes()
-  assert name==f'animal-{num:03d}.svg' and len(data)==vector['bytes']
-  assert hashlib.sha256(data).hexdigest()==vector['sha256'] and b'<path' in data and b'<image' not in data
-  assert vector['alpha_iou']>=0.84
-  shutil.copy2(vector_dir/name,svg_out/name)
- shutil.copy2(vector_dir/'manifest.json',svg_out/'manifest.json')
- # Second SVG batch; first-batch drawings and manifest are retained.
- vector_meta08=json.loads((vector_dir/'manifest-batch08.json').read_text(encoding='utf8'))
- assert vector_meta08['range']==[26,45] and len(vector_meta08['items'])==20
- for vector in vector_meta08['items']:
-  num=vector['index'];name=vector['file'];data=(vector_dir/name).read_bytes()
-  assert name==f'animal-{num:03d}.svg' and len(data)==vector['bytes']
-  assert hashlib.sha256(data).hexdigest()==vector['sha256'] and b'<path' in data and b'<image' not in data
-  assert vector['alpha_iou']>=0.84
-  shutil.copy2(vector_dir/name,svg_out/name)
- shutil.copy2(vector_dir/'manifest-batch08.json',svg_out/'manifest-batch08.json')
- # Third batch of original-contour SVGs 46–65; both older SVG batches stay intact.
- vector_meta09=json.loads((vector_dir/'manifest-batch09.json').read_text(encoding='utf8'))
- assert vector_meta09['range']==[46,65] and len(vector_meta09['items'])==20
- for vector in vector_meta09['items']:
-  num=vector['index'];name=vector['file'];data=(vector_dir/name).read_bytes()
-  assert name==f'animal-{num:03d}.svg' and len(data)==vector['bytes']
-  assert hashlib.sha256(data).hexdigest()==vector['sha256'] and b'<path' in data and b'<image' not in data
-  assert vector['alpha_iou']>=0.84
-  shutil.copy2(vector_dir/name,svg_out/name)
- shutil.copy2(vector_dir/'manifest-batch09.json',svg_out/'manifest-batch09.json')
- # Fourth batch of faithful source-contour gold SVGs: animals 66–85.
- vector_meta10=json.loads((vector_dir/'manifest-batch10.json').read_text(encoding='utf8'))
- assert vector_meta10['range']==[66,85] and len(vector_meta10['items'])==20
- for vector in vector_meta10['items']:
-  num=vector['index'];name=vector['file'];data=(vector_dir/name).read_bytes()
-  assert name==f'animal-{num:03d}.svg' and len(data)==vector['bytes']
-  assert hashlib.sha256(data).hexdigest()==vector['sha256'] and b'<path' in data and b'<image' not in data
-  assert vector['alpha_iou']>=0.84
-  shutil.copy2(vector_dir/name,svg_out/name)
- shutil.copy2(vector_dir/'manifest-batch10.json',svg_out/'manifest-batch10.json')
- # Last fifteen cards: preserve the separately hand-drawn anatomical grass snake #87.
- vector_meta11=json.loads((vector_dir/'manifest-batch11.json').read_text(encoding='utf8'))
- assert vector_meta11['range']==[86,100] and len(vector_meta11['items'])==14
- assert vector_meta11['preservedHandDrawn']['index']==87
- indices=[e['index'] for e in vector_meta11['items']]
- assert indices==[n for n in range(86,101) if n!=87]
- assert not (vector_dir/'animal-087.svg').exists()
- for vector in vector_meta11['items']:
-  num=vector['index'];name=vector['file'];data=(vector_dir/name).read_bytes()
-  assert name==f'animal-{num:03d}.svg' and len(data)==vector['bytes']
-  assert hashlib.sha256(data).hexdigest()==vector['sha256'] and b'<path' in data and b'<image' not in data
-  assert vector['alpha_iou']>=0.84
-  shutil.copy2(vector_dir/name,svg_out/name)
- shutil.copy2(vector_dir/'manifest-batch11.json',svg_out/'manifest-batch11.json')
- print('VECTOR_BATCH11_14_SVG_PLUS_SNAKE87_PUBLISHED',sum(v['bytes'] for v in vector_meta11['items']),flush=True)
- print('VECTOR_BATCH10_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta10['items']),flush=True)
- print('VECTOR_BATCH09_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta09['items']),flush=True)
- print('VECTOR_BATCH08_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta08['items']),flush=True)
- redraw_src=BASE/'art'/'redraw-gold'
- redraw_manifest=json.loads((redraw_src/'manifest-live.json').read_text(encoding='utf8'))
- assert redraw_manifest['status']=='published' and [x['index'] for x in redraw_manifest['items']]==[6,10,24,33,51,52,53,54,55,60,63,65,66,67,68,69,70,76,79,93,96,100]
- redraw_out=DEST/'art'/'redraw-gold';redraw_out.mkdir(parents=True,exist_ok=True)
- for v in redraw_manifest['items']:
-  name=v['file'];raw=(redraw_src/name).read_bytes()
-  assert name==f"animal-{v['index']:03}.svg" and len(raw)==v['bytes']
-  assert hashlib.sha256(raw).hexdigest()==v['sha256']
-  assert b'<svg' in raw and b'<path' in raw and b'<image' not in raw
-  shutil.copy2(redraw_src/name,redraw_out/name)
- shutil.copy2(redraw_src/'manifest-live.json',redraw_out/'manifest-live.json')
- print('ANIMAGIA_REDRAW_ALL22_SVG_PUBLISHED',sum(x['bytes'] for x in redraw_manifest['items']),flush=True)
- print('VECTOR_BATCH07_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta['items']),flush=True)
- print('INDIVIDUAL_105_ART_PUBLISHED',sum(e['size'] for e in solo['items']),flush=True)
+ new_dir=BASE/'art'/'site-01-20'
+ batch=json.loads((new_dir/'manifest.json').read_text(encoding='utf8'))
+ assert batch['transparent'] is True and batch['dimensions']==[640,440]
+ assert len(batch['numbers'])==20 and [x['n'] for x in batch['numbers']]==list(range(1,21))
+ new_out=DEST/'art'/'site-01-20';new_out.mkdir(parents=True,exist_ok=True)
+ new_bytes=0
+ for entry in batch['numbers']:
+  name=entry['asset'];num=entry['n']
+  assert name==f'animal-{num:03d}.webp'
+  raw=(new_dir/name).read_bytes()
+  assert len(raw)>20000 and raw[:4]==b'RIFF' and raw[8:12]==b'WEBP','Bad new 01-20 picture '+name
+  shutil.copy2(new_dir/name,new_out/name)
+  new_bytes+=len(raw)
+ shutil.copy2(new_dir/'manifest.json',new_out/'manifest.json')
+ print('ANIMAGIA_NEW_20_IMAGES_PUBLISHED',new_bytes,'bytes',flush=True)
+ print('ANIMAGIA_RETAINED_80_AND_APPROVED_5_READY',legacy_bytes,'bytes',flush=True)
  print('SHARP_ALL_100_ART_READY',[(e['file'],e['bytes']) for e in manifest['results']],flush=True)
  print('CORRECTED_SPECIES_22_READY',len(replacement),'bytes',flush=True)
  print('CURATED_100_ART_READY',len(raw100),'bytes',expected100,flush=True)
