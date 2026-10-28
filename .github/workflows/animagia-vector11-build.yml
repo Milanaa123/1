@@ -5,6 +5,7 @@ on:
     branches: [animagia-site]
     paths:
       - 'tools/build_vector_batch11.py'
+      - 'tests/check_vector_batch11.cjs'
       - '.github/workflows/animagia-vector11-build.yml'
   workflow_dispatch:
 

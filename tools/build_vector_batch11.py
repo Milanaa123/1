@@ -116,7 +116,7 @@ def main():
     assert [v['index'] for v in manifest['items']]==[i for i in range(86,101) if i!=87]
     (OUT/'manifest-batch11.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     sheet.save(QA/'vector11-original-vs-svg.png',optimize=True)
-    print('VECTOR_BATCH11_20_IMAGES_READY',count,'TOTAL_BYTES',
+    print('VECTOR_BATCH11_14_IMAGES_READY',count,'TOTAL_BYTES',
           sum(e['bytes'] for e in manifest['items']),'MIN_ALPHA_IOU',
           min(e['alpha_iou'] for e in manifest['items']),flush=True)
 
@@ -133,6 +133,6 @@ def main():
     atlas=atlas.replace(needle,needle+'\n'+"  vectorBatch11:Object.freeze({first:86,last:100,count:14,excluded:[87],source:'faithful alpha contour trace; retain hand-drawn snake 87',manualAnatomyReviewed:false}),")
 
     atlas_file.write_text(atlas,encoding='utf-8')
-    print('VECTOR11_ATLAS_20_ROUTED',flush=True)
+    print('VECTOR11_ATLAS_14_ROUTED',flush=True)
 
 if __name__=='__main__':main()
