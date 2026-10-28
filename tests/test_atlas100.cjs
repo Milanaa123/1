@@ -655,7 +655,7 @@ test('Second 20 authentic SVG paths cover animals 26–45 while earlier 20 and r
   assert.equal(crypto.createHash('sha256').update(data).digest('hex'),item.sha256,file);
   assert.ok(item.alpha_iou>=.84,file);
   assert.match(data.toString('utf8'),/<path/);assert.doesNotMatch(data.toString('utf8'),/<image\\b/);
-  assert.equal(api.individualImageUrl(item.index-1),'./art/vector-ink/'+item.file);
+  assert.equal(api.individualImageUrl(item.index-1),[6,10,24,33,51,52].includes(item.index)?'./art/redraw-gold/'+item.file:'./art/vector-ink/'+item.file);
  }
  assert.equal(api.individualImageUrl(24),'./art/vector-ink/animal-025.svg');
  assert.equal(api.individualImageUrl(44),'./art/vector-ink/animal-045.svg');
@@ -676,7 +676,7 @@ test('Third 20 source-faithful SVGs cover animals 46–65 with all 40 earlier ve
   assert.equal(crypto.createHash('sha256').update(data).digest('hex'),item.sha256,file);
   assert.ok(item.alpha_iou>=.84,file);
   assert.match(data.toString('utf8'),/<path/);assert.doesNotMatch(data.toString('utf8'),/<image\\b/);
-  assert.equal(api.individualImageUrl(item.index-1),'./art/vector-ink/'+item.file);
+  assert.equal(api.individualImageUrl(item.index-1),[6,10,24,33,51,52].includes(item.index)?'./art/redraw-gold/'+item.file:'./art/vector-ink/'+item.file);
  }
  assert.equal(api.individualImageUrl(24),'./art/vector-ink/animal-025.svg');
  assert.equal(api.individualImageUrl(44),'./art/vector-ink/animal-045.svg');
@@ -699,7 +699,7 @@ test('Fourth 20 source-faithful SVGs cover animals 66–85 and preserve all earl
     assert.equal(crypto.createHash('sha256').update(data).digest('hex'),item.sha256,file);
     assert.ok(item.alpha_iou>=.84,file);
     assert.match(data.toString('utf8'),/<path/);assert.doesNotMatch(data.toString('utf8'),/<image\b/);
-    assert.equal(api.individualImageUrl(item.index-1),'./art/vector-ink/'+item.file);
+    assert.equal(api.individualImageUrl(item.index-1),[6,10,24,33,51,52].includes(item.index)?'./art/redraw-gold/'+item.file:'./art/vector-ink/'+item.file);
   }
   assert.equal(api.individualImageUrl(24),'./art/vector-ink/animal-025.svg');
   assert.equal(api.individualImageUrl(44),'./art/vector-ink/animal-045.svg');
