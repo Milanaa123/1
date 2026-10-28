@@ -756,7 +756,7 @@ test('New 6 and 10 feline vector art replaces wrong outlines with verified file 
  const crypto=require('node:crypto');
  assert.equal(meta.status,'published');
  assert.equal(meta.items.length,22);
- assert.deepEqual(meta.items.map(x=>x.index),[6,10,24,33,51,52,53,54,55,60,63,65]);
+ assert.deepEqual(meta.items.map(x=>x.index),[6,10,24,33,51,52,53,54,55,60,63,65,66,67,68,69,70,76,79,93,96,100]);
  assert.deepEqual(Array.from(api.redrawPublished),[6,10,24,33,51,52,53,54,55,60,63,65,66,67,68,69,70,76,79,93,96,100]);
  assert.equal(api.redrawDir,'./art/redraw-gold/');
  for(const entry of meta.items){
