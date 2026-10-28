@@ -1,0 +1,42 @@
+name: Generate original-contour SVGs for 20 animals 26–45
+on:
+  push:
+    branches: [animagia-vector-batch08-20261028]
+    paths:
+      - 'tools/vectorize_gold_batch08.py'
+      - '.github/workflows/animagia-vector-batch08-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: animagia-vector-batch08-build
+  cancel-in-progress: true
+jobs:
+  trace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install image-to-path tracing dependencies
+        run: python -m pip install --disable-pip-version-check Pillow==11.3.0 opencv-python-headless==4.11.0.86 CairoSVG==2.7.1
+      - name: Trace 20 species silhouettes into vector SVG and verify alpha overlap
+        run: python tools/vectorize_gold_batch08.py
+      - name: Upload comparative contact sheet
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-batch08-20-original-vs-svg
+          path: qa-artifacts/vector08-original-vs-svg.png
+          retention-days: 14
+      - name: Commit verified paths
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add art/vector-ink/
+          git diff --cached --quiet && exit 0
+          git commit -m 'Vectorize and validate twenty gold animal shapes 26-45'
+          git fetch origin animagia-vector-batch08-20261028
+          git rebase origin/animagia-vector-batch08-20261028
+          git push origin HEAD:animagia-vector-batch08-20261028
