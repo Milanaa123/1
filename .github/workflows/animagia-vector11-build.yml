@@ -1,12 +1,8 @@
 name: Animagia Vector Batch 11 Generator
 
+# Archived legacy source-tracing job. The final species now have newly redrawn SVGs,
+# so do not rerun the old contour-tracer on changes to browser QA or live routing.
 on:
-  push:
-    branches: [animagia-site]
-    paths:
-      - 'tools/build_vector_batch11.py'
-      - 'tests/check_vector_batch11.cjs'
-      - '.github/workflows/animagia-vector11-build.yml'
   workflow_dispatch:
 
 permissions:
@@ -14,6 +10,8 @@ permissions:
 
 jobs:
   generate-and-verify:
+    # Retained for historical reproducibility only; old tracing must not overwrite curated redraws.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
