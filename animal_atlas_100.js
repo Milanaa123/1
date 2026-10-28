@@ -15,8 +15,14 @@
  const SHARP_CORRECTED_URI='./art/animagia-corrected-22-sharp4x.webp';
  const SHARP_SCALE=4;
  const INDIVIDUAL_DIR='./art/individual-4x/';
+ const VECTOR_DIR='./art/vector-ink/';
+ const VECTOR07_FIRST=6,VECTOR07_LAST=25;
  const individualCache=new Map();
- const individualUrl=i=>i===86?GRASS_SNAKE_URI:INDIVIDUAL_DIR+'animal-'+String(i+1).padStart(3,'0')+'.webp';
+ const individualUrl=i=>{
+  if(i===86)return GRASS_SNAKE_URI;
+  const number=i+1,suffix='animal-'+String(number).padStart(3,'0');
+  return number>=VECTOR07_FIRST&&number<=VECTOR07_LAST?VECTOR_DIR+suffix+'.svg':INDIVIDUAL_DIR+suffix+'.webp';
+ };
  function individualAsset(i){
   if(!Number.isInteger(i)||i<0||i>=100)return Promise.resolve(null);
   if(!individualCache.has(i))individualCache.set(i,new Promise(resolve=>{
@@ -320,6 +326,7 @@
   grassSnake87ImageUrl:GRASS_SNAKE_URI,
   sharpImageUrl:SHARP_URI,sharpCorrectedImageUrl:SHARP_CORRECTED_URI,sharpArtworkScale:SHARP_SCALE,
   individualDir:INDIVIDUAL_DIR,individualImageUrl:individualUrl,
+  vectorDir:VECTOR_DIR,vectorBatch07:Object.freeze({first:6,last:25,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
   correctedImageUrl:CORRECTED_URI,correctedIndices:Object.freeze([6,7,9,10,14,19,24,29,30,33,35,40,46,47,48,53,54,65,68,78,81,86]),
   resolve,classify:legacy.classify,style:legacy.style,
   render,drawCanvas,drawable,

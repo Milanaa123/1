@@ -278,6 +278,19 @@ def build():
   assert len(raw)==entry['size'] and hashlib.sha256(raw).hexdigest()==entry['sha256'] and raw[:4]==b'RIFF','Bad individual sprite '+name
   shutil.copy2(solo_dir/name,outdir/name)
  shutil.copy2(solo_dir/'manifest.json',outdir/'manifest.json')
+ # Verified, independently traceable real SVG paths for animal images 6–25.
+ vector_dir=BASE/'art'/'vector-ink'
+ vector_meta=json.loads((vector_dir/'manifest.json').read_text(encoding='utf8'))
+ assert vector_meta['range']==[6,25] and len(vector_meta['items'])==20
+ svg_out=DEST/'art'/'vector-ink';svg_out.mkdir(parents=True,exist_ok=True)
+ for vector in vector_meta['items']:
+  num=vector['index'];name=vector['file'];data=(vector_dir/name).read_bytes()
+  assert name==f'animal-{num:03d}.svg' and len(data)==vector['bytes']
+  assert hashlib.sha256(data).hexdigest()==vector['sha256'] and b'<path' in data and b'<image' not in data
+  assert vector['alpha_iou']>=0.84
+  shutil.copy2(vector_dir/name,svg_out/name)
+ shutil.copy2(vector_dir/'manifest.json',svg_out/'manifest.json')
+ print('VECTOR_BATCH07_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta['items']),flush=True)
  print('INDIVIDUAL_105_ART_PUBLISHED',sum(e['size'] for e in solo['items']),flush=True)
  print('SHARP_ALL_100_ART_READY',[(e['file'],e['bytes']) for e in manifest['results']],flush=True)
  print('CORRECTED_SPECIES_22_READY',len(replacement),'bytes',flush=True)
