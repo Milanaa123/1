@@ -290,6 +290,17 @@ def build():
   assert vector['alpha_iou']>=0.84
   shutil.copy2(vector_dir/name,svg_out/name)
  shutil.copy2(vector_dir/'manifest.json',svg_out/'manifest.json')
+ # Second SVG batch; first-batch drawings and manifest are retained.
+ vector_meta08=json.loads((vector_dir/'manifest-batch08.json').read_text(encoding='utf8'))
+ assert vector_meta08['range']==[26,45] and len(vector_meta08['items'])==20
+ for vector in vector_meta08['items']:
+  num=vector['index'];name=vector['file'];data=(vector_dir/name).read_bytes()
+  assert name==f'animal-{num:03d}.svg' and len(data)==vector['bytes']
+  assert hashlib.sha256(data).hexdigest()==vector['sha256'] and b'<path' in data and b'<image' not in data
+  assert vector['alpha_iou']>=0.84
+  shutil.copy2(vector_dir/name,svg_out/name)
+ shutil.copy2(vector_dir/'manifest-batch08.json',svg_out/'manifest-batch08.json')
+ print('VECTOR_BATCH08_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta08['items']),flush=True)
  print('VECTOR_BATCH07_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta['items']),flush=True)
  print('INDIVIDUAL_105_ART_PUBLISHED',sum(e['size'] for e in solo['items']),flush=True)
  print('SHARP_ALL_100_ART_READY',[(e['file'],e['bytes']) for e in manifest['results']],flush=True)

@@ -1,0 +1,214 @@
+{
+  "version": "vector08-20261028",
+  "range": [
+    26,
+    45
+  ],
+  "method": "OpenCV contour-to-SVG path tracing, not manual anatomy redraw",
+  "inputResolution": [
+    640,
+    440
+  ],
+  "items": [
+    {
+      "index": 26,
+      "file": "animal-026.svg",
+      "bytes": 7529,
+      "sha256": "ace971deb478884a0bd18db4a7fa4c42262a11b93231e95dfd7e9c3a23f77c39",
+      "source_sha256": "5d869a4cd097445013dc198d2b2ca09166859e37d79658488f252cdeddbbf200",
+      "alpha_iou": 0.9122,
+      "path_count": 56,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 27,
+      "file": "animal-027.svg",
+      "bytes": 8850,
+      "sha256": "497b01f6703f4539bddea18a299bab62900544c2cf8d3b12eaa83257bc4d52f8",
+      "source_sha256": "4b1ba7b86a2e7287edff94e4f2587564d6284cc64d972207c76be763be8bae06",
+      "alpha_iou": 0.9228,
+      "path_count": 51,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 28,
+      "file": "animal-028.svg",
+      "bytes": 9672,
+      "sha256": "fd08930999f23a6c0ff68a8df0950c28c52e3e7a7b9ee966ef0c09823ee75a3e",
+      "source_sha256": "abdb53ca129d5791818efd2f45d2cf4cfe6b32e48d41258ea9e60c1fc3aa4e93",
+      "alpha_iou": 0.9196,
+      "path_count": 59,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 29,
+      "file": "animal-029.svg",
+      "bytes": 4714,
+      "sha256": "e5854b60a8bd8bc9d588fbd6f6ea56167d122a7e43926c53c231ae911a46c693",
+      "source_sha256": "31d0f570b1844a5518a7490feb5dc79fd96577e76b2061bbdf00ff8150d8cddc",
+      "alpha_iou": 0.895,
+      "path_count": 6,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 30,
+      "file": "animal-030.svg",
+      "bytes": 3080,
+      "sha256": "dad27d6b0059d52776493f859100dd60359859d9ee184b540579f7ac7ce505a7",
+      "source_sha256": "abc5b67322fe068c4df237a01627acfcf104d4c512c520ed2a7f011c9c067f17",
+      "alpha_iou": 0.9184,
+      "path_count": 5,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 31,
+      "file": "animal-031.svg",
+      "bytes": 7477,
+      "sha256": "2b463d0f320264e7bd9e93714985f9fce4574875b68957a6147133594a8cfe4e",
+      "source_sha256": "529e4f9386881178c7c7e606dcb04af27ae0223244f794f9974f06810c3668bb",
+      "alpha_iou": 0.8993,
+      "path_count": 30,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 32,
+      "file": "animal-032.svg",
+      "bytes": 8814,
+      "sha256": "d4a63164ab378fe0dc70dfffed83b3fa34a9cbe4cd5579cc65d570e31ce254f0",
+      "source_sha256": "5ad3f14122847962571fe2925157ce7cddb7686fd062b3ffe0bf34351647240e",
+      "alpha_iou": 0.8993,
+      "path_count": 29,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 33,
+      "file": "animal-033.svg",
+      "bytes": 8941,
+      "sha256": "b34cb087cb8bceb80759cb0c17a83774d91d3764c1d13375e8acfc2997ec4b0d",
+      "source_sha256": "fccd64899aec336e41dce8407d29ba16c12f74669d71c80e6d3c0c905638506b",
+      "alpha_iou": 0.8754,
+      "path_count": 84,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 34,
+      "file": "animal-034.svg",
+      "bytes": 8292,
+      "sha256": "4177509d6d802c0dda30b7f0103fc37a68548cc93af525779e6fcca771f7a8aa",
+      "source_sha256": "9be1a84fa1039e8093ca15934a98e70e5f25904176a700a371fcf6ed59d9384c",
+      "alpha_iou": 0.8952,
+      "path_count": 30,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 35,
+      "file": "animal-035.svg",
+      "bytes": 26362,
+      "sha256": "13910e6afab683df2016ecee68b6fc84adad1618f917d44f1f0f98611f7e2189",
+      "source_sha256": "cd4159783ae62ad1472f7c1db9bd088ad9821965e003fcb82d10f393abde4944",
+      "alpha_iou": 0.8759,
+      "path_count": 372,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 36,
+      "file": "animal-036.svg",
+      "bytes": 8983,
+      "sha256": "6d0218791af4bad368166f1d085d607fefc74ffa827cf53279cade89e4f68f52",
+      "source_sha256": "50c29a423f361a70246b99a7965e47138cfaacb84f48c5362c9b13d2d6b32a1c",
+      "alpha_iou": 0.9078,
+      "path_count": 40,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 37,
+      "file": "animal-037.svg",
+      "bytes": 8405,
+      "sha256": "d6e40b46fa59ec642966411ddd7c5dd1af2559f02a0f272d6a79d216064a74d0",
+      "source_sha256": "36dc1588aaefa8198a0e3ab24b5670fb7a3940912bd7ea16c666ec9324769123",
+      "alpha_iou": 0.9086,
+      "path_count": 40,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 38,
+      "file": "animal-038.svg",
+      "bytes": 8212,
+      "sha256": "70cf0b5c2df441c8301a9efbd05d6712886b711121611266c39f5906cfa8deb2",
+      "source_sha256": "e64fa3f783c2fbae47102561ee42e03adf9f785ae149ea798605f938bd8a9dc9",
+      "alpha_iou": 0.9056,
+      "path_count": 46,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 39,
+      "file": "animal-039.svg",
+      "bytes": 7739,
+      "sha256": "5d36999b8ecd66cfb689c682c73e0aba1681dc48f75757cff9eeacc39c534501",
+      "source_sha256": "b5df73f2f9b336b4cd098b852be3a34438e57008f4f636c812c9bf1f549288a0",
+      "alpha_iou": 0.9078,
+      "path_count": 48,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 40,
+      "file": "animal-040.svg",
+      "bytes": 15026,
+      "sha256": "1a0d19e384d049e0e04a97ebcc7c299afc488facf552f181ed84dbdb1f0f90e1",
+      "source_sha256": "b16b7d661db7832d5661b5fa6f2ef11a705eb56a4de198e2b1103e9f700e54dc",
+      "alpha_iou": 0.8669,
+      "path_count": 162,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 41,
+      "file": "animal-041.svg",
+      "bytes": 8441,
+      "sha256": "56e7248a403005a5844152c5cfa2d00c0fac87ab6ba60e98be9f540e53611e2d",
+      "source_sha256": "04416557789b0d97db1922f0453ea0efcc2c3a369af1a3c261d73cbbdf92cda7",
+      "alpha_iou": 0.9034,
+      "path_count": 40,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 42,
+      "file": "animal-042.svg",
+      "bytes": 8882,
+      "sha256": "80b38b0aa4e9dcf807fe40443f1d1a83477c3d569f813b7002a0a962ab71c6bf",
+      "source_sha256": "5cdb63ed866617a9cd2c260d0955e3dcea7a38348650ad5dcef8830c5204c84a",
+      "alpha_iou": 0.9295,
+      "path_count": 45,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 43,
+      "file": "animal-043.svg",
+      "bytes": 7366,
+      "sha256": "1abe216226acee718556b54832298c641c6a722a6c544c87ae5c49c5c0089049",
+      "source_sha256": "c4cb990da6a638e25640e530e418c69baeb4b6374310bbe8f91b072fbe83b698",
+      "alpha_iou": 0.8986,
+      "path_count": 34,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 44,
+      "file": "animal-044.svg",
+      "bytes": 9802,
+      "sha256": "87dc916fca114adebd6f4ab985a1227ca843b63f82e76dc45cf37a9a5d976843",
+      "source_sha256": "4fb50b205aeac59f3bbf1df09cab10f0e9f79fe55bc889b2db327ec56840741e",
+      "alpha_iou": 0.8971,
+      "path_count": 46,
+      "anatomy_reviewed": false
+    },
+    {
+      "index": 45,
+      "file": "animal-045.svg",
+      "bytes": 6837,
+      "sha256": "637c2992aad05c306a5e7610d50c696f2eef338b1d06a5c4ba0a084302da4f66",
+      "source_sha256": "150d45e1cb97690c82bcd45a54076a01090439ee8710b59999231e7ab96d1d72",
+      "alpha_iou": 0.9076,
+      "path_count": 49,
+      "anatomy_reviewed": false
+    }
+  ]
+}
