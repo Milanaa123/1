@@ -1,0 +1,113 @@
+{
+  "batch": "01-20",
+  "version": 1,
+  "description": "Twenty new golden portraits, opaque cosmic backdrop extracted to alpha. No AI artwork generation at runtime. Exact zoological species identity not certified.",
+  "transparent": true,
+  "format": "WebP",
+  "dimensions": [
+    640,
+    440
+  ],
+  "numbers": [
+    {
+      "n": 1,
+      "label": "Волк",
+      "asset": "animal-001.webp"
+    },
+    {
+      "n": 2,
+      "label": "Лиса",
+      "asset": "animal-002.webp"
+    },
+    {
+      "n": 3,
+      "label": "Собака",
+      "asset": "animal-003.webp"
+    },
+    {
+      "n": 4,
+      "label": "Кошка",
+      "asset": "animal-004.webp"
+    },
+    {
+      "n": 5,
+      "label": "Лев",
+      "asset": "animal-005.webp"
+    },
+    {
+      "n": 6,
+      "label": "Тигр",
+      "asset": "animal-006.webp"
+    },
+    {
+      "n": 7,
+      "label": "Снежный барс",
+      "asset": "animal-007.webp"
+    },
+    {
+      "n": 8,
+      "label": "Гепард",
+      "asset": "animal-008.webp"
+    },
+    {
+      "n": 9,
+      "label": "Ягуар",
+      "asset": "animal-009.webp"
+    },
+    {
+      "n": 10,
+      "label": "Пума",
+      "asset": "animal-010.webp"
+    },
+    {
+      "n": 11,
+      "label": "Медведь",
+      "asset": "animal-011.webp"
+    },
+    {
+      "n": 12,
+      "label": "Панда",
+      "asset": "animal-012.webp"
+    },
+    {
+      "n": 13,
+      "label": "Енот",
+      "asset": "animal-013.webp"
+    },
+    {
+      "n": 14,
+      "label": "Выдра",
+      "asset": "animal-014.webp"
+    },
+    {
+      "n": 15,
+      "label": "Норка",
+      "asset": "animal-015.webp"
+    },
+    {
+      "n": 16,
+      "label": "Барсук",
+      "asset": "animal-016.webp"
+    },
+    {
+      "n": 17,
+      "label": "Росомаха",
+      "asset": "animal-017.webp"
+    },
+    {
+      "n": 18,
+      "label": "Оцелот",
+      "asset": "animal-018.webp"
+    },
+    {
+      "n": 19,
+      "label": "Рысь",
+      "asset": "animal-019.webp"
+    },
+    {
+      "n": 20,
+      "label": "Каракал",
+      "asset": "animal-020.webp"
+    }
+  ]
+}

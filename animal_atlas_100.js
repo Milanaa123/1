@@ -15,6 +15,7 @@
  const SHARP_CORRECTED_URI='./art/animagia-corrected-22-sharp4x.webp';
  const SHARP_SCALE=4;
  const INDIVIDUAL_DIR='./art/individual-4x/';
+ const NEW_BATCH01_DIR='./art/site-01-20/';
  const VECTOR_DIR='./art/vector-ink/';
  const REDRAW_DIR='./art/redraw-gold/';
  const REDRAW_PUBLISHED=new Set([6,10,24,33,51,52,53,54,55,60,63,65,66,67,68,69,70,76,79,93,96,100]);
@@ -29,7 +30,7 @@
  const individualUrl=i=>{
   if(!Number.isInteger(i)||i<0||i>=100)return null;
   const suffix='animal-'+String(i+1).padStart(3,'0');
-  return INDIVIDUAL_DIR+suffix+'.webp';
+  return (i<20?NEW_BATCH01_DIR:INDIVIDUAL_DIR)+suffix+'.webp';
  };
  function individualAsset(i){
   if(!Number.isInteger(i)||i<0||i>=100)return Promise.resolve(null);
@@ -229,8 +230,10 @@
   // The visitor's first five have been individually cleaned and verified:
   // prefer that exact original drawing to the older 100-up montage cell.
   const reviewed=legacy.resolve(row);
-  if(Number.isInteger(reviewed?.approvedIndex))return reviewed;
   const chosen=choose(row);
+  // New site artwork supersedes the legacy five approved previews whenever
+  // there is a corresponding animal in the first 20. Frogs stay legacy.
+  if(Number.isInteger(reviewed?.approvedIndex)&&!chosen)return reviewed;
   if(!chosen)return legacy.resolve(row);
   const old=legacy.classify(row);
   const rank=chosen.rank;
@@ -333,7 +336,7 @@
   ...legacy,imageUrl:URI,legacyImageUrl:legacy.imageUrl,
   grassSnake87ImageUrl:GRASS_SNAKE_URI,
   sharpImageUrl:SHARP_URI,sharpCorrectedImageUrl:SHARP_CORRECTED_URI,sharpArtworkScale:SHARP_SCALE,
-  individualDir:INDIVIDUAL_DIR,individualImageUrl:individualUrl,
+  individualDir:INDIVIDUAL_DIR,siteBatch01Dir:NEW_BATCH01_DIR,siteBatch01Count:20,individualImageUrl:individualUrl,
   redrawDir:REDRAW_DIR,redrawPublished:Object.freeze([]),redrawArchived:Object.freeze([6,10,24,33,51,52,53,54,55,60,63,65,66,67,68,69,70,76,79,93,96,100]),
   vectorDir:VECTOR_DIR,vectorBatch07:Object.freeze({active:false,first:6,last:25,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
   vectorBatch08:Object.freeze({active:false,first:26,last:45,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
