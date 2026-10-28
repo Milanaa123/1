@@ -1,0 +1,27 @@
+{
+  "version": "2026-10-28-comparison-06-10",
+  "candidates": "art/candidates/manifest-06-10.json",
+  "preview": "qa-artifacts/original-cat-proposals-06-10.png",
+  "source": "art/animagia-100-sharp4x.webp",
+  "approvedForDeployment": false,
+  "reviewedFromActualPixels": true,
+  "comments": [
+    {
+      "index": 6,
+      "name": "Тигр",
+      "current": "art/vector-ink/animal-006.svg",
+      "candidate": "art/candidates/animal-006-original-proposal.svg",
+      "decision": "redraw_required",
+      "issue": "Исходный вариант сохраняет больше видимых полос, но имеет сжатый, почти бесхвостый силуэт. Кандидат восстанавливает длинный хвост, однако теряет тигриный полосатый рисунок и выглядит слишком грубым для замены. Требуется качественный оригинальный рисунок с кошачьей анатомией, хвостом и отчётливыми поперечными полосами."
+    },
+    {
+      "index": 10,
+      "name": "Пума",
+      "current": "art/vector-ink/animal-010.svg",
+      "candidate": "art/candidates/animal-010-original-proposal.svg",
+      "decision": "redraw_required",
+      "issue": "Текущая поза и общая форма неубедительны для пумы; кандидат даёт более длинный хвост, но морда и очертания тела слишком схематичны, чтобы публиковать как проверенную анатомию. Нужна вытянутая фигура кошки без пятен с округлыми ушами и длинным хвостом."
+    }
+  ],
+  "limitations": "No original candidate is promoted merely because vector path overlap with its own source is >0.84; this is a fidelity metric only."
+}
