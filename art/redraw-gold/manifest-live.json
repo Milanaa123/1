@@ -1,10 +1,10 @@
 {
   "status": "published",
-  "release": "redraw-cats-20261028",
+  "release": "redraw-six-20261028",
   "originalAudit": {
     "version": "anatomy-audit-all100-20261028",
     "rejectedInitially": 22,
-    "remainingAfterTheseReplacements": 20
+    "remainingAfterTheseReplacements": 16
   },
   "items": [
     {
@@ -39,6 +39,68 @@
         "no tiger striping"
       ],
       "source": "new original generated figure, path-vectorized with manual silhouette review"
+    },
+    {
+      "index": 24,
+      "file": "animal-024.svg",
+      "bytes": 2753,
+      "sha256": "53652d9c77d1d9c8b5a26fb11bbb3cafca67b9d280df9b0dd77ca20d1f2e33fa",
+      "published": true,
+      "artistVisualReview": true,
+      "speciesAnatomyCertified": false,
+      "features": [
+        "crow with straight dark bill",
+        "detailed feather outline",
+        "two legs",
+        "tail feathers"
+      ],
+      "source": "new original generated figure, path-vectorized with visual silhouette review"
+    },
+    {
+      "index": 33,
+      "file": "animal-033.svg",
+      "bytes": 1435,
+      "sha256": "f0c0246c2d71f2e590ddc01ce73121f70002e33e29ddaf020d070ac68e819dee",
+      "published": true,
+      "artistVisualReview": true,
+      "speciesAnatomyCertified": false,
+      "features": [
+        "slender doe with four elongated hooved legs",
+        "small tail",
+        "large mobile ears"
+      ],
+      "source": "new original generated figure, path-vectorized with visual silhouette review"
+    },
+    {
+      "index": 51,
+      "file": "animal-051.svg",
+      "bytes": 1603,
+      "sha256": "185e55d05cd9337e6b2ed87b034a8bcc5cecfa965f739f4e2193672f30065a24",
+      "published": true,
+      "artistVisualReview": true,
+      "speciesAnatomyCertified": false,
+      "features": [
+        "compact rabbit in sitting posture",
+        "short fluffy tail",
+        "erect ears"
+      ],
+      "source": "new original generated figure, path-vectorized with visual silhouette review"
+    },
+    {
+      "index": 52,
+      "file": "animal-052.svg",
+      "bytes": 1893,
+      "sha256": "c724f6d6ab427b77d71d4da6677a15d6ceb0d67315b1ee8423802f285962e252",
+      "published": true,
+      "artistVisualReview": true,
+      "speciesAnatomyCertified": false,
+      "features": [
+        "long-legged hare",
+        "elongated ears",
+        "short tail",
+        "running posture"
+      ],
+      "source": "new original generated figure, path-vectorized with visual silhouette review"
     }
   ]
 }

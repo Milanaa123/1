@@ -23,7 +23,7 @@ const body=String(function(){
    let union=0,intersection=0,newPixels=0;
    for(let t=3;t<a.length;t+=4){const oldV=a[t]>48,newV=b[t]>48;if(oldV||newV)union++;if(oldV&&newV)intersection++;if(newV)newPixels++;}
    const iou=union?intersection/union:0;
-   if(iou<.82)errors.push('SVG anatomical contour overlap too low '+number+': '+iou.toFixed(3));
+   if(number===33){if(!atlas.individualImageUrl(i).includes('/redraw-gold/'))errors.push('New roe deer not routed');if(iou<.10)errors.push('Roe deer drawing missing');} else if(iou<.82)errors.push('SVG anatomical contour overlap too low '+number+': '+iou.toFixed(3));
    if(newPixels<1200)errors.push('Blank gold line art '+number);
    if(b[3]!==0||b[(639*4)+3]!==0||b[(439*640*4)+3]!==0)errors.push('Opaque background '+number);
    stats.push({number,iou:Number(iou.toFixed(3)),pixels:newPixels});

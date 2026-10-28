@@ -396,8 +396,12 @@
   "unchangedSiteAssets": true,
   "publishedReplacements": [
     6,
-    10
+    10,
+    24,
+    33,
+    51,
+    52
   ],
-  "outstandingRedraws": 20,
-  "notesAfterOriginalAudit": "Initial audit had 22 erroneous old sprites. Tigers 6 and pumas 10 now have distinct original SVG replacements on site; full scientific species-level certification is not claimed for either. The initial audit classifications are preserved as source history."
+  "outstandingRedraws": 16,
+  "notesAfterOriginalAudit": "Initial audit found 22 wrong illustrations. Six source images (6,10,24,33,51,52) have been replaced by manually reviewed original SVG silhouettes. The historical rejection report is retained. Species-level certified anatomy is NOT claimed; 16 rejected source drawings await replacement."
 }

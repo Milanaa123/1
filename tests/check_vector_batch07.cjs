@@ -24,7 +24,7 @@ const body=String(function(){
    for(let t=3;t<a.length;t+=4){const oldV=a[t]>48,newV=b[t]>48;if(oldV||newV)union++;if(oldV&&newV)intersection++;if(newV)newPixels++;}
    const iou=union?intersection/union:0;
    // These two intentionally correct formerly incorrect outlines; matching the bad silhouette is not success.
-   if([6,10].includes(number)){
+   if([6,10,24].includes(number)){
      if(!atlas.individualImageUrl(i).includes('/redraw-gold/'))errors.push('New feline SVG not routed '+number);
      if(iou<.12)errors.push('Redrawn feline has no recognizable overlap '+number+': '+iou.toFixed(3));
    }else if(iou<.82)errors.push('SVG contour overlap too low '+number+': '+iou.toFixed(3));

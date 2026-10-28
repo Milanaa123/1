@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=redraw-cats-20261028'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=redraw-six-20261028'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -635,7 +635,7 @@ test('Real scalable vector paths replace raster for precisely animals 6–25 onl
   assert.ok(item.alpha_iou>=.84,file);
   assert.match(data.toString('utf8'),/<path/);
   assert.doesNotMatch(data.toString('utf8'),/<image\\b/);
-  assert.equal(api.individualImageUrl(item.index-1),[6,10].includes(item.index)?'./art/redraw-gold/'+item.file:'./art/vector-ink/'+item.file);
+  assert.equal(api.individualImageUrl(item.index-1),[6,10,24,33,51,52].includes(item.index)?'./art/redraw-gold/'+item.file:'./art/vector-ink/'+item.file);
  }
  assert.equal(api.individualImageUrl(4),'./art/individual-4x/animal-005.webp');
  assert.equal(api.individualImageUrl(25),'./art/vector-ink/animal-026.svg');
@@ -755,9 +755,9 @@ test('New 6 and 10 feline vector art replaces wrong outlines with verified file 
  const meta=JSON.parse(fs.readFileSync('art/redraw-gold/manifest-live.json','utf8'));
  const crypto=require('node:crypto');
  assert.equal(meta.status,'published');
- assert.equal(meta.items.length,2);
- assert.deepEqual(meta.items.map(x=>x.index),[6,10]);
- assert.deepEqual(Array.from(api.redrawPublished),[6,10]);
+ assert.equal(meta.items.length,6);
+ assert.deepEqual(meta.items.map(x=>x.index),[6,10,24,33,51,52]);
+ assert.deepEqual(Array.from(api.redrawPublished),[6,10,24,33,51,52]);
  assert.equal(api.redrawDir,'./art/redraw-gold/');
  for(const entry of meta.items){
   const file='art/redraw-gold/'+entry.file,data=fs.readFileSync(file);
