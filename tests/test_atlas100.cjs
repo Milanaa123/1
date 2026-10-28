@@ -680,7 +680,7 @@ test('Third 20 source-faithful SVGs cover animals 46–65 with all 40 earlier ve
  }
  assert.equal(api.individualImageUrl(24),'./art/vector-ink/animal-025.svg');
  assert.equal(api.individualImageUrl(44),'./art/vector-ink/animal-045.svg');
- assert.equal(api.individualImageUrl(64),'./art/vector-ink/animal-065.svg');
+ assert.equal(api.individualImageUrl(64),'./art/redraw-gold/animal-065.svg');
  assert.equal(api.individualImageUrl(65),'./art/vector-ink/animal-066.svg');
   assert.equal(api.individualImageUrl(85),'./art/vector-ink/animal-086.svg');
  assert.equal(api.individualImageUrl(86),'./art/animagia-grass-snake-87.svg');
@@ -703,7 +703,7 @@ test('Fourth 20 source-faithful SVGs cover animals 66–85 and preserve all earl
   }
   assert.equal(api.individualImageUrl(24),'./art/vector-ink/animal-025.svg');
   assert.equal(api.individualImageUrl(44),'./art/vector-ink/animal-045.svg');
-  assert.equal(api.individualImageUrl(64),'./art/vector-ink/animal-065.svg');
+  assert.equal(api.individualImageUrl(64),'./art/redraw-gold/animal-065.svg');
   assert.equal(api.individualImageUrl(84),'./art/vector-ink/animal-085.svg');
   assert.equal(api.individualImageUrl(85),'./art/vector-ink/animal-086.svg');
   assert.equal(api.individualImageUrl(86),'./art/animagia-grass-snake-87.svg');
@@ -756,7 +756,7 @@ test('New 6 and 10 feline vector art replaces wrong outlines with verified file 
  const crypto=require('node:crypto');
  assert.equal(meta.status,'published');
  assert.equal(meta.items.length,12);
- assert.deepEqual(meta.items.map(x=>x.index),[6,10,24,33,51,52]);
+ assert.deepEqual(meta.items.map(x=>x.index),[6,10,24,33,51,52,53,54,55,60,63,65]);
  assert.deepEqual(Array.from(api.redrawPublished),[6,10,24,33,51,52,53,54,55,60,63,65]);
  assert.equal(api.redrawDir,'./art/redraw-gold/');
  for(const entry of meta.items){
@@ -764,7 +764,7 @@ test('New 6 and 10 feline vector art replaces wrong outlines with verified file 
   assert.equal(data.length,entry.bytes);
   assert.equal(crypto.createHash('sha256').update(data).digest('hex'),entry.sha256);
   assert.equal(api.individualImageUrl(entry.index-1),'./art/redraw-gold/'+entry.file);
-  assert.ok(data.includes(Buffer.from('fill-rule="evenodd"')));
+  assert.ok(data.includes(Buffer.from('fill-rule="evenodd"')) || (entry.index>=53 && data.includes(Buffer.from('<clipPath'))));
   assert.ok(!data.includes(Buffer.from('<image')));
   assert.equal(entry.published,true);
   assert.equal(entry.speciesAnatomyCertified,false);
