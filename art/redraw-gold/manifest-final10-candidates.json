@@ -1,0 +1,172 @@
+{
+  "status": "review-pending",
+  "version": "final-ten-redraws-20261028",
+  "source": "original path-based vector illustrations drawn from wildlife morphology references; no raster embedded",
+  "items": [
+    {
+      "index": 66,
+      "name": "Эму",
+      "file": "animal-066.svg",
+      "bytes": 17987,
+      "sha256": "14f30e1a1fd1dea8b54f587b25f1de174ec767e9202d1512f3d1283e1876947f",
+      "published": false,
+      "manualAnatomyApproved": false,
+      "drawnFeatures": [
+        "upright emu neck",
+        "shaggy body plumage",
+        "two long three-toed legs"
+      ],
+      "nontransparentPixels": 50044,
+      "contentType": "image/svg+xml"
+    },
+    {
+      "index": 67,
+      "name": "Страус",
+      "file": "animal-067.svg",
+      "bytes": 13777,
+      "sha256": "91cc38e8b87f0952f3acda1cf3f662168fe925e45bafc2b595bba260eb183211",
+      "published": false,
+      "manualAnatomyApproved": false,
+      "drawnFeatures": [
+        "long ostrich neck",
+        "large flightless body",
+        "two strong legs",
+        "broad feathered tail"
+      ],
+      "nontransparentPixels": 41697,
+      "contentType": "image/svg+xml"
+    },
+    {
+      "index": 68,
+      "name": "Казуар",
+      "file": "animal-068.svg",
+      "bytes": 16647,
+      "sha256": "659f17b96d9e34e2fccc447cdaebbf831ef4560b7efe701cf208344854bca91c",
+      "published": false,
+      "manualAnatomyApproved": false,
+      "drawnFeatures": [
+        "raised cassowary casque",
+        "neck wattles",
+        "strong claws",
+        "dark hair-like feathers"
+      ],
+      "nontransparentPixels": 53551,
+      "contentType": "image/svg+xml"
+    },
+    {
+      "index": 69,
+      "name": "Киви",
+      "file": "animal-069.svg",
+      "bytes": 19824,
+      "sha256": "8815af21498c1b11775ab208378debf9c7fc9d626096a4ec321e776e12877e2d",
+      "published": false,
+      "manualAnatomyApproved": false,
+      "drawnFeatures": [
+        "compact feathered kiwi body",
+        "elongated down-curved narrow bill",
+        "short legs"
+      ],
+      "nontransparentPixels": 56806,
+      "contentType": "image/svg+xml"
+    },
+    {
+      "index": 70,
+      "name": "Пингвин",
+      "file": "animal-070.svg",
+      "bytes": 7968,
+      "sha256": "ae17591b89e7f289a900c4026c527e167d90de2633a619f8772d542a9a751258",
+      "published": false,
+      "manualAnatomyApproved": false,
+      "drawnFeatures": [
+        "upright penguin body",
+        "two flippers",
+        "pale ventral belly",
+        "short feet"
+      ],
+      "nontransparentPixels": 53049,
+      "contentType": "image/svg+xml"
+    },
+    {
+      "index": 76,
+      "name": "Тюлень",
+      "file": "animal-076.svg",
+      "bytes": 14023,
+      "sha256": "e0b0bfc64ca62c822b3f006548456689fa6dd306799098f5b19f5c2c2f8927ac",
+      "published": false,
+      "manualAnatomyApproved": false,
+      "drawnFeatures": [
+        "true seal without external ear flaps",
+        "small front flippers",
+        "streamlined body",
+        "hind flippers"
+      ],
+      "nontransparentPixels": 58809,
+      "contentType": "image/svg+xml"
+    },
+    {
+      "index": 79,
+      "name": "Ламантин",
+      "file": "animal-079.svg",
+      "bytes": 13283,
+      "sha256": "5ae98a14fb4b0c504fee07bf68bcd8c84be05cc1e2e693fa31a3cf32182e25f5",
+      "published": false,
+      "manualAnatomyApproved": false,
+      "drawnFeatures": [
+        "rounded manatee body",
+        "paddle flippers",
+        "spatulate rounded tail"
+      ],
+      "nontransparentPixels": 72065,
+      "contentType": "image/svg+xml"
+    },
+    {
+      "index": 93,
+      "name": "Шипохвост",
+      "file": "animal-093.svg",
+      "bytes": 9651,
+      "sha256": "bb4b08473e64c9f05ff4815f0cd610f4010ed724240c12388110df784aca3599",
+      "published": false,
+      "manualAnatomyApproved": false,
+      "drawnFeatures": [
+        "uromastyx short thick thorny tail",
+        "low lizard body",
+        "four legs"
+      ],
+      "nontransparentPixels": 42930,
+      "contentType": "image/svg+xml"
+    },
+    {
+      "index": 96,
+      "name": "Кальмар",
+      "file": "animal-096.svg",
+      "bytes": 14277,
+      "sha256": "72775c537da43eb4d1f3b946bb0d41943900c395b72bd0cad08696239eeb0342",
+      "published": false,
+      "manualAnatomyApproved": false,
+      "drawnFeatures": [
+        "triangular mantle fins",
+        "eight arms and two longer tentacles",
+        "large eye"
+      ],
+      "nontransparentPixels": 55828,
+      "contentType": "image/svg+xml"
+    },
+    {
+      "index": 100,
+      "name": "Омар",
+      "file": "animal-100.svg",
+      "bytes": 14466,
+      "sha256": "b240bc8b1bb894a72bef2fa15e7a6a127ee771b5b70ab7e618c4dad37b241848",
+      "published": false,
+      "manualAnatomyApproved": false,
+      "drawnFeatures": [
+        "lobster segmented abdomen",
+        "two major pincers",
+        "walking legs",
+        "long antennae"
+      ],
+      "nontransparentPixels": 52782,
+      "contentType": "image/svg+xml"
+    }
+  ]
+}
