@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=vector-batch08-20261028'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=vector-batch09-20261028'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -659,7 +659,29 @@ test('Second 20 authentic SVG paths cover animals 26–45 while earlier 20 and r
  }
  assert.equal(api.individualImageUrl(24),'./art/vector-ink/animal-025.svg');
  assert.equal(api.individualImageUrl(44),'./art/vector-ink/animal-045.svg');
- assert.equal(api.individualImageUrl(45),'./art/individual-4x/animal-046.webp');
+ assert.equal(api.individualImageUrl(45),'./art/vector-ink/animal-046.svg');
+ assert.equal(api.individualImageUrl(86),'./art/animagia-grass-snake-87.svg');
+ assert.equal(api.list.length,100);
+});
+
+
+test('Third 20 source-faithful SVGs cover animals 46–65 with all 40 earlier vectors intact',()=>{
+ const crypto=require('node:crypto'),m=JSON.parse(fs.readFileSync('art/vector-ink/manifest-batch09.json','utf8'));
+ assert.deepEqual(m.range,[46,65]);assert.equal(m.items.length,20);
+ assert.equal(api.vectorBatch09.first,46);assert.equal(api.vectorBatch09.last,65);
+ assert.equal(api.vectorBatch09.manualAnatomyReviewed,false);
+ for(const item of m.items){
+  const file='art/vector-ink/'+item.file,data=fs.readFileSync(file);
+  assert.equal(data.length,item.bytes,file);
+  assert.equal(crypto.createHash('sha256').update(data).digest('hex'),item.sha256,file);
+  assert.ok(item.alpha_iou>=.84,file);
+  assert.match(data.toString('utf8'),/<path/);assert.doesNotMatch(data.toString('utf8'),/<image\\b/);
+  assert.equal(api.individualImageUrl(item.index-1),'./art/vector-ink/'+item.file);
+ }
+ assert.equal(api.individualImageUrl(24),'./art/vector-ink/animal-025.svg');
+ assert.equal(api.individualImageUrl(44),'./art/vector-ink/animal-045.svg');
+ assert.equal(api.individualImageUrl(64),'./art/vector-ink/animal-065.svg');
+ assert.equal(api.individualImageUrl(65),'./art/individual-4x/animal-066.webp');
  assert.equal(api.individualImageUrl(86),'./art/animagia-grass-snake-87.svg');
  assert.equal(api.list.length,100);
 });
