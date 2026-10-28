@@ -310,6 +310,17 @@ def build():
   assert vector['alpha_iou']>=0.84
   shutil.copy2(vector_dir/name,svg_out/name)
  shutil.copy2(vector_dir/'manifest-batch09.json',svg_out/'manifest-batch09.json')
+ # Fourth batch of faithful source-contour gold SVGs: animals 66–85.
+ vector_meta10=json.loads((vector_dir/'manifest-batch10.json').read_text(encoding='utf8'))
+ assert vector_meta10['range']==[66,85] and len(vector_meta10['items'])==20
+ for vector in vector_meta10['items']:
+  num=vector['index'];name=vector['file'];data=(vector_dir/name).read_bytes()
+  assert name==f'animal-{num:03d}.svg' and len(data)==vector['bytes']
+  assert hashlib.sha256(data).hexdigest()==vector['sha256'] and b'<path' in data and b'<image' not in data
+  assert vector['alpha_iou']>=0.84
+  shutil.copy2(vector_dir/name,svg_out/name)
+ shutil.copy2(vector_dir/'manifest-batch10.json',svg_out/'manifest-batch10.json')
+ print('VECTOR_BATCH10_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta10['items']),flush=True)
  print('VECTOR_BATCH09_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta09['items']),flush=True)
  print('VECTOR_BATCH08_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta08['items']),flush=True)
  print('VECTOR_BATCH07_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta['items']),flush=True)
