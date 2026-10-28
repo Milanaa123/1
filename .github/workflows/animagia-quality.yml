@@ -23,6 +23,8 @@ jobs:
           node-version: "22"
       - name: Verify unapproved feline drafts cannot reach live catalog
         run: node tests/check_felid_candidate_review.cjs
+      - name: Verify source-backed visual and taxonomy audit of animals 21–40
+        run: node tests/check_review_batch02.cjs
       - name: Validate 20-image visual triage report without claiming anatomy approval
         run: node tests/check_review_batch01.cjs
       - name: Check JavaScript syntax

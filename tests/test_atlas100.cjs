@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=vector-batch11-20261028'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=visual-audit02-20261028'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -739,4 +739,14 @@ test('Final 15 illustrations retain grass snake 87 and verify exactly 14 new gol
  assert.equal(api.individualImageUrl(99),'./art/vector-ink/animal-100.svg');
  assert.equal(api.list.length,100);
  assert.ok(fs.readFileSync('build_data.py','utf8').includes('VECTOR_BATCH11_14_SVG_PLUS_SNAKE87_PUBLISHED'));
+});
+
+test('European bison key correctly identifies wisent, not aurochs',()=>{
+ assert.equal(api.list[36].name,'Зубр');
+ assert.equal(api.list[36].key,'european-bison');
+ const p=api.resolve(row('Bison bonasus','Mammalia','Artiodactyla'));
+ assert.equal(p.cell,36);
+ assert.equal(p.id,'european-bison');
+ assert.equal(p.label,'Зубр');
+ assert.equal(api.list[35].key,'bison');
 });

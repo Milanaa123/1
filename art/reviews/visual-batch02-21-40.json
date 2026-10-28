@@ -1,0 +1,209 @@
+{
+  "version": "anatomy-triage-batch02-20261028",
+  "scope": {
+    "first": 21,
+    "last": 40,
+    "total": 20
+  },
+  "method": "Editorial examination of actual 640x440 site source sprites, supported by wildlife morphology references. Source and SVG SHA256 are independently checked in tests.",
+  "disclaimer": "Provisional means broad silhouette did not appear obviously wrong, NOT species-level confirmation or scientific anatomy approval. No unapproved art is replaced.",
+  "references": {
+    "crow": "https://web-cdn.rspb.org.uk/birds-and-wildlife/carrion-crow",
+    "vulture": "https://www.pbs.org/wnet/nature/animal-guide-cape-griffon-vulture/470/",
+    "europeanBison": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7981210/",
+    "comparison": "https://naturstyrelsen.dk/find-et-naturomraade/naturguider/bornholm/almindingen/bisonskoven/europaeisk-bison-i-almindingen-om-dyrevelfaerd"
+  },
+  "taxonomyCorrection": {
+    "index": 37,
+    "russianName": "Зубр",
+    "incorrectKey": "aurochs",
+    "correctKey": "european-bison",
+    "scientificSpecies": "Bison bonasus",
+    "synonym": "Bos bonasus",
+    "wrongSpecies": "Bos primigenius",
+    "artNotCertified": true
+  },
+  "items": [
+    {
+      "index": 21,
+      "name": "Сова",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Общая форма в этом масштабе предварительно узнаваема; видовые детали и анатомические пропорции окончательно не утверждены.",
+      "sourceFile": "art/individual-4x/animal-021.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 22,
+      "name": "Филин",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Общая форма в этом масштабе предварительно узнаваема; видовые детали и анатомические пропорции окончательно не утверждены.",
+      "sourceFile": "art/individual-4x/animal-022.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 23,
+      "name": "Ворон",
+      "status": "needs_further_comparison",
+      "priority": "medium",
+      "concern": "У птицы сильно загнутый клюв и силуэт напоминает хищную птицу; для ворона нужно сравнение формы толстого клюва, хвоста и головы.",
+      "sourceFile": "art/individual-4x/animal-023.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 24,
+      "name": "Ворона",
+      "status": "reject",
+      "priority": "critical",
+      "concern": "Исправленный спрайт слишком похож на обобщённую мультяшную птицу. Не читаются массивный клюв и характерные пропорции вороны.",
+      "sourceFile": "art/individual-4x/animal-024.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 25,
+      "name": "Сокол",
+      "status": "needs_further_comparison",
+      "priority": "medium",
+      "concern": "Форма загнутого клюва подходит хищной птице, но соколиные пропорции головы и очертания крыльев не отличаются уверенно от ястреба.",
+      "sourceFile": "art/individual-4x/animal-025.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 26,
+      "name": "Ястреб",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Общая форма в этом масштабе предварительно узнаваема; видовые детали и анатомические пропорции окончательно не утверждены.",
+      "sourceFile": "art/individual-4x/animal-026.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 27,
+      "name": "Орёл",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Общая форма в этом масштабе предварительно узнаваема; видовые детали и анатомические пропорции окончательно не утверждены.",
+      "sourceFile": "art/individual-4x/animal-027.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 28,
+      "name": "Стервятник",
+      "status": "needs_further_comparison",
+      "priority": "high",
+      "concern": "Силуэт напоминает обобщённую хищную птицу; плохо читаются характерные для многих стервятников голова, шея и воротник.",
+      "sourceFile": "art/individual-4x/animal-028.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 29,
+      "name": "Чайка",
+      "status": "needs_further_comparison",
+      "priority": "medium",
+      "concern": "Птица в полёте очень схематична: клюв, голова и пропорции крыльев типичной чайки почти неразличимы.",
+      "sourceFile": "art/individual-4x/animal-029.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 30,
+      "name": "Колибри",
+      "status": "needs_further_comparison",
+      "priority": "medium",
+      "concern": "Длинный тонкий клюв подходит колибри, но крылья, грудная клетка и хвост показаны чрезмерно упрощённо.",
+      "sourceFile": "art/individual-4x/animal-030.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 31,
+      "name": "Олень",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Общая форма в этом масштабе предварительно узнаваема; видовые детали и анатомические пропорции окончательно не утверждены.",
+      "sourceFile": "art/individual-4x/animal-031.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 32,
+      "name": "Лось",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Общая форма в этом масштабе предварительно узнаваема; видовые детали и анатомические пропорции окончательно не утверждены.",
+      "sourceFile": "art/individual-4x/animal-032.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 33,
+      "name": "Косуля",
+      "status": "reject",
+      "priority": "critical",
+      "concern": "Корпус слишком массивен, ноги неестественно короткие и плохо различимые; силуэт не передаёт косулю. Отсутствие рогов не является ошибкой у самок косули.",
+      "sourceFile": "art/individual-4x/animal-033.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 34,
+      "name": "Северный олень",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Общая форма в этом масштабе предварительно узнаваема; видовые детали и анатомические пропорции окончательно не утверждены.",
+      "sourceFile": "art/individual-4x/animal-034.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 35,
+      "name": "Кабан",
+      "status": "needs_further_comparison",
+      "priority": "high",
+      "concern": "Виден скорее крупный фронтальный фрагмент головы: ноги, корпус, характерный профиль и клыки кабана не читаются.",
+      "sourceFile": "art/individual-4x/animal-035.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 36,
+      "name": "Бизон",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Общая форма в этом масштабе предварительно узнаваема; видовые детали и анатомические пропорции окончательно не утверждены.",
+      "sourceFile": "art/individual-4x/animal-036.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 37,
+      "name": "Зубр",
+      "status": "needs_further_comparison",
+      "priority": "high",
+      "concern": "Силуэт трудно отличить от соседнего американского бизона; европейский зубр обычно стройнее. Отдельно подтверждена ошибка идентификатора aurochs вместо european-bison.",
+      "sourceFile": "art/individual-4x/animal-037.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 38,
+      "name": "Баран",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Общая форма в этом масштабе предварительно узнаваема; видовые детали и анатомические пропорции окончательно не утверждены.",
+      "sourceFile": "art/individual-4x/animal-038.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 39,
+      "name": "Козёл",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Общая форма в этом масштабе предварительно узнаваема; видовые детали и анатомические пропорции окончательно не утверждены.",
+      "sourceFile": "art/individual-4x/animal-039.webp",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 40,
+      "name": "Серна",
+      "status": "needs_further_comparison",
+      "priority": "medium",
+      "concern": "Фигура и ноги чрезмерно упрощены, трудно распознать короткие загнутые назад рога серны.",
+      "sourceFile": "art/individual-4x/animal-040.webp",
+      "manualAnatomyApproved": false
+    }
+  ],
+  "nextStep": "Create separate replacement proposals for crow 24 and roe deer 33; review before site release; continue batch 41–60."
+}

@@ -1,0 +1,31 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),crypto=require('node:crypto');
+const r=JSON.parse(fs.readFileSync('art/reviews/visual-batch02-21-40.json','utf8'));
+const m=JSON.parse(fs.readFileSync('art/individual-4x/manifest.json','utf8'));
+const vectors=[JSON.parse(fs.readFileSync('art/vector-ink/manifest.json','utf8')),JSON.parse(fs.readFileSync('art/vector-ink/manifest-batch08.json','utf8'))];
+assert.deepEqual(r.scope,{first:21,last:40,total:20});
+assert.equal(r.items.length,20);
+assert.equal(r.taxonomyCorrection.correctKey,'european-bison');
+const js=fs.readFileSync('animal_atlas_100.js','utf8');
+assert.ok(js.includes('["european-bison","Зубр"]'));
+assert.ok(!js.includes('["aurochs","Зубр"]'));
+const statuses={provisional:[],reject:[],needs_further_comparison:[]};
+for(let i=0;i<20;i++){
+ const entry=r.items[i],n=i+21;
+ assert.equal(entry.index,n);assert.equal(entry.manualAnatomyApproved,false);
+ assert.ok(Object.hasOwn(statuses,entry.status));
+ assert.ok(entry.concern.length>40);
+ assert.equal(entry.sourceFile,'art/individual-4x/animal-'+String(n).padStart(3,'0')+'.webp');
+ const file=fs.readFileSync(entry.sourceFile),source=m.items.find(x=>x.index===n);
+ assert.ok(source);assert.equal(file.length,source.size);
+ assert.equal(crypto.createHash('sha256').update(file).digest('hex'),source.sha256);
+ const v=vectors.flatMap(x=>x.items).find(x=>x.index===n);
+ assert.ok(v);assert.equal(v.anatomy_reviewed,false);
+ const svg=fs.readFileSync('art/vector-ink/'+v.file);
+ assert.equal(svg.length,v.bytes);
+ assert.equal(crypto.createHash('sha256').update(svg).digest('hex'),v.sha256);
+ statuses[entry.status].push(n);
+}
+assert.deepEqual(statuses.reject,[24,33]);
+assert.ok(statuses.needs_further_comparison.includes(37));
+console.log('ANIMAL_ART_AUDIT_21_40_VERIFIED',JSON.stringify(statuses));
