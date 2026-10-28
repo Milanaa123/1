@@ -21,6 +21,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Validate 20-image visual triage report without claiming anatomy approval
+        run: node tests/check_review_batch01.cjs
       - name: Check JavaScript syntax
         run: |
           for file in app.js greek_taxa.js enhancements.js photo_gallery.js magic_ui.js ritual_ui.js silhouette_service.js animal_atlas.js animal_atlas_100.js relic_features.js; do
