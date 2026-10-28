@@ -40,7 +40,7 @@ jobs:
           corrected_code=$(curl --fail --silent --show-error --location --max-time 45 --write-out '%{http_code}' "$url/art/animagia-corrected-22.webp" -o /tmp/animagia-live-corrected.webp)
           echo "LIVE_CORRECTED_HTTP=$corrected_code"
           for art in animagia-100-sharp4x.webp animagia-corrected-22-sharp4x.webp animals-approved-01-05-sharp4x.png; do
-            curl --fail --silent --show-error --location --max-time 55 "$url/art/$art" -o "/tmp/$art"
+            curl --fail --silent --show-error --location --max-time 55 "$url/art/$art?v=$GITHUB_SHA" -o "/tmp/$art"
             test "$(wc -c <"/tmp/$art")" -gt 100000
           done
           python - <<'PY'
@@ -48,7 +48,10 @@ jobs:
           meta=json.load(open('art/sharp-art-manifest.json'))
           for entry in meta['results']:
            data=open('/tmp/'+entry['file'],'rb').read()
-           assert len(data)==entry['bytes'] and hashlib.sha256(data).hexdigest()==entry['sha256'],entry['file']
+           actual_hash=hashlib.sha256(data).hexdigest()
+ if len(data)!=entry['bytes'] or actual_hash!=entry['sha256']:
+  print('LIVE_ART_HASH_MISMATCH',entry['file'],'bytes',len(data),'sha256',actual_hash,'expected',entry['sha256'],flush=True)
+ assert len(data)==entry['bytes'] and actual_hash==entry['sha256'],entry['file']
           print('LIVE_SHARP_ALL_100_ART_BYTES_VERIFIED')
           PY
           snake_http=$(curl --fail --silent --show-error --location --max-time 45 --write-out '%{http_code}' "$url/art/animagia-grass-snake-87.svg" -o /tmp/animagia-live-snake87.svg)
