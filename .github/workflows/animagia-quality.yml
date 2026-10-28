@@ -85,7 +85,31 @@ jobs:
           grep -Fq 'batch06:{first:86,last:100,count:15' /tmp/animagia-live.js || { echo 'RENDER_OLD_JS_OR_WRONG_SITE'; exit 1; }
           test "$(wc -c </tmp/animagia-live.webp)" -gt 20000
           test "$(dd if=/tmp/animagia-live.webp bs=1 count=4 2>/dev/null)" = 'RIFF'
+          for n in animal-006.svg animal-015.svg animal-025.svg; do
+            curl --fail --silent --show-error --location --max-time 45 "$url/art/vector-ink/$n" -o "/tmp/$n"
+          done
+          python - <<'PY'
+          import json,hashlib
+          entries=json.load(open('art/vector-ink/manifest.json'))['items']
+          matches=0
+          for e in entries:
+           if e['file'] in ('animal-006.svg','animal-015.svg','animal-025.svg'):
+            data=open('/tmp/'+e['file'],'rb').read()
+            assert len(data)==e['bytes'] and hashlib.sha256(data).hexdigest()==e['sha256'],e['file']
+            assert b'<path' in data and b'<image' not in data
+            matches+=1
+          assert matches==3
+          print('LIVE_VECTOR_20_SVG_BATCH_VERIFIED')
+          PY
           echo "LIVE_RENDER_CURRENT_BATCH06_CONFIRMED"
+      - name: Verify 20 gold SVG outlines on real Chromium Canvas
+        run: node tests/check_vector_batch07.cjs
+      - name: Save 20 SVG portraits from live Chromium
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-vector07-20-browser-proof
+          path: qa-artifacts/vector07-chromium-20.png
+          retention-days: 14
       - name: Check per-animal loading avoids downloading the 10MB source atlases
         run: node tests/check_individual_art.cjs
       - name: Save focused, sharp on-demand browser proof
