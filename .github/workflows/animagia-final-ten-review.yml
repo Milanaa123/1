@@ -1,0 +1,37 @@
+name: Animagia final ten original animal redraw review
+on:
+  push:
+    branches: [animagia-site]
+    paths:
+      - 'tools/preview_final_redraws.py'
+      - '.github/workflows/animagia-final-ten-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install local SVG renderer
+        run: python -m pip install -q Pillow==11.3.0 CairoSVG==2.7.1
+      - name: Render all ten candidate SVGs and verify transparent corners, file shapes and SHA256
+        run: python tools/preview_final_redraws.py
+      - name: Archive final ten illustrated animal portraits for editorial review
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-final-ten-drawings
+          path: qa-artifacts/redraw-final-ten-proof.png
+          retention-days: 14
+      - name: Commit manifest and preview evidence
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add art/redraw-gold/manifest-final10-candidates.json qa-artifacts/redraw-final-ten-proof.png
+          git diff --cached --check
+          git commit -m 'Record SHA256 and transparent proof of final ten redrawn animal SVGs'
+          git push origin HEAD:animagia-site
