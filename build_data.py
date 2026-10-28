@@ -338,6 +338,18 @@ def build():
  print('VECTOR_BATCH10_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta10['items']),flush=True)
  print('VECTOR_BATCH09_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta09['items']),flush=True)
  print('VECTOR_BATCH08_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta08['items']),flush=True)
+ redraw_src=BASE/'art'/'redraw-gold'
+ redraw_manifest=json.loads((redraw_src/'manifest-live.json').read_text(encoding='utf8'))
+ assert redraw_manifest['status']=='published' and [x['index'] for x in redraw_manifest['items']]==[6,10]
+ redraw_out=DEST/'art'/'redraw-gold';redraw_out.mkdir(parents=True,exist_ok=True)
+ for v in redraw_manifest['items']:
+  name=v['file'];raw=(redraw_src/name).read_bytes()
+  assert name==f"animal-{v['index']:03}.svg" and len(raw)==v['bytes']
+  assert hashlib.sha256(raw).hexdigest()==v['sha256']
+  assert b'<svg' in raw and b'<path' in raw and b'<image' not in raw
+  shutil.copy2(redraw_src/name,redraw_out/name)
+ shutil.copy2(redraw_src/'manifest-live.json',redraw_out/'manifest-live.json')
+ print('ANIMAGIA_REDRAW_CATS_2_SVG_PUBLISHED',sum(x['bytes'] for x in redraw_manifest['items']),flush=True)
  print('VECTOR_BATCH07_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta['items']),flush=True)
  print('INDIVIDUAL_105_ART_PUBLISHED',sum(e['size'] for e in solo['items']),flush=True)
  print('SHARP_ALL_100_ART_READY',[(e['file'],e['bytes']) for e in manifest['results']],flush=True)

@@ -1,0 +1,44 @@
+{
+  "status": "published",
+  "release": "redraw-cats-20261028",
+  "originalAudit": {
+    "version": "anatomy-audit-all100-20261028",
+    "rejectedInitially": 22,
+    "remainingAfterTheseReplacements": 20
+  },
+  "items": [
+    {
+      "index": 6,
+      "file": "animal-006.svg",
+      "bytes": 5004,
+      "sha256": "f3fe6cf82b68b581619cf5e0bbfb4c532f855924ef3c2606cc441c167dd06895",
+      "published": true,
+      "artistVisualReview": true,
+      "speciesAnatomyCertified": false,
+      "features": [
+        "feline body and four legs",
+        "long banded tail",
+        "bold vertical stripes",
+        "round ears"
+      ],
+      "source": "new original generated figure, path-vectorized with manual silhouette review"
+    },
+    {
+      "index": 10,
+      "file": "animal-010.svg",
+      "bytes": 1405,
+      "sha256": "f599d6d6893ccd3e5e01c3f612d58033915b0afc863f48c856ce7257f906d5d9",
+      "published": true,
+      "artistVisualReview": true,
+      "speciesAnatomyCertified": false,
+      "features": [
+        "slender feline build",
+        "four weight-bearing legs",
+        "long curved tail",
+        "short rounded ears",
+        "no tiger striping"
+      ],
+      "source": "new original generated figure, path-vectorized with manual silhouette review"
+    }
+  ]
+}

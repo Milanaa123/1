@@ -393,5 +393,11 @@
     "Preserve hand-drawn grass snake #87 and Greek name arithmetic.",
     "Allow deliberate one-by-one approval only after screenshot and live-file integrity checks."
   ],
-  "unchangedSiteAssets": true
+  "unchangedSiteAssets": true,
+  "publishedReplacements": [
+    6,
+    10
+  ],
+  "outstandingRedraws": 20,
+  "notesAfterOriginalAudit": "Initial audit had 22 erroneous old sprites. Tigers 6 and pumas 10 now have distinct original SVG replacements on site; full scientific species-level certification is not claimed for either. The initial audit classifications are preserved as source history."
 }

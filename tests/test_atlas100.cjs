@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=visual-audit02-20261028'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=redraw-cats-20261028'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -614,7 +614,7 @@ test('105 dedicated crisp images load individually without changing animal numbe
   assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),item.sha256,item.file);
  }
  assert.equal(api.individualDir,'./art/individual-4x/');
- assert.equal(api.individualImageUrl(5),'./art/vector-ink/animal-006.svg');
+ assert.equal(api.individualImageUrl(5),'./art/redraw-gold/animal-006.svg');
  assert.equal(api.individualImageUrl(86),'./art/animagia-grass-snake-87.svg');
  assert.equal(api.individualImageUrl(99),'./art/vector-ink/animal-100.svg');
  assert.ok(fs.readFileSync('relic_features.js','utf8').includes('gallery.drawable(profile)'));
@@ -635,7 +635,7 @@ test('Real scalable vector paths replace raster for precisely animals 6–25 onl
   assert.ok(item.alpha_iou>=.84,file);
   assert.match(data.toString('utf8'),/<path/);
   assert.doesNotMatch(data.toString('utf8'),/<image\\b/);
-  assert.equal(api.individualImageUrl(item.index-1),'./art/vector-ink/'+item.file);
+  assert.equal(api.individualImageUrl(item.index-1),[6,10].includes(item.index)?'./art/redraw-gold/'+item.file:'./art/vector-ink/'+item.file);
  }
  assert.equal(api.individualImageUrl(4),'./art/individual-4x/animal-005.webp');
  assert.equal(api.individualImageUrl(25),'./art/vector-ink/animal-026.svg');
@@ -749,4 +749,28 @@ test('European bison key correctly identifies wisent, not aurochs',()=>{
  assert.equal(p.id,'european-bison');
  assert.equal(p.label,'Зубр');
  assert.equal(api.list[35].key,'bison');
+});
+
+test('New 6 and 10 feline vector art replaces wrong outlines with verified file content',()=>{
+ const meta=JSON.parse(fs.readFileSync('art/redraw-gold/manifest-live.json','utf8'));
+ const crypto=require('node:crypto');
+ assert.equal(meta.status,'published');
+ assert.equal(meta.items.length,2);
+ assert.deepEqual(meta.items.map(x=>x.index),[6,10]);
+ assert.deepEqual(Array.from(api.redrawPublished),[6,10]);
+ assert.equal(api.redrawDir,'./art/redraw-gold/');
+ for(const entry of meta.items){
+  const file='art/redraw-gold/'+entry.file,data=fs.readFileSync(file);
+  assert.equal(data.length,entry.bytes);
+  assert.equal(crypto.createHash('sha256').update(data).digest('hex'),entry.sha256);
+  assert.equal(api.individualImageUrl(entry.index-1),'./art/redraw-gold/'+entry.file);
+  assert.ok(data.includes(Buffer.from('fill-rule="evenodd"')));
+  assert.ok(!data.includes(Buffer.from('<image')));
+  assert.equal(entry.published,true);
+  assert.equal(entry.speciesAnatomyCertified,false);
+ }
+ assert.equal(api.individualImageUrl(6),'./art/vector-ink/animal-007.svg');
+ assert.equal(api.individualImageUrl(9),'./art/redraw-gold/animal-010.svg');
+ assert.equal(api.individualImageUrl(10),'./art/vector-ink/animal-011.svg');
+ assert.equal(api.individualImageUrl(86),'./art/animagia-grass-snake-87.svg');
 });
