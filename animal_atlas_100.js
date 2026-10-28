@@ -24,14 +24,12 @@
  const VECTOR10_FIRST=66,VECTOR10_LAST=85;
  const VECTOR11_FIRST=86,VECTOR11_LAST=100;
  const individualCache=new Map();
+ // The 100 visitor-approved originals take priority over experimental vector
+ // tracings. Do not reinterpret their anatomy, poses or golden line-work.
  const individualUrl=i=>{
-  if(i===86)return GRASS_SNAKE_URI;
-  const number=i+1,suffix='animal-'+String(number).padStart(3,'0');
-  if(REDRAW_PUBLISHED.has(number))return REDRAW_DIR+suffix+'.svg';
-  return ((number>=VECTOR07_FIRST&&number<=VECTOR07_LAST)||(number>=VECTOR08_FIRST&&number<=VECTOR08_LAST)||
-   (number>=VECTOR09_FIRST&&number<=VECTOR09_LAST)||
-   (number>=VECTOR10_FIRST&&number<=VECTOR10_LAST)||
-   (number>=VECTOR11_FIRST&&number<=VECTOR11_LAST))?VECTOR_DIR+suffix+'.svg':INDIVIDUAL_DIR+suffix+'.webp';
+  if(!Number.isInteger(i)||i<0||i>=100)return null;
+  const suffix='animal-'+String(i+1).padStart(3,'0');
+  return INDIVIDUAL_DIR+suffix+'.webp';
  };
  function individualAsset(i){
   if(!Number.isInteger(i)||i<0||i>=100)return Promise.resolve(null);
@@ -336,12 +334,12 @@
   grassSnake87ImageUrl:GRASS_SNAKE_URI,
   sharpImageUrl:SHARP_URI,sharpCorrectedImageUrl:SHARP_CORRECTED_URI,sharpArtworkScale:SHARP_SCALE,
   individualDir:INDIVIDUAL_DIR,individualImageUrl:individualUrl,
-  redrawDir:REDRAW_DIR,redrawPublished:Object.freeze([6,10,24,33,51,52,53,54,55,60,63,65,66,67,68,69,70,76,79,93,96,100]),
-  vectorDir:VECTOR_DIR,vectorBatch07:Object.freeze({first:6,last:25,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
-  vectorBatch08:Object.freeze({first:26,last:45,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
-  vectorBatch09:Object.freeze({first:46,last:65,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
-  vectorBatch10:Object.freeze({first:66,last:85,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
-  vectorBatch11:Object.freeze({first:86,last:100,count:14,excluded:[87],source:'faithful alpha contour trace; retain hand-drawn snake 87',manualAnatomyReviewed:false}),
+  redrawDir:REDRAW_DIR,redrawPublished:Object.freeze([]),redrawArchived:Object.freeze([6,10,24,33,51,52,53,54,55,60,63,65,66,67,68,69,70,76,79,93,96,100]),
+  vectorDir:VECTOR_DIR,vectorBatch07:Object.freeze({active:false,first:6,last:25,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
+  vectorBatch08:Object.freeze({active:false,first:26,last:45,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
+  vectorBatch09:Object.freeze({active:false,first:46,last:65,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
+  vectorBatch10:Object.freeze({active:false,first:66,last:85,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
+  vectorBatch11:Object.freeze({active:false,first:86,last:100,count:14,excluded:[87],source:'faithful alpha contour trace; retain hand-drawn snake 87',manualAnatomyReviewed:false}),
   correctedImageUrl:CORRECTED_URI,correctedIndices:Object.freeze([6,7,9,10,14,19,24,29,30,33,35,40,46,47,48,53,54,65,68,78,81,86]),
   resolve,classify:legacy.classify,style:legacy.style,
   render,drawCanvas,drawable,
