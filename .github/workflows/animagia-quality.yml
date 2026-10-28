@@ -49,9 +49,9 @@ jobs:
           for entry in meta['results']:
            data=open('/tmp/'+entry['file'],'rb').read()
            actual_hash=hashlib.sha256(data).hexdigest()
- if len(data)!=entry['bytes'] or actual_hash!=entry['sha256']:
-  print('LIVE_ART_HASH_MISMATCH',entry['file'],'bytes',len(data),'sha256',actual_hash,'expected',entry['sha256'],flush=True)
- assert len(data)==entry['bytes'] and actual_hash==entry['sha256'],entry['file']
+           if len(data)!=entry['bytes'] or actual_hash!=entry['sha256']:
+            print('LIVE_ART_HASH_MISMATCH',entry['file'],'bytes',len(data),'sha256',actual_hash,'expected',entry['sha256'],flush=True)
+           assert len(data)==entry['bytes'] and actual_hash==entry['sha256'],entry['file']
           print('LIVE_SHARP_ALL_100_ART_BYTES_VERIFIED')
           PY
           snake_http=$(curl --fail --silent --show-error --location --max-time 45 --write-out '%{http_code}' "$url/art/animagia-grass-snake-87.svg" -o /tmp/animagia-live-snake87.svg)
