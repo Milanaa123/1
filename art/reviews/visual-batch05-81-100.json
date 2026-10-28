@@ -1,0 +1,257 @@
+{
+  "version": "anatomy-triage-batch05-20261028",
+  "scope": {
+    "first": 81,
+    "last": 100,
+    "total": 20
+  },
+  "method": "Direct visual inspection of twenty real site raster sources; for #87 inspect separately routed original vector features rather than obsolete raster fallback. Every published SVG and source byte is checked in QA. Comparison with published morphology descriptions is editorial, not specialist certification.",
+  "disclaimer": "'provisional' only means the broad form is recognizable; none of 20 cards is independently certified as biologically accurate. Artistic and fantasy representations are not scientific illustrations.",
+  "references": {
+    "seaTurtle": "https://www.noaa.gov/education/resource-collections/marine-life/sea-turtles",
+    "chameleon": "https://animals.sandiegozoo.org/animals/chameleon",
+    "spinyTail": "https://www.oaklandzoo.org/animals/ornate-uromastyx/",
+    "crocAlligator": "https://myfwc.com/wildlifehabitats/wildlife/american-crocodile/croc-or-gator/",
+    "squid": "https://ocean.si.edu/ocean-life/invertebrates/octopuses-squids-and-relatives",
+    "lobster": "https://www.fisheries.noaa.gov/species/american-lobster"
+  },
+  "items": [
+    {
+      "index": 81,
+      "name": "Черепаха",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Каркас панциря, низкое туловище и короткие опорные конечности напоминают сухопутную черепаху. Форма шеи и головы сильно стилизована; видовой точности не установлено.",
+      "sourceFile": "art/individual-4x/animal-081.webp",
+      "siteSvgFile": "art/vector-ink/animal-081.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 82,
+      "name": "Морская черепаха",
+      "status": "needs_further_comparison",
+      "priority": "medium",
+      "concern": "Плавники узнаваемы, но пропорции панциря и головы чрезмерно вытянуты; проверить характерные крупные передние ласты морских черепах и их крепление к телу.",
+      "sourceFile": "art/individual-4x/animal-082.webp",
+      "siteSvgFile": "art/vector-ink/animal-082.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 83,
+      "name": "Ящерица",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Вытянутое тело, четыре конечности и длинный хвост передают обобщённую ящерицу. Конкретный род и детали лап не определены, поэтому видовая точность не подтверждается.",
+      "sourceFile": "art/individual-4x/animal-083.webp",
+      "siteSvgFile": "art/vector-ink/animal-083.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 84,
+      "name": "Игуана",
+      "status": "needs_further_comparison",
+      "priority": "medium",
+      "concern": "Гребень на спине и большой хвост присутствуют, но конечности и голова сливаются, почти не читается типичный подвес под горлом игуаны.",
+      "sourceFile": "art/individual-4x/animal-084.webp",
+      "siteSvgFile": "art/vector-ink/animal-084.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 85,
+      "name": "Хамелеон",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Закрученный хватательный хвост и крупные глаза указывают на хамелеона. Цепкие лапы и шарнирная анатомия глаз слишком упрощены для видового подтверждения.",
+      "sourceFile": "art/individual-4x/animal-085.webp",
+      "siteSvgFile": "art/vector-ink/animal-085.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 86,
+      "name": "Геккон",
+      "status": "needs_further_comparison",
+      "priority": "medium",
+      "concern": "Рисунок похож на общую ящерицу; нельзя уверенно различить характерные пальцевые пластинки геккона и форму головы, поэтому требуется сравнение с конкретным гекконом.",
+      "sourceFile": "art/individual-4x/animal-086.webp",
+      "siteSvgFile": "art/vector-ink/animal-086.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 87,
+      "name": "Уж (змея)",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "На сайте используется специально нарисованный безногий уж с тонким S-образным телом и светлым воротничком, а не неверный растровый запасной рисунок. Видовая анатомия этого SVG пока не сертифицирована.",
+      "sourceFile": "art/individual-4x/animal-087.webp",
+      "siteSvgFile": "art/animagia-grass-snake-87.svg",
+      "artRoute": "dedicated-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 88,
+      "name": "Змей (декоративный)",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Фантазийный декоративный змей с дракономорфной головой, петлями тела и лишними стилистическими деталями. Это намеренно фантазийный рисунок, к которому нельзя применять биологическую видовую приёмку.",
+      "sourceFile": "art/individual-4x/animal-088.webp",
+      "siteSvgFile": "art/vector-ink/animal-088.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false,
+      "fantasyOnly": true
+    },
+    {
+      "index": 89,
+      "name": "Кобра",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Поднятое переднее тело и расширенный капюшон характерны для кобры. Пропорции капюшона и рисунок чешуи пока не подтверждены по конкретному виду.",
+      "sourceFile": "art/individual-4x/animal-089.webp",
+      "siteSvgFile": "art/vector-ink/animal-089.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 90,
+      "name": "Питон",
+      "status": "needs_further_comparison",
+      "priority": "medium",
+      "concern": "У питона заметны крупные кольца тела, но голова и окончания изгибов слишком фантазийны. Следует проверить, что изображена безногая змея без кобриного капюшона.",
+      "sourceFile": "art/individual-4x/animal-090.webp",
+      "siteSvgFile": "art/vector-ink/animal-090.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 91,
+      "name": "Крокодил",
+      "status": "needs_further_comparison",
+      "priority": "medium",
+      "concern": "Крокодил в целом узнаваем, но вытянутый силуэт и морда почти не различимы от соседнего аллигатора; нужно сравнить с сужающейся V-образной мордой Crocodylus.",
+      "sourceFile": "art/individual-4x/animal-091.webp",
+      "siteSvgFile": "art/vector-ink/animal-091.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 92,
+      "name": "Аллигатор",
+      "status": "needs_further_comparison",
+      "priority": "medium",
+      "concern": "Аллигатор почти идентичен соседнему крокодилу; не считывается более широкая и закруглённая U-образная морда. Требуется отдельное сравнение и исправление отличий.",
+      "sourceFile": "art/individual-4x/animal-092.webp",
+      "siteSvgFile": "art/vector-ink/animal-092.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 93,
+      "name": "Шипохвост",
+      "status": "reject",
+      "priority": "critical",
+      "concern": "У настоящего шипохвоста Uromastyx короткий толстый хвост с кольцами выраженных шипов. На картинке длинный гладкий хвост, типичная ящерица без основного диагностического признака.",
+      "sourceFile": "art/individual-4x/animal-093.webp",
+      "siteSvgFile": "art/vector-ink/animal-093.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 94,
+      "name": "Летучая мышь",
+      "status": "needs_further_comparison",
+      "priority": "medium",
+      "concern": "В целом силуэт распахнутых крыльев напоминает летучую мышь, но перепонки и количество соединённых пальцев искажены, голова плохо отделяется от крыльев.",
+      "sourceFile": "art/individual-4x/animal-094.webp",
+      "siteSvgFile": "art/vector-ink/animal-094.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 95,
+      "name": "Осьминог",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Крупная голова и множество гибких щупалец позволяют узнать осьминога, но необходимо отдельное подсчитывание восьми рук и оценка их крепления к туловищу.",
+      "sourceFile": "art/individual-4x/animal-095.webp",
+      "siteSvgFile": "art/vector-ink/animal-095.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 96,
+      "name": "Кальмар",
+      "status": "reject",
+      "priority": "critical",
+      "concern": "Кальмар выглядит как вытянутое неразборчивое существо, не разделены мантия, голова, восемь рук и два ловчих щупальца. Его силуэт не передаёт характерное строение кальмара.",
+      "sourceFile": "art/individual-4x/animal-096.webp",
+      "siteSvgFile": "art/vector-ink/animal-096.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 97,
+      "name": "Медуза",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Полусферический купол и свисающие щупальца позволяют распознать медузу. Видовые диагностические признаки не проверены из-за сильной стилизации.",
+      "sourceFile": "art/individual-4x/animal-097.webp",
+      "siteSvgFile": "art/vector-ink/animal-097.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 98,
+      "name": "Морской конёк",
+      "status": "provisional",
+      "priority": "routine",
+      "concern": "Голова, вертикальное положение и закрученный хвост морского конька узнаваемы. Плавники и конкретные видовые пропорции недостаточно проработаны.",
+      "sourceFile": "art/individual-4x/animal-098.webp",
+      "siteSvgFile": "art/vector-ink/animal-098.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 99,
+      "name": "Краб",
+      "status": "needs_further_comparison",
+      "priority": "medium",
+      "concern": "Узнаются две большие клешни и широкий панцирь краба, но невозможно уверенно сосчитать ходильные конечности и проверить характерную их сегментацию.",
+      "sourceFile": "art/individual-4x/animal-099.webp",
+      "siteSvgFile": "art/vector-ink/animal-099.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    },
+    {
+      "index": 100,
+      "name": "Омар",
+      "status": "reject",
+      "priority": "critical",
+      "concern": "Омар показан как неразборчивая смесь клешней и конечностей: отсутствует ясно читаемый сегментированный вытянутый хвост, форма головогруди и правильное расположение клешней. Нужна новая композиция.",
+      "sourceFile": "art/individual-4x/animal-100.webp",
+      "siteSvgFile": "art/vector-ink/animal-100.svg",
+      "artRoute": "on-demand-vector",
+      "manualAnatomyApproved": false
+    }
+  ],
+  "sourceException": {
+    "index": 87,
+    "kind": "dedicated vector used on live site",
+    "file": "art/animagia-grass-snake-87.svg",
+    "fallbackRaster": "art/individual-4x/animal-087.webp",
+    "verifiedHash": "31a6276434eef7f5a5593f94885fcc40b36cc096e03f0b59f82369571dfaa216"
+  },
+  "approvalGate": {
+    "rejectedCannotBePublishedAsReviewed": [
+      93,
+      96,
+      100
+    ],
+    "required": "Species-specific redraw and manual anatomy review, then browser and SHA256 verification."
+  },
+  "nextStep": "All 100 editorially triaged. Prioritize 22 redrawn assets, inspect and accept in curated batches; recheck 34 additional ambiguous species."
+}
