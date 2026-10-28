@@ -28,7 +28,7 @@ test('corrected historical numerals and methodical 598 difference',()=>{
   assert.equal(ctx.score('ιετυ')-ctx.score('ραβδι'),598);
 });
 test('Russian phonetic Greek transliteration with manual correction support',()=>{
-  for(const [n,s] of [['Фрейзер Гарольд Браун',2155],
+  for(const [n,s] of [['Фрейзер Гарольд Браун',1558],
     ['Нерис Фостер Берриклот',2177],['Илайн Эли Нельсон',551]])
     assert.equal(ctx.score(ctx.transcribe(n)),s,n);
   assert.equal(ctx.validGreek('φϟη'),true);
@@ -53,7 +53,8 @@ test('privacy and large catalogue only',()=>{
   assert.doesNotMatch(html,/option value="original"/);
   assert.doesNotMatch(html,/id="method"/);
   assert.match(html,/Catalogue of Life XR 2026-08-26/);
-  assert.match(html,/Например: Фрейзер Гарольд Браун/);
+  assert.match(html,/Гарольд Фрейзер Браун/);
+  assert.match(html,/Введи все имена и фамилию/);
   assert.match(html,/id="printPdf"/);
   assert.match(html,/id="letterBreakdown"/);
   assert.match(html,/id="groupFilter"/);
@@ -90,7 +91,8 @@ test('only one large catalogue; data files disclose their Greek basis',()=>{
   const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
   const python=fs.readFileSync(path.join(root,'build_data.py'),'utf8');
   assert.match(html,/greek_taxa\.js/);
-  assert.match(html,/Это не древнегреческий перевод/);
+  assert.match(html,/Автоматическая запись приблизительна/);
+  assert.match(html,/а не единственный перевод/);
   assert.match(python,/n=taxon_score\(name\)/);
   assert.match(python,/taxon_score\(r\[1\]\)/);
   assert.match(python,/algorithm_id/);
@@ -100,9 +102,10 @@ test('only one large catalogue; data files disclose their Greek basis',()=>{
 });
 
 test('древнегреческая запись Брауна и звонких согласных',()=>{
-  assert.equal(ctx.transcribe('Браун'),'Βράουν');
+  assert.equal(ctx.transcribe('Браун'),'Βραουν');
+  assert.equal(ctx.score('Βραουν'),ctx.score('Βράουν'),'Stress marks must not change score');
   assert.equal(ctx.score('Βράουν'),623);
-  assert.equal(ctx.transcribe('Гарольд'),'Χάρολδ');
+  assert.equal(ctx.transcribe('Гарольд'),'Γαρολδ');
   assert.equal(ctx.transcribe('Дамир'),'Δαμιρ');
   assert.equal(ctx.transcribe('Вивиан'),'Ϝιϝιαν');
   assert.equal(ctx.taxonGreek('Vulpes vulpes'),'ϝουλπες ϝουλπες');
