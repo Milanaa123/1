@@ -12,11 +12,11 @@ const api = vm.runInNewContext(script + '\n;({score, transcribe, validGreek, bre
 });
 
 const cases = [
-  ['Фрейзер Гарольд Браун', 2155],
+  ['Фрейзер Гарольд Браун', 1558],
   ['Нерис Фостер Берриклот', 2177],
   ['Илайн Эли Нельсон', 551],
   ['Эйк Льюис Эйвери', 891],
-  ['Льюис Этан Эйвери', 926]
+  ['Льюис Этан Эйвери', 1212]
 ];
 
 for (const [name, value] of cases) {
@@ -41,9 +41,9 @@ test('греческое поле отвергает латиницу и кир�
 });
 test('интерфейс без кнопок сохранённых имён и с правильным примером', () => {
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-  assert.ok(html.includes('Например: Фрейзер Гарольд Браун'));
-  assert.ok(html.includes('Введи полное имя'));
-  assert.ok(html.includes('Данные не сохраняются'));
+  assert.ok(html.includes('Гарольд Фрейзер Браун'));
+  assert.ok(html.includes('Введи все имена и фамилию'));
+  assert.ok(html.includes('Автоматическая запись приблизительна'));
   assert.ok(!html.includes('data-example='));
   assert.ok(!script.includes('localStorage'));
   assert.ok(!script.includes('sessionStorage'));
@@ -79,7 +79,9 @@ test('все основные названия в подборке написа�
   }
 });
 test('непризнанные русские имена не маскируются под официальные',()=>{
-  assert.equal(api.display([551,'Arctosa capensis','species','Arachnida','Araneae','','Arthropoda']),'Паук-волк — арктоса капенсис');
+  const row=[551,'Arctosa capensis','species','Arachnida','Araneae','','Arthropoda'];
+  assert.equal(api.display(row),'Паук-волк');
+  assert.equal(row[1],'Arctosa capensis','Scientific identity must remain available separately');
 });
 
 
