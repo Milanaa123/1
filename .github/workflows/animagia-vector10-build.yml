@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: '22'
       - name: Install vector tracing dependencies
-        run: python -m pip install --quiet 'numpy==1.26.4' 'Pillow==11.2.1' 'opencv-python-headless==4.11.0.86'
+        run: python -m pip install --quiet 'numpy==1.26.4' 'Pillow==11.2.1' 'opencv-python-headless==4.11.0.86' 'CairoSVG==2.7.1'
       - name: Generate transparent SVG portraits 66–85
         run: python tools/build_vector_batch10.py
       - name: Verify fidelity on real Chromium Canvas
@@ -44,6 +44,12 @@ jobs:
               assert b'<path ' in data and b'<image' not in data
           print('VECTOR10_FILES_SHA256_VERIFIED')
           PY
+      - name: Archive original versus traced SVG review sheet
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-vector10-original-versus-svg
+          path: qa-artifacts/vector10-original-vs-svg.png
+          retention-days: 14
       - name: Commit verified 20 drawings and site routing
         run: |
           git config user.name 'github-actions[bot]'
