@@ -79,7 +79,7 @@ test('Render deployment explicitly includes both curated atlas module and art by
  assert.ok(build.includes("shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')"));
  assert.ok(build.includes('CURATED_100_ART_READY'));
  const html=fs.readFileSync('index.html','utf8');
- assert.ok(html.includes('./animal_atlas_100.js?v=vector-batch10-20261028'));
+ assert.ok(html.includes('./animal_atlas_100.js?v=vector-batch11-20261028'));
 });
 
 test('wrapper prefers five personally reviewed PNG cutouts without changing other 95',()=>{
@@ -616,7 +616,7 @@ test('105 dedicated crisp images load individually without changing animal numbe
  assert.equal(api.individualDir,'./art/individual-4x/');
  assert.equal(api.individualImageUrl(5),'./art/vector-ink/animal-006.svg');
  assert.equal(api.individualImageUrl(86),'./art/animagia-grass-snake-87.svg');
- assert.equal(api.individualImageUrl(99),'./art/individual-4x/animal-100.webp');
+ assert.equal(api.individualImageUrl(99),'./art/vector-ink/animal-100.svg');
  assert.ok(fs.readFileSync('relic_features.js','utf8').includes('gallery.drawable(profile)'));
  assert.equal(api.list.length,100);
 });
@@ -682,7 +682,7 @@ test('Third 20 source-faithful SVGs cover animals 46–65 with all 40 earlier ve
  assert.equal(api.individualImageUrl(44),'./art/vector-ink/animal-045.svg');
  assert.equal(api.individualImageUrl(64),'./art/vector-ink/animal-065.svg');
  assert.equal(api.individualImageUrl(65),'./art/vector-ink/animal-066.svg');
-  assert.equal(api.individualImageUrl(85),'./art/individual-4x/animal-086.webp');
+  assert.equal(api.individualImageUrl(85),'./art/vector-ink/animal-086.svg');
  assert.equal(api.individualImageUrl(86),'./art/animagia-grass-snake-87.svg');
  assert.equal(api.list.length,100);
 });
@@ -705,6 +705,38 @@ test('Fourth 20 source-faithful SVGs cover animals 66–85 and preserve all earl
   assert.equal(api.individualImageUrl(44),'./art/vector-ink/animal-045.svg');
   assert.equal(api.individualImageUrl(64),'./art/vector-ink/animal-065.svg');
   assert.equal(api.individualImageUrl(84),'./art/vector-ink/animal-085.svg');
-  assert.equal(api.individualImageUrl(85),'./art/individual-4x/animal-086.webp');
+  assert.equal(api.individualImageUrl(85),'./art/vector-ink/animal-086.svg');
   assert.equal(api.individualImageUrl(86),'./art/animagia-grass-snake-87.svg');
+});
+
+
+test('Final 15 illustrations retain grass snake 87 and verify exactly 14 new gold SVGs',()=>{
+ const crypto=require('node:crypto');
+ const meta=JSON.parse(fs.readFileSync('art/vector-ink/manifest-batch11.json','utf8'));
+ assert.deepEqual(meta.range,[86,100]);
+ assert.equal(meta.items.length,14);
+ assert.equal(meta.preservedHandDrawn.index,87);
+ assert.equal(meta.preservedHandDrawn.file,'art/animagia-grass-snake-87.svg');
+ assert.equal(api.vectorBatch11.first,86);
+ assert.equal(api.vectorBatch11.last,100);
+ assert.equal(api.vectorBatch11.count,14);
+ assert.deepEqual(Array.from(api.vectorBatch11.excluded),[87]);
+ assert.equal(api.vectorBatch11.manualAnatomyReviewed,false);
+ assert.deepEqual(meta.items.map(x=>x.index),Array.from({length:15},(_,i)=>i+86).filter(x=>x!==87));
+ assert.ok(fs.existsSync('art/animagia-grass-snake-87.svg'));
+ assert.ok(!fs.existsSync('art/vector-ink/animal-087.svg'));
+ for(const entry of meta.items){
+  const file='art/vector-ink/'+entry.file, data=fs.readFileSync(file);
+  assert.equal(entry.file,'animal-'+String(entry.index).padStart(3,'0')+'.svg');
+  assert.equal(data.length,entry.bytes);
+  assert.equal(crypto.createHash('sha256').update(data).digest('hex'),entry.sha256);
+  assert.ok(entry.alpha_iou>=0.84);
+  assert.match(data.toString('utf8'),/<path/);
+  assert.doesNotMatch(data.toString('utf8'),/<image\b/);
+  assert.equal(api.individualImageUrl(entry.index-1),'./art/vector-ink/'+entry.file);
+ }
+ assert.equal(api.individualImageUrl(86),'./art/animagia-grass-snake-87.svg');
+ assert.equal(api.individualImageUrl(99),'./art/vector-ink/animal-100.svg');
+ assert.equal(api.list.length,100);
+ assert.ok(fs.readFileSync('build_data.py','utf8').includes('VECTOR_BATCH11_14_SVG_PLUS_SNAKE87_PUBLISHED'));
 });

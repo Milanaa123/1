@@ -32,7 +32,7 @@ const body=String(function(){
    newCanvas.style.width='240px';newCanvas.style.height='165px';
    fig.append(newCanvas,c);main.append(fig);
   }
-  if(atlas.individualImageUrl(85).endsWith('.svg'))errors.push('Wrongly vectorized animal 86');
+  if(atlas.individualImageUrl(85)!=='./art/vector-ink/animal-086.svg')errors.push('Animal 86 vector route missing');
   if(atlas.individualImageUrl(86)!=='./art/animagia-grass-snake-87.svg')errors.push('Hand-drawn grass snake 87 missing');
   const requested=performance.getEntriesByType('resource').map(x=>x.name);
   if(requested.some(x=>x.includes('animagia-100-sharp4x.webp')||x.includes('animagia-corrected-22-sharp4x.webp')))

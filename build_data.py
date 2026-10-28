@@ -320,6 +320,21 @@ def build():
   assert vector['alpha_iou']>=0.84
   shutil.copy2(vector_dir/name,svg_out/name)
  shutil.copy2(vector_dir/'manifest-batch10.json',svg_out/'manifest-batch10.json')
+ # Last fifteen cards: preserve the separately hand-drawn anatomical grass snake #87.
+ vector_meta11=json.loads((vector_dir/'manifest-batch11.json').read_text(encoding='utf8'))
+ assert vector_meta11['range']==[86,100] and len(vector_meta11['items'])==14
+ assert vector_meta11['preservedHandDrawn']['index']==87
+ indices=[e['index'] for e in vector_meta11['items']]
+ assert indices==[n for n in range(86,101) if n!=87]
+ assert not (vector_dir/'animal-087.svg').exists()
+ for vector in vector_meta11['items']:
+  num=vector['index'];name=vector['file'];data=(vector_dir/name).read_bytes()
+  assert name==f'animal-{num:03d}.svg' and len(data)==vector['bytes']
+  assert hashlib.sha256(data).hexdigest()==vector['sha256'] and b'<path' in data and b'<image' not in data
+  assert vector['alpha_iou']>=0.84
+  shutil.copy2(vector_dir/name,svg_out/name)
+ shutil.copy2(vector_dir/'manifest-batch11.json',svg_out/'manifest-batch11.json')
+ print('VECTOR_BATCH11_14_SVG_PLUS_SNAKE87_PUBLISHED',sum(v['bytes'] for v in vector_meta11['items']),flush=True)
  print('VECTOR_BATCH10_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta10['items']),flush=True)
  print('VECTOR_BATCH09_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta09['items']),flush=True)
  print('VECTOR_BATCH08_20_SVG_PUBLISHED',sum(v['bytes'] for v in vector_meta08['items']),flush=True)
