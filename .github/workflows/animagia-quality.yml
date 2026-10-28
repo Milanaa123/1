@@ -21,5 +21,7 @@ jobs:
           for file in app.js greek_taxa.js enhancements.js animal_atlas.js animal_atlas_100.js animal_cutout_40.js gold_contour_40.js relic_features.js; do node --check "$file"; done
       - name: Validate unchanged reference source and 40 routed original illustrations
         run: node tests/check_exact_reference_01_40.cjs
+      - name: Verify 40 paths draw on Canvas and have no empty vector slots
+        run: node tests/check_gold_contour_runtime.cjs
       - name: Verify animal name calculator remains unchanged
         run: node --test tests/phonetic.test.cjs tests/strict-original.test.cjs
