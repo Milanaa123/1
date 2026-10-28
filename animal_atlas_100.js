@@ -269,13 +269,14 @@
  function drawExactReference(ctx,art,cell,x,y,w,h){
   if(!art||!Number.isInteger(cell)||cell<0||cell>=40||
      art.naturalWidth!==1536||art.naturalHeight!==424)return false;
-  const col=cell%10,row=Math.floor(cell/10);
-  const sx=REF_X0[col],sy=REF_Y0[row];
-  const sw=REF_X1[col]-sx,sh=REF_Y1[row]-sy;
-  const scale=Math.min(w*.94/sw,h*.94/sh);
-  const dw=sw*scale,dh=sh*scale;
+  // Cut out only the existing gold animal. The frog follows this same
+  // transparent-canvas approach; a rectangle or caption must never be drawn.
+  const isolated=window.AnimagiaTransparentCutouts?.isolate(art,cell);
+  if(!isolated)return false;
+  const factor=Math.min(w*.90/isolated.width,h*.90/isolated.height);
+  const dw=isolated.width*factor,dh=isolated.height*factor;
   ctx.save();ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
-  ctx.drawImage(art,sx,sy,sw,sh,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
+  ctx.drawImage(isolated,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
   ctx.restore();
   return true;
  }
@@ -288,7 +289,7 @@
   // 160x110 preview or download the full 10MB source atlas for one animal.
   if(Number.isInteger(profile.cell)&&loaded?.singleArt&&loaded.singleCell===profile.cell){
    const art=loaded.singleArt;
-   if(drawExactReference(ctx,art,profile.cell,x,y,w,h))return true;
+   if(profile.cell<40)return drawExactReference(ctx,art,profile.cell,x,y,w,h);
    if(art.naturalWidth>0&&art.naturalHeight>0){
     const factor=Math.min(w*.90/art.naturalWidth,h*.90/art.naturalHeight);
     const dw=art.naturalWidth*factor,dh=art.naturalHeight*factor;
