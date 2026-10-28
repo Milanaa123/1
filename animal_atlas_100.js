@@ -17,11 +17,13 @@
  const INDIVIDUAL_DIR='./art/individual-4x/';
  const VECTOR_DIR='./art/vector-ink/';
  const VECTOR07_FIRST=6,VECTOR07_LAST=25;
+ const VECTOR08_FIRST=26,VECTOR08_LAST=45;
  const individualCache=new Map();
  const individualUrl=i=>{
   if(i===86)return GRASS_SNAKE_URI;
   const number=i+1,suffix='animal-'+String(number).padStart(3,'0');
-  return number>=VECTOR07_FIRST&&number<=VECTOR07_LAST?VECTOR_DIR+suffix+'.svg':INDIVIDUAL_DIR+suffix+'.webp';
+  return ((number>=VECTOR07_FIRST&&number<=VECTOR07_LAST)||(number>=VECTOR08_FIRST&&number<=VECTOR08_LAST))?
+   VECTOR_DIR+suffix+'.svg':INDIVIDUAL_DIR+suffix+'.webp';
  };
  function individualAsset(i){
   if(!Number.isInteger(i)||i<0||i>=100)return Promise.resolve(null);
@@ -327,6 +329,7 @@
   sharpImageUrl:SHARP_URI,sharpCorrectedImageUrl:SHARP_CORRECTED_URI,sharpArtworkScale:SHARP_SCALE,
   individualDir:INDIVIDUAL_DIR,individualImageUrl:individualUrl,
   vectorDir:VECTOR_DIR,vectorBatch07:Object.freeze({first:6,last:25,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
+  vectorBatch08:Object.freeze({first:26,last:45,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
   correctedImageUrl:CORRECTED_URI,correctedIndices:Object.freeze([6,7,9,10,14,19,24,29,30,33,35,40,46,47,48,53,54,65,68,78,81,86]),
   resolve,classify:legacy.classify,style:legacy.style,
   render,drawCanvas,drawable,
