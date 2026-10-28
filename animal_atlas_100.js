@@ -15,7 +15,12 @@
  const SHARP_CORRECTED_URI='./art/animagia-corrected-22-sharp4x.webp';
  const SHARP_SCALE=4;
  const INDIVIDUAL_DIR='./art/individual-4x/';
- const NEW_BATCH01_DIR='./art/site-01-20/';
+ const EXACT_REF_URL='./art/reference-original-01-40.png';
+ // Pixel-exact boundaries from the user's original 1536×1024 collage.
+ const REF_X0=Object.freeze([4,155,309,463,617,772,926,1082,1236,1391]);
+ const REF_X1=Object.freeze([149,301,455,608,763,919,1075,1230,1383,1532]);
+ const REF_Y0=Object.freeze([4,111,217,323]);
+ const REF_Y1=Object.freeze([105,211,317,423]);
  const VECTOR_DIR='./art/vector-ink/';
  const REDRAW_DIR='./art/redraw-gold/';
  const REDRAW_PUBLISHED=new Set([6,10,24,33,51,52,53,54,55,60,63,65,66,67,68,69,70,76,79,93,96,100]);
@@ -25,15 +30,24 @@
  const VECTOR10_FIRST=66,VECTOR10_LAST=85;
  const VECTOR11_FIRST=86,VECTOR11_LAST=100;
  const individualCache=new Map();
+ let sharedExactReference=null;
  // The 100 visitor-approved originals take priority over experimental vector
  // tracings. Do not reinterpret their anatomy, poses or golden line-work.
  const individualUrl=i=>{
   if(!Number.isInteger(i)||i<0||i>=100)return null;
   const suffix='animal-'+String(i+1).padStart(3,'0');
-  return (i<20?NEW_BATCH01_DIR:INDIVIDUAL_DIR)+suffix+'.webp';
+  return i<40?EXACT_REF_URL:INDIVIDUAL_DIR+suffix+'.webp';
  };
  function individualAsset(i){
   if(!Number.isInteger(i)||i<0||i>=100)return Promise.resolve(null);
+  if(i<40){
+   if(!sharedExactReference)sharedExactReference=new Promise(resolve=>{
+    const img=new Image();img.crossOrigin='anonymous';
+    img.onload=()=>resolve(img);img.onerror=()=>resolve(null);
+    img.src=EXACT_REF_URL;
+   });
+   return sharedExactReference;
+  }
   if(!individualCache.has(i))individualCache.set(i,new Promise(resolve=>{
    const image=new Image();image.crossOrigin='anonymous';
    image.onload=()=>resolve(image);image.onerror=()=>resolve(null);
@@ -261,6 +275,19 @@
   // 160x110 preview or download the full 10MB source atlas for one animal.
   if(Number.isInteger(profile.cell)&&loaded?.singleArt&&loaded.singleCell===profile.cell){
    const art=loaded.singleArt;
+   if(profile.cell<40&&art.naturalWidth===1536&&art.naturalHeight===424){
+    // The original pixels remain untouched; each canvas view crops the
+    // corresponding cell. Only display scaling depends on card dimensions.
+    const col=profile.cell%10,row=Math.floor(profile.cell/10);
+    const sx=REF_X0[col],sy=REF_Y0[row];
+    const sw=REF_X1[col]-sx,sh=REF_Y1[row]-sy;
+    const scale=Math.min(w*.94/sw,h*.94/sh);
+    const dw=sw*scale,dh=sh*scale;
+    ctx.save();ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+    ctx.drawImage(art,sx,sy,sw,sh,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
+    ctx.restore();
+    return true;
+   }
    if(art.naturalWidth>0&&art.naturalHeight>0){
     const factor=Math.min(w*.90/art.naturalWidth,h*.90/art.naturalHeight);
     const dw=art.naturalWidth*factor,dh=art.naturalHeight*factor;
@@ -336,7 +363,7 @@
   ...legacy,imageUrl:URI,legacyImageUrl:legacy.imageUrl,
   grassSnake87ImageUrl:GRASS_SNAKE_URI,
   sharpImageUrl:SHARP_URI,sharpCorrectedImageUrl:SHARP_CORRECTED_URI,sharpArtworkScale:SHARP_SCALE,
-  individualDir:INDIVIDUAL_DIR,siteBatch01Dir:NEW_BATCH01_DIR,siteBatch01Count:20,individualImageUrl:individualUrl,
+  individualDir:INDIVIDUAL_DIR,exactReferenceUrl:EXACT_REF_URL,exactReferenceCount:40,individualImageUrl:individualUrl,
   redrawDir:REDRAW_DIR,redrawPublished:Object.freeze([]),redrawArchived:Object.freeze([6,10,24,33,51,52,53,54,55,60,63,65,66,67,68,69,70,76,79,93,96,100]),
   vectorDir:VECTOR_DIR,vectorBatch07:Object.freeze({active:false,first:6,last:25,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
   vectorBatch08:Object.freeze({active:false,first:26,last:45,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),

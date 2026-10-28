@@ -268,37 +268,28 @@ def build():
   name=e['file'];data=(BASE/'art'/name).read_bytes()
   assert len(data)==e['bytes'] and hashlib.sha256(data).hexdigest()==e['sha256'],'Corrupt sharper art '+name
   shutil.copy2(BASE/'art'/name,DEST/'art'/name)
- # New image layout: batch 01–20 is separately redrawn, all remaining
- # older portraits 21–100 remain available until replaced in later batches.
+ # Preserve the 60 not-yet-replaced species 41–100 and five
+ # historical approved previews. First 40 use a pixel-exact shared PNG.
  solo_dir=BASE/'art'/'individual-4x'
  solo=json.loads((solo_dir/'manifest.json').read_text(encoding='utf8'))
- assert solo['count']==80 and solo['approvedCount']==5 and len(solo['items'])==85
+ assert solo['count']==60 and solo['approvedCount']==5 and len(solo['items'])==65
  outdir=DEST/'art'/'individual-4x';outdir.mkdir(parents=True,exist_ok=True)
- legacy_bytes=0
+ retained_bytes=0
  for entry in solo['items']:
   name=entry['file'];raw=(solo_dir/name).read_bytes()
-  assert len(raw)==entry['size'] and hashlib.sha256(raw).hexdigest()==entry['sha256'] and raw[:4]==b'RIFF','Bad retained individual artwork '+name
+  assert len(raw)==entry['size'] and hashlib.sha256(raw).hexdigest()==entry['sha256'] and raw[:4]==b'RIFF','Bad remaining animal art '+name
   shutil.copy2(solo_dir/name,outdir/name)
-  legacy_bytes+=len(raw)
+  retained_bytes+=len(raw)
  shutil.copy2(solo_dir/'manifest.json',outdir/'manifest.json')
- new_dir=BASE/'art'/'site-01-20'
- batch=json.loads((new_dir/'manifest.json').read_text(encoding='utf8'))
- assert batch['transparent'] is True and batch['dimensions']==[640,440]
- assert len(batch['numbers'])==20 and [x['n'] for x in batch['numbers']]==list(range(1,21))
- new_out=DEST/'art'/'site-01-20';new_out.mkdir(parents=True,exist_ok=True)
- new_bytes=0
- for entry in batch['numbers']:
-  name=entry['asset'];num=entry['n']
-  assert name==f'animal-{num:03d}.webp'
-  raw=(new_dir/name).read_bytes()
-  assert len(raw)>20000 and raw[:4]==b'RIFF' and raw[8:12]==b'WEBP','Bad new 01-20 picture '+name
-  shutil.copy2(new_dir/name,new_out/name)
-  new_bytes+=len(raw)
- shutil.copy2(new_dir/'manifest.json',new_out/'manifest.json')
- print('ANIMAGIA_NEW_20_IMAGES_PUBLISHED',new_bytes,'bytes',flush=True)
- print('ANIMAGIA_RETAINED_80_AND_APPROVED_5_READY',legacy_bytes,'bytes',flush=True)
- print('SHARP_ALL_100_ART_READY',[(e['file'],e['bytes']) for e in manifest['results']],flush=True)
- print('CORRECTED_SPECIES_22_READY',len(replacement),'bytes',flush=True)
+ ref_source=BASE/'art'/'reference-original-01-40.png'
+ ref_data=ref_source.read_bytes()
+ assert ref_data[:8]==bytes([137,80,78,71,13,10,26,10])
+ assert len(ref_data)==1284104
+ assert hashlib.sha256(ref_data).hexdigest()=='de19956a431cd33018f7acf6b52012bf2ba3425227857bfa7b6ffe0fad816e1b','Reference must be the untouched crop of the uploaded original'
+ assert int.from_bytes(ref_data[16:20],'big')==1536 and int.from_bytes(ref_data[20:24],'big')==424
+ shutil.copy2(ref_source,DEST/'art'/'reference-original-01-40.png')
+ print('ANIMAGIA_UNMODIFIED_REFERENCE_01_40_PUBLISHED',len(ref_data),'bytes',flush=True)
+ print('ANIMAGIA_REMAINING_60_AND_APPROVED_5_PUBLISHED',retained_bytes,'bytes',flush=True)
  print('CURATED_100_ART_READY',len(raw100),'bytes',expected100,flush=True)
  # First review batch is a separate alpha PNG with five individually cleaned
  # visitor-selected originals; prevent Render from serving an older cached sheet.

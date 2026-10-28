@@ -1,16 +1,10 @@
 {
-  "version": "individual-4x-retained-21-100-20261028",
+  "version": "retained-only-41-100-20261028",
   "width": 640,
   "height": 440,
-  "count": 80,
+  "count": 60,
   "approvedCount": 5,
   "corrections": [
-    24,
-    29,
-    30,
-    33,
-    35,
-    40,
     46,
     47,
     48,
@@ -23,146 +17,6 @@
     86
   ],
   "items": [
-    {
-      "index": 21,
-      "file": "animal-021.webp",
-      "size": 90312,
-      "sha256": "753fc143d6a5d73fc1548526d6dbd83a2d6da2f56a4f37659a436bb70e840ea1",
-      "source": "original"
-    },
-    {
-      "index": 22,
-      "file": "animal-022.webp",
-      "size": 92346,
-      "sha256": "75211f339bd427449b8a17e5510e98d3d699845b9e12333acfa22c95d8d749be",
-      "source": "original"
-    },
-    {
-      "index": 23,
-      "file": "animal-023.webp",
-      "size": 80016,
-      "sha256": "ec30e860b1bc7536661cf592ddceaf6fd1a766b39c7636119d2fd18aacca416a",
-      "source": "original"
-    },
-    {
-      "index": 24,
-      "file": "animal-024.webp",
-      "size": 51980,
-      "sha256": "321a35eb56325f7258fcf8556bb66946a254da080ba54c0e408612b330be564a",
-      "source": "corrected"
-    },
-    {
-      "index": 25,
-      "file": "animal-025.webp",
-      "size": 82508,
-      "sha256": "a2895caedd233183b1d2d57ffc53638b446975cde500f683c64f369eb5e6b8c5",
-      "source": "original"
-    },
-    {
-      "index": 26,
-      "file": "animal-026.webp",
-      "size": 77628,
-      "sha256": "5d869a4cd097445013dc198d2b2ca09166859e37d79658488f252cdeddbbf200",
-      "source": "original"
-    },
-    {
-      "index": 27,
-      "file": "animal-027.webp",
-      "size": 86452,
-      "sha256": "4b1ba7b86a2e7287edff94e4f2587564d6284cc64d972207c76be763be8bae06",
-      "source": "original"
-    },
-    {
-      "index": 28,
-      "file": "animal-028.webp",
-      "size": 93832,
-      "sha256": "abdb53ca129d5791818efd2f45d2cf4cfe6b32e48d41258ea9e60c1fc3aa4e93",
-      "source": "original"
-    },
-    {
-      "index": 29,
-      "file": "animal-029.webp",
-      "size": 59052,
-      "sha256": "31d0f570b1844a5518a7490feb5dc79fd96577e76b2061bbdf00ff8150d8cddc",
-      "source": "corrected"
-    },
-    {
-      "index": 30,
-      "file": "animal-030.webp",
-      "size": 45490,
-      "sha256": "abc5b67322fe068c4df237a01627acfcf104d4c512c520ed2a7f011c9c067f17",
-      "source": "corrected"
-    },
-    {
-      "index": 31,
-      "file": "animal-031.webp",
-      "size": 80498,
-      "sha256": "529e4f9386881178c7c7e606dcb04af27ae0223244f794f9974f06810c3668bb",
-      "source": "original"
-    },
-    {
-      "index": 32,
-      "file": "animal-032.webp",
-      "size": 95582,
-      "sha256": "5ad3f14122847962571fe2925157ce7cddb7686fd062b3ffe0bf34351647240e",
-      "source": "original"
-    },
-    {
-      "index": 33,
-      "file": "animal-033.webp",
-      "size": 45938,
-      "sha256": "fccd64899aec336e41dce8407d29ba16c12f74669d71c80e6d3c0c905638506b",
-      "source": "corrected"
-    },
-    {
-      "index": 34,
-      "file": "animal-034.webp",
-      "size": 90582,
-      "sha256": "9be1a84fa1039e8093ca15934a98e70e5f25904176a700a371fcf6ed59d9384c",
-      "source": "original"
-    },
-    {
-      "index": 35,
-      "file": "animal-035.webp",
-      "size": 96906,
-      "sha256": "cd4159783ae62ad1472f7c1db9bd088ad9821965e003fcb82d10f393abde4944",
-      "source": "corrected"
-    },
-    {
-      "index": 36,
-      "file": "animal-036.webp",
-      "size": 96314,
-      "sha256": "50c29a423f361a70246b99a7965e47138cfaacb84f48c5362c9b13d2d6b32a1c",
-      "source": "original"
-    },
-    {
-      "index": 37,
-      "file": "animal-037.webp",
-      "size": 94484,
-      "sha256": "36dc1588aaefa8198a0e3ab24b5670fb7a3940912bd7ea16c666ec9324769123",
-      "source": "original"
-    },
-    {
-      "index": 38,
-      "file": "animal-038.webp",
-      "size": 92276,
-      "sha256": "e64fa3f783c2fbae47102561ee42e03adf9f785ae149ea798605f938bd8a9dc9",
-      "source": "original"
-    },
-    {
-      "index": 39,
-      "file": "animal-039.webp",
-      "size": 85022,
-      "sha256": "b5df73f2f9b336b4cd098b852be3a34438e57008f4f636c812c9bf1f549288a0",
-      "source": "original"
-    },
-    {
-      "index": 40,
-      "file": "animal-040.webp",
-      "size": 67454,
-      "sha256": "b16b7d661db7832d5661b5fa6f2ef11a705eb56a4de198e2b1103e9f700e54dc",
-      "source": "corrected"
-    },
     {
       "index": 41,
       "file": "animal-041.webp",
@@ -619,5 +473,6 @@
       "source": "five-approved-originals"
     }
   ],
-  "replacedFirst20By": "art/site-01-20/manifest.json"
+  "replacedFirst20By": "art/site-01-20/manifest.json",
+  "exactReplacements": "art/reference-original-01-40.png"
 }
