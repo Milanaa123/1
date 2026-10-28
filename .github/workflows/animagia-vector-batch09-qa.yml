@@ -1,0 +1,47 @@
+name: Independently verify vector batch 09 and all animal cards
+on:
+  push:
+    branches: [animagia-vector-batch09-20261028]
+    paths:
+      - 'animal_atlas_100.js'
+      - 'tests/check_vector_batch09.cjs'
+      - 'tests/test_atlas100.cjs'
+      - '.github/workflows/animagia-vector-batch09-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax
+        run: |
+          node --check animal_atlas_100.js
+          node --check tests/check_vector_batch07.cjs
+          node --check tests/check_vector_batch08.cjs
+          node --check tests/check_vector_batch09.cjs
+      - name: Check all SVG files 6-65 and original Greek arithmetic
+        run: node --test tests/test_atlas100.cjs
+      - name: Real Chromium test of animals 6-25
+        run: node tests/check_vector_batch07.cjs
+      - name: Real Chromium test of animals 26-45
+        run: node tests/check_vector_batch08.cjs
+      - name: Real Chromium test of animals 46-65
+        run: node tests/check_vector_batch09.cjs
+      - name: Check all 100 animal drawings and 5 original approved species
+        run: node tests/check_individual_all100.cjs
+      - name: Keep 22 anatomical corrections
+        run: node tests/check_corrected_species.cjs
+      - name: Check downloadable cards and older layouts
+        run: node tests/check_complete_animal_stack.cjs
+      - name: Save browser proof of 20 new SVG drawings
+        uses: actions/upload-artifact@v4
+        with:
+          name: animagia-vector09-browser-proof
+          path: qa-artifacts/vector09-chromium-20.png
+          retention-days: 14
