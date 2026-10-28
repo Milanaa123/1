@@ -1,10 +1,10 @@
 {
   "status": "published",
-  "release": "redraw-six-20261028",
+  "release": "redraw-twelve-20261028",
   "originalAudit": {
     "version": "anatomy-audit-all100-20261028",
     "rejectedInitially": 22,
-    "remainingAfterTheseReplacements": 16
+    "remainingAfterTheseReplacements": 10
   },
   "items": [
     {
@@ -101,6 +101,102 @@
         "running posture"
       ],
       "source": "new original generated figure, path-vectorized with visual silhouette review"
+    },
+    {
+      "index": 53,
+      "file": "animal-053.svg",
+      "bytes": 50755,
+      "sha256": "f59dbc35c67e0751dc9a57a573ac19de1170a82bd03fa65a7b677efa3c3ceea1",
+      "published": true,
+      "artistVisualReview": true,
+      "speciesAnatomyCertified": false,
+      "features": [
+        "вертикальный пышный хвост",
+        "маленькие передние лапы",
+        "компактный корпус",
+        "заострённые уши"
+      ],
+      "source": "Hand-authored original SVG with multiple gold engraved textures and manual silhouette inspection"
+    },
+    {
+      "index": 54,
+      "file": "animal-054.svg",
+      "bytes": 49934,
+      "sha256": "a90974e78c7b339d34d8f08830c6367c808035919976327c0f949a6136ba5c26",
+      "published": true,
+      "artistVisualReview": true,
+      "speciesAnatomyCertified": false,
+      "features": [
+        "широкий уплощённый чешуйчатый хвост",
+        "массивное тело",
+        "короткие лапы",
+        "резцы"
+      ],
+      "source": "Hand-authored original SVG with multiple gold engraved textures and manual silhouette inspection"
+    },
+    {
+      "index": 55,
+      "file": "animal-055.svg",
+      "bytes": 38566,
+      "sha256": "ae3d3912c7d1cf68b037162a986801eb3071f50c32e30348b9eb625627af6da1",
+      "published": true,
+      "artistVisualReview": true,
+      "speciesAnatomyCertified": false,
+      "features": [
+        "отсутствие длинного хвоста",
+        "округлое тело",
+        "защёчные мешки",
+        "короткие лапы"
+      ],
+      "source": "Hand-authored original SVG with multiple gold engraved textures and manual silhouette inspection"
+    },
+    {
+      "index": 60,
+      "file": "animal-060.svg",
+      "bytes": 49687,
+      "sha256": "9825e6b4ca41558630fdc4baeb28a4fc0bf381a08fda5455e4bad7b0bdf9bede",
+      "published": true,
+      "artistVisualReview": true,
+      "speciesAnatomyCertified": false,
+      "features": [
+        "округлый массивный корпус",
+        "короткие сильные лапы",
+        "небольшой пушистый хвост",
+        "маленькие уши"
+      ],
+      "source": "Hand-authored original SVG with multiple gold engraved textures and manual silhouette inspection"
+    },
+    {
+      "index": 63,
+      "file": "animal-063.svg",
+      "bytes": 38059,
+      "sha256": "3ea39e585a63d0d97f53fd2fc22c5c33601814ca963200c4ce9f5fd7aaee8273",
+      "published": true,
+      "artistVisualReview": true,
+      "speciesAnatomyCertified": false,
+      "features": [
+        "низкий широкий корпус",
+        "короткие мощные ноги",
+        "массивная голова",
+        "почти незаметный хвост"
+      ],
+      "source": "Hand-authored original SVG with multiple gold engraved textures and manual silhouette inspection"
+    },
+    {
+      "index": 65,
+      "file": "animal-065.svg",
+      "bytes": 38371,
+      "sha256": "c87696cdfcded1e835fc731f7f1701cb87181ae67ffe6b694d5831f7514e8f38",
+      "published": true,
+      "artistVisualReview": true,
+      "speciesAnatomyCertified": false,
+      "features": [
+        "приземистый хищник",
+        "крупная голова",
+        "светлая нагрудная полоса",
+        "короткий толстый хвост"
+      ],
+      "source": "Hand-authored original SVG with multiple gold engraved textures and manual silhouette inspection"
     }
   ]
 }

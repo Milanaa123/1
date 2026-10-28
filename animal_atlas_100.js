@@ -17,7 +17,7 @@
  const INDIVIDUAL_DIR='./art/individual-4x/';
  const VECTOR_DIR='./art/vector-ink/';
  const REDRAW_DIR='./art/redraw-gold/';
- const REDRAW_PUBLISHED=new Set([6,10,24,33,51,52]);
+ const REDRAW_PUBLISHED=new Set([6,10,24,33,51,52,53,54,55,60,63,65]);
  const VECTOR07_FIRST=6,VECTOR07_LAST=25;
  const VECTOR08_FIRST=26,VECTOR08_LAST=45;
  const VECTOR09_FIRST=46,VECTOR09_LAST=65;
@@ -336,7 +336,7 @@
   grassSnake87ImageUrl:GRASS_SNAKE_URI,
   sharpImageUrl:SHARP_URI,sharpCorrectedImageUrl:SHARP_CORRECTED_URI,sharpArtworkScale:SHARP_SCALE,
   individualDir:INDIVIDUAL_DIR,individualImageUrl:individualUrl,
-  redrawDir:REDRAW_DIR,redrawPublished:Object.freeze([6,10,24,33,51,52]),
+  redrawDir:REDRAW_DIR,redrawPublished:Object.freeze([6,10,24,33,51,52,53,54,55,60,63,65]),
   vectorDir:VECTOR_DIR,vectorBatch07:Object.freeze({first:6,last:25,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
   vectorBatch08:Object.freeze({first:26,last:45,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
   vectorBatch09:Object.freeze({first:46,last:65,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),

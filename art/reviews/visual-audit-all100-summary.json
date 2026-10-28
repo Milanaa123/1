@@ -400,8 +400,14 @@
     24,
     33,
     51,
-    52
+    52,
+    53,
+    54,
+    55,
+    60,
+    63,
+    65
   ],
-  "outstandingRedraws": 16,
-  "notesAfterOriginalAudit": "Initial audit found 22 wrong illustrations. Six source images (6,10,24,33,51,52) have been replaced by manually reviewed original SVG silhouettes. The historical rejection report is retained. Species-level certified anatomy is NOT claimed; 16 rejected source drawings await replacement."
+  "outstandingRedraws": 10,
+  "notesAfterOriginalAudit": "The original 22 rejects remain in historical audit. Twelve distinct SVG redraws were visually reviewed for basic anatomy and promoted (6,10,24,33,51,52,53,54,55,60,63,65). Ten await redraw. No scientific certification claimed."
 }
