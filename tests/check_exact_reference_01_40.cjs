@@ -10,7 +10,7 @@ assert.equal(digest,'de19956a431cd33018f7acf6b52012bf2ba3425227857bfa7b6ffe0fad8
 assert.equal(image.toString('hex',0,8),'89504e470d0a1a0a');
 assert.equal(image.readUInt32BE(16),1536);
 assert.equal(image.readUInt32BE(20),424);
-assert.match(src,/return i<40\?EXACT_REF_URL:INDIVIDUAL_DIR/);
+assert.match(src,/return i<40\?EXACT_REF_URL:null/);
 const cutouts=fs.readFileSync(path.join(root,'animal_cutout_40.js'),'utf8');
 assert.match(cutouts,/AnimagiaTransparentCutouts=Object\.freeze/);
 assert.match(cutouts,/const alpha=clamp\(warm\*3\.1/);
@@ -36,18 +36,25 @@ assert.match(html,/animal_cutout_40\.js\?v=frog-style-isolated-v2-20261028/);
 assert.match(html,/animal_atlas_100\.js\?v=vector-gold-40-panda-bison-20261028/);
 assert.match(builder,/shutil\.copy2\(BASE\/'animal_cutout_40\.js'/);
 assert.match(builder,/ANIMAGIA_UNMODIFIED_REFERENCE_01_40_PUBLISHED/);
+assert.match(src,/drawRestVector\(ctx,profile\.cell,x,y,w,h\)/);
+for(const batch of ['41_60','61_80','81_100']){
+ const moduleName='gold_contour_'+batch+'.js';
+ assert.ok(fs.existsSync(path.join(root,moduleName)),moduleName);
+ assert.match(html,new RegExp(moduleName.replaceAll('.','\\.')+'\\?v=gold-contours-100-final-20261028'));
+ assert.match(builder,new RegExp('gold_contour_'));
+}
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'art/individual-4x/manifest.json'),'utf8'));
-assert.equal(manifest.count,60);
-assert.equal(manifest.items.length,65);
+assert.equal(manifest.count,0);
+assert.equal(manifest.items.length,5);
 for(let n=1;n<=40;n++){
  const f=path.join(root,'art/individual-4x','animal-'+String(n).padStart(3,'0')+'.webp');
  assert.equal(fs.existsSync(f),false,'Old image remains '+n);
 }
 for(let n=41;n<=100;n++){
  const f=path.join(root,'art/individual-4x','animal-'+String(n).padStart(3,'0')+'.webp');
- assert.equal(fs.existsSync(f),true,'Missing remaining image '+n);
+ assert.equal(fs.existsSync(f),false,'Obsolete blurry image still exists '+n);
 }
 assert.equal(fs.existsSync(path.join(root,'art/site-01-20')),false,'Prior generated approximation was not removed');
 assert.equal(fs.existsSync(path.join(root,'art/vector-ink')),false,'Rejected tracing directory remains');
 assert.equal(fs.existsSync(path.join(root,'art/redraw-gold')),false,'Rejected hand-redraw directory remains');
-console.log('EXACT_40_ORIGINAL_REFERENCE_VERIFIED',JSON.stringify({sourceSHA256:digest,nativeSize:'1536x424',originalImages:40,remainingImages:60}));
+console.log('EXACT_40_ORIGINAL_REFERENCE_VERIFIED',JSON.stringify({sourceSHA256:digest,nativeSize:'1536x424',originalImages:40,newVectorImages:60,remainingBlurryImages:0}));

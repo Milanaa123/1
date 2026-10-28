@@ -36,10 +36,11 @@
  const individualUrl=i=>{
   if(!Number.isInteger(i)||i<0||i>=100)return null;
   const suffix='animal-'+String(i+1).padStart(3,'0');
-  return i<40?EXACT_REF_URL:INDIVIDUAL_DIR+suffix+'.webp';
+  return i<40?EXACT_REF_URL:null;
  };
  function individualAsset(i){
   if(!Number.isInteger(i)||i<0||i>=100)return Promise.resolve(null);
+  if(i>=40)return Promise.resolve(null);
   if(i<40){
    if(!sharedExactReference)sharedExactReference=new Promise(resolve=>{
     const img=new Image();img.crossOrigin='anonymous';
@@ -284,11 +285,21 @@
   ctx.restore();
   return true;
  }
+ function drawRestVector(ctx,cell,x,y,w,h){
+  if(!Number.isInteger(cell)||cell<40||cell>=100)return false;
+  const api=cell<60?window.AnimagiaGoldContour41_60:
+   cell<80?window.AnimagiaGoldContour61_80:window.AnimagiaGoldContour81_100;
+  return api?.draw(ctx,cell,x,y,w,h)===true;
+ }
  function drawCanvas(ctx,loaded,profile,x,y,w,h){
   if(profile?.artSet!=='atlas100'){
    const legacyImage=loaded?.legacy||loaded;
    return legacy.drawCanvas(ctx,legacyImage,profile,x,y,w,h);
   }
+  // Reuse only paths traced from the original reference for #41–100.
+  // Never fall back to the blurred per-animal raster or a full atlas tile.
+  if(Number.isInteger(profile.cell)&&profile.cell>=40&&profile.cell<100)
+   return drawRestVector(ctx,profile.cell,x,y,w,h);
   // On-demand portrait: draw one native 4x cell directly, never stretch a
   // 160x110 preview or download the full 10MB source atlas for one animal.
   if(Number.isInteger(profile.cell)&&loaded?.singleArt&&loaded.singleCell===profile.cell){
@@ -338,6 +349,8 @@
     const image=await legacy.drawable(profile);
     return image?{legacy:image}:null;
    }
+   if(Number.isInteger(profile.cell)&&profile.cell>=40&&profile.cell<100)
+    return {vectorOnly:true,singleCell:profile.cell};
    const singleArt=await individualAsset(profile.cell);
    if(singleArt)return {singleArt,singleCell:profile.cell};
    const [newSheet,corrected,grassSnake87]=await Promise.all([asset(),correctedAsset(),snake87Asset()]);
@@ -372,7 +385,7 @@
   ...legacy,imageUrl:URI,legacyImageUrl:legacy.imageUrl,
   grassSnake87ImageUrl:GRASS_SNAKE_URI,
   sharpImageUrl:SHARP_URI,sharpCorrectedImageUrl:SHARP_CORRECTED_URI,sharpArtworkScale:SHARP_SCALE,
-  individualDir:INDIVIDUAL_DIR,exactReferenceUrl:EXACT_REF_URL,exactReferenceCount:40,individualImageUrl:individualUrl,
+  individualDir:INDIVIDUAL_DIR,exactReferenceUrl:EXACT_REF_URL,exactReferenceCount:40,individualImageUrl:individualUrl,vectorArtworkCount:100,vectorArtworkRest:'gold_contour_41_60.js;gold_contour_61_80.js;gold_contour_81_100.js',
   redrawDir:REDRAW_DIR,redrawPublished:Object.freeze([]),redrawArchived:Object.freeze([6,10,24,33,51,52,53,54,55,60,63,65,66,67,68,69,70,76,79,93,96,100]),
   vectorDir:VECTOR_DIR,vectorBatch07:Object.freeze({active:false,first:6,last:25,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),
   vectorBatch08:Object.freeze({active:false,first:26,last:45,count:20,source:'faithful alpha contour trace',manualAnatomyReviewed:false}),

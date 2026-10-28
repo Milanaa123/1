@@ -15,4 +15,16 @@ const fake={save(){},restore(){},translate(){},scale(){},set fillStyle(x){this._
 for(let cell=0;cell<40;cell++)assert.equal(api.draw(fake,cell,0,0,790,570),true,'vector cell '+(cell+1));
 assert.equal(api.draw(fake,40,0,0,790,570),false);
 assert.equal(count,40*5);
-console.log('40_ANIMAGIA_TRACED_CANVAS_PATHS_VERIFIED',count);
+for(const [a,b] of [[41,60],[61,80],[81,100]]){
+ const src=fs.readFileSync(path.join(__dirname,'..',`gold_contour_${a}_${b}.js`),'utf8');
+ const win={};vm.runInNewContext(src,{window:win,Path2D:FakePath2D});
+ const api=win[`AnimagiaGoldContour${a}_${b}`];
+ assert.equal(api.count,20);assert.equal(api.levels,5);
+ assert.equal(api.method,'original-mask-multilevel-vector-trace');
+ assert.equal(api.draw(fake,a-2,0,0,790,570),false);
+ for(let cell=a-1;cell<b;cell++)
+  assert.equal(api.draw(fake,cell,0,0,790,570),true,'vector cell '+(cell+1));
+ assert.equal(api.draw(fake,b,0,0,790,570),false);
+}
+assert.equal(count,100*5);
+console.log('100_ANIMAGIA_TRACED_CANVAS_PATHS_VERIFIED',count);

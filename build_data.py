@@ -272,7 +272,7 @@ def build():
  # historical approved previews. First 40 use a pixel-exact shared PNG.
  solo_dir=BASE/'art'/'individual-4x'
  solo=json.loads((solo_dir/'manifest.json').read_text(encoding='utf8'))
- assert solo['count']==60 and solo['approvedCount']==5 and len(solo['items'])==65
+ assert solo['count']==0 and solo['approvedCount']==5 and len(solo['items'])==5
  outdir=DEST/'art'/'individual-4x';outdir.mkdir(parents=True,exist_ok=True)
  retained_bytes=0
  for entry in solo['items']:
@@ -289,7 +289,7 @@ def build():
  assert int.from_bytes(ref_data[16:20],'big')==1536 and int.from_bytes(ref_data[20:24],'big')==424
  shutil.copy2(ref_source,DEST/'art'/'reference-original-01-40.png')
  print('ANIMAGIA_UNMODIFIED_REFERENCE_01_40_PUBLISHED',len(ref_data),'bytes',flush=True)
- print('ANIMAGIA_REMAINING_60_AND_APPROVED_5_PUBLISHED',retained_bytes,'bytes',flush=True)
+ print('ANIMAGIA_APPROVED_FIVE_LEGACY_IMAGES_READY',retained_bytes,'bytes',flush=True)
  print('CURATED_100_ART_READY',len(raw100),'bytes',expected100,flush=True)
  # First review batch is a separate alpha PNG with five individually cleaned
  # visitor-selected originals; prevent Render from serving an older cached sheet.
@@ -300,6 +300,11 @@ def build():
  assert hashlib.sha256(raw5).hexdigest()==expected5,'First-five approved alpha atlas corrupted'
  shutil.copy2(BASE/'animal_cutout_40.js',DEST/'animal_cutout_40.js')
  shutil.copy2(BASE/'gold_contour_40.js',DEST/'gold_contour_40.js')
+ for batch in ('41_60','61_80','81_100'):
+  source=BASE/f'gold_contour_{batch}.js'
+  assert source.stat().st_size>120000,'Missing vector batch '+batch
+  shutil.copy2(source,DEST/f'gold_contour_{batch}.js')
+ print('ANIMAGIA_VECTOR_100_BATCHES_PUBLISHED',flush=True)
  shutil.copy2(art5,DEST/'art'/'animals-approved-01-05.png')
  print('CURATED_FIRST_FIVE_ALPHA_READY',len(raw5),'bytes',expected5,flush=True)
  stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();t0=time.time()
