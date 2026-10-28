@@ -4,7 +4,7 @@ const meta=JSON.parse(fs.readFileSync('art/redraw-gold/manifest-live.json','utf8
 const src=fs.readFileSync('animal_atlas_100.js','utf8');
 const builder=fs.readFileSync('build_data.py','utf8');
 assert.equal(meta.status,'published');
-assert.deepEqual(meta.items.map(x=>x.index),[6,10,24,33,51,52]);
+assert.deepEqual(meta.items.map(x=>x.index),[6,10,24,33,51,52,53,54,55,60,63,65]);
 assert.ok(src.includes("const REDRAW_PUBLISHED=new Set([6,10,24,33,51,52,53,54,55,60,63,65])"));
 assert.ok(src.includes("return REDRAW_DIR+suffix+'.svg'"));
 assert.ok(builder.includes('ANIMAGIA_REDRAW_TWELVE_SVG_PUBLISHED'));
