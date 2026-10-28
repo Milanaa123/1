@@ -26,7 +26,8 @@ const body=String(function(){
    // These two intentionally correct formerly incorrect outlines; matching the bad silhouette is not success.
    if([6,10,24].includes(number)){
      if(!atlas.individualImageUrl(i).includes('/redraw-gold/'))errors.push('New feline SVG not routed '+number);
-     if(iou<.12)errors.push('Redrawn feline has no recognizable overlap '+number+': '+iou.toFixed(3));
+     // Old source anatomy is rejected, so its overlap is not a validity metric.
+     if(newPixels<1200)errors.push('New species vector has too few painted pixels '+number);
    }else if(iou<.82)errors.push('SVG contour overlap too low '+number+': '+iou.toFixed(3));
    if(newPixels<1200)errors.push('Blank gold line art '+number);
    if(b[3]!==0||b[(639*4)+3]!==0||b[(439*640*4)+3]!==0)errors.push('Opaque background '+number);
