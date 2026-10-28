@@ -198,19 +198,19 @@ jobs:
           print('LIVE_VECTOR_BATCH11_14_SVG_HASHES_VERIFIED')
           PY
           # The new cat silhouettes are deliberately different from the two flawed old sprites.
-          for n in 006 010 024 033 051 052 053 054 055 060 063 065; do
+          for n in 006 010 024 033 051 052 053 054 055 060 063 065 066 067 068 069 070 076 079 093 096 100; do
             curl --fail --silent --show-error --location --max-time 40 "$url/art/redraw-gold/animal-$n.svg" -o "/tmp/redraw-animal-$n.svg"
           done
           python - <<'PY'
           import json,hashlib,pathlib,xml.etree.ElementTree as ET
           m=json.load(open('art/redraw-gold/manifest-live.json'))
-          assert m['status']=='published' and [e['index'] for e in m['items']]==[6,10,24,33,51,52,53,54,55,60,63,65]
+          assert m['status']=='published' and [e['index'] for e in m['items']]==[6,10,24,33,51,52,53,54,55,60,63,65,66,67,68,69,70,76,79,93,96,100]
           for entry in m['items']:
            body=pathlib.Path('/tmp','redraw-'+entry['file']).read_bytes()
            assert len(body)==entry['bytes'] and hashlib.sha256(body).hexdigest()==entry['sha256']
            assert b'<path' in body and b'<image' not in body
            ET.fromstring(body)
-          print('LIVE_GOLD_REDRAW_TWELVE_SVG_SHA_VERIFIED')
+          print('LIVE_GOLD_REDRAW_ALL22_SVG_SHA_VERIFIED')
           PY
           echo "LIVE_RENDER_CURRENT_BATCH06_CONFIRMED"
       - name: Verify 20 gold SVG outlines on real Chromium Canvas
