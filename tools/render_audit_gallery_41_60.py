@@ -10,7 +10,7 @@ from PIL import Image,ImageDraw,ImageFont
 import cairosvg
 
 ROOT=Path(__file__).resolve().parents[1]
-review=json.loads((ROOT/'art/reviews/visual-batch02-41-60.json').read_text(encoding='utf8'))
+review=json.loads((ROOT/'art/reviews/visual-batch03-41-60.json').read_text(encoding='utf8'))
 v1=json.loads((ROOT/'art/vector-ink/manifest-batch08.json').read_text())
 v2=json.loads((ROOT/'art/vector-ink/manifest-batch09.json').read_text())
 lookup={e['index']:e for m in [v1,v2] for e in m['items']}
