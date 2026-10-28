@@ -1,0 +1,32 @@
+name: Animagia verify original frog engraving (temporary QA)
+on:
+  push:
+    branches: [animagia-site]
+    paths: ['.github/workflows/animagia-frog-source-inspection.yml']
+permissions:
+  contents: read
+jobs:
+  crop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m pip install -q pillow
+      - name: Capture untouched frog engraving for anatomical assessment
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          from io import BytesIO
+          from urllib.request import urlopen
+          import base64,hashlib
+          url='https://animagia-calculator.onrender.com/art/animals-gold-v1.png'
+          data=urlopen(url,timeout=45).read()
+          im=Image.open(BytesIO(data)).convert('RGB')
+          print('SHEET',im.size,hashlib.sha256(data).hexdigest(),flush=True)
+          w,h=im.size
+          assert (w,h)==(1536,1024)
+          frog=im.crop((w*3//5,h*3//4,w*4//5,h))
+          out=BytesIO();frog.save(out,format='PNG',optimize=True)
+          b64=base64.b64encode(out.getvalue()).decode()
+          print('FROG_DATA_BEGIN '+b64+' FROG_DATA_END',flush=True)
+          PY
