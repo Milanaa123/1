@@ -5,7 +5,8 @@ const body=String(function(){
   const atlas=window.AnimagiaAnimalAtlas,errors=[],stats=[];
   const main=document.querySelector('main');
   function img(src){return new Promise(resolve=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=()=>resolve(null);i.src=src;});}
-  for(let number=86;number<=100;number++){if(number===87)continue;){
+  for(let number=86;number<=100;number++){
+   if(number===87)continue;
    const i=number-1,profile={artSet:'atlas100',cell:i,reviewedBatch:6};
    const packed=await atlas.drawable(profile);
    const old=await img('./art/individual-4x/animal-'+String(number).padStart(3,'0')+'.webp');
