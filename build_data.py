@@ -522,7 +522,7 @@ def build():
    unique+=len(values);available.append(bid)
    # Fail the entire publication if ANY row is invalid, misplaced,
    # duplicated, excluded, incorrectly scored or out of sorted order.
-   report=audit_bucket(values,bid)
+   report=audit_bucket(values,bid,synonym_evidence=synonym_ru_evidence)
    audit_ranks.update(report['ranks']);audit_classes.update(report['classes'])
    family_present+=sum(bool(r[7]) for r in values)
    family_ru_present+=sum(bool(r[8]) for r in values)
