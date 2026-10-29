@@ -68,7 +68,12 @@
     "Hipposideros bicolor": "Двуцветный листонос",
     "Anolis monteverde": "Анолис Монтеверде",
     "Atelopus calima": "Жаба-арлекин Калима",
-    "Geocrinia laevis": "Тасманийская лягушка"
+    "Geocrinia laevis": "Тасманийская лягушка",
+    "Cornufer bufoniformis": "Жабовидная лягушка",
+    "Cornufer guppyi": "Лягушка-гурман",
+    "Cornufer malukuna": "Крапчатобрюхая лягушка",
+    "Cornufer opisthodon": "Бугорчатоносая лягушка",
+    "Cornufer vogti": "Океанийская лягушка"
   },
   "family_ru": {
     "Felidae": "Кошачьи",
@@ -260,5 +265,32 @@
     "Echinidae": "Морские ежи",
     "Holothuriidae": "Голотурии",
     "Chitonidae": "Хитоны"
+  },
+  "ru_name_sources": {
+    "Cornufer bufoniformis": {
+      "published_as": "Discodeles bufoniformis",
+      "russian": "https://www.zin.ru/societies/nhs/doc/amphibia_reptilia_vocabularium_nominum_animalium_quinquelingue.pdf",
+      "current": "https://amphibiansoftheworld.amnh.org/Amphibia/Anura/Ceratobatrachidae/Ceratobatrachinae/Cornufer/Cornufer-bufoniformis"
+    },
+    "Cornufer guppyi": {
+      "published_as": "Discodeles guppyi",
+      "russian": "https://www.zin.ru/societies/nhs/doc/amphibia_reptilia_vocabularium_nominum_animalium_quinquelingue.pdf",
+      "current": "https://amphibiansoftheworld.amnh.org/Amphibia/Anura/Ceratobatrachidae/Ceratobatrachinae/Cornufer/Cornufer-guppyi"
+    },
+    "Cornufer malukuna": {
+      "published_as": "Discodeles malukuna",
+      "russian": "https://bvi.rusf.ru/sista/alf_r043.htm",
+      "current": "https://amphibiansoftheworld.amnh.org/Amphibia/Anura/Ceratobatrachidae/Ceratobatrachinae/Cornufer/Cornufer-malukuna"
+    },
+    "Cornufer opisthodon": {
+      "published_as": "Discodeles opisthodon",
+      "russian": "https://www.zin.ru/societies/nhs/doc/amphibia_reptilia_vocabularium_nominum_animalium_quinquelingue.pdf",
+      "current": "https://amphibiansoftheworld.amnh.org/Amphibia/Anura/Ceratobatrachidae/Ceratobatrachinae/Cornufer/Cornufer-opisthodon"
+    },
+    "Cornufer vogti": {
+      "published_as": "Discodeles vogti (also Discodeles ventricosus)",
+      "russian": "https://bvi.rusf.ru/sista/alf_r043.htm",
+      "current": "https://amphibiansoftheworld.amnh.org/Amphibia/Anura/Ceratobatrachidae/Ceratobatrachinae/Cornufer/Cornufer-vogti"
+    }
   }
 }
