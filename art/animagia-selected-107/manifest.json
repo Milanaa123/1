@@ -1,0 +1,866 @@
+{
+  "version": 1,
+  "count": 107,
+  "animals": 104,
+  "additional": 3,
+  "format": "original unmodified transparent RGBA PNG",
+  "approval": "visually selected 2026-10-29; not scientific anatomy certification",
+  "files": [
+    {
+      "number": 1,
+      "name": "Лев",
+      "file": "animals/001-Лев.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "8ac070a0ac2d2140f294987e34457572b5231916c1ece2a4b7025d0532cf45da"
+    },
+    {
+      "number": 2,
+      "name": "Тигр",
+      "file": "animals/002-Тигр.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "46b11fa808bbbacbca0af70afda21ed67668f1c2f689c1243d0042804eb97511"
+    },
+    {
+      "number": 3,
+      "name": "Леопард",
+      "file": "animals/003-Леопард.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "4d5b8af9038503aaebc76e5e8052febbfa4135cf8617abf90c94f26d436a7ed6"
+    },
+    {
+      "number": 4,
+      "name": "Ягуар",
+      "file": "animals/004-Ягуар.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "ca062fa2254accc7cf013136c4937ae9c9a6b842794d2a38d5e37697847219bb"
+    },
+    {
+      "number": 5,
+      "name": "Пума",
+      "file": "animals/005-Пума.png",
+      "width": 1423,
+      "height": 1105,
+      "sha256": "d0e066baed43891c73fefd7bc84dad2c2e8005060fa29526ec0b2b569995e264"
+    },
+    {
+      "number": 6,
+      "name": "Рысь",
+      "file": "animals/006-Рысь.png",
+      "width": 1199,
+      "height": 1312,
+      "sha256": "1f11830ea03d19c42a9d70a73a718d0c925799445d79750cda6d95aed64fe1b7"
+    },
+    {
+      "number": 7,
+      "name": "Лисица",
+      "file": "animals/007-Лисица.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "8c63c9150171e16575fa3c713001ad94200a8b8521e7af18a1197d126cefd4d9"
+    },
+    {
+      "number": 9,
+      "name": "Шакал",
+      "file": "animals/009-Шакал.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "f3010a3caa019f8b7ed8be91b6617f090d35d24edef29924746eb36894ea3a26"
+    },
+    {
+      "number": 10,
+      "name": "Гиена",
+      "file": "animals/010-Гиена.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "591d12e4380c52c321f655d4e37e6061283ef818fc3d2f012604ae1bff7911bb"
+    },
+    {
+      "number": 11,
+      "name": "Бурый медведь",
+      "file": "animals/011-Бурый_медведь.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "b706e403c38e1a8300508f93dc04efb6f191dc7eea32c9846866f8f1245beb4e"
+    },
+    {
+      "number": 13,
+      "name": "Панда большая",
+      "file": "animals/013-Панда_большая.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "3f320a2484faf99643118f63c042b6b08e01ff450b0eb4df612dafbdbe20234a"
+    },
+    {
+      "number": 14,
+      "name": "Енот",
+      "file": "animals/014-Енот.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "9b79bb32e2b021f6d774cdf7b55ae84a0c766ef3a7c9871c57b3438fa9ec9e27"
+    },
+    {
+      "number": 15,
+      "name": "Барсук",
+      "file": "animals/015-Барсук.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "2b7778d50bcf95892d47448a366ef4324a86f4cfbc8fd91f9f8c12d86bc63900"
+    },
+    {
+      "number": 16,
+      "name": "Выдра",
+      "file": "animals/016-Выдра.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "8afe2622f970d31dd87d3a79139d4982f0f6f0fef859f44f1606223904ce292a"
+    },
+    {
+      "number": 17,
+      "name": "Хорёк",
+      "file": "animals/017-Хорёк.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "dd7cfc94d5724ec43fa6b2fed0ccea5a440a52af3e74c14bb6ce1d7db7983052"
+    },
+    {
+      "number": 18,
+      "name": "Бобр",
+      "file": "animals/018-Бобр.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "8b2184ef29c459bfd90e48ef32046c9f011337eafa7e1f06d666da0c016a4f2b"
+    },
+    {
+      "number": 19,
+      "name": "Белка",
+      "file": "animals/019-Белка.png",
+      "width": 1237,
+      "height": 1271,
+      "sha256": "885ee20897b6e65e69d1484809728f0a965b0a2b213347ae4bd92fa93fc70640"
+    },
+    {
+      "number": 20,
+      "name": "Летяга",
+      "file": "animals/020-Летяга.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "1d98b689252469fade4a10b32999e1cd143233318d666afbd4c68582114616db"
+    },
+    {
+      "number": 21,
+      "name": "Заяц-беляк",
+      "file": "animals/021-Заяц-беляк.png",
+      "width": 1199,
+      "height": 1312,
+      "sha256": "0a443808eaafdca86b45aae397f5aaecd1d67283ec137f24d2ab32eb0dea5690"
+    },
+    {
+      "number": 22,
+      "name": "Кролик",
+      "file": "animals/022-Кролик.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "40d1b5564a140f53ece7b2f106d27e092954859da728583012ff9b58f70577f5"
+    },
+    {
+      "number": 23,
+      "name": "Ёж европейский",
+      "file": "animals/023-Ёж_европейский.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "6b46d41a6ceb8233bc2da618c91bd12a510d97e32dc65e9f2ed8f5f54b34630e"
+    },
+    {
+      "number": 24,
+      "name": "Лось",
+      "file": "animals/024-Лось.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "0afc3b3a19506f4cf82b96a099838ff239e6752dbb32090b894ceeda97d36711"
+    },
+    {
+      "number": 25,
+      "name": "Олень благородный",
+      "file": "animals/025-Олень_благородный.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "2ed0a97d1c809a1bdce42066c2d051f81950e9ed3ef8ee1cdd6d991c88ef3769"
+    },
+    {
+      "number": 28,
+      "name": "Кабан",
+      "file": "animals/028-Кабан.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "8a6be6b9e856f74c6ec295f15d6654d8fefa47d46773a045f44c5e3fd794ee1a"
+    },
+    {
+      "number": 29,
+      "name": "Бизон",
+      "file": "animals/029-Бизон.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "aa9a87d990e0f4f3e3e7562f7fefd24e706f71f720ba58ab26753f94913c98eb"
+    },
+    {
+      "number": 31,
+      "name": "Жираф",
+      "file": "animals/031-Жираф.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "a328446d1242d13efd6a39ba04ad79a820efe2c75784ee0ada0a60d5457a4a35"
+    },
+    {
+      "number": 32,
+      "name": "Слон африканский",
+      "file": "animals/032-Слон_африканский.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "a69843ba4d21cf6b8afe15079fb03610aaed5ef059de34998ff4e5269858c1ca"
+    },
+    {
+      "number": 34,
+      "name": "Бегемот",
+      "file": "animals/034-Бегемот.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "78df1a257800f2836b5f7173ccc6834477e8e4e14eafe07448804aab9cb10253"
+    },
+    {
+      "number": 35,
+      "name": "Верблюд двугорбый",
+      "file": "animals/035-Верблюд_двугорбый.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "b7dd80f0fdeb29acac0be65db146573c8798fe5707733479afe396ba682c4da0"
+    },
+    {
+      "number": 37,
+      "name": "Горилла",
+      "file": "animals/037-Горилла.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "d224d65a1a3dec3fed618f97bdff50b5a1e9f06de6d4d579b26a46d8d2ec0bce"
+    },
+    {
+      "number": 38,
+      "name": "Шимпанзе",
+      "file": "animals/038-Шимпанзе.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "796042908148221c3fee2a20ba158c8ca81d127b5a712309cf81b4577cbf97e8"
+    },
+    {
+      "number": 39,
+      "name": "Орангутан",
+      "file": "animals/039-Орангутан.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "a01ba959ccc860b255111a743860fa12f01442127fed02a4d1f7b8d1892a2f76"
+    },
+    {
+      "number": 40,
+      "name": "Капуцин",
+      "file": "animals/040-Капуцин.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "a1b0a444bd4923fd31a387008c07744c93149fc0dbf55b389f21fc94e46e2a25"
+    },
+    {
+      "number": 41,
+      "name": "Ленивец",
+      "file": "animals/041-Ленивец.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "7fd634571c9af9a0e1b42a02fa8284a2f632f17b9de038894de022427a87e24a"
+    },
+    {
+      "number": 42,
+      "name": "Коала",
+      "file": "animals/042-Коала.png",
+      "width": 1214,
+      "height": 1295,
+      "sha256": "9b5a241ad1a3709719b41745b138b4b6fd296a6f9933b580343b6b5d7023f408"
+    },
+    {
+      "number": 43,
+      "name": "Кенгуру рыжий",
+      "file": "animals/043-Кенгуру_рыжий.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "58eb316720789cc5921b71cb4c57f56660013374169a922825e788925dc5be59"
+    },
+    {
+      "number": 44,
+      "name": "Вомбат",
+      "file": "animals/044-Вомбат.png",
+      "width": 1402,
+      "height": 1122,
+      "sha256": "4d75805c389152b6b8591d0238fa3cc22c46f67ee80eca2b0e7ad22312dfec2c"
+    },
+    {
+      "number": 46,
+      "name": "Дельфин-афалина",
+      "file": "animals/046-Дельфин-афалина.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "cad8ef891950338527d4de5ebb329aabc89504816316e5cf50a793d4f4850838"
+    },
+    {
+      "number": 47,
+      "name": "Касатка",
+      "file": "animals/047-Касатка.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "4c3d435a037ca7b3810f28f508ade64bde00008834911b1d550e1096b0ca1b80"
+    },
+    {
+      "number": 48,
+      "name": "Синий кит",
+      "file": "animals/048-Синий_кит.png",
+      "width": 1774,
+      "height": 887,
+      "sha256": "ef4d785c34da439b99e663fac12e29c2efa7c1349e10f59aeb549e3a2777922a"
+    },
+    {
+      "number": 49,
+      "name": "Тюлень обыкновенный",
+      "file": "animals/049-Тюлень_обыкновенный.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "60c2a558d91a4ca739d86e48ee847f99337cb695cab43fa7e7fa341fd153e0ae"
+    },
+    {
+      "number": 50,
+      "name": "Орёл беркут",
+      "file": "animals/050-Орёл_беркут.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "eb22c8f6f2529b4f2536c1fac95af89b73e6fe419068371d8818c8b8ea71a88a"
+    },
+    {
+      "number": 51,
+      "name": "Белоголовый орлан",
+      "file": "animals/051-Белоголовый_орлан.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "aed4bdb25a9de4ce495e3a5ab4484d186eac9a9ee31825c329fb46575f576291"
+    },
+    {
+      "number": 52,
+      "name": "Сапсан",
+      "file": "animals/052-Сапсан.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "49d1778642f5b83879e9357e8fe79bac0349988bf9e1c016db64ddef50276cfc"
+    },
+    {
+      "number": 53,
+      "name": "Полярная сова",
+      "file": "animals/053-Полярная_сова.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "ec2fe28409d568190787d0f148d6313657982c9ca025d607003c9bf0599050db"
+    },
+    {
+      "number": 54,
+      "name": "Сова ушастая",
+      "file": "animals/054-Сова_ушастая.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "c4a3398333f1e49ceed1c41b769314a1274e5c6fe22b301d0ae79806c5d0e655"
+    },
+    {
+      "number": 55,
+      "name": "Ворон",
+      "file": "animals/055-Ворон.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "1e9e44cc3cc878dbecfa614c614475be115e11b761a1d581cb8bd51f91d3e656"
+    },
+    {
+      "number": 56,
+      "name": "Ворона серая",
+      "file": "animals/056-Ворона_серая.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "6c20f27fb6b027aa54071a3da5068ecf72ffab0240650ebdadb96c7b477855e9"
+    },
+    {
+      "number": 58,
+      "name": "Сорока",
+      "file": "animals/058-Сорока.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "fa88e8d03d377dbd72fb9d7f85ec3347a06fe1a5951f2118d4d0976fbd856133"
+    },
+    {
+      "number": 59,
+      "name": "Лебедь-шипун",
+      "file": "animals/059-Лебедь-шипун.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "5225b992c60b2b7e95b6b9aab13ecdd95d033b12efa4fff91d9acf496719bfd1"
+    },
+    {
+      "number": 60,
+      "name": "Фламинго розовый",
+      "file": "animals/060-Фламинго_розовый.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "b17a574018022fa7cb6f71952798a4f356410a26a4f029917a788b8b0f631e3c"
+    },
+    {
+      "number": 61,
+      "name": "Пеликан",
+      "file": "animals/061-Пеликан.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "10d093714695f084cdf4faf907ae058930a95bf8ef8655008837d900c941cd6f"
+    },
+    {
+      "number": 62,
+      "name": "Аист белый",
+      "file": "animals/062-Аист_белый.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "7d7dd4caa32dd7c38a6d3fa4c80cc8335ff668898dede0c7021486dbfd51efda"
+    },
+    {
+      "number": 63,
+      "name": "Журавль серый",
+      "file": "animals/063-Журавль_серый.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "f657e14d3cfda5c17a03ff4edb8b2a1d49430db10df22fcfa23dd48cc08e27a8"
+    },
+    {
+      "number": 64,
+      "name": "Павлин",
+      "file": "animals/064-Павлин.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "901a74e30636e789685c3dcddd0f234f895822a422d0da5c5af6ff9ddff1d0a0"
+    },
+    {
+      "number": 65,
+      "name": "Индюк",
+      "file": "animals/065-Индюк.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "475c70eea237e6cf7983784d14e3153cafa3c54186e25153e3ed72a6dbc36c63"
+    },
+    {
+      "number": 66,
+      "name": "Фазан",
+      "file": "animals/066-Фазан.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "c84acdbf0d58735b4a5c373ae73cdfef877cbe49bc7e34853050d40056a09a0b"
+    },
+    {
+      "number": 67,
+      "name": "Глухарь",
+      "file": "animals/067-Глухарь.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "30276d0dad1c028bce1e1c4b2e1f850f6e747d4ba7b455a109a02a5bf637c487"
+    },
+    {
+      "number": 69,
+      "name": "Пингвин императорский",
+      "file": "animals/069-Пингвин_императорский.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "7374f7c23e1371a435d573d22401f98e2d307eed70672e0f916da555147d5356"
+    },
+    {
+      "number": 70,
+      "name": "Пингвин Адели",
+      "file": "animals/070-Пингвин_Адели.png",
+      "width": 1131,
+      "height": 1391,
+      "sha256": "8e384965c9bc4177bc3636647446e95f09c779cd4bb937b58626bf1815db7767"
+    },
+    {
+      "number": 74,
+      "name": "Колибри",
+      "file": "animals/074-Колибри.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "173109c985adb15576a36531427d9fad34dccdf81e46d5fa913c95302e292e11"
+    },
+    {
+      "number": 77,
+      "name": "Ласточка деревенская",
+      "file": "animals/077-Ласточка_деревенская.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "5dc0029d591e3b401058e9c85b6ccf3cd9d1f435def67faffaf854440efde004"
+    },
+    {
+      "number": 78,
+      "name": "Синица большая",
+      "file": "animals/078-Синица_большая.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "0b65cec2766e1a25ae6f2d4464a6574e288648a532ea74c25e0a22a3e090a772"
+    },
+    {
+      "number": 79,
+      "name": "Малиновка",
+      "file": "animals/079-Малиновка.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "eacef1d6e6d938cbed5e6c8878ef196c696921cf71ab1e16c95cb4004ee4af31"
+    },
+    {
+      "number": 80,
+      "name": "Домовый воробей",
+      "file": "animals/080-Домовый_воробей.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "5895ad1069cb58aa27fffe7f0b39cc0b853b419debb69f1c0e208caa2ed0abc6"
+    },
+    {
+      "number": 81,
+      "name": "Голубь сизый",
+      "file": "animals/081-Голубь_сизый.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "3a43671cc059c38c17b1b2ff30410aac3001324c28abe658044b4113a0aba976"
+    },
+    {
+      "number": 82,
+      "name": "Чайка серебристая",
+      "file": "animals/082-Чайка_серебристая.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "4c65047652adaa9e4156ac38cc8779bfd9f2e3e4653b9dff352d9540e45f91fc"
+    },
+    {
+      "number": 83,
+      "name": "Утка кряква",
+      "file": "animals/083-Утка_кряква.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "227f11e77137b33ca69708e1a4318fdaaf98faa9e7bcfa0bc787872dbde906e1"
+    },
+    {
+      "number": 85,
+      "name": "Аллигатор миссисипский",
+      "file": "animals/085-Аллигатор_миссисипский.png",
+      "width": 1619,
+      "height": 971,
+      "sha256": "88c68bb87b99ddd80f3ca4415f8e8a7271de7834f9b95c6ac77475a17d030afa"
+    },
+    {
+      "number": 86,
+      "name": "Гавиал",
+      "file": "animals/086-Гавиал.png",
+      "width": 1774,
+      "height": 887,
+      "sha256": "8133b2a5d1451d14cb4c3fcdf4bc7590f5ce064b021f258f1329cfa1197b44cb"
+    },
+    {
+      "number": 89,
+      "name": "Хамелеон йеменский",
+      "file": "animals/089-Хамелеон_йеменский.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "53bc8ca1d8129c23d6fd0d0383864b5384a6ae14935cfe193f94cbf09d2e621b"
+    },
+    {
+      "number": 92,
+      "name": "Черепаха зелёная морская",
+      "file": "animals/092-Черепаха_зелёная_морская.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "7da7c897b6be83a26cb21b6c007dbd3f8e1dcdfef2ec60af3dea12ba212ffbe8"
+    },
+    {
+      "number": 93,
+      "name": "Черепаха сухопутная среднеазиатская",
+      "file": "animals/093-Черепаха_сухопутная_среднеазиатская.png",
+      "width": 1402,
+      "height": 1122,
+      "sha256": "d80af198b6507801368357a6b75a6f42d8a0543f4ab44e1e5d8ee0c87761235d"
+    },
+    {
+      "number": 94,
+      "name": "Кобра индийская",
+      "file": "animals/094-Кобра_индийская.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "d4cf4a72d87ab76a5aa78fec940c4d96a8da3bdda832477800d090af9ce5de39"
+    },
+    {
+      "number": 95,
+      "name": "Королевская кобра",
+      "file": "animals/095-Королевская_кобра.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "439bb5c0239d2e6cb684e1134c0287630bbd2656fc1207044b92bed8e224eb98"
+    },
+    {
+      "number": 98,
+      "name": "Удав обыкновенный",
+      "file": "animals/098-Удав_обыкновенный.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "dac3c2649dcbbfa7e76f763d842b0da596676941e8aff7a2388deadc1939f2f0"
+    },
+    {
+      "number": 99,
+      "name": "Анаконда зелёная",
+      "file": "animals/099-Анаконда_зелёная.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "efaa4a6452cfbfd4c93e8d6bb5847576d5b407397b925615014d83c73dc57c9b"
+    },
+    {
+      "number": 100,
+      "name": "Гремучая змея",
+      "file": "animals/100-Гремучая_змея.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "d58c00e8fd796b97db90b3e2e3a4d90a0cdff20099885ee23644556a30ebf904"
+    },
+    {
+      "number": 101,
+      "name": "Гадюка обыкновенная",
+      "file": "animals/101-Гадюка_обыкновенная.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "3343536f1af98ff7de9619c709eb1d2fcebc1845a4be755848492c58a36627db"
+    },
+    {
+      "number": 102,
+      "name": "Уж обыкновенный",
+      "file": "animals/102-Уж_обыкновенный.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "ca270bb22eefd3c2bf42a559839cfc0b6c225eb20010ec863673f12f1f7b5f14"
+    },
+    {
+      "number": 112,
+      "name": "Тритон гребенчатый",
+      "file": "animals/112-Тритон_гребенчатый.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "23d9cc81003efa4c4031283f6eaf914963ae1c4455f27dff4b959b187796b4f9"
+    },
+    {
+      "number": 113,
+      "name": "Червяга",
+      "file": "animals/113-Червяга.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "98f8331bba656c37189bb53e9fddebf4912ca2f0561fbea5a321a4e353a187bc"
+    },
+    {
+      "number": 114,
+      "name": "Акула белая",
+      "file": "animals/114-Акула_белая.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "ad7b3743845cb458fe9ed3234ae2b880154c9516c122c9d1e1a51b665d7b8312"
+    },
+    {
+      "number": 115,
+      "name": "Акула-молот",
+      "file": "animals/115-Акула-молот.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "99e11ceff852a3b8e8a76e975b3efc02ec8b2b93e9890b064775771ef721b7cb"
+    },
+    {
+      "number": 116,
+      "name": "Китовая акула",
+      "file": "animals/116-Китовая_акула.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "4c2f90958ce24ea7417095130f59663d4d8534b0cf7a2e1d2696806ab5634afa"
+    },
+    {
+      "number": 117,
+      "name": "Скат манта",
+      "file": "animals/117-Скат_манта.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "f5ebd3fde2334a73946de44c24ba77c6beb9fb6acaa9333fc43b46c0f091e18f"
+    },
+    {
+      "number": 118,
+      "name": "Рыба-клоун",
+      "file": "animals/118-Рыба-клоун.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "9414742c8e47bb5ecba7fcb52964815365cfaf0eca32afdd1ce4706224de8238"
+    },
+    {
+      "number": 119,
+      "name": "Голубой хирург",
+      "file": "animals/119-Голубой_хирург.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "30a07287e1392544a9d7d76e4615d924ea1b01f8853170005c2a922904e9ea2d"
+    },
+    {
+      "number": 120,
+      "name": "Морской конёк",
+      "file": "animals/120-Морской_конёк.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "a89e3972182c5b7f2b8f800f22418e75d8ebb6341994eb2c644d43af359843de"
+    },
+    {
+      "number": 122,
+      "name": "Рыба-луна",
+      "file": "animals/122-Рыба-луна.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "3cd3169e3dfceabe59273edd525d058a3143069938c121f2d6884ef72989a6ae"
+    },
+    {
+      "number": 123,
+      "name": "Угорь европейский",
+      "file": "animals/123-Угорь_европейский.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "18bf184ec5d74853a034b200f7b58eed66e345c77a32db55b6d0af401a015f64"
+    },
+    {
+      "number": 124,
+      "name": "Щука",
+      "file": "animals/124-Щука.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "0433732b138237a52fe4733d2b4342cde873e2e4025604d12e220efebd0a7fcd"
+    },
+    {
+      "number": 125,
+      "name": "Окунь речной",
+      "file": "animals/125-Окунь_речной.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "277565e8bc9add0a0159233ffdb41d5648ec92e825e7e0d042a3362df4b78ffe"
+    },
+    {
+      "number": 127,
+      "name": "Сом европейский",
+      "file": "animals/127-Сом_европейский.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "ba6646a092f6d8cc1fb2a92246abccf3ec1600db1c4dbabfcb4ff27eda10ea16"
+    },
+    {
+      "number": 128,
+      "name": "Лосось атлантический",
+      "file": "animals/128-Лосось_атлантический.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "fd609a5712b024b67b61d46bec07892c33289239dab7b3c332ce4edbc4dceafb"
+    },
+    {
+      "number": 129,
+      "name": "Форель радужная",
+      "file": "animals/129-Форель_радужная.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "780e45544437eaa173ff2522f0563b1c35d0bccd2af38c10012bf219e085a1bc"
+    },
+    {
+      "number": 132,
+      "name": "Мурена",
+      "file": "animals/132-Мурена.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "b71aa0e5af9162e0dd220ebbfbdd4d28a9b713ecf0da4cc20d684d0e30668017"
+    },
+    {
+      "number": 133,
+      "name": "Пиранья краснобрюхая",
+      "file": "animals/133-Пиранья_краснобрюхая.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "1c528a766cee807d892fed6ffb2acacd23f442877718b46f8dbc9e267d1d17eb"
+    },
+    {
+      "number": 161,
+      "name": "Осьминог обыкновенный",
+      "file": "animals/161-Осьминог_обыкновенный.png",
+      "width": 1376,
+      "height": 1143,
+      "sha256": "29c83ff1538738e7076fcb597711e91d40d1b65b5030918b288834dc4651f37d"
+    },
+    {
+      "number": 164,
+      "name": "Наутилус",
+      "file": "animals/164-Наутилус.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "d82c95d5978b4f241fe8e41d7f411e104abe76c409bcf91504debf2674837dd0"
+    },
+    {
+      "number": 165,
+      "name": "Кальмар-вампир",
+      "file": "animals/165-Кальмар-вампир.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "63c0b71085755a1b69a461bdad69fcef8eced791364155afeb1551dd8ee59d91"
+    },
+    {
+      "number": 166,
+      "name": "Морская звезда",
+      "file": "animals/166-Морская_звезда.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "8e79d641a214412ae7c6359097915f9b0495778c0414df2213d3fbdaf1625131"
+    },
+    {
+      "number": 167,
+      "name": "Морской ёж",
+      "file": "animals/167-Морской_ёж.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "483882fd84ec68ab3b9a7f1cadea8d345d556902e101c772f11e1e5330ecb121"
+    },
+    {
+      "number": 168,
+      "name": "Морской огурец",
+      "file": "animals/168-Морской_огурец.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "67014e562d0a6004714b10472498481d2004819ea0ae391224d468039a3f2812"
+    },
+    {
+      "number": null,
+      "name": "Филин",
+      "file": "additional/Филин.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "a740fcecb822bdadd26bc5dc504c2a653fd6a47756339ebf37f6dec7988fe9fd"
+    },
+    {
+      "number": null,
+      "name": "Кошка",
+      "file": "additional/Кошка.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "0dcd44eb745180616585e04d90c7dccf3302e5933f2bff55700bbcefcb998ed8"
+    },
+    {
+      "number": null,
+      "name": "Волк",
+      "file": "additional/Волк.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "62179a4c8c0d15a82ed131a5f9162ecc7306cb0a55b11952c5f576d74c4135b6"
+    }
+  ]
+}

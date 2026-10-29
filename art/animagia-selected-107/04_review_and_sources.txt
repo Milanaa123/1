@@ -1,0 +1,19 @@
+Проверка и источники
+
+Исходник: animagia-136-animals.zip, 136 PNG; все 136 контрольных сумм совпали с animals.csv исходного архива. Дополнительно просмотрены 30 локальных прежних генераций и загруженные референсы. Старые реалистичные гравюрные варианты в новый набор не включены.
+
+Критерии взяты из запроса: отдельное животное, прозрачный фон, единая золотисто-медная манера, читаемая анатомия. Стиль оценивается сравнением с предоставленными изображениями; это экспертное визуальное суждение, не объективная метрика.
+
+Источники для отдельных видовых признаков (проверены 29.10.2026):
+- Лошадь Пржевальского: короткая стоячая грива, без чёлки — Smithsonian National Zoo: https://nationalzoo.si.edu/animals/przewalskis-horse
+- Песец: короткие округлые уши — Norwegian Polar Institute: https://npolar.no/en/species/arctic-fox/
+- Белый медведь: длинная шея, узкий череп, отсутствие характерного для бурого медведя плечевого горба — International Association for Bear Research and Management: https://www.bearbiology.org/the-eight-bear-species/ursus-maritimus-polar-bear/
+- Косуля: короткие рога, обычно по три отростка — British Deer Society: https://bds.org.uk/information-advice/about-deer/deer-species/roe-deer/
+- Белый носорог: широкая квадратная верхняя губа — Save the Rhino International: https://www.savetherhino.org/rhino-info/rhino-species/white-rhinos/
+- Лягушки: четыре пальца передних конечностей и пять задних — Exploratorium: https://annex.exploratorium.edu/frogs/mainstory/frogstory2.html ; University of Michigan BioKIDS: https://biokids.umich.edu/guides/tracks_and_sign/tracks_key/tracks_o1/
+- Аксолотль: четыре пальца спереди и пять сзади — Axolotl.org: https://www.axolotl.org/faq.htm
+- Туканы, дятлы, попугаи: два пальца вперёд и два назад — San Diego Zoo Wildlife Alliance: https://animals.sandiegozoo.org/animals/toucan
+- Чёрная мамба: круглые зрачки — African Snakebite Institute: https://www.africansnakebiteinstitute.com/news/myths-and-hoaxes/poisonous-vs-non-poisonous/
+- Кальмар и каракатица: восемь рук и два ловчих щупальца — Monterey Bay Aquarium: https://www.montereybayaquarium.org/animals-the-ocean/animals-a-to-z/cephalopods ; Smithsonian: https://ocean.si.edu/ocean-life/invertebrates/giant-squid-anatomy
+
+Оставшиеся замечания о стиле, читаемости контуров и убедительности силуэта являются результатом просмотра конкретных PNG, а не утверждениями из этих источников. Полные изображения с ошибками в архив не включены.
