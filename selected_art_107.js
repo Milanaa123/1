@@ -1,7 +1,7 @@
 'use strict';
 /* Animagia: individually approved original PNG artwork.
  * Apply a drawing to an actual calculated taxon only for an explicitly
- * identified matching species. Everything else retains the existing atlas.
+ * identified matching species. No old atlas image may be used as fallback.
  * Both on-screen preview and PNG export draw the same unmodified source.
  */
 (()=>{
@@ -99,9 +99,9 @@
   return Object.freeze({artSet:'original107',file:path,scientific:row[1],name,
     exact:true,note:'Оригинальный золотой рисунок «'+name+'» · не фотография'});
  }
- function resolve(row){return profileFor(row)||previous.resolve(row)}
+ function resolve(row){return profileFor(row)}
  function drawable(profile){
-  if(profile?.artSet!=='original107')return previous.drawable(profile);
+  if(profile?.artSet!=='original107')return Promise.resolve(null);
   const path=profile.file;
   if(!cache.has(path)){
    cache.set(path,new Promise(resolve=>{
@@ -115,8 +115,7 @@
   return cache.get(path);
  }
  function drawCanvas(ctx,loaded,profile,x,y,w,h){
-  if(profile?.artSet!=='original107')
-   return previous.drawCanvas(ctx,loaded,profile,x,y,w,h);
+  if(profile?.artSet!=='original107')return false;
   const img=loaded?.original107;
   if(!img||!img.naturalWidth||!img.naturalHeight)return false;
   const scale=Math.min(w*.92/img.naturalWidth,h*.92/img.naturalHeight);
@@ -129,8 +128,11 @@
   return true;
  }
  function render(container,profile){
-  if(profile?.artSet!=='original107')return previous.render(container,profile);
   if(!container)return;
+  if(profile?.artSet!=='original107'){
+   container.replaceChildren();
+   return;
+  }
   const img=document.createElement('img');
   img.className='atlas-art-sprite original-107-art';
   img.alt=profile.note+' · '+profile.scientific;
