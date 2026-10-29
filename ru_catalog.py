@@ -62,37 +62,13 @@ def load_birdnet_names():
 def taxon_ru_labels(scientific, family):
     return FAMILY_RU.get(family, ''), SPECIES_RU.get(scientific, '') or EXTERNAL_SPECIES_RU.get(scientific, '')
 
-# Cyrillic pronunciation aid, not a Russian vernacular species name.
-# Mirrors the deterministic Latin-to-Cyrillic rules in app.js.
-_RU_LETTERS=dict(zip('abcdefghijklmnopqrstuvwxyz',
- ('а','б','к','д','е','ф','г','х','и','й','к','л','м','н','о','п','к','р','с','т','у','в','в','кс','и','з')))
-_RU_DIGRAPHS={'ph':'ф','th':'т','ch':'х','sh':'ш','zh':'ж','kh':'х',
- 'ck':'к','qu':'кв','sch':'сх'}
-
-def scientific_ru_transcription(name):
-    words=[]
-    for word in name.lower().split(' '):
-        out=[]
-        i=0
-        while i<len(word):
-            triple=word[i:i+3]
-            pair=word[i:i+2]
-            if triple in _RU_DIGRAPHS:
-                out.append(_RU_DIGRAPHS[triple]);i+=3
-            elif pair in _RU_DIGRAPHS:
-                out.append(_RU_DIGRAPHS[pair]);i+=2
-            else:
-                out.append(_RU_LETTERS.get(word[i],''));i+=1
-        words.append(''.join(out))
-    return ' '.join(words)
-
 def indexed_taxon_row(score, scientific, rank, lineage):
     family=lineage.get('family','').strip()
     family_ru, common_ru=taxon_ru_labels(scientific, family)
     # Do not assign a species name to subspecies merely because they share a binomial.
     return [score,scientific,rank,lineage.get('class',''),
             lineage.get('order',''),'',lineage.get('phylum',''),
-            family,family_ru,common_ru,scientific_ru_transcription(scientific)]
+            family,family_ru,common_ru]
 
 def genus_key(phylum, animal_class, order, scientific):
     return (phylum,animal_class,order,scientific.split(' ',1)[0])

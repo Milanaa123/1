@@ -92,7 +92,7 @@ render=function(){
     const latin=document.createElement('small');latin.textContent=row[1]+(row[5]?' · '+status(row):'');
     const reading=document.createElement('small');reading.className='russian-name-note';
     reading.textContent=verifiedRussianName(row)?'Подтверждённое русское название вида':
-      'Научное название русскими буквами: '+scientificRussianReading(row)+' (не официальное название)';
+      'Русское название этого вида не установлено; показана группа животного';
     const renderedGreek=document.createElement('small');
     renderedGreek.textContent='По-гречески (транслитерация): '+taxonGreek(row[1]);
     body.append(name,latin,reading,renderedGreek);card.append(index,body);
@@ -202,9 +202,9 @@ run=async function(){
    const data=JSON.parse(body);
    if(!Array.isArray(data))throw Error('Некорректный формат индекса');
    matches=data.filter(row=>Array.isArray(row)&&row[0]===target);
-   if(matches.some(row=>row.length!==11 ||
+   if(matches.some(row=>row.length!==10 ||
       !['species','subspecies'].includes(row[2]) || row[5]!=='' ||
-      !row[3] || !row[6] || [row[7],row[8],row[9],row[10]].some(x=>typeof x!=='string') || !/^[A-Z][A-Za-z-]+(?: [a-z-]+){1,2}$/.test(row[1]) ||
+      !row[3] || !row[6] || [row[7],row[8],row[9]].some(x=>typeof x!=='string') || !/^[A-Z][A-Za-z-]+(?: [a-z-]+){1,2}$/.test(row[1]) ||
       taxonGreekScore(row[1])!==target))
     throw Error('Сумма транслитерированного греческого названия не совпала с индексом');
   }
@@ -222,9 +222,9 @@ run=async function(){
 download=function(format){
   if(!results.length)return;
   const origin='Catalogue of Life XR 2026-08-26; греческая транслитерация латинизированных научных названий, единая греческая числовая таблица; это не исторический перевод';
-  const rows=results.map(r=>[display(r),r[1],taxonGreek(r[1]),r[2],r[0],r[5],filterName(r),r[7]||'',r[8]||'',r[9]||'',scientificRussianReading(r),verifiedRussianName(r)?'подтверждено':'транскрипция']);
+  const rows=results.map(r=>[display(r),r[1],taxonGreek(r[1]),r[2],r[0],r[5],filterName(r),r[7]||'',r[8]||'',verifiedRussianName(r),verifiedRussianName(r)?'подтверждено':'русское название вида не установлено']);
   const csv=v=>/[;"\r\n]/.test(String(v))?'"'+String(v).replace(/"/g,'""')+'"':String(v);
-  const content=format==='csv'?[['Русское название','Научное латинское название','Греческая транслитерация','Ранг','Число (греческое)','Статус','Группа','Семейство (лат.)','Семейство (рус.)','Русское название вида (проверенное)','Русская транскрипция научного имени','Статус русского названия'],...rows].map(row=>row.map(csv).join(';')).join('\r\n'):
+  const content=format==='csv'?[['Русское название','Научное латинское название','Греческая транслитерация','Ранг','Число (греческое)','Статус','Группа','Семейство (лат.)','Семейство (рус.)','Русское название вида (проверенное)','Статус русского названия'],...rows].map(row=>row.map(csv).join(';')).join('\r\n'):
     ['Имя: '+el('name').value,'Латинское написание: '+el('latin').value,'Греческая запись: '+el('greek').value,'Число: '+sum,'Точных совпадений: '+results.length,'Источник: '+origin,'',...rows.map((r,i)=>(i+1)+'. '+r[0]+' — '+r[1]+' → '+r[2]+' ('+r[3]+', '+r[4]+')')].join('\n');
   const url=URL.createObjectURL(new Blob(['\ufeff'+content],{type:format==='csv'?'text/csv;charset=utf-8':'text/plain;charset=utf-8'}));
   const a=document.createElement('a');a.href=url;a.download='Анимагия_'+sum+'_все_'+results.length+'.'+format;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);

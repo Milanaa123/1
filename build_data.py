@@ -519,7 +519,7 @@ def build():
  meta['excluded_uncertain_rows']=excluded_uncertain
  meta['excluded_out_of_scope_rows']=excluded_scope
  meta['taxon_ranks']='species and subspecies only'
- meta['row_schema']=['greek_score','scientific_name','rank','class','order','status','phylum','family','family_ru','common_name_ru','scientific_name_ru_transcription']
+ meta['row_schema']=['greek_score','scientific_name','rank','class','order','status','phylum','family','family_ru','common_name_ru']
  meta['family_catalogue_file']='families.json'
  if external_report.exists():
   shutil.copy2(external_report,DEST/'family_external_verified.json')
@@ -540,13 +540,12 @@ def build():
   meta['family_itis_evidence_file']='family_itis_verified.json'
  meta['bulk_russian_names_source']=EXTERNAL_STATS
  meta['bulk_russian_name_policy']='Only documented Russian common names of exactly matching scientific species from a fixed BirdNET+ snapshot; no AI translation.'
- meta['unverified_name_presentation']='Other taxa retain a scientific name and gain an explicitly labelled Russian phonetic reading in the interface; not claimed as Russian species common name.'
+ meta['unverified_name_presentation']='If no documented Russian species name exists, the interface identifies the zoological group as a fallback; scientific Latin name remains separately visible.'
  meta['missing_family_diagnostics']='families_missing.json'
  meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
   'distinct_families':len(family_values),'family_ru_present':family_ru_present,
   'verified_species_common_names':species_ru_present}
- meta['russian_name_policy']='Curated and BirdNET+ exact Russian species names; otherwise explicitly general family/genus descriptor plus Cyrillic reading of Latin scientific name. No invented common names.'
- meta['russian_transcription_count']=unique
+ meta['russian_name_policy']='Curated and BirdNET+ exact Russian species names; otherwise explicitly labelled genus/family group with original Latin scientific name. No transliterations or invented common names.'
  meta['artwork_key']='family (the scientific family name in row[7])'
  meta['editorial_scope_warning']='Independent/nonparasitic status is approximated from taxonomy, not individually proven for each species'
  meta['category_filter']='Curated noncolonial independent animal groups: mammals, birds, reptiles, amphibians, fish, insects, spiders/scorpions, free-moving crustaceans, cephalopods and echinoderms. Excludes corals/polyps, sponges, attached molluscs and worms; ecology is inferred, not verified species by species.'

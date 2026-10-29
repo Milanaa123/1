@@ -78,9 +78,14 @@ test('все основные названия в подборке написа�
     assert.doesNotMatch(label,/[A-Za-z]/);
   }
 });
+test('заголовок использует только русское название вида, а латынь остаётся отдельным научным полем',()=>{
+  const row=[1531,'Canis lupus','species','Mammalia','Carnivora','','Chordata','Canidae','Псовые','Волк'];
+  assert.equal(api.display(row),'Волк');
+  assert.equal(row[1],'Canis lupus');
+});
 test('непризнанные русские имена не маскируются под официальные',()=>{
   const row=[551,'Arctosa capensis','species','Arachnida','Araneae','','Arthropoda'];
-  assert.equal(api.display(row),'Паук-волк · арктоса капенсис (транскрипция)');
+  assert.equal(api.display(row),'Паук-волк (русское название вида не установлено)');
   assert.doesNotMatch(api.display(row),/[A-Za-z]/);
   assert.equal(row[1],'Arctosa capensis','Scientific identity must remain available separately');
 });
