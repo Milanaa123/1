@@ -12,7 +12,7 @@ from taxon_filters import allow_animal_taxon
 ROW_WIDTH = 10
 ALLOWED_RANKS = frozenset(("species", "subspecies"))
 
-def audit_bucket(rows, bucket_id: int) -> dict:
+def audit_bucket(rows, bucket_id: int, synonym_evidence: dict | None = None) -> dict:
     if not isinstance(bucket_id, int) or bucket_id < 0:
         raise ValueError("Invalid bucket number")
     if not isinstance(rows, list) or not rows:
@@ -44,8 +44,27 @@ def audit_bucket(rows, bucket_id: int) -> dict:
             raise ValueError(f"Out-of-scope class/order for {name!r}")
         if len(family)>160 or len(family_ru)>160 or len(common_ru)>180:
             raise ValueError(f"Overlong family or Russian label for {name!r}")
-        if (family_ru,common_ru) != taxon_ru_labels(name,family,cls,order,phylum,rank):
-            raise ValueError(f"Unverified Russian label for {name!r}")
+        expected_family,expected_common=taxon_ru_labels(name,family,cls,order,phylum,rank)
+        if family_ru!=expected_family:
+            raise ValueError(f"Unverified Russian family label for {name!r}")
+        if common_ru!=expected_common:
+            key=name+'|'+rank
+            record=(synonym_evidence or {}).get(key)
+            if expected_common or not record or record.get('russian')!=common_ru:
+                raise ValueError(f"Unverified Russian label for {name!r}")
+            aliases=record.get('source_synonyms',[])
+            if not isinstance(aliases,list) or not aliases or not all(
+                isinstance(alias,str) and alias!=name for alias in aliases
+            ):
+                raise ValueError(f"Missing explicit synonym for {name!r}")
+            corroborated={
+                taxon_ru_labels(alias,family,cls,order,phylum,rank)[1]
+                for alias in aliases
+            }
+            if corroborated!={common_ru} or record.get('taxonomic_authority')!=(
+                'Catalogue of Life XR 2026-08-26 TextTree direct synonym'
+            ):
+                raise ValueError(f"Synonym evidence conflicts for {name!r}")
         if taxon_score(name) != value:
             raise ValueError(f"Bad Greek score for {name!r}")
         key = (name.lower(), rank)
