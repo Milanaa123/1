@@ -34,4 +34,12 @@ jobs:
           for j,row in enumerate(reader):
             if j>=2:break
             print('BIRDNET_EXAMPLE',json.dumps(row[:14],ensure_ascii=False),flush=True)
+          import hashlib,re
+          with urllib.request.urlopen(req,timeout=60) as resp:
+            content=resp.read(30000000)
+          h=hashlib.sha256(content).hexdigest()
+          data_rows=list(csv.DictReader(io.StringIO(content.decode('utf-8-sig'))))
+          ru=[x for x in data_rows if re.search('[А-Яа-яЁё]',x.get('common_name_ru',''))]
+          print('BIRDNET_DOWNLOAD',len(content),'SHA256',h,'TOTAL',len(data_rows),'RU',len(ru),flush=True)
+          print('BIRDNET_RU_EXAMPLES',json.dumps([{'scientific_name':x['scientific_name'],'name_ru':x['common_name_ru']} for x in ru[:12]],ensure_ascii=False),flush=True)
           PY
