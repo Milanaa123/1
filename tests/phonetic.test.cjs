@@ -66,7 +66,7 @@ test('если точных животных меньше 30, не добавл�
   const rows=Array.from({length:12},(_,i)=>[551,'Testus exemplar'+i,'species','Aves','Passeriformes','','Chordata']);
   assert.equal(api.featured(rows).length,12);
 });
-test('все основные названия в подборке написаны кириллицей',()=>{
+test('в подборке: подтверждённые названия по-русски, остальные — латинские',()=>{
   const rows=[
     [551,'Arctosa capensis','species','Arachnida','Araneae','','Arthropoda'],
     [551,'Gekko hulk','species','Reptilia','Squamata','','Chordata'],
@@ -74,8 +74,7 @@ test('все основные названия в подборке написа�
   ];
   for(const row of rows){
     const label=api.display(row);
-    assert.match(label,/[А-Яа-яЁё]/);
-    assert.doesNotMatch(label,/[A-Za-z]/);
+    assert.equal(label,row[1]);
   }
 });
 test('заголовок использует только русское название вида, а латынь остаётся отдельным научным полем',()=>{
@@ -85,8 +84,7 @@ test('заголовок использует только русское наз
 });
 test('непризнанные русские имена не маскируются под официальные',()=>{
   const row=[551,'Arctosa capensis','species','Arachnida','Araneae','','Arthropoda'];
-  assert.equal(api.display(row),'Паук-волк (русское название вида не установлено)');
-  assert.doesNotMatch(api.display(row),/[A-Za-z]/);
+  assert.equal(api.display(row),'Arctosa capensis');
   assert.equal(row[1],'Arctosa capensis','Scientific identity must remain available separately');
 });
 
@@ -103,6 +101,6 @@ test('при большом количестве разных таксонов �
   assert.equal(list.length,30);
   assert.ok(list.every(row=>groups.includes(row[3])),'obscure animals should not displace 30 interesting matches');
 });
-test('в русском заголовке нет букв латинского алфавита даже у неопознанного вида',()=>{
-  assert.doesNotMatch(api.display([887,'Mysteriella novissima','species','','','','']),/[A-Za-z]/);
+test('без подтверждённого русского названия используется чистая научная латынь',()=>{
+  assert.equal(api.display([887,'Mysteriella novissima','species','','','','']),'Mysteriella novissima');
 });
