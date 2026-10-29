@@ -34,7 +34,7 @@ const atlas=loadAtlas();
 test('only the 108 accepted unmodified transparent PNGs remain available',()=>{
  assert.equal(manifest.count,108);
  assert.equal(rows.length,108);
- assert.equal(new Set(rows.map(x=>x.file)).size,107);
+ assert.equal(new Set(rows.map(x=>x.file)).size,108);
  assert.equal(manifest.animals,104);
  assert.equal(manifest.additional,4);
  for(const item of rows){
@@ -70,6 +70,14 @@ test('only exact accepted species get animal imagery',()=>{
  assert.equal(atlas.resolve([1878,'Panthera leo','subspecies']),null);
 });
 
+test('user-provided frog is shown for Anura with honest generic classification',()=>{
+ const anura=[1878,'Cornufer opisthodon','species','Amphibia','Anura','','Chordata'];
+ const profile=atlas.resolve(anura);
+ assert.equal(profile?.file,'additional/Лягушка.png');
+ assert.equal(profile?.exact,false);
+ assert.match(profile?.note,/обобщённый образ/);
+ assert.equal(atlas.resolve([1878,'Salamandra salamandra','species','Amphibia','Urodela']),null);
+});
 test('no legacy fallback, even on direct image requests',async()=>{
  const unsupported=row('Panthera uncia');
  assert.equal(atlas.resolve(unsupported),null);
