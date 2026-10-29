@@ -16,7 +16,7 @@ sys.path.insert(0,str(BASE))
 from greek_taxa import greek_transliterate, taxon_score, score_greek, RULE_VERSION
 from taxon_filters import allow_animal_taxon, POLICY_VERSION
 from audit_index import audit_bucket
-from ru_catalog import indexed_taxon_row, taxon_ru_labels
+from ru_catalog import indexed_taxon_row, taxon_ru_labels, genus_key, family_from_unambiguous_genus
 
 CONTROL={
  "Naja oxiana":254,
@@ -110,6 +110,19 @@ class GreekNumericParityTests(unittest.TestCase):
                         r[:9]+['Выдуманное название']):
             with self.assertRaises(ValueError):
                 audit_bucket([invalid],r[0]//25)
+
+    def test_family_recovery_requires_unique_taxonomic_genus(self):
+        r=row()
+        r[7]=''
+        r[8]=''
+        key=genus_key(r[6],r[3],r[4],r[1])
+        self.assertEqual(family_from_unambiguous_genus({key:{'Felidae'}},r),'Felidae')
+        self.assertEqual(family_from_unambiguous_genus({key:{'Felidae','Canidae'}},r),'')
+        self.assertEqual(family_from_unambiguous_genus({},r),'')
+        self.assertEqual(family_from_unambiguous_genus({
+            genus_key('Arthropoda','Insecta','Coleoptera',r[1]):{'Felidae'}},r),'')
+        r[7]='Felidae'
+        self.assertEqual(family_from_unambiguous_genus({key:{'Felidae'}},r),'')
 
     def test_reject_corrupt_rows(self):
         valid=row()

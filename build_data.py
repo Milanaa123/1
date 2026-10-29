@@ -5,7 +5,7 @@ from original.alphabet_maps import latin_map as CH
 from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_score, CONTROL_NAMES
 from taxon_filters import POLICY_VERSION, allow_animal_taxon
 from audit_index import audit_bucket
-from ru_catalog import indexed_taxon_row, FAMILY_RU
+from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus
 from pathlib import Path
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
 URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
@@ -233,6 +233,8 @@ def bundle_curated_gold_art():
 def build():
  verify_original()
  verify_animal_scope()
+ stats=load_birdnet_names()
+ print('BIRDNET_RUSSIAN_NAMES_VALIDATED',stats,flush=True)
  zpath=Path(os.getenv('COL_ZIP','')) if os.getenv('COL_ZIP') else BASE/'source.zip'
  if not zpath.is_file():
   print('Downloading CoL data',URL,flush=True)
@@ -308,7 +310,7 @@ def build():
  print('ANIMAGIA_VECTOR_100_BATCHES_PUBLISHED',flush=True)
  shutil.copy2(art5,DEST/'art'/'animals-approved-01-05.png')
  print('CURATED_FIRST_FIVE_ALPHA_READY',len(raw5),'bytes',expected5,flush=True)
- stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();t0=time.time()
+ stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();genus_families=collections.defaultdict(set);t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)
   def spool(bid,row):
@@ -340,6 +342,11 @@ def build():
     # Propagate the dagger (†) down the hierarchy before indexing.
     is_extinct=('†' in body[:3]) or (stack[-1][3] if stack else False)
     is_uncertain=body.lstrip().startswith('?')
+    if rank=='genus' and name and not is_extinct:
+     genus_lin={r:n for _,r,n,_ in stack}
+     known_family=genus_lin.get('family','')
+     if known_family:
+      genus_families[genus_key(genus_lin.get('phylum',''),genus_lin.get('class',''),genus_lin.get('order',''),name)].add(known_family)
     if rank in RANK and name:
      lin={r:n for _,r,n,_ in stack}
      if is_extinct:
@@ -354,12 +361,15 @@ def build():
       except ValueError:
        invalid_names+=1
       else:
+       # Do not infer a family from a broad order or an animal's appearance.
+       if lin.get('family'):
+        genus_families[genus_key(lin.get('phylum',''),lin.get('class',''),lin.get('order',''),name)].add(lin['family'])
        # No extinct/uncertain record may enter the downloadable index.
        spool(n//25,indexed_taxon_row(n,name,rank,lin))
        formal+=1
     stack.append((indent,rank,name,is_extinct))
   for f in handles.values():f.close()
-  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
+  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=family_genus_inferred=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
   for p in directory.glob('*.part'):
    bid=int(p.stem);seen={}
    with p.open(encoding='utf8') as f:
@@ -373,6 +383,13 @@ def build():
      else:
       seen[key]=r
    values=sorted(seen.values(),key=lambda r:(r[0],r[3],r[1]))
+   for row in values:
+    if row[7]:continue
+    inferred=family_from_unambiguous_genus(genus_families,row)
+    if inferred:
+     row[7]=inferred
+     row[8],row[9]=taxon_ru_labels(row[1],inferred)
+     family_genus_inferred+=1
    unique+=len(values);available.append(bid)
    # Fail the entire publication if ANY row is invalid, misplaced,
    # duplicated, excluded, incorrectly scored or out of sorted order.
@@ -386,7 +403,7 @@ def build():
    for r in values:
     if not r[7]:
      missing_families[(r[3],r[4])]+=1
-     if len(missing_samples)<60:
+     if len(missing_samples)<4000:
       missing_samples.append({'scientific_name':r[1],'rank':r[2],'class':r[3],'order':r[4]})
    blob=json.dumps(values,ensure_ascii=False,separators=(',',':')).encode('utf8')
    (DATA/(str(bid)+'.json')).write_bytes(blob)
@@ -404,7 +421,7 @@ def build():
  assert sum(x['record_count'] for x in family_index)==family_present
  (DEST/'families_missing.json').write_text(
   json.dumps({'source':'Catalogue of Life XR 2026-08-26',
-              'explanation':'No family ancestor was present in the source TextTree lineage for these species/subspecies; not proof of absent biological family',
+              'explanation':'Neither an original family ancestor nor a uniquely classified genus in this CoL release provided an unambiguous family; biological absence is not implied',
               'count':unique-family_present,
               'by_class_order':[{'class':cl,'order':order,'count':n}
                                 for (cl,order),n in sorted(missing_families.items(),key=lambda x:(-x[1],x[0]))],
@@ -425,11 +442,14 @@ def build():
  meta['taxon_ranks']='species and subspecies only'
  meta['row_schema']=['greek_score','scientific_name','rank','class','order','status','phylum','family','family_ru','common_name_ru']
  meta['family_catalogue_file']='families.json'
+ meta['family_assignments_from_unique_genus']=family_genus_inferred
+ meta['bulk_russian_names_source']=EXTERNAL_STATS
+ meta['bulk_russian_name_policy']='Only documented Russian common names of exactly matching scientific species from a fixed BirdNET+ snapshot; no AI translation.'
  meta['missing_family_diagnostics']='families_missing.json'
  meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
   'distinct_families':len(family_values),'family_ru_present':family_ru_present,
   'verified_species_common_names':species_ru_present}
- meta['russian_name_policy']='Curated exact species Russian names where available; otherwise the interface shows an explicitly general genus/family label. No invented species names.'
+ meta['russian_name_policy']='Curated and BirdNET+ exact Russian species names, otherwise explicitly general family/genus descriptor. No invented species names or auto-translations.'
  meta['artwork_key']='family (the scientific family name in row[7])'
  meta['editorial_scope_warning']='Independent/nonparasitic status is approximated from taxonomy, not individually proven for each species'
  meta['category_filter']='Curated noncolonial independent animal groups: mammals, birds, reptiles, amphibians, fish, insects, spiders/scorpions, free-moving crustaceans, cephalopods and echinoderms. Excludes corals/polyps, sponges, attached molluscs and worms; ecology is inferred, not verified species by species.'
