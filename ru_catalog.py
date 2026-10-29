@@ -32,6 +32,12 @@ assert INAT_SNAPSHOT['count']==len(INAT_SNAPSHOT['names'])
 if INAT_SNAPSHOT['count']:
     assert INAT_SNAPSHOT['source']=='iNaturalist official taxonomy DarwinCore Archive, Russian lexicon'
 INAT_NAMES=INAT_SNAPSHOT['names']
+_BVI_PATH=Path(__file__).resolve().parent/'russian_bvi_snapshot.json'
+BVI_SNAPSHOT=json.loads(_BVI_PATH.read_text(encoding='utf-8')) if _BVI_PATH.exists() else {'count':0,'names':{}}
+assert BVI_SNAPSHOT['count']==len(BVI_SNAPSHOT['names'])
+if BVI_SNAPSHOT['count']:
+    assert BVI_SNAPSHOT['source']=='BVI historical taxonomy index: real Russian animal names'
+BVI_NAMES=BVI_SNAPSHOT['names']
 
 BIRDNET_URL='https://birdnet.cornell.edu/taxonomy/api/download/csv'
 BIRDNET_SHA256='daecb2505ff16dddbafe76cfa8d15a044c506b6a2998b2349a94bcd355475ac4'
@@ -109,6 +115,17 @@ def inat_ru_label(scientific, family, animal_class, order, phylum, rank):
         if ours and theirs and ours!=theirs:return ''
     return label if _RUSSIAN.fullmatch(label) else ''
 
+def bvi_ru_label(scientific,animal_class,rank):
+    """Published Russian zoological names matching the exact class and binomial."""
+    if not isinstance(scientific,str) or not animal_class or rank not in ('species','subspecies'):
+        return ''
+    entry=BVI_NAMES.get(scientific.casefold()+'|'+rank)
+    if not entry or len(entry)!=3:return ''
+    label,classes,source_url=entry
+    if animal_class not in classes or not source_url.startswith('https://bvi.rusf.ru/'):
+        return ''
+    return label if _RUSSIAN.fullmatch(label) else ''
+
 def wikidata_ru_label(scientific,rank):
     """Wikidata CC0 community-curated species label for exact scientific binomial."""
     if rank!='species' or not isinstance(scientific,str):
@@ -127,6 +144,8 @@ def taxon_ru_labels(scientific, family, animal_class='', order='', phylum='', ra
         common=source_vernacular_name(scientific,family,animal_class,order,phylum,rank)
     if not common and animal_class and phylum:
         common=inat_ru_label(scientific,family,animal_class,order,phylum,rank)
+    if not common and animal_class and phylum:
+        common=bvi_ru_label(scientific,animal_class,rank)
     if not common and animal_class and phylum:
         common=wikidata_ru_label(scientific,rank)
     return FAMILY_RU.get(family, ''),common
