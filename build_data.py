@@ -235,6 +235,18 @@ def build():
  verify_animal_scope()
  stats=load_birdnet_names()
  print('BIRDNET_RUSSIAN_NAMES_VALIDATED',stats,flush=True)
+ verified_external={}
+ verified_external_genus={}
+ external_report=BASE/'family_external_verified.json'
+ if external_report.exists():
+  ext=json.loads(external_report.read_text(encoding='utf8'))
+  assert ext['base_source']=='Catalogue of Life XR 2026-08-26'
+  verified_external=ext['families']
+  verified_external_genus=ext.get('genus_based_families',{})
+  assert len(verified_external)==ext['verified_count']
+  assert len(verified_external_genus)==ext.get('genus_based_verified_count',len(verified_external_genus))
+  assert len(verified_external)<=ext['original_unresolved']
+  print('GBIF_FAMILIES_SNAPSHOT_LOADED',len(verified_external),flush=True)
  zpath=Path(os.getenv('COL_ZIP','')) if os.getenv('COL_ZIP') else BASE/'source.zip'
  if not zpath.is_file():
   print('Downloading CoL data',URL,flush=True)
@@ -369,7 +381,7 @@ def build():
        formal+=1
     stack.append((indent,rank,name,is_extinct))
   for f in handles.values():f.close()
-  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=family_genus_inferred=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
+  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=family_genus_inferred=family_external_inferred=family_external_genus_inferred=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
   for p in directory.glob('*.part'):
    bid=int(p.stem);seen={}
    with p.open(encoding='utf8') as f:
@@ -390,6 +402,29 @@ def build():
      row[7]=inferred
      row[8],row[9]=taxon_ru_labels(row[1],inferred)
      family_genus_inferred+=1
+    else:
+     evidence=verified_external.get(row[1])
+     if (evidence and evidence.get('rank')==row[2] and
+         evidence.get('class')==row[3] and evidence.get('order')==row[4] and
+         evidence.get('phylum')==row[6] and
+         evidence.get('matched_name','').casefold()==row[1].casefold() and
+         evidence.get('match_type')=='EXACT' and
+         evidence.get('family','').endswith('idae')):
+      row[7]=evidence['family']
+      row[8],row[9]=taxon_ru_labels(row[1],row[7])
+      family_external_inferred+=1
+     else:
+      evidence=verified_external_genus.get(row[1])
+      if (evidence and evidence.get('rank')==row[2] and
+          evidence.get('class')==row[3] and evidence.get('order')==row[4] and
+          evidence.get('phylum')==row[6] and
+          evidence.get('matched_genus','').casefold()==row[1].split()[0].casefold() and
+          evidence.get('source_match_rank')=='GENUS' and
+          evidence.get('match_type')=='EXACT' and
+          evidence.get('family','').endswith('idae')):
+       row[7]=evidence['family']
+       row[8],row[9]=taxon_ru_labels(row[1],row[7])
+       family_external_genus_inferred+=1
    unique+=len(values);available.append(bid)
    # Fail the entire publication if ANY row is invalid, misplaced,
    # duplicated, excluded, incorrectly scored or out of sorted order.
@@ -442,7 +477,15 @@ def build():
  meta['taxon_ranks']='species and subspecies only'
  meta['row_schema']=['greek_score','scientific_name','rank','class','order','status','phylum','family','family_ru','common_name_ru']
  meta['family_catalogue_file']='families.json'
+ if external_report.exists():
+  shutil.copy2(external_report,DEST/'family_external_verified.json')
+  meta_gbif_src='family_external_verified.json'
+ else:
+  meta_gbif_src=''
+ meta['family_external_evidence_file']=meta_gbif_src
  meta['family_assignments_from_unique_genus']=family_genus_inferred
+ meta['family_assignments_from_exact_gbif']=family_external_inferred
+ meta['family_assignments_from_exact_gbif_genus']=family_external_genus_inferred
  meta['bulk_russian_names_source']=EXTERNAL_STATS
  meta['bulk_russian_name_policy']='Only documented Russian common names of exactly matching scientific species from a fixed BirdNET+ snapshot; no AI translation.'
  meta['missing_family_diagnostics']='families_missing.json'

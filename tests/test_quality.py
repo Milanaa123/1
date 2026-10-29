@@ -124,6 +124,26 @@ class GreekNumericParityTests(unittest.TestCase):
         r[7]='Felidae'
         self.assertEqual(family_from_unambiguous_genus({key:{'Felidae'}},r),'')
 
+    def test_exact_gbif_evidence_snapshot(self):
+        data=json.loads((BASE/'family_external_verified.json').read_text(encoding='utf-8'))
+        direct=data['families']
+        genera=data['genus_based_families']
+        self.assertEqual(len(direct),data['verified_count'])
+        self.assertEqual(len(genera),data['genus_based_verified_count'])
+        self.assertFalse(set(direct)&set(genera))
+        self.assertEqual(data['original_unresolved'],990)
+        self.assertEqual(len(direct)+len(genera)+data['remaining_after_genus'],990)
+        for name,entry in direct.items():
+            self.assertEqual(entry['matched_name'].casefold(),name.casefold())
+            self.assertEqual(entry['match_type'],'EXACT')
+            self.assertTrue(entry['family'].endswith('idae'))
+            self.assertIn(entry['rank'],('species','subspecies'))
+        for name,entry in genera.items():
+            self.assertEqual(entry['matched_genus'].casefold(),name.split()[0].casefold())
+            self.assertEqual(entry['source_match_rank'],'GENUS')
+            self.assertEqual(entry['match_type'],'EXACT')
+            self.assertTrue(entry['family'].endswith('idae'))
+
     def test_reject_corrupt_rows(self):
         valid=row()
         bucket=valid[0]//25
