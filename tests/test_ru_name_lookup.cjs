@@ -58,5 +58,12 @@ const row=(name,family='Canidae')=>[1,name,'species','Mammalia','Carnivora','','
  const prior=calls.length;
  assert.equal(await api.resolve(row('Ursus arctos','Ursidae')),'Бурый медведь');
  assert.equal(calls.length,prior,'verified positive names cached');
+ // The site must use a plain Latin binomial if a Russian species name is unknown.
+ const page=fs.readFileSync(path.join(__dirname,'..','app.js'),'utf8');
+ const ctx=vm.createContext({window:{AnimagiaRussianNames:{get:()=>''}},document:{addEventListener(){}}});
+ vm.runInContext(page,ctx,{filename:'app.js'});
+ assert.equal(vm.runInContext('display([0,"Cornufer unknown","species","Amphibia","Anura","","Chordata","Ceratobatrachidae","",""])',ctx),'Cornufer unknown');
+ assert.equal(vm.runInContext('display([0,"Cornufer opisthodon","species","Amphibia","Anura","","Chordata","Ceratobatrachidae","","Бугорчатоносая лягушка"])',ctx),'Бугорчатоносая лягушка');
+ assert.ok(!page.includes('русское название вида не установлено'));
  console.log('RUSSIAN_NAMES_TWO_SOURCES_STRICT_ACCEPTED_TESTS_PASSED');
 })().catch(err=>{console.error(err);process.exitCode=1});
