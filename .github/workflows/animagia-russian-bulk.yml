@@ -1,0 +1,30 @@
+name: Import verified Russian names from open taxonomy tables
+on:
+  push:
+    branches: [animagia-site]
+    paths: ['tools/build_russian_snapshot.py','.github/workflows/animagia-russian-bulk.yml']
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: animagia-site
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pyarrow==20.0.0
+      - name: Validate authentic Russian names against source rank and taxon identity
+        run: python tools/build_russian_snapshot.py
+      - name: Commit validated compact snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add russian_vernacular_snapshot.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Import checked Russian names from CoL GBIF ITIS NCBI"
+            git push origin HEAD:animagia-site
+          fi
