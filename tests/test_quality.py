@@ -196,7 +196,9 @@ class GreekNumericParityTests(unittest.TestCase):
         self.assertNotEqual(WIKIDATA_NAMES.get('panthera leo'),None)
         for label,qid in list(WIKIDATA_NAMES.values())[:500]:
             self.assertRegex(label,r'[А-Яа-яЁё]')
-            self.assertRegex(qid,r'^Q[0-9]+
+            self.assertTrue(qid.startswith('Q') and qid[1:].isdigit())
+
+    def test_reject_corrupt_rows(self):
         valid=row()
         bucket=valid[0]//25
         self.assertEqual(audit_bucket([valid],bucket)["rows"],1)
