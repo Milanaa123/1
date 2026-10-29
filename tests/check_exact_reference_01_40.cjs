@@ -33,7 +33,7 @@ assert.match(src,/individualAsset\(0\)/);
 assert.match(src,/REF_X0=Object\.freeze\(\[4,155,309,463,617,772,926,1082,1236,1391\]\)/);
 assert.match(src,/REF_Y0=Object\.freeze\(\[4,111,217,323\]\)/);
 assert.match(html,/animal_cutout_40\.js\?v=frog-style-isolated-v2-20261028/);
-assert.match(html,/animal_atlas_100\.js\?v=gold-contours-100-final-20261028/);
+assert.match(html,/animal_atlas_100\.js\?v=family-ru-catalog-20261029/);
 assert.match(builder,/shutil\.copy2\(BASE\/'animal_cutout_40\.js'/);
 assert.match(builder,/ANIMAGIA_UNMODIFIED_REFERENCE_01_40_PUBLISHED/);
 assert.match(src,/drawRestVector\(ctx,profile\.cell,x,y,w,h\)/);
