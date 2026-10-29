@@ -202,9 +202,9 @@ run=async function(){
    const data=JSON.parse(body);
    if(!Array.isArray(data))throw Error('Некорректный формат индекса');
    matches=data.filter(row=>Array.isArray(row)&&row[0]===target);
-   if(matches.some(row=>row.length!==10 ||
+   if(matches.some(row=>row.length!==11 ||
       !['species','subspecies'].includes(row[2]) || row[5]!=='' ||
-      !row[3] || !row[6] || [row[7],row[8],row[9]].some(x=>typeof x!=='string') || !/^[A-Z][A-Za-z-]+(?: [a-z-]+){1,2}$/.test(row[1]) ||
+      !row[3] || !row[6] || [row[7],row[8],row[9],row[10]].some(x=>typeof x!=='string') || !/^[A-Z][A-Za-z-]+(?: [a-z-]+){1,2}$/.test(row[1]) ||
       taxonGreekScore(row[1])!==target))
     throw Error('Сумма транслитерированного греческого названия не совпала с индексом');
   }

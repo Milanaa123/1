@@ -5,11 +5,11 @@ independent confirmation of continued existence. Run on *all* published rows.
 """
 from __future__ import annotations
 from collections import Counter
-from ru_catalog import taxon_ru_labels
+from ru_catalog import taxon_ru_labels, scientific_ru_transcription
 from greek_taxa import SCIENTIFIC_RE, taxon_score
 from taxon_filters import allow_animal_taxon
 
-ROW_WIDTH = 10
+ROW_WIDTH = 11
 ALLOWED_RANKS = frozenset(("species", "subspecies"))
 
 def audit_bucket(rows, bucket_id: int) -> dict:
@@ -24,7 +24,7 @@ def audit_bucket(rows, bucket_id: int) -> dict:
     for i, row in enumerate(rows):
         if not isinstance(row, list) or len(row) != ROW_WIDTH:
             raise ValueError(f"Invalid taxon record at {bucket_id}:{i}")
-        value, name, rank, cls, order, status, phylum, family, family_ru, common_ru = row
+        value, name, rank, cls, order, status, phylum, family, family_ru, common_ru, phonetic_ru = row
         if type(value) is not int or value < 1 or value // 25 != bucket_id:
             raise ValueError(f"Wrong numeric bucket for {name!r}")
         if rank not in ALLOWED_RANKS or status != "":
@@ -35,15 +35,17 @@ def audit_bucket(rows, bucket_id: int) -> dict:
             raise ValueError(f"Non-binomial species: {name!r}")
         if rank == "subspecies" and len(name.split()) != 3:
             raise ValueError(f"Non-trinomial subspecies: {name!r}")
-        if any(not isinstance(x, str) for x in (cls, order, status, phylum, family, family_ru, common_ru)):
+        if any(not isinstance(x, str) for x in (cls, order, status, phylum, family, family_ru, common_ru, phonetic_ru)):
             raise ValueError(f"Malformed classification for {name!r}")
         if not cls or not phylum or not allow_animal_taxon({
             "kingdom":"Animalia", "phylum":phylum, "class":cls,
             "order":order,"genus":name.split()[0]
         }):
             raise ValueError(f"Out-of-scope class/order for {name!r}")
-        if len(family)>160 or len(family_ru)>160 or len(common_ru)>180:
+        if len(family)>160 or len(family_ru)>160 or len(common_ru)>180 or len(phonetic_ru)>180:
             raise ValueError(f"Overlong family or Russian label for {name!r}")
+        if phonetic_ru != scientific_ru_transcription(name):
+            raise ValueError(f"Invalid Cyrillic rendering for {name!r}")
         if (family_ru,common_ru) != taxon_ru_labels(name,family):
             raise ValueError(f"Unverified Russian label for {name!r}")
         if taxon_score(name) != value:

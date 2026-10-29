@@ -234,7 +234,7 @@ function familyDisplay(r){
 }
 function scientificRussianReading(r){
   // Unique readable Cyrillic transcription; NOT an attested Russian species name.
-  return rusTransliteration(r[1]);
+  return r[10] || rusTransliteration(r[1]);
 }
 function verifiedRussianName(r){
   return r[9] || (typeof window!=='undefined'?window.AnimagiaRussianNames?.get(r):'') ||

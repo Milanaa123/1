@@ -16,7 +16,7 @@ sys.path.insert(0,str(BASE))
 from greek_taxa import greek_transliterate, taxon_score, score_greek, RULE_VERSION
 from taxon_filters import allow_animal_taxon, POLICY_VERSION
 from audit_index import audit_bucket
-from ru_catalog import indexed_taxon_row, taxon_ru_labels, genus_key, family_from_unambiguous_genus
+from ru_catalog import indexed_taxon_row, taxon_ru_labels, genus_key, family_from_unambiguous_genus, scientific_ru_transcription
 
 CONTROL={
  "Naja oxiana":254,
@@ -103,8 +103,9 @@ class GreekNumericParityTests(unittest.TestCase):
         self.assertGreaterEqual(len(FAMILY_RU),150)
         self.assertGreaterEqual(len(SPECIES_RU),60)
         r=row()
-        self.assertEqual(len(r),10)
+        self.assertEqual(len(r),11)
         self.assertEqual(r[7:10],['Felidae','Кошачьи','Снежный барс'])
+        self.assertEqual(r[10],'пантера ункиа')
         audit_bucket([r],r[0]//25)
         for invalid in (r[:8]+['Псовые','Снежный барс'],
                         r[:9]+['Выдуманное название']):
@@ -143,6 +144,20 @@ class GreekNumericParityTests(unittest.TestCase):
             self.assertEqual(entry['source_match_rank'],'GENUS')
             self.assertEqual(entry['match_type'],'EXACT')
             self.assertTrue(entry['family'].endswith('idae'))
+
+    def test_all_scientific_names_get_cyrillic_reading_not_fake_common_name(self):
+        for scientific in ['Castor fiber','Panthera uncia','Arctosa capensis',
+                           'Hyparrheniaspis campbelli','Vulpes vulpes']:
+            with self.subTest(scientific=scientific):
+                name=scientific_ru_transcription(scientific)
+                self.assertTrue(name and name.islower())
+                self.assertFalse(any('a'<=c<='z' for c in name))
+        self.assertEqual(scientific_ru_transcription('Castor fiber'),'кастор фибер')
+        self.assertEqual(scientific_ru_transcription('Panthera uncia'),'пантера ункиа')
+        row=indexed_taxon_row(taxon_score('Arctosa capensis'),
+            'Arctosa capensis','species',{'class':'Arachnida','order':'Araneae','phylum':'Arthropoda'})
+        self.assertEqual(row[9],'')
+        self.assertEqual(row[10],'арктоса капенсис')
 
     def test_strict_itis_family_snapshot(self):
         data=json.loads((BASE/'family_itis_verified.json').read_text(encoding='utf-8'))
