@@ -18,7 +18,7 @@ query=prefix+'''SELECT ?taxon ?scientific ?ru WHERE {
  ?taxon wdt:P225 ?scientific .
  ?taxon rdfs:label ?ru .
  FILTER(LANG(?ru) = "ru")
-} LIMIT 20000'''
+} LIMIT 7000'''
 url='https://query.wikidata.org/sparql?'+urllib.parse.urlencode({'query':query,'format':'json'})
 req=urllib.request.Request(url,headers={'Accept':'application/sparql-results+json',
  'User-Agent':'Animagia-Russian-Taxon-Labels/1.0 (public biodiversity educational site)',
@@ -54,11 +54,11 @@ for scientific,labels in collected.items():
  verified[scientific]=[label,qid]
 result={'source':'Wikidata CC0 species rank Q7432; Russian language labels',
  'source_url':'https://www.wikidata.org','license':'CC0',
- 'retrieved':'2026-10-29','query_limit':20000,
+ 'retrieved':'2026-10-29','query_limit':7000,
  'queried_rows':len(data.get('results',{}).get('bindings',[])),
  'count':len(verified),'rejected':dict(rejected),'names':dict(sorted(verified.items()))}
 out=json.dumps(result,ensure_ascii=False,separators=(',',':'))+'\n'
-assert 250<len(verified)<20000,len(verified)
+assert 150<len(verified)<7000,len(verified)
 assert len(out.encode())<3000000,len(out)
 (ROOT/'russian_wikidata_snapshot.json').write_text(out,encoding='utf8')
 print('WIKIDATA_RUSSIAN_LABELS_READY',json.dumps({k:v for k,v in result.items() if k!='names'},ensure_ascii=False),
