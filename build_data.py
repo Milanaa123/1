@@ -238,6 +238,16 @@ def build():
  verified_external={}
  verified_external_genus={}
  verified_itis={}
+ verified_opentree={}
+ opentree_report=BASE/'family_opentree_verified.json'
+ if opentree_report.exists():
+  ot=json.loads(opentree_report.read_text(encoding='utf8'))
+  assert ot['source']=='OpenTree v3 strict exact taxonomy'
+  assert ot['source_taxonomy']=='Catalogue of Life XR 2026-08-26'
+  assert ot['initial_missing']==458
+  verified_opentree=ot['families']
+  assert len(verified_opentree)==ot['verified_count']
+  print('OPENTREE_EXACT_FAMILIES_LOADED',len(verified_opentree),flush=True)
  itis_report=BASE/'family_itis_verified.json'
  if itis_report.exists():
   itis=json.loads(itis_report.read_text(encoding='utf8'))
@@ -390,7 +400,7 @@ def build():
        formal+=1
     stack.append((indent,rank,name,is_extinct))
   for f in handles.values():f.close()
-  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=family_genus_inferred=family_external_inferred=family_external_genus_inferred=family_itis_inferred=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
+  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=family_genus_inferred=family_external_inferred=family_external_genus_inferred=family_itis_inferred=family_opentree_inferred=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
   for p in directory.glob('*.part'):
    bid=int(p.stem);seen={}
    with p.open(encoding='utf8') as f:
@@ -446,6 +456,19 @@ def build():
       row[7]=itis_match['family']
       row[8],row[9]=taxon_ru_labels(row[1],row[7])
       family_itis_inferred+=1
+    if not row[7]:
+     ott=verified_opentree.get(row[1])
+     if (ott and ott.get('name')==row[1] and
+         ott.get('rank')==row[2] and
+         ott.get('class')==row[3] and ott.get('order')==row[4] and
+         ott.get('phylum')==row[6] and bool(ott.get('phylum')) and
+         ott.get('match_type')=='exact_non_synonym' and
+         ott.get('source')=='OpenTree v3 strict exact taxonomy' and
+         isinstance(ott.get('ott_id'),int) and
+         re.fullmatch(r'[A-Z][a-z]+idae',ott.get('family',''))):
+      row[7]=ott['family']
+      row[8],row[9]=taxon_ru_labels(row[1],row[7])
+      family_opentree_inferred+=1
    unique+=len(values);available.append(bid)
    # Fail the entire publication if ANY row is invalid, misplaced,
    # duplicated, excluded, incorrectly scored or out of sorted order.
@@ -508,6 +531,10 @@ def build():
  meta['family_assignments_from_exact_gbif']=family_external_inferred
  meta['family_assignments_from_exact_gbif_genus']=family_external_genus_inferred
  meta['family_assignments_from_exact_itis']=family_itis_inferred
+ meta['family_assignments_from_exact_opentree']=family_opentree_inferred
+ if opentree_report.exists():
+  shutil.copy2(opentree_report,DEST/'family_opentree_verified.json')
+  meta['family_opentree_evidence_file']='family_opentree_verified.json'
  if itis_report.exists():
   shutil.copy2(itis_report,DEST/'family_itis_verified.json')
   meta['family_itis_evidence_file']='family_itis_verified.json'

@@ -171,6 +171,21 @@ class GreekNumericParityTests(unittest.TestCase):
             self.assertEqual(entry['rank'],'species')
         self.assertEqual(data['initial_missing'],459)
 
+    def test_strict_opentree_evidence_snapshot(self):
+        data=json.loads((BASE/'family_opentree_verified.json').read_text(encoding='utf8'))
+        self.assertEqual(data['source'],'OpenTree v3 strict exact taxonomy')
+        self.assertEqual(data['initial_missing'],458)
+        self.assertEqual(len(data['families']),data['verified_count'])
+        self.assertEqual(data['verified_count'],26)
+        full=0
+        for name,record in data['families'].items():
+            self.assertEqual(name,record['name'])
+            self.assertEqual(record['rank'],'species')
+            self.assertEqual(record['match_type'],'exact_non_synonym')
+            self.assertTrue(record['family'].endswith('idae'))
+            if record['phylum']: full+=1
+        self.assertEqual(full,20,'Only records with phylum evidence can be published')
+
     def test_reject_corrupt_rows(self):
         valid=row()
         bucket=valid[0]//25
