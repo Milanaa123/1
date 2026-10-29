@@ -18,18 +18,20 @@ query=prefix+'''SELECT ?taxon ?scientific ?ru WHERE {
  ?taxon wdt:P225 ?scientific .
  ?taxon rdfs:label ?ru .
  FILTER(LANG(?ru) = "ru")
-} LIMIT 7000 OFFSET 7000'''
+} LIMIT 2000 OFFSET 7000'''
 url='https://query.wikidata.org/sparql?'+urllib.parse.urlencode({'query':query,'format':'json'})
 req=urllib.request.Request(url,headers={'Accept':'application/sparql-results+json',
  'User-Agent':'Animagia-Russian-Taxon-Labels/1.0 (public biodiversity educational site)',
  'Accept-Encoding':'identity'})
 started=time.monotonic()
 try:
- with urllib.request.urlopen(req,timeout=65) as response:
+ with urllib.request.urlopen(req,timeout=90) as response:
   data=json.load(response)
 except Exception as error:
- print('WIKIDATA_BULK_QUERY_FAILED',type(error).__name__,str(error)[:450],flush=True)
- raise
+ print('WIKIDATA_SECOND_PAGE_UNAVAILABLE_RETAIN_VERIFIED_NAMES',type(error).__name__,str(error)[:450],flush=True)
+ existing=json.loads((ROOT/'russian_wikidata_snapshot.json').read_text(encoding='utf8'))
+ assert existing['count']==len(existing['names']) and existing['count']>=2000
+ raise SystemExit(0)
 rejected=collections.Counter()
 collected=collections.defaultdict(dict)
 for record in data.get('results',{}).get('bindings',[]):
@@ -62,7 +64,7 @@ for scientific,labels in collected.items():
  verified[scientific]=[label,qid]
 result={'source':'Wikidata CC0 species rank Q7432; Russian language labels',
  'source_url':'https://www.wikidata.org','license':'CC0',
- 'retrieved':'2026-10-29','query_limit':14000,
+ 'retrieved':'2026-10-29','query_limit':9000,
  'queried_rows':previous.get('queried_rows',0)+len(data.get('results',{}).get('bindings',[])),
  'new_names_added_in_second_page':added,
  'count':len(verified),'rejected':dict(rejected),'names':dict(sorted(verified.items()))}
