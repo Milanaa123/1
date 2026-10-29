@@ -273,6 +273,8 @@ def build():
  # Ship only curated, checksum-verified original art; never publish older assets.
  shutil.copy2(BASE/'selected_art_107.js',DEST/'selected_art_107.js')
  shutil.copy2(BASE/'approved_only_cards.js',DEST/'approved_only_cards.js')
+ shutil.copy2(BASE/'approved_chooser_gallery.js',DEST/'approved_chooser_gallery.js')
+ shutil.copy2(BASE/'approved_chooser_gallery.css',DEST/'approved_chooser_gallery.css')
  stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();genus_families=collections.defaultdict(set);synonym_candidates=collections.defaultdict(set);synonym_candidate_rows=0;t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)
