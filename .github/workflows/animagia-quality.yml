@@ -23,6 +23,8 @@ jobs:
         run: node tests/check_exact_reference_01_40.cjs
       - name: Verify 100 paths draw on Canvas and have no empty vector slots
         run: node tests/check_gold_contour_runtime.cjs
+      - name: Check Python catalogue builder syntax
+        run: python -m py_compile build_data.py audit_index.py ru_catalog.py
       - name: Validate family and Russian-name fields without changing Greek sums
         run: python -m unittest discover -s tests -p 'test_quality.py' -v
       - name: Verify animal name calculator remains unchanged
