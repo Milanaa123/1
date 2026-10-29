@@ -2,7 +2,7 @@ name: Verify remaining families against ITIS hierarchy
 on:
   push:
     branches: [animagia-site]
-    paths: ['.github/workflows/animagia-itis-verify.yml']
+    paths: ['.github/workflows/animagia-itis-verify.yml', 'tools/resolve_missing_itis.py']
 permissions:
   contents: write
 jobs:
