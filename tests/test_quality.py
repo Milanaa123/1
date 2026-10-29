@@ -217,24 +217,3 @@ class GreekNumericParityTests(unittest.TestCase):
 
 if __name__=="__main__":
     unittest.main()
-)
-
-    def test_reject_corrupt_rows(self):
-        valid=row()
-        bucket=valid[0]//25
-        self.assertEqual(audit_bucket([valid],bucket)["rows"],1)
-        bad_rows=[
-            [[valid[0]+25,*valid[1:]]],  # wrong bucket
-            [[valid[0],"Not a canonical name","species",*valid[3:]]],
-            [[valid[0],valid[1],"variety",*valid[3:]]],
-            [[valid[0],valid[1],"species",valid[3],valid[4],"†",valid[6]]],
-            [[valid[0],valid[1],"species","Anthozoa",valid[4],"","Cnidaria"]],
-            [valid,valid],             # duplicate
-        ]
-        for broken in bad_rows:
-            with self.subTest(broken=broken):
-                with self.assertRaises(ValueError):
-                    audit_bucket(broken,bucket)
-
-if __name__=="__main__":
-    unittest.main()
