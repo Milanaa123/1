@@ -1,0 +1,303 @@
+{
+  "source": "OpenTree v3 strict exact taxonomy",
+  "source_url": "https://api.opentreeoflife.org/v3/",
+  "source_taxonomy": "Catalogue of Life XR 2026-08-26",
+  "initial_missing": 458,
+  "verified_count": 26,
+  "remaining": 432,
+  "rejection_reasons": {
+    "lineage_class_mismatch": 11,
+    "lineage_order_mismatch": 13,
+    "missing_family": 108,
+    "non_unique_exact": 300,
+    "unmatched": 0
+  },
+  "families": {
+    "Aulocera swaha": {
+      "name": "Aulocera swaha",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Nymphalidae",
+      "ott_id": 5228399,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Celama erythrostigmata": {
+      "name": "Celama erythrostigmata",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Nolidae",
+      "ott_id": 4240205,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Celama squalida": {
+      "name": "Celama squalida",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Nolidae",
+      "ott_id": 4240256,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Creteus cyrina": {
+      "name": "Creteus cyrina",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Hesperiidae",
+      "ott_id": 7712161,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Episparina tortuosalis": {
+      "name": "Episparina tortuosalis",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Noctuidae",
+      "ott_id": 7715927,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Gainella chelata": {
+      "name": "Gainella chelata",
+      "rank": "species",
+      "class": "Malacostraca",
+      "order": "Amphipoda",
+      "phylum": "Arthropoda",
+      "family": "Lysianassidae",
+      "ott_id": 4671581,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Gelasma prasina": {
+      "name": "Gelasma prasina",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Geometridae",
+      "ott_id": 4279919,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Leiochrodes glabratus": {
+      "name": "Leiochrodes glabratus",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Coleoptera",
+      "phylum": "Arthropoda",
+      "family": "Tenebrionidae",
+      "ott_id": 3358949,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Melanocyma faunula": {
+      "name": "Melanocyma faunula",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Nymphalidae",
+      "ott_id": 5341285,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Nevina aboe": {
+      "name": "Nevina aboe",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Hepialidae",
+      "ott_id": 3244346,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Ophiomaria rugosa": {
+      "name": "Ophiomaria rugosa",
+      "rank": "species",
+      "class": "Ophiuroidea",
+      "order": "Ophiurida",
+      "phylum": "",
+      "family": "Ophiolepididae",
+      "ott_id": 4146467,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Ophiomaria tenella": {
+      "name": "Ophiomaria tenella",
+      "rank": "species",
+      "class": "Ophiuroidea",
+      "order": "Ophiurida",
+      "phylum": "",
+      "family": "Ophiolepididae",
+      "ott_id": 4146468,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Ophiotrochus longispinus": {
+      "name": "Ophiotrochus longispinus",
+      "rank": "species",
+      "class": "Ophiuroidea",
+      "order": "Ophiurida",
+      "phylum": "",
+      "family": "Ophiolepididae",
+      "ott_id": 4146471,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Ophiotrochus panniculus": {
+      "name": "Ophiotrochus panniculus",
+      "rank": "species",
+      "class": "Ophiuroidea",
+      "order": "Ophiurida",
+      "phylum": "",
+      "family": "Ophiolepididae",
+      "ott_id": 4146470,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Parapneustes cordatus": {
+      "name": "Parapneustes cordatus",
+      "rank": "species",
+      "class": "Echinoidea",
+      "order": "Spatangoida",
+      "phylum": "",
+      "family": "Schizasteridae",
+      "ott_id": 3649770,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Parapneustes reductus": {
+      "name": "Parapneustes reductus",
+      "rank": "species",
+      "class": "Echinoidea",
+      "order": "Spatangoida",
+      "phylum": "",
+      "family": "Schizasteridae",
+      "ott_id": 3649824,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Parasarpa zayla": {
+      "name": "Parasarpa zayla",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Nymphalidae",
+      "ott_id": 83064,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Poecilonola seminigra": {
+      "name": "Poecilonola seminigra",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Nolidae",
+      "ott_id": 4239623,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Silda rubricilia": {
+      "name": "Silda rubricilia",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Noctuidae",
+      "ott_id": 4261835,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Stenia magellanica": {
+      "name": "Stenia magellanica",
+      "rank": "species",
+      "class": "Malacostraca",
+      "order": "Amphipoda",
+      "phylum": "Arthropoda",
+      "family": "Lysianassidae",
+      "ott_id": 5091308,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Sumalia zulema": {
+      "name": "Sumalia zulema",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Nymphalidae",
+      "ott_id": 7151746,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Synuropus granulatus": {
+      "name": "Synuropus granulatus",
+      "rank": "species",
+      "class": "Malacostraca",
+      "order": "Isopoda",
+      "phylum": "Arthropoda",
+      "family": "Scleropactidae",
+      "ott_id": 2993185,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Thermozephyrus ataxus": {
+      "name": "Thermozephyrus ataxus",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Lycaenidae",
+      "ott_id": 772679,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Turquinia montana": {
+      "name": "Turquinia montana",
+      "rank": "species",
+      "class": "Arachnida",
+      "order": "Opiliones",
+      "phylum": "Arthropoda",
+      "family": "Phalangodidae",
+      "ott_id": 5096584,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Virachola isocrates": {
+      "name": "Virachola isocrates",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Lycaenidae",
+      "ott_id": 3147774,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    },
+    "Virachola perse": {
+      "name": "Virachola perse",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Lycaenidae",
+      "ott_id": 3149009,
+      "match_type": "exact_non_synonym",
+      "source": "OpenTree v3 strict exact taxonomy"
+    }
+  }
+}
