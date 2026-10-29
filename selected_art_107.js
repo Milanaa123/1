@@ -92,6 +92,13 @@
  function profileFor(row){
   if(!row||row[2]!=='species'||typeof row[1]!=='string')return null;
   const entry=scientificToArtwork.get(row[1]);
+  // The user-supplied frog illustration is intentionally a representative
+  // frog image, not a claim of exact Cornufer/Rana/Hyla species anatomy.
+  if(!entry && row[3]==='Amphibia' && row[4]==='Anura'){
+   return Object.freeze({artSet:'original107',file:'additional/Лягушка.png',
+    scientific:row[1],name:'Лягушка',exact:false,
+    note:'Золотой рисунок лягушки · обобщённый образ отряда бесхвостых'});
+  }
   if(!entry)return null;
   const [number,name]=entry;
   const path=number===null?'additional/'+name+'.png':
@@ -144,7 +151,7 @@
  }
  window.AnimagiaAnimalAtlas=Object.freeze({
   ...previous,resolve,drawable,drawCanvas,render,
-  originalArtworkCount:107,originalArtworkDirectory:directory,
+  originalArtworkCount:108,originalArtworkDirectory:directory,
   originalArtworkExactTaxa:scientificToArtwork.size
  });
 })();
