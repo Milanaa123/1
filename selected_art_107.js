@@ -20,7 +20,7 @@
   ['Oryctolagus cuniculus',[22,'Кролик']],
   ['Erinaceus europaeus',[23,'Ёж европейский']],
   ['Alces alces',[24,'Лось']],['Cervus elaphus',[25,'Олень благородный']],
-  ['Sus scrofa',[28,'Кабан']],['Bison bison',[29,'Бизон']],
+  ['Sus scrofa',[28,'Кабан']],['Bos bison',[29,'Бизон']],
   ['Giraffa camelopardalis',[31,'Жираф']],
   ['Loxodonta africana',[32,'Слон африканский']],
   ['Hippopotamus amphibius',[34,'Бегемот']],
@@ -218,6 +218,7 @@
   originalArtworkCount:108,originalArtworkDirectory:directory,
   originalArtworkExactTaxa:scientificToArtwork.size,
   approvedRepresentativeSpecies:Object.freeze(Object.fromEntries(representativeScientific)),
-  approvedArtworkIds:Object.freeze([...new Set([...scientificToArtwork.values()].map(x=>x[0]===null?'additional:'+x[1]:x[0]))].sort((a,b)=>String(a).localeCompare(String(b))))
+  approvedArtworkIds:Object.freeze([...new Set([...scientificToArtwork.values()].map(x=>x[0]===null?'additional:'+x[1]:x[0]))].sort((a,b)=>String(a).localeCompare(String(b)))),
+  approvedArtworkExamples:Object.freeze([...scientificToArtwork].map(([scientific,[number,name]])=>Object.freeze({scientific,number,name})))
  });
 })();
