@@ -31,12 +31,12 @@ function loadAtlas(){
 }
 const atlas=loadAtlas();
 
-test('only the 107 accepted unmodified transparent PNGs remain available',()=>{
- assert.equal(manifest.count,107);
- assert.equal(rows.length,107);
+test('only the 108 accepted unmodified transparent PNGs remain available',()=>{
+ assert.equal(manifest.count,108);
+ assert.equal(rows.length,108);
  assert.equal(new Set(rows.map(x=>x.file)).size,107);
  assert.equal(manifest.animals,104);
- assert.equal(manifest.additional,3);
+ assert.equal(manifest.additional,4);
  for(const item of rows){
   const name=path.join(base,item.file);
   const data=fs.readFileSync(name);
@@ -49,7 +49,7 @@ test('only the 107 accepted unmodified transparent PNGs remain available',()=>{
 });
 
 test('only exact accepted species get animal imagery',()=>{
- assert.equal(atlas.originalArtworkCount,107);
+ assert.equal(atlas.originalArtworkCount,108);
  for(const [latin,expectedFile] of [
   ['Panthera leo','animals/001-Лев.png'],
   ['Panthera tigris','animals/002-Тигр.png'],
