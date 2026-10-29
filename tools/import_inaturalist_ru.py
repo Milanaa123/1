@@ -110,6 +110,7 @@ def main():
                  re.search(r"(?:^|[-_.])ru(?:[-_.]|$)",p.lower())]
             selected=russian_only or vnfiles
             grouped=collections.defaultdict(set)
+            global_names=collections.defaultdict(set)
             counts=collections.Counter()
             for filename in selected:
                 for row in readcsv(z,filename):
@@ -122,16 +123,28 @@ def main():
                     label=field(row,"vernacularName","name")
                     if not valid_name(label):continue
                     grouped[ident].add(label)
+                    # The official DwC-A separately marks names restricted to
+                    # a locality/country. If a taxon has exactly one
+                    # unlocalized Russian name, prefer that documented form
+                    # instead of rejecting it because regional variants exist.
+                    locality=field(row,"locality")
+                    country=field(row,"countryCode")
+                    if not locality and not country:
+                        global_names[ident].add(label)
                     counts["russian_valid"]+=1
                 print("INAT_VERNACULAR_FILE",filename,flush=True)
             by_scientific=collections.defaultdict(dict)
             conflicts=set()
             for ident,labels in grouped.items():
-                if len(labels)!=1:
+                if len(labels)==1:
+                    label=next(iter(labels))
+                elif len(global_names.get(ident,set()))==1:
+                    label=next(iter(global_names[ident]))
+                    counts["unique_unlocalized_russian"]+=1
+                else:
                     counts["ambiguous_lexicon_taxon"]+=1
                     continue
                 scientific,rank,phylum,cls,order,family=taxa[ident]
-                label=next(iter(labels))
                 key=scientific.casefold()+"|"+rank
                 entry=[label,phylum,cls,order,family,ident]
                 if key in by_scientific and by_scientific[key].get("entry")!=entry[:5]:
@@ -141,6 +154,18 @@ def main():
                     if old[:5]!=entry[:5]:conflicts.add(key)
                 else:by_scientific[key]={"entry":entry}
             results={k:v["entry"] for k,v in by_scientific.items() if k not in conflicts}
+            # A new source rerun must never silently erase previously
+            # verified names due to export or preference changes.
+            if OUT.exists():
+                previous=json.loads(OUT.read_text(encoding="utf-8"))
+                assert previous["source"]=="iNaturalist official taxonomy DarwinCore Archive, Russian lexicon"
+                for key,entry in previous["names"].items():
+                    if key not in results:
+                        results[key]=entry
+                        counts["previously_verified_retained"]+=1
+                    elif entry[:5]!=results[key][:5]:
+                        results[key]=entry
+                        counts["changed_labels_review_needed"]+=1
             counts["ambiguous_scientific_taxon"]=len(conflicts)
             print("INAT_RU_STATS",dict(counts),"TOTAL_UNAMBIGUOUS",len(results),flush=True)
             if len(results)<1000:
