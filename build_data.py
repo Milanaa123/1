@@ -299,6 +299,7 @@ def build():
  assert hashlib.sha256(raw100).hexdigest()==expected100,'Corrupt 100-image atlas'
  shutil.copy2(art100,DEST/'art'/'animagia-100-alpha.webp')
  shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')
+ shutil.copy2(BASE/'selected_art_107.js',DEST/'selected_art_107.js')
  # Species-specific art corrections: keep approved 100-image master untouched.
  corrected=BASE/'art'/'animagia-corrected-22.webp'
  replacement=corrected.read_bytes()
