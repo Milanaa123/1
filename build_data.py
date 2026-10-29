@@ -5,7 +5,7 @@ from original.alphabet_maps import latin_map as CH
 from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_score, CONTROL_NAMES
 from taxon_filters import POLICY_VERSION, allow_animal_taxon
 from audit_index import audit_bucket
-from ru_catalog import indexed_taxon_row
+from ru_catalog import indexed_taxon_row, FAMILY_RU
 from pathlib import Path
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
 URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
@@ -359,7 +359,7 @@ def build():
        formal+=1
     stack.append((indent,rank,name,is_extinct))
   for f in handles.values():f.close()
-  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_present=family_ru_present=species_ru_present=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
+  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();family_present=family_ru_present=species_ru_present=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
   for p in directory.glob('*.part'):
    bid=int(p.stem);seen={}
    with p.open(encoding='utf8') as f:
@@ -382,6 +382,7 @@ def build():
    family_ru_present+=sum(bool(r[8]) for r in values)
    species_ru_present+=sum(bool(r[9]) for r in values)
    family_values.update(r[7] for r in values if r[7])
+   family_counts.update(r[7] for r in values if r[7])
    blob=json.dumps(values,ensure_ascii=False,separators=(',',':')).encode('utf8')
    (DATA/(str(bid)+'.json')).write_bytes(blob)
    digest=hashlib.sha256(blob).hexdigest()
@@ -392,6 +393,14 @@ def build():
     if bid==target//25:
      count=sum(r[0]==target for r in values)
      print('CONTROL_GREEK_TAXA',target,count,flush=True)
+ family_index=[{'family':latin,'family_ru':FAMILY_RU.get(latin,''),'record_count':count,'art_key':latin}
+               for latin,count in sorted(family_counts.items())]
+ assert len(family_index)==len(family_values)
+ assert sum(x['record_count'] for x in family_index)==family_present
+ (DEST/'families.json').write_text(
+  json.dumps({'source':'Catalogue of Life XR 2026-08-26','kind':'family index for linking reviewed artwork',
+              'count':len(family_index),'families':family_index},ensure_ascii=False,separators=(',',':')),
+  encoding='utf8')
  meta={'version':'2026-08-26 XR','source':'Catalogue of Life Extended Release','url':URL,'scanned_rows':lines,'formal_rows':formal,'unique_records':unique,'skipped_uncanonical_names':invalid_names,'buckets':len(available),'bucket_width':25,'available_buckets':sorted(available)}
  meta['algorithm']='Same Greek numeral table for transcribed name and Greek-rendered Latinised scientific taxon; exact equality only'
  meta['algorithm_id']=RULE_VERSION
@@ -401,6 +410,7 @@ def build():
  meta['excluded_out_of_scope_rows']=excluded_scope
  meta['taxon_ranks']='species and subspecies only'
  meta['row_schema']=['greek_score','scientific_name','rank','class','order','status','phylum','family','family_ru','common_name_ru']
+ meta['family_catalogue_file']='families.json'
  meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
   'distinct_families':len(family_values),'family_ru_present':family_ru_present,
   'verified_species_common_names':species_ru_present}
