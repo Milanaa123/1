@@ -25,5 +25,9 @@ jobs:
           git add russian_wikidata_snapshot.json
           if ! git diff --cached --quiet; then
             git commit -m "Import Wikidata Russian vernacular species labels"
+            # Source queries can take minutes; preserve concurrent edits to
+            # application/tests rather than rejecting a valid finished import.
+            git fetch origin animagia-site
+            git rebase origin/animagia-site
             git push origin HEAD:animagia-site
           fi
