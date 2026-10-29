@@ -5,7 +5,7 @@ from original.alphabet_maps import latin_map as CH
 from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_score, CONTROL_NAMES
 from taxon_filters import POLICY_VERSION, allow_animal_taxon
 from audit_index import audit_bucket
-from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus, RUSSIAN_SNAPSHOT, BULK_NAMES, SPECIES_RU, EXTERNAL_SPECIES_RU, WIKIDATA_SNAPSHOT, WIKIDATA_NAMES, wikidata_ru_label, INAT_NAMES, INAT_SNAPSHOT, inat_ru_label
+from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus, RUSSIAN_SNAPSHOT, BULK_NAMES, SPECIES_RU, EXTERNAL_SPECIES_RU, WIKIDATA_SNAPSHOT, WIKIDATA_NAMES, wikidata_ru_label, INAT_NAMES, INAT_SNAPSHOT, inat_ru_label, BVI_NAMES, BVI_SNAPSHOT, bvi_ru_label
 from pathlib import Path
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
 URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
@@ -490,6 +490,8 @@ def build():
       russian_name_sources['taxadb_'+lookup[1]]+=1
      elif inat_ru_label(r[1],r[7],r[3],r[4],r[6],r[2])==r[9]:
       russian_name_sources['inaturalist_official_ru']+=1
+     elif bvi_ru_label(r[1],r[3],r[2])==r[9]:
+      russian_name_sources['bvi_historical']+=1
      elif wikidata_ru_label(r[1],r[2])==r[9]:
       russian_name_sources['wikidata_cc0']+=1
      else:
@@ -568,6 +570,8 @@ def build():
   'inaturalist_snapshot':{'source':'official iNaturalist DarwinCore Archive',
     'url':INAT_SNAPSHOT.get('url',''),'candidate_exact_names':INAT_SNAPSHOT['count'],
     'sha256':INAT_SNAPSHOT.get('sha256','')},
+  'historical_bvi_snapshot':{'candidate_exact_names':BVI_SNAPSHOT['count'],
+    'url':BVI_SNAPSHOT.get('source_url','')},
   'wikidata_sample':{'rows':WIKIDATA_SNAPSHOT['queried_rows'],
      'accepted_cyrillic_labels':WIKIDATA_SNAPSHOT['count'],
      'license':'CC0',
@@ -578,7 +582,7 @@ def build():
  meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
   'distinct_families':len(family_values),'family_ru_present':family_ru_present,
   'verified_species_common_names':species_ru_present}
- meta['russian_name_policy']='Curated Russian names, BirdNET+, CoL, GBIF, exact iNaturalist Russian lexicon and Wikidata. No phonetic transcription or fabricated common names.'
+ meta['russian_name_policy']='Curated Russian names, BirdNET+, CoL, GBIF, iNaturalist Russian lexicon, attested historic BVI zoological labels and Wikidata. No phonetic transcription or fabricated common names.'
  meta['artwork_key']='family (the scientific family name in row[7])'
  meta['editorial_scope_warning']='Independent/nonparasitic status is approximated from taxonomy, not individually proven for each species'
  meta['category_filter']='Curated noncolonial independent animal groups: mammals, birds, reptiles, amphibians, fish, insects, spiders/scorpions, free-moving crustaceans, cephalopods and echinoderms. Excludes corals/polyps, sponges, attached molluscs and worms; ecology is inferred, not verified species by species.'
