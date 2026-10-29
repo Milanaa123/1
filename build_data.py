@@ -568,7 +568,7 @@ def build():
      'license':'CC0',
      'sha256':hashlib.sha256((BASE/'russian_wikidata_snapshot.json').read_bytes()).hexdigest()}
  }
- meta['unverified_name_presentation']='If no documented Russian species name exists, the interface identifies the zoological group as a fallback; scientific Latin name remains separately visible.'
+ meta['unverified_name_presentation']='If no documented Russian species name exists, show the exact Latin scientific name as title, without a missing-name annotation.'
  meta['missing_family_diagnostics']='families_missing.json'
  meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
   'distinct_families':len(family_values),'family_ru_present':family_ru_present,
