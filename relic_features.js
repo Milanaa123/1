@@ -37,7 +37,7 @@
   return a;
  };
  const safeRows=()=>typeof results!=='undefined'&&Array.isArray(results)&&
-   typeof sum==='number'?results.filter(r=>Array.isArray(r)&&r.length===7&&r[0]===sum):[];
+   typeof sum==='number'?results.filter(r=>Array.isArray(r)&&r.length>=7&&r[0]===sum):[];
  const chosenRows=()=>{
   const rows=safeRows();
   const known=typeof photoGallery!=='undefined'&&photoGallery&&
@@ -1665,7 +1665,7 @@
    if(!Array.isArray(rows))throw Error('Некорректный формат каталога');
    cache.set(bucket,rows);
   }
-  const rows=cache.get(bucket).filter(row=>Array.isArray(row)&&row.length===7&&row[0]===number&&
+  const rows=cache.get(bucket).filter(row=>Array.isArray(row)&&row.length>=7&&row[0]===number&&
     row[5]===''&&['species','subspecies'].includes(row[2])&&taxonGreekScore(row[1])===number);
   return {number,count:rows.length,examples:rows.slice(0,3).map(label)};
  }

@@ -177,6 +177,8 @@
   reviewedCutouts.set(index,canvas);
   return canvas;
  }
+ // Family -> one approved art index. Fill only after illustration approval.
+ const FAMILY_ARTWORK=Object.freeze({});
  const fallbackOrder={"Carnivora":1,"Rodentia":55,"Lagomorpha":50,"Chiroptera":93,"Cetacea":70,"Cetartiodactyla":30,"Artiodactyla":30,"Perissodactyla":40,"Sirenia":78,"Diprotodontia":60,"Dasyuromorphia":64,"Strigiformes":20,"Accipitriformes":26,"Falconiformes":24,"Passeriformes":22,"Sphenisciformes":69,"Struthioniformes":66,"Casuariiformes":65,"Apterygiformes":68,"Charadriiformes":28,"Apodiformes":29,"Testudines":80,"Squamata":82,"Crocodylia":90,"Crocodilia":90,"Octopoda":94,"Teuthida":95,"Myliobatiformes":74,"Rajiformes":74,"Decapoda":98};
  const fallbackClass={"Mammalia":1,"Aves":22,"Reptilia":82,"Chondrichthyes":73,"Elasmobranchii":73,"Cephalopoda":94,"Scyphozoa":96,"Cubozoa":96,"Malacostraca":98};
  const scientific=(row)=>String(row?.[1]||'').trim().replace(/\s+/g,' ');
@@ -226,6 +228,12 @@
   // First match full scientific taxa, then a non-ambiguous genus entry.
   if(namedEntries.has(full))return {idx:namedEntries.get(full),rank:'species'};
   if(namedEntries.has(genus))return {idx:namedEntries.get(genus),rank:'genus'};
+  const family=String(row[7]||'');
+  if(Object.prototype.hasOwnProperty.call(FAMILY_ARTWORK,family)){
+   const idx=FAMILY_ARTWORK[family];
+   if(Number.isInteger(idx)&&idx>=0&&idx<entries.length)
+    return {idx,rank:'family'};
+  }
   // Literal genus aliases for familiar disambiguated cases.
   if(genus==='Panthera')return {idx:4,rank:'order'}; // a big cat, NOT the exact species.
   if(genus==='Equus')return {idx:40,rank:'order'};
@@ -254,7 +262,7 @@
   const rank=chosen.rank;
   const name=labelFor(chosen.idx);
   return {id:entries[chosen.idx][0],cell:chosen.idx,
-   artSet:'atlas100',label:name,scientific:scientific(row),
+   artSet:'atlas100',label:name,scientific:scientific(row),family:row[7]||'',
    exact:false, // the visitor-approved drawing is an artistic archetype
    reviewedBatch:chosen.idx>=BATCH_02_START&&chosen.idx<BATCH_02_END?2:
     chosen.idx>=BATCH_03_START&&chosen.idx<BATCH_03_END?3:
@@ -264,7 +272,7 @@
    diet:old?.diet||null,habitat:old?.habitat||null,
    secondary:old?.secondary||[],
    note:rank==='species'?('Художественный рисунок «'+name+'» · не фотография вида'):
-    ('Обобщённый рисунок '+(rank==='genus'?'рода':rank==='order'?'отряда':'класса')+
+    ('Обобщённый рисунок '+(rank==='genus'?'рода':rank==='family'?'семейства':rank==='order'?'отряда':'класса')+
       ' · '+name+' · не изображение указанного вида')};
  }
  function drawExactReference(ctx,art,cell,x,y,w,h){

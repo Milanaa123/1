@@ -5,6 +5,7 @@ from original.alphabet_maps import latin_map as CH
 from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_score, CONTROL_NAMES
 from taxon_filters import POLICY_VERSION, allow_animal_taxon
 from audit_index import audit_bucket
+from ru_catalog import indexed_taxon_row
 from pathlib import Path
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
 URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
@@ -354,11 +355,11 @@ def build():
        invalid_names+=1
       else:
        # No extinct/uncertain record may enter the downloadable index.
-       spool(n//25,[n,name,rank,lin.get('class',''),lin.get('order',''),'',lin.get('phylum','')])
+       spool(n//25,indexed_taxon_row(n,name,rank,lin))
        formal+=1
     stack.append((indent,rank,name,is_extinct))
   for f in handles.values():f.close()
-  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
+  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_present=family_ru_present=species_ru_present=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
   for p in directory.glob('*.part'):
    bid=int(p.stem);seen={}
    with p.open(encoding='utf8') as f:
@@ -377,6 +378,10 @@ def build():
    # duplicated, excluded, incorrectly scored or out of sorted order.
    report=audit_bucket(values,bid)
    audit_ranks.update(report['ranks']);audit_classes.update(report['classes'])
+   family_present+=sum(bool(r[7]) for r in values)
+   family_ru_present+=sum(bool(r[8]) for r in values)
+   species_ru_present+=sum(bool(r[9]) for r in values)
+   family_values.update(r[7] for r in values if r[7])
    blob=json.dumps(values,ensure_ascii=False,separators=(',',':')).encode('utf8')
    (DATA/(str(bid)+'.json')).write_bytes(blob)
    digest=hashlib.sha256(blob).hexdigest()
@@ -395,6 +400,12 @@ def build():
  meta['excluded_uncertain_rows']=excluded_uncertain
  meta['excluded_out_of_scope_rows']=excluded_scope
  meta['taxon_ranks']='species and subspecies only'
+ meta['row_schema']=['greek_score','scientific_name','rank','class','order','status','phylum','family','family_ru','common_name_ru']
+ meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
+  'distinct_families':len(family_values),'family_ru_present':family_ru_present,
+  'verified_species_common_names':species_ru_present}
+ meta['russian_name_policy']='Curated exact species Russian names where available; otherwise the interface shows an explicitly general genus/family label. No invented species names.'
+ meta['artwork_key']='family (the scientific family name in row[7])'
  meta['editorial_scope_warning']='Independent/nonparasitic status is approximated from taxonomy, not individually proven for each species'
  meta['category_filter']='Curated noncolonial independent animal groups: mammals, birds, reptiles, amphibians, fish, insects, spiders/scorpions, free-moving crustaceans, cephalopods and echinoderms. Excludes corals/polyps, sponges, attached molluscs and worms; ecology is inferred, not verified species by species.'
  meta['animal_name_method']='ancient-Greek-alphabet approximation of the original scientific name; not verified Ancient Greek lexical translation; digamma stands in for modern v/w'

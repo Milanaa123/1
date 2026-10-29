@@ -265,9 +265,9 @@ function photoMakeCard(item,index) {
 
  const name=document.createElement('strong');name.className='animal-name';name.textContent=display(row);
  const origin=document.createElement('span');origin.className='bestiary-name-origin';
- origin.textContent=Object.prototype.hasOwnProperty.call(SPECIES_NAME_RU,row[1])
-  ?'Известное русское название'
-  :'Условная русская запись; научное название — ниже';
+ origin.textContent=(row[9]||Object.prototype.hasOwnProperty.call(SPECIES_NAME_RU,row[1]))
+  ?'Проверенное русское название вида'
+  :(row[8]?'Обобщённое название группы; вид указан по-латыни':'Научное название вида приведено ниже');
  const science=document.createElement('small');science.className='bestiary-scientific';science.textContent=row[1];
 
  const engraving=document.createElement('div');engraving.className='bestiary-engraving';
@@ -292,6 +292,7 @@ function photoMakeCard(item,index) {
  const classification=document.createElement('p');
  classification.textContent='Класс: '+bestiaryGroupName(row)+
   (row[4]?' · Отряд: '+(ORDER_RU[row[4]]||row[4]):'')+
+  ' · Семейство: '+familyDisplay(row)+
   ' · Ранг: '+(row[2]==='subspecies'?'подвид':'вид');
  const proof=document.createElement('a');proof.href=item.photo.source;
  proof.target='_blank';proof.rel='noopener noreferrer';

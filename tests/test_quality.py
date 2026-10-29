@@ -16,6 +16,7 @@ sys.path.insert(0,str(BASE))
 from greek_taxa import greek_transliterate, taxon_score, score_greek, RULE_VERSION
 from taxon_filters import allow_animal_taxon, POLICY_VERSION
 from audit_index import audit_bucket
+from ru_catalog import indexed_taxon_row, taxon_ru_labels
 
 CONTROL={
  "Naja oxiana":254,
@@ -41,7 +42,7 @@ process.stdout.write(answer);
 """
 
 def row(name="Panthera uncia"):
-    return [taxon_score(name),name,"species","Mammalia","Carnivora","","Chordata"]
+    return indexed_taxon_row(taxon_score(name),name,'species',{'class':'Mammalia','order':'Carnivora','phylum':'Chordata','family':'Felidae'})
 
 class GreekNumericParityTests(unittest.TestCase):
     def test_fixed_known_animals(self):
@@ -93,6 +94,21 @@ class GreekNumericParityTests(unittest.TestCase):
         for cls in ["Mammalia","Aves","Reptilia","Amphibia","Actinopterygii"]:
             self.assertTrue(allow_animal_taxon({
                 "kingdom":"Animalia","phylum":"Chordata","class":cls}))
+
+    def test_family_inheritance_and_verified_russian_names(self):
+        from ru_catalog import FAMILY_RU, SPECIES_RU
+        self.assertEqual(taxon_ru_labels('Panthera uncia','Felidae'),('Кошачьи','Снежный барс'))
+        self.assertEqual(taxon_ru_labels('Unknown species','Unknownidae'),('',''))
+        self.assertGreaterEqual(len(FAMILY_RU),150)
+        self.assertGreaterEqual(len(SPECIES_RU),60)
+        r=row()
+        self.assertEqual(len(r),10)
+        self.assertEqual(r[7:10],['Felidae','Кошачьи','Снежный барс'])
+        audit_bucket([r],r[0]//25)
+        for invalid in (r[:8]+['Псовые','Снежный барс'],
+                        r[:9]+['Выдуманное название']):
+            with self.assertRaises(ValueError):
+                audit_bucket([invalid],r[0]//25)
 
     def test_reject_corrupt_rows(self):
         valid=row()

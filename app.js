@@ -228,12 +228,17 @@ function rusTransliteration(name){
   }).join(' ');
 }
 function category(r){return ORDER_RU[r[4]]||CLASS_RU[r[3]]||PHYLUM_RU[r[6]]||'Животное';}
+function familyDisplay(r){
+  if(!r[7])return 'семейство не установлено в источнике';
+  return (r[8]?r[8]+' · ':'')+r[7];
+}
 function display(r){
+  if(r[9])return r[9];
   if(SPECIES_NAME_RU[r[1]])return SPECIES_NAME_RU[r[1]];
   const genus=r[1].split(' ')[0];
   // Never invent a Russian species name by transliterating Latin.
   // The precise binomial appears in the scientific-name field next to it.
-  return GENUS_RU[genus]||category(r);
+  return GENUS_RU[genus]||(r[8]?r[8]+' (семейство)':category(r));
 }
 function status(r){return r[5]==='†'?'Вымерший †':r[5]==='?'?'Сомнительный статус ?':'';}
 
@@ -315,11 +320,11 @@ function featured(rows){
   }
   return out;
 }
-function render(){el('preview').replaceChildren();let f=document.createDocumentFragment();for(let [i,r] of featured(results).entries()){let li=document.createElement('li'),no=document.createElement('span'),body=document.createElement('span'),name=document.createElement('span'),small=document.createElement('small');li.className='species-row';no.className='idx';no.textContent=String(i+1).padStart(2,'0');name.className='animal-name';name.textContent=display(r);small.textContent=r[1]+(r[2]==='subspecies'?' · подвид':'')+(r[5]?' · '+status(r):'');body.append(name,small);li.append(no,body);f.append(li);}el('preview').append(f);el('featuredCount').textContent=featured(results).length+' из '+results.length+' точных совпадений';el('previewSection').hidden=!results.length;el('downloads').hidden=!results.length;el('empty').textContent=results.length?'':'Совпадений с разницей 0 не найдено. Попробуйте изменить греческую транскрипцию.';}
+function render(){el('preview').replaceChildren();let f=document.createDocumentFragment();for(let [i,r] of featured(results).entries()){let li=document.createElement('li'),no=document.createElement('span'),body=document.createElement('span'),name=document.createElement('span'),small=document.createElement('small');li.className='species-row';no.className='idx';no.textContent=String(i+1).padStart(2,'0');name.className='animal-name';name.textContent=display(r);small.textContent=r[1]+(r[2]==='subspecies'?' · подвид':'')+' · '+familyDisplay(r)+(r[5]?' · '+status(r):'');body.append(name,small);li.append(no,body);f.append(li);}el('preview').append(f);el('featuredCount').textContent=featured(results).length+' из '+results.length+' точных совпадений';el('previewSection').hidden=!results.length;el('downloads').hidden=!results.length;el('empty').textContent=results.length?'':'Совпадений с разницей 0 не найдено. Попробуйте изменить греческую транскрипцию.';}
 function reset(){serial++;el('resultPanel').hidden=true;el('previewSection').hidden=true;el('downloads').hidden=true;el('run').disabled=false;el('runLabel').textContent='Найти животных';results=[];sum=null;}
 async function run(){let greek=el('greek').value.trim();if(!/^[А-Яа-яЁё\s\-'’]+$/.test(el('name').value.trim())||!validGreek(greek)){reset();el('error').textContent='Введи имя на русском и проверь, что транскрипция состоит только из греческих букв.';return;}let n=score(greek),id=++serial;if(!n){reset();el('error').textContent='Не удалось вычислить число имени. Проверь греческую запись.';return;}el('run').disabled=true;el('runLabel').textContent='Проверяю каталог…';el('error').textContent='';try{let bid=Math.floor(n/25);if(meta&&!meta.available_buckets.includes(bid)){results=[];}else{let response=await fetch('./data/'+bid+'.json');if(!response.ok)throw Error('Архив результатов пока недоступен');let data=await response.json();if(id!==serial)return;results=data.filter(r=>r[0]===n);}sum=n;el('score').textContent=n.toLocaleString('ru-RU');el('total').textContent=results.length.toLocaleString('ru-RU');el('formula').textContent=breakdown(greek)+' · разница 0';el('resultPanel').hidden=false;render();el('resultPanel').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){el('error').textContent='Ошибка загрузки каталога: '+e.message;reset();}finally{if(id===serial){el('run').disabled=false;el('runLabel').textContent='Найти животных';}}}
 function csv(x){let s=String(x||'');return /[;\n"]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}
-function download(type){if(!results.length)return;let lines=results.map(r=>[category(r),display(r),r[1],RANK[r[2]]||r[2],r[0],status(r),r[3],r[4],r[6]]);let content=type==='csv'?[[ 'Группа','Русское название','Научное название','Ранг','Сумма','Статус','Класс','Отряд','Тип'],...lines].map(row=>row.map(csv).join(';')).join('\r\n'):[ 'Имя: '+el('name').value,'Греческая запись: '+el('greek').value,'Число: '+sum,'Совпадений: '+results.length,'Источник: Catalogue of Life XR 2026-08-26','',...results.map((r,i)=>(i+1)+'. '+display(r)+' ['+r[1]+'] · '+(RANK[r[2]]||r[2])+(r[5]?' · '+status(r):''))].join('\n');let url=URL.createObjectURL(new Blob(['\ufeff'+content],{type:type==='csv'?'text/csv;charset=utf-8':'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='Анимагия_'+sum+'_все_'+results.length+'.'+type;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);}
+function download(type){if(!results.length)return;let lines=results.map(r=>[category(r),display(r),r[1],RANK[r[2]]||r[2],r[0],status(r),r[3],r[4],r[6],r[7]||'',r[8]||'',r[9]||'']);let content=type==='csv'?[[ 'Группа','Русское название','Научное название','Ранг','Сумма','Статус','Класс','Отряд','Тип','Семейство (лат.)','Семейство (рус.)','Русское название вида (проверенное)'],...lines].map(row=>row.map(csv).join(';')).join('\r\n'):[ 'Имя: '+el('name').value,'Греческая запись: '+el('greek').value,'Число: '+sum,'Совпадений: '+results.length,'Источник: Catalogue of Life XR 2026-08-26','',...results.map((r,i)=>(i+1)+'. '+display(r)+' ['+r[1]+'] · '+(RANK[r[2]]||r[2])+(r[5]?' · '+status(r):'')+' · '+familyDisplay(r))].join('\n');let url=URL.createObjectURL(new Blob(['\ufeff'+content],{type:type==='csv'?'text/csv;charset=utf-8':'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='Анимагия_'+sum+'_все_'+results.length+'.'+type;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);}
 document.addEventListener('DOMContentLoaded',()=>{
  const input=el('name'),latin=el('latin'),greek=el('greek');
  // Editing upstream restarts the chain; Greek can always be corrected manually.
