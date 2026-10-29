@@ -100,6 +100,21 @@ class GreekNumericParityTests(unittest.TestCase):
         self.assertEqual(taxon_ru_labels('Panthera uncia','Felidae'),('Кошачьи','Снежный барс'))
         self.assertEqual(taxon_ru_labels('Unknown species','Unknownidae'),('',''))
         self.assertEqual(taxon_ru_labels('Castor fiber','Castoridae'),('Бобровые','Бобр обыкновенный'))
+        # Historic Discodeles Russian names, verified against current Cornufer taxa.
+        verified_frogs={
+            'Cornufer bufoniformis':'Жабовидная лягушка',
+            'Cornufer guppyi':'Лягушка-гурман',
+            'Cornufer malukuna':'Крапчатобрюхая лягушка',
+            'Cornufer opisthodon':'Бугорчатоносая лягушка',
+            'Cornufer vogti':'Океанийская лягушка',
+        }
+        evidence=json.loads((BASE/'ru_taxonomy.json').read_text(encoding='utf-8'))['ru_name_sources']
+        for scientific,ru in verified_frogs.items():
+            with self.subTest(scientific=scientific):
+                self.assertEqual(taxon_ru_labels(scientific,'Ceratobatrachidae','Amphibia','Anura','Chordata','species')[1],ru)
+                self.assertTrue(evidence[scientific]['published_as'].startswith('Discodeles '))
+                self.assertTrue(evidence[scientific]['russian'].startswith('https://'))
+                self.assertTrue(evidence[scientific]['current'].startswith('https://'))
         self.assertGreaterEqual(len(FAMILY_RU),150)
         self.assertGreaterEqual(len(SPECIES_RU),60)
         r=row()
