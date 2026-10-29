@@ -269,12 +269,10 @@ def build():
   print('Downloading CoL data',URL,flush=True)
   urllib.request.urlretrieve(URL,str(zpath))
  if DATA.exists():shutil.rmtree(DATA)
- DATA.mkdir(exist_ok=True,parents=True);approved_original_art=publish_selected_original_art(BASE,DEST);shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'animals.html',DEST/'animals.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'ru_name_lookup.js',DEST/'ru_name_lookup.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'relic_card_stage1.css',DEST/'relic_card_stage1.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'animal_atlas.js',DEST/'animal_atlas.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
+ DATA.mkdir(exist_ok=True,parents=True);approved_original_art=publish_selected_original_art(BASE,DEST);shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'ru_name_lookup.js',DEST/'ru_name_lookup.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'relic_card_stage1.css',DEST/'relic_card_stage1.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'animal_atlas.js',DEST/'animal_atlas.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
  # Ship only curated, checksum-verified original art; never publish older assets.
  shutil.copy2(BASE/'selected_art_107.js',DEST/'selected_art_107.js')
  shutil.copy2(BASE/'approved_only_cards.js',DEST/'approved_only_cards.js')
- shutil.copy2(BASE/'approved_chooser_gallery.js',DEST/'approved_chooser_gallery.js')
- shutil.copy2(BASE/'approved_chooser_gallery.css',DEST/'approved_chooser_gallery.css')
  stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();genus_families=collections.defaultdict(set);synonym_candidates=collections.defaultdict(set);synonym_candidate_rows=0;t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)

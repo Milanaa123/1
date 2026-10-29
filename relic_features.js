@@ -1708,7 +1708,7 @@
    status.textContent='Сначала найди точные совпадения.';return;
   }
   status.textContent='Составляем золотой бестиарий…';
-  const gallery=atlas(),picture=gallery?await gallery.drawable():null;
+  const gallery=atlas();
   const cards=chosenRows(),list=get('printRelicList'),frag=document.createDocumentFragment();
   get('printRelicName').textContent='Имя: '+get('name').value.trim();
   get('printRelicGreek').textContent='Греческая запись: '+get('greek').value.trim();
@@ -1719,14 +1719,13 @@
    const art=elem('article');art.className='print-relic-animal';
    art.append(elem('span','✧ '+String(i+1).padStart(2,'0')));
    const illustration=atlas()?.resolve(r);
-   const originalSprite=illustration?.artSet==='original107'?await gallery.drawable(illustration):null;
-   const artSprite=originalSprite||picture;
-   if(illustration&&artSprite){
+   const image=illustration?await gallery.drawable(illustration):null;
+   if(illustration&&image){
     const windowArt=elem('canvas');windowArt.className='print-art-cell';
     windowArt.width=400;windowArt.height=330;
     windowArt.setAttribute('role','img');
     windowArt.setAttribute('aria-label','Золотой образ '+r[1]);
-    gallery.drawCanvas(windowArt.getContext('2d'),artSprite,illustration,0,0,400,330);
+    gallery.drawCanvas(windowArt.getContext('2d'),image,illustration,0,0,400,330);
     art.append(windowArt);
    }
    art.append(elem('h3',label(r)));
@@ -1791,10 +1790,10 @@
 
    if(!ok){
     if(typeof closeAnimalChooser==='function')closeAnimalChooser();
-    const chooser=get('animalChooserOpen');if(chooser)chooser.disabled=false; // The approved artwork gallery is always available.
-    const title=get('animalChosenName');if(title)title.textContent='Выбери рисунок животного';
-    const sci=get('animalChosenScientific');if(sci)sci.textContent='108 готовых рисунков · расчёт отдельно';
-    svg.replaceChildren();picker.replaceChildren(elem('option','Рисунки доступны в каталоге'));
+    const chooser=get('animalChooserOpen');if(chooser)chooser.disabled=true;
+    const title=get('animalChosenName');if(title)title.textContent='Сначала выполни расчёт';
+    const sci=get('animalChosenScientific');if(sci)sci.textContent='Выбери найденное животное';
+    svg.replaceChildren();picker.replaceChildren(elem('option','Сначала выполни поиск'));
     void composeScreenCard(null);
     picker.dataset.signature='';previous=null;
     syncSilhouette(picker);
