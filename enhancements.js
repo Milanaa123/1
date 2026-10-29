@@ -112,9 +112,11 @@ render=function(){
   window.AnimagiaRussianNames?.hydrate(picks,(row,common)=>{
     const target=uiNames.get(row[1]);
     if(target?.isConnected){
-      target.textContent=common;target.title='Русское название вида: iNaturalist';
+      target.textContent=common;
+      const source=window.AnimagiaRussianNames?.sourceFor(row)||'проверенный источник';
+      target.title='Русское название вида · '+source;
       const note=target.parentElement?.querySelector('.russian-name-note');
-      if(note)note.textContent='Русское название вида: iNaturalist';
+      if(note)note.textContent='Подтверждённое русское название вида · '+source;
     }
   });
   el('featuredCount').textContent=selected.length+' из '+results.length+' точных совпадений';
