@@ -1,0 +1,92 @@
+name: Import 107 approved original Animagia PNG artworks
+on:
+  push:
+    branches: [animagia-site]
+    paths: ['.github/workflows/import-selected-original-art.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import-originals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: animagia-site
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch three original-lossless artwork packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/animagia-import art/animagia-selected-107
+          curl --fail --location --retry 4 --retry-delay 3 \
+            'https://d2ol7oe51mr4n9.cloudfront.net/user_3IWontIKp1HpvdwOJQiSSyMEM6K/e9999626-a41f-465d-9f67-2cc60109fdc8.zip' \
+            -o /tmp/animagia-import/01.zip
+          curl --fail --location --retry 4 --retry-delay 3 \
+            'https://d2ol7oe51mr4n9.cloudfront.net/user_3IWontIKp1HpvdwOJQiSSyMEM6K/58cc8ca4-0c6f-433f-b4ec-a64bce8af201.zip' \
+            -o /tmp/animagia-import/02.zip
+          curl --fail --location --retry 4 --retry-delay 3 \
+            'https://d2ol7oe51mr4n9.cloudfront.net/user_3IWontIKp1HpvdwOJQiSSyMEM6K/a8d5f641-a09a-4a5c-b0e8-91c0e022b35d.zip' \
+            -o /tmp/animagia-import/03.zip
+          printf '%s\n' \
+            '779c8f3493a01f3cf05025f15e2c6d70152ba47e765e6032cc34423576d8824c  /tmp/animagia-import/01.zip' \
+            '77d56f55231cabb2271dad68c8f8761402d6d0a244f1ff9f919db42949f9333b  /tmp/animagia-import/02.zip' \
+            'e2a55729dbb98a805a6c3da46e5d1eba734a0f454a893cbb15a170a57819c977  /tmp/animagia-import/03.zip' | sha256sum --check --status
+          for part in /tmp/animagia-import/*.zip; do
+            unzip -q -o "$part" -d art/animagia-selected-107
+          done
+      - name: Validate SHA256 alpha PNG dimensions and create manifest
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv,hashlib,io,json,struct
+          from pathlib import Path
+          root=Path('art/animagia-selected-107')
+          rows=list(csv.DictReader((root/'01_accepted.csv').open(encoding='utf-8-sig',newline='')))
+          assert len(rows)==107,len(rows)
+          imgs=list(root.rglob('*.png'))
+          assert len(imgs)==107,len(imgs)
+          items=[]
+          seen=set()
+          for r in rows:
+              path=Path(r['Файл'])
+              assert len(path.parts)==2 and path.parts[0] in {'animals','additional'}
+              assert str(path) not in seen
+              seen.add(str(path))
+              data=(root/path).read_bytes()
+              assert data[:8]==b'\x89PNG\r\n\x1a\n',path
+              width,height=struct.unpack('>II',data[16:24])
+              assert data[25]==6,(path,'PNG must be RGBA')
+              assert (width,height)==(int(r['Ширина']),int(r['Высота'])),path
+              assert hashlib.sha256(data).hexdigest()==r['SHA-256'],path
+              items.append({'number':int(r['Номер']) if r['Номер'] else None,
+                            'name':r['Животное'],'file':r['Файл'],
+                            'width':width,'height':height,'sha256':r['SHA-256']})
+          assert len([v for v in items if v['number']])==104
+          assert len([v for v in items if v['number'] is None])==3
+          assert len(set(v['number'] for v in items if v['number']))==104
+          manifest={'version':1,'count':107,'animals':104,'additional':3,
+                    'format':'original unmodified transparent RGBA PNG',
+                    'approval':'visually selected 2026-10-29; not scientific anatomy certification',
+                    'files':items}
+          (root/'manifest.json').write_text(
+              json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('APPROVED_107_PNG_CHECKSUMS_AND_DIMENSIONS_OK',len(items),flush=True)
+          PY
+      - name: Commit 107 original PNG files unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config http.postBuffer 524288000
+          git add art/animagia-selected-107
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish 107 approved original transparent Animagia PNG artworks'
+            git fetch origin animagia-site
+            git rebase origin/animagia-site
+            git push origin HEAD:animagia-site
+          fi
