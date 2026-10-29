@@ -1,4 +1,4 @@
-"""Publish the 107 selected original Animagia transparent PNGs without re-encoding."""
+"""Publish the 108 selected original Animagia transparent PNGs without re-encoding."""
 from __future__ import annotations
 import hashlib, json, shutil, struct
 from pathlib import Path
@@ -10,9 +10,9 @@ def publish_selected_original_art(base, destination):
     base=Path(base);destination=Path(destination)
     source=base/ART_REL
     manifest=json.loads((source/"manifest.json").read_text(encoding="utf-8"))
-    assert manifest["count"]==107 and manifest["animals"]==104 and manifest["additional"]==3
+    assert manifest["count"]==108 and manifest["animals"]==104 and manifest["additional"]==4
     records=manifest["files"]
-    assert len(records)==107
+    assert len(records)==108
     seen=set();bytes_published=0
     for item in records:
         path=Path(item["file"])
@@ -30,6 +30,6 @@ def publish_selected_original_art(base, destination):
         shutil.copyfile(sourcefile,dest)
         bytes_published+=len(raw)
     shutil.copyfile(source/"manifest.json",destination/ART_REL/"manifest.json")
-    print("ANIMAGIA_107_ORIGINAL_RGBA_PNG_PUBLISHED",len(seen),bytes_published,flush=True)
+    print("ANIMAGIA_108_ORIGINAL_RGBA_PNG_PUBLISHED",len(seen),bytes_published,flush=True)
     return {"count":len(seen),"original_png_bytes":bytes_published,
         "directory":str(ART_REL),"sha256_audited":True,"reencoded":False}
