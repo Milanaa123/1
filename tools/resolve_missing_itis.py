@@ -21,7 +21,7 @@ def query(row):
         try:
             response=get(url).get('response',{})
             break
-        except (urllib.error.URLError,ValueError,TimeoutError) as e:
+        except (OSError,ValueError,TimeoutError) as e:
             if attempt==2:return name,None,'request_error'
             time.sleep(1.0*(attempt+1))
     docs=[d for d in response.get('docs',[])
@@ -51,7 +51,7 @@ def main():
     report=get(REPORT)
     assert report['count']==459,len(report['examples'])
     accepted={};skipped=collections.Counter()
-    with cf.ThreadPoolExecutor(max_workers=5) as pool:
+    with cf.ThreadPoolExecutor(max_workers=2) as pool:
         for i,(name,result,reason) in enumerate(pool.map(query,report['examples']),1):
             if result:accepted[name]=result
             else:skipped[reason]+=1
