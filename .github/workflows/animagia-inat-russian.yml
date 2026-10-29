@@ -1,0 +1,50 @@
+name: Import authentic Russian names from official iNaturalist taxonomy
+on:
+  push:
+    branches: [animagia-site]
+    paths:
+      - 'tools/import_inaturalist_ru.py'
+      - '.github/workflows/animagia-inat-russian.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import-russian:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: animagia-site
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Python importer
+        run: python -m py_compile tools/import_inaturalist_ru.py ru_catalog.py build_data.py
+      - name: Download official taxonomy and match Russian names by accepted taxon identity
+        run: python tools/import_inaturalist_ru.py
+      - name: Audit full source snapshot without losing previous names
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import ru_catalog as ru
+          p=Path('russian_inaturalist_snapshot.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          assert d['count']==len(d['names']) and d['count']>=1000
+          assert len(ru.INAT_NAMES)==d['count']
+          for key,record in list(d['names'].items())[:2000]:
+              scientific,rank=key.split('|')
+              name,phylum,cls,order,family,ident=record
+              assert ru.inat_ru_label(scientific,family,cls,order,phylum,rank)==name
+          print('OFFICIAL_RUSSIAN_NAMES_VERIFIED',d['count'])
+          PY
+      - name: Commit immutable source evidence and Russian name lookup
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add russian_inaturalist_snapshot.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Import verified official iNaturalist Russian species names'
+            git push origin HEAD:animagia-site
+          fi
