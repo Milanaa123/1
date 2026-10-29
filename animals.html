@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#110c15">
+<title>Анимагия — 107 золотых образов животных</title>
+<meta name="description" content="Отобранные оригинальные рисунки животных для карточек Анимагии. Прозрачные PNG без потери качества.">
+<style>
+:root{color-scheme:dark;--bg:#100d16;--panel:#1e1725;--ink:#f6ead8;--muted:#b5a1a9;--gold:#e5bd7a;--line:#57432e}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);background:radial-gradient(ellipse at 50% -15%,#463020 0%,#17111c 45%,var(--bg) 85%);font:15px/1.6 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100dvh}
+a{color:var(--gold)}
+header{max-width:1300px;margin:auto;padding:30px 22px 16px}
+nav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
+.home{font-weight:800;text-decoration:none;letter-spacing:.2em;font-size:13px;color:var(--gold)}
+.return{border:1px solid var(--line);border-radius:25px;padding:8px 15px;text-decoration:none;background:#241a25}
+.hero{text-align:center;padding:46px 8px 30px}
+.eyebrow{letter-spacing:.3em;font-size:11px;color:#e9bc7d;text-transform:uppercase}
+h1{font:normal clamp(38px,6vw,71px)/1.1 Georgia,serif;margin:13px 0;background:linear-gradient(90deg,#a67a45,#ffe2a5,#d9a967);background-clip:text;color:transparent}
+.sub{color:#d4bbc0;max-width:700px;margin:0 auto}
+main{max-width:1300px;margin:auto;padding:0 22px 55px}
+.tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:20px 0 24px}
+input{width:min(380px,100%);border:1px solid #785a3a;border-radius:10px;background:#211923;color:#fff;padding:12px 14px;font:inherit}
+input:focus{outline:2px solid #d8b57d;outline-offset:1px}
+.counter{color:#e6c99a;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:17px}
+figure{margin:0;background:linear-gradient(145deg,#271b24,#17111c);border:1px solid #59402a;border-radius:16px;overflow:hidden;min-width:0;box-shadow:0 12px 30px #0004;content-visibility:auto;contain-intrinsic-size:310px}
+.art{appearance:none;background:radial-gradient(ellipse at center,#3c291e 0%,#201820 70%);display:grid;place-items:center;width:100%;aspect-ratio:1.08;border:0;padding:8px;cursor:zoom-in}
+.art img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 3px 11px #0006)}
+figcaption{padding:12px 15px;border-top:1px solid #493627;min-height:66px;display:flex;align-items:center;gap:12px}
+.num{font:14px Georgia,serif;color:#a98a66}
+.name{font-weight:600;font-size:14px}
+.note{font-size:12px;color:var(--muted);margin:30px 0 5px}
+dialog{padding:0;border:1px solid #7c5b39;border-radius:17px;background:#1a141c;color:var(--ink);max-width:min(96vw,1050px);max-height:95dvh;overflow:auto}
+dialog::backdrop{background:#050307eb}
+.dialog-inner{padding:20px;display:flex;flex-direction:column;align-items:center}
+.dialog-inner img{max-width:100%;max-height:78dvh;object-fit:contain}
+.dialog-inner button{align-self:flex-end;margin-bottom:8px;cursor:pointer;background:#422e30;border:1px solid #ba9166;border-radius:9px;color:#ffe8b8;font-size:16px;padding:7px 13px}
+.dialog-inner p{margin:6px 0 0;color:#e9c78d}
+[hidden]{display:none!important}
+footer{text-align:center;color:#998892;font-size:12px;padding:0 20px 30px}
+@media(max-width:510px){header{padding:18px 14px 8px}main{padding:0 12px 35px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}figure{border-radius:11px}figcaption{padding:9px 8px;gap:6px;min-height:64px}.name{font-size:12px}.num{font-size:11px}.art{padding:4px}.hero{padding:30px 0 24px}.tools{margin-top:10px}input{width:100%}}
+@media(prefers-reduced-motion:no-preference){figure{transition:transform .15s,border-color .15s}figure:hover{transform:translateY(-2px);border-color:#bd9160}}
+</style>
+</head>
+<body>
+<header>
+<nav><a class="home" href="./index.html">✧ А Н И М А Г И Я</a><a class="return" href="./index.html">← Вернуться к калькулятору</a></nav>
+<section class="hero"><p class="eyebrow">✧ Атлас скрытых форм ✧</p><h1>Золотые образы животных</h1><p class="sub">Каждое животное — отдельная оригинальная иллюстрация с прозрачным фоном. Изображения сохранены без размытия и пересохранения.</p></section>
+</header>
+<main>
+<div class="tools"><input id="search" type="search" placeholder="Поиск животного…" aria-label="Найти животное"><span class="counter" id="counter">Загружаем рисунки…</span></div>
+<div class="grid" id="gallery" aria-live="polite"></div>
+<p class="note">В этой галерее представлены только 107 отобранных рисунков. Некоторые из остальных животных пока ожидают создания или исправления изображения. Художественные работы не являются научными определителями видов.</p>
+</main>
+<dialog id="viewer" aria-label="Рисунок крупным планом"><div class="dialog-inner"><button type="button" id="closeViewer" aria-label="Закрыть">× Закрыть</button><img id="largeImage" alt=""><p id="largeTitle"></p></div></dialog>
+<footer>✧ Анимагия · 107 исходных PNG без изменения качества</footer>
+<script>
+'use strict';
+(async()=>{
+  const grid=document.getElementById('gallery'),counter=document.getElementById('counter');
+  const input=document.getElementById('search'),dialog=document.getElementById('viewer');
+  const large=document.getElementById('largeImage'),title=document.getElementById('largeTitle');
+  const root='./art/animagia-selected-107/';
+  try{
+    const response=await fetch(root+'manifest.json',{cache:'no-store'});
+    if(!response.ok)throw new Error('Не удалось получить каталог рисунков');
+    const data=await response.json();
+    if(data.count!==107||data.files?.length!==107)throw new Error('Неполный каталог');
+    function render(){
+      const query=input.value.toLocaleLowerCase('ru').trim(),fragment=document.createDocumentFragment();
+      const selected=data.files.filter(item=>item.name.toLocaleLowerCase('ru').includes(query));
+      for(const item of selected){
+        const figure=document.createElement('figure'),button=document.createElement('button');
+        const img=document.createElement('img'),caption=document.createElement('figcaption');
+        const num=document.createElement('span'),name=document.createElement('span');
+        const url=root+item.file.split('/').map(encodeURIComponent).join('/');
+        button.className='art';button.type='button';
+        button.setAttribute('aria-label','Увеличить рисунок: '+item.name);
+        img.loading='lazy';img.decoding='async';img.src=url;img.alt='Золотой рисунок: '+item.name;
+        button.append(img);
+        button.addEventListener('click',()=>{
+          large.src=url;large.alt=img.alt;title.textContent=item.name;dialog.showModal();
+        });
+        num.className='num';num.textContent=item.number?'№ '+String(item.number).padStart(3,'0'):'✧';
+        name.className='name';name.textContent=item.name;
+        caption.append(num,name);figure.append(button,caption);fragment.append(figure);
+      }
+      grid.replaceChildren(fragment);
+      counter.textContent='Показано: '+selected.length+' из '+data.count;
+    }
+    input.addEventListener('input',render);
+    document.getElementById('closeViewer').addEventListener('click',()=>dialog.close());
+    dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
+    render();
+  }catch(error){counter.textContent='Ошибка: '+error.message}
+})();
+</script>
+</body>
+</html>
