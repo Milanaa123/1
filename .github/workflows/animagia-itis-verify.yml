@@ -1,0 +1,25 @@
+name: Verify remaining families against ITIS hierarchy
+on:
+  push:
+    branches: [animagia-site]
+    paths: ['.github/workflows/animagia-itis-verify.yml']
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: animagia-site
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python tools/resolve_missing_itis.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add family_itis_verified.json
+          git commit -m "Record independent ITIS verified families for residual taxa"
+          git push origin HEAD:animagia-site
