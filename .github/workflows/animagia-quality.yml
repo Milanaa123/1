@@ -27,5 +27,7 @@ jobs:
         run: python -m py_compile build_data.py audit_index.py ru_catalog.py
       - name: Validate family and Russian-name fields without changing Greek sums
         run: python -m unittest discover -s tests -p 'test_quality.py' -v
+      - name: Check exact-species Russian name lookup with mocked API
+        run: node tests/test_ru_name_lookup.cjs
       - name: Verify animal name calculator remains unchanged
         run: node --test tests/phonetic.test.cjs tests/strict-original.test.cjs

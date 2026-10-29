@@ -1,7 +1,7 @@
 'use strict';
 const oldReset=reset;
 let photoStamp=0,observer,queue=[],busy=0;
-reset=function(){photoStamp++;queue.length=0;if(observer)observer.disconnect();oldReset();};
+reset=function(){photoStamp++;queue.length=0;if(observer)observer.disconnect();window.AnimagiaRussianNames?.cancel();oldReset();};
 function inspectImage(data,name,rank){
   for(const x of data&&Array.isArray(data.results)?data.results:[]){
     if(String(x.name||'').toLowerCase()!==name.toLowerCase()||x.rank!==rank)continue;
@@ -78,6 +78,7 @@ render=function(){
   const selected=featured(results);renewFilter(selected);
   const filter=el('groupFilter').value,picks=filter==='all'?selected:selected.filter(r=>classifyRow(r)===filter);
   const fragment=document.createDocumentFragment();
+  const uiNames=new Map();
   for(const [i,row] of picks.entries()){
     const li=document.createElement('li');li.className='species-row';
     const media=document.createElement('div');media.className='photo-media';
@@ -87,6 +88,7 @@ render=function(){
     const index=document.createElement('span');index.className='idx';index.textContent=String(i+1).padStart(2,'0');
     const body=document.createElement('span');
     const name=document.createElement('span');name.className='animal-name';name.textContent=display(row);
+    uiNames.set(row[1],name);
     const latin=document.createElement('small');latin.textContent=row[1]+(row[5]?' · '+status(row):'');
     const renderedGreek=document.createElement('small');
     renderedGreek.textContent='По-гречески (транслитерация): '+taxonGreek(row[1]);
@@ -104,6 +106,10 @@ render=function(){
     }
   }
   el('preview').replaceChildren(fragment);
+  window.AnimagiaRussianNames?.hydrate(picks,(row,common)=>{
+    const target=uiNames.get(row[1]);
+    if(target?.isConnected){target.textContent=common;target.title='Русское название вида: iNaturalist';}
+  });
   el('featuredCount').textContent=selected.length+' из '+results.length+' точных совпадений';
   el('previewSection').hidden=!results.length;el('downloads').hidden=!results.length;
   el('empty').textContent=results.length?'':'Точных совпадений в выбранной базе нет. Приблизительные животные не добавляются.';

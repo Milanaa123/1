@@ -265,7 +265,7 @@ function photoMakeCard(item,index) {
 
  const name=document.createElement('strong');name.className='animal-name';name.textContent=display(row);
  const origin=document.createElement('span');origin.className='bestiary-name-origin';
- origin.textContent=(row[9]||Object.prototype.hasOwnProperty.call(SPECIES_NAME_RU,row[1]))
+ origin.textContent=(row[9]||window.AnimagiaRussianNames?.get(row)||Object.prototype.hasOwnProperty.call(SPECIES_NAME_RU,row[1]))
   ?'Проверенное русское название вида'
   :(row[8]?'Обобщённое название группы; вид указан по-латыни':'Научное название вида приведено ниже');
  const science=document.createElement('small');science.className='bestiary-scientific';science.textContent=row[1];

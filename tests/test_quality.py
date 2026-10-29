@@ -99,6 +99,7 @@ class GreekNumericParityTests(unittest.TestCase):
         from ru_catalog import FAMILY_RU, SPECIES_RU
         self.assertEqual(taxon_ru_labels('Panthera uncia','Felidae'),('Кошачьи','Снежный барс'))
         self.assertEqual(taxon_ru_labels('Unknown species','Unknownidae'),('',''))
+        self.assertEqual(taxon_ru_labels('Castor fiber','Castoridae'),('Бобровые','Бобр обыкновенный'))
         self.assertGreaterEqual(len(FAMILY_RU),150)
         self.assertGreaterEqual(len(SPECIES_RU),60)
         r=row()

@@ -234,11 +234,13 @@ function familyDisplay(r){
 }
 function display(r){
   if(r[9])return r[9];
+  const sourced=typeof window!=='undefined'?window.AnimagiaRussianNames?.get(r):'';
+  if(sourced)return sourced;
   if(SPECIES_NAME_RU[r[1]])return SPECIES_NAME_RU[r[1]];
   const genus=r[1].split(' ')[0];
   // Never invent a Russian species name by transliterating Latin.
   // The precise binomial appears in the scientific-name field next to it.
-  return GENUS_RU[genus]||(r[8]?r[8]+' (семейство)':category(r));
+  return GENUS_RU[genus]|| (r[8]?'Представитель семейства '+r[8].toLowerCase():category(r)+' (группа)');
 }
 function status(r){return r[5]==='†'?'Вымерший †':r[5]==='?'?'Сомнительный статус ?':'';}
 

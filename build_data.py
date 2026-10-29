@@ -359,7 +359,7 @@ def build():
        formal+=1
     stack.append((indent,rank,name,is_extinct))
   for f in handles.values():f.close()
-  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();family_present=family_ru_present=species_ru_present=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
+  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
   for p in directory.glob('*.part'):
    bid=int(p.stem);seen={}
    with p.open(encoding='utf8') as f:
@@ -383,6 +383,11 @@ def build():
    species_ru_present+=sum(bool(r[9]) for r in values)
    family_values.update(r[7] for r in values if r[7])
    family_counts.update(r[7] for r in values if r[7])
+   for r in values:
+    if not r[7]:
+     missing_families[(r[3],r[4])]+=1
+     if len(missing_samples)<60:
+      missing_samples.append({'scientific_name':r[1],'rank':r[2],'class':r[3],'order':r[4]})
    blob=json.dumps(values,ensure_ascii=False,separators=(',',':')).encode('utf8')
    (DATA/(str(bid)+'.json')).write_bytes(blob)
    digest=hashlib.sha256(blob).hexdigest()
@@ -397,6 +402,15 @@ def build():
                for latin,count in sorted(family_counts.items())]
  assert len(family_index)==len(family_values)
  assert sum(x['record_count'] for x in family_index)==family_present
+ (DEST/'families_missing.json').write_text(
+  json.dumps({'source':'Catalogue of Life XR 2026-08-26',
+              'explanation':'No family ancestor was present in the source TextTree lineage for these species/subspecies; not proof of absent biological family',
+              'count':unique-family_present,
+              'by_class_order':[{'class':cl,'order':order,'count':n}
+                                for (cl,order),n in sorted(missing_families.items(),key=lambda x:(-x[1],x[0]))],
+              'examples':missing_samples},ensure_ascii=False,separators=(',',':')),
+  encoding='utf8')
+ assert sum(missing_families.values())==unique-family_present
  (DEST/'families.json').write_text(
   json.dumps({'source':'Catalogue of Life XR 2026-08-26','kind':'family index for linking reviewed artwork',
               'count':len(family_index),'families':family_index},ensure_ascii=False,separators=(',',':')),
@@ -411,6 +425,7 @@ def build():
  meta['taxon_ranks']='species and subspecies only'
  meta['row_schema']=['greek_score','scientific_name','rank','class','order','status','phylum','family','family_ru','common_name_ru']
  meta['family_catalogue_file']='families.json'
+ meta['missing_family_diagnostics']='families_missing.json'
  meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
   'distinct_families':len(family_values),'family_ru_present':family_ru_present,
   'verified_species_common_names':species_ru_present}
