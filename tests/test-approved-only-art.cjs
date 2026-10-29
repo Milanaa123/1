@@ -90,7 +90,7 @@ test('all 108 approved PNGs are reachable on their correct animal cards',()=>{
  }
  assert.equal(used.size,107,'Not all mapped artwork PNGs were exercised');
  const frog=rows.find(item=>item.name==='Лягушка');
- assert(frog,'The user's original frog PNG must remain available');
+ assert(frog,"The user-supplied original frog PNG must remain available");
  assert.equal(atlas.resolve([1700,'Cornufer opisthodon','species','Amphibia','Anura']).file,frog.file);
  // Legacy art is not allowed to appear in a different species' card.
  assert.equal(atlas.resolve([1700,'Panthera uncia','species','Mammalia','Carnivora']),null);
