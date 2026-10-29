@@ -12,6 +12,14 @@ URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
 RANK={'species','subspecies'}  # only individual animal species and subspecies; no forms/varieties
 RANK_RE=re.compile(rb'\[([^\]]+)\]\s*$');EP=re.compile(r'^[a-z][a-z-]*$');START=re.compile(r'^[A-Z][A-Za-z0-9_-]*')
 SKIP={'subsp.','ssp.','var.','subvar.','f.','forma','natio','ab.','morph.','morph','×'}
+# Only copy an already-attested Russian label through a CoL-declared synonym.
+# Exact binomial identity and rank still must match the published synonym line.
+SYNONYM_SOURCE_KEYS=(
+ {k.casefold()+'|species' for k in SPECIES_RU}|
+ {k.casefold()+'|species' for k in EXTERNAL_SPECIES_RU}|
+ set(BULK_NAMES)|set(INAT_NAMES)|set(BVI_NAMES)|
+ {k+'|species' for k in WIKIDATA_NAMES}
+)
 # Historical Latin scoring is retained only as a regression check for the old programme.
 # Matching NOW uses the same Greek-numeral values for names and Greek-rendered taxa.
 GREEK_WEIGHTS = dict(zip('αβγδεζηθικλμνξοπρστυφχψω',
@@ -75,6 +83,13 @@ def canonical(body,rank):
   else:break
   if len(out)>=(2 if rank=='species' else 3):break
  return ' '.join(out) if len(out)>=(2 if rank=='species' else 3) else ''
+def texttree_synonym(body,rank):
+ """Read explicit '=' or '≡' CoL TextTree synonym; never infer by genus."""
+ clean=body.lstrip('†? ').strip()
+ if not clean.startswith(('=','≡')) or rank not in RANK:
+  return ''
+ return canonical(clean.lstrip('=≡$† ').strip(),rank)
+
 def parent(body):
  s=body.lstrip('†?*=$ ').strip();m=START.match(s)
  return m.group(0) if m else (s.split()[0] if s else '')
@@ -342,7 +357,7 @@ def build():
  print('ANIMAGIA_VECTOR_100_BATCHES_PUBLISHED',flush=True)
  shutil.copy2(art5,DEST/'art'/'animals-approved-01-05.png')
  print('CURATED_FIRST_FIVE_ALPHA_READY',len(raw5),'bytes',expected5,flush=True)
- stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();genus_families=collections.defaultdict(set);t0=time.time()
+ stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();genus_families=collections.defaultdict(set);synonym_candidates=collections.defaultdict(set);synonym_candidate_rows=0;t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)
   def spool(bid,row):
@@ -369,7 +384,292 @@ def build():
      continue
     if indent<=base:break
     while stack and stack[-1][0]>=indent:stack.pop()
-    if body.lstrip('†? ').strip().startswith(('=','*','$')):continue
+    synonym=texttree_synonym(body,rank)
+    if synonym:
+     # Only direct children of an accepted species/subspecies can transmit
+     # that accepted taxon's identity, per the official TextTree grammar.
+     if (stack and stack[-1][1]==rank and
+         indent==stack[-1][0]+2 and not stack[-1][3] and
+         synonym.casefold()+'|'+rank in SYNONYM_SOURCE_KEYS):
+      accepted=stack[-1][2]
+      if accepted.casefold()!=synonym.casefold():
+       synonym_candidates[(accepted,rank)].add(synonym)
+       synonym_candidate_rows+=1
+     continue
+    if body.lstrip('†? ').strip().startswith(('=','≡','*','
+    # A species can inherit extinction from its genus/family/order/etc.
+    # Propagate the dagger (†) down the hierarchy before indexing.
+    is_extinct=('†' in body[:3]) or (stack[-1][3] if stack else False)
+    is_uncertain=body.lstrip().startswith('?')
+    if rank=='genus' and name and not is_extinct:
+     genus_lin={r:n for _,r,n,_ in stack}
+     known_family=genus_lin.get('family','')
+     if known_family:
+      genus_families[genus_key(genus_lin.get('phylum',''),genus_lin.get('class',''),genus_lin.get('order',''),name)].add(known_family)
+    if rank in RANK and name:
+     lin={r:n for _,r,n,_ in stack}
+     if is_extinct:
+      excluded_extinct+=1
+     elif is_uncertain:
+      excluded_uncertain+=1
+     elif not allow_animal_taxon(lin):
+      excluded_scope+=1
+     else:
+      try:
+       n=taxon_score(name)
+      except ValueError:
+       invalid_names+=1
+      else:
+       # Do not infer a family from a broad order or an animal's appearance.
+       if lin.get('family'):
+        genus_families[genus_key(lin.get('phylum',''),lin.get('class',''),lin.get('order',''),name)].add(lin['family'])
+       # No extinct/uncertain record may enter the downloadable index.
+       spool(n//25,indexed_taxon_row(n,name,rank,lin))
+       formal+=1
+    stack.append((indent,rank,name,is_extinct))
+  for f in handles.values():f.close()
+  synonym_ru_evidence={};synonym_ru_conflicts=0
+  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();russian_name_sources=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=family_genus_inferred=family_external_inferred=family_external_genus_inferred=family_itis_inferred=family_opentree_inferred=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
+  for p in directory.glob('*.part'):
+   bid=int(p.stem);seen={}
+   with p.open(encoding='utf8') as f:
+    for line in f:
+     r=json.loads(line)
+     # The release can contain case variants of the same Latin binomial.
+     # Scientific names are not distinguished by capitalization.
+     key=(r[1].casefold(),r[2])
+     if key in seen:
+      if seen[key][1]!=r[1]:casefold_duplicates+=1
+     else:
+      seen[key]=r
+   values=sorted(seen.values(),key=lambda r:(r[0],r[3],r[1]))
+   for row in values:
+    if row[7]:continue
+    inferred=family_from_unambiguous_genus(genus_families,row)
+    if inferred:
+     row[7]=inferred
+     row[8],row[9]=taxon_ru_labels(row[1],inferred,row[3],row[4],row[6],row[2])
+     family_genus_inferred+=1
+    else:
+     evidence=verified_external.get(row[1])
+     if (evidence and evidence.get('rank')==row[2] and
+         evidence.get('class')==row[3] and evidence.get('order')==row[4] and
+         evidence.get('phylum')==row[6] and
+         evidence.get('matched_name','').casefold()==row[1].casefold() and
+         evidence.get('match_type')=='EXACT' and
+         evidence.get('family','').endswith('idae')):
+      row[7]=evidence['family']
+      row[8],row[9]=taxon_ru_labels(row[1],row[7],row[3],row[4],row[6],row[2])
+      family_external_inferred+=1
+     else:
+      evidence=verified_external_genus.get(row[1])
+      if (evidence and evidence.get('rank')==row[2] and
+          evidence.get('class')==row[3] and evidence.get('order')==row[4] and
+          evidence.get('phylum')==row[6] and
+          evidence.get('matched_genus','').casefold()==row[1].split()[0].casefold() and
+          evidence.get('source_match_rank')=='GENUS' and
+          evidence.get('match_type')=='EXACT' and
+          evidence.get('family','').endswith('idae')):
+       row[7]=evidence['family']
+       row[8],row[9]=taxon_ru_labels(row[1],row[7])
+       family_external_genus_inferred+=1
+    if not row[7]:
+     itis_match=verified_itis.get(row[1])
+     if (itis_match and itis_match.get('rank')==row[2] and
+         itis_match.get('name')==row[1] and
+         itis_match.get('class')==row[3] and
+         itis_match.get('order')==row[4] and
+         itis_match.get('phylum')==row[6] and
+         itis_match.get('source')=='ITIS Solr exact valid hierarchy' and
+         re.fullmatch(r'[A-Z][a-z]+idae',itis_match.get('family',''))):
+      row[7]=itis_match['family']
+      row[8],row[9]=taxon_ru_labels(row[1],row[7])
+      family_itis_inferred+=1
+    if not row[7]:
+     ott=verified_opentree.get(row[1])
+     if (ott and ott.get('name')==row[1] and
+         ott.get('rank')==row[2] and
+         ott.get('class')==row[3] and ott.get('order')==row[4] and
+         ott.get('phylum')==row[6] and bool(ott.get('phylum')) and
+         ott.get('match_type')=='exact_non_synonym' and
+         ott.get('source')=='OpenTree v3 strict exact taxonomy' and
+         isinstance(ott.get('ott_id'),int) and
+         re.fullmatch(r'[A-Z][a-z]+idae',ott.get('family',''))):
+      row[7]=ott['family']
+      row[8],row[9]=taxon_ru_labels(row[1],row[7])
+      family_opentree_inferred+=1
+   # Historical Russian species names may be published under a previous
+   # genus. CoL supplies the identity equivalence as a direct synonym edge.
+   # An exact, unique label is accepted only after taxonomic cross-checks.
+   for row in values:
+    if row[9]:continue
+    aliases=synonym_candidates.get((row[1],row[2]),set())
+    if not aliases:continue
+    labels=collections.defaultdict(set)
+    for alias in aliases:
+     _,russian=taxon_ru_labels(alias,row[7],row[3],row[4],row[6],row[2])
+     if russian:
+      labels[russian].add(alias)
+    if len(labels)==1:
+     russian,provenance=next(iter(labels.items()))
+     row[9]=russian
+     synonym_ru_evidence[row[1]+'|'+row[2]]={
+      'russian':russian,'source_synonyms':sorted(provenance),
+      'taxonomic_authority':'Catalogue of Life XR 2026-08-26 TextTree direct synonym'}
+    elif len(labels)>1:
+     synonym_ru_conflicts+=1
+   unique+=len(values);available.append(bid)
+   # Fail the entire publication if ANY row is invalid, misplaced,
+   # duplicated, excluded, incorrectly scored or out of sorted order.
+   report=audit_bucket(values,bid)
+   audit_ranks.update(report['ranks']);audit_classes.update(report['classes'])
+   family_present+=sum(bool(r[7]) for r in values)
+   family_ru_present+=sum(bool(r[8]) for r in values)
+   species_ru_present+=sum(bool(r[9]) for r in values)
+   for r in values:
+    if not r[9]:continue
+    if r[1] in SPECIES_RU:
+     russian_name_sources['manual_curated']+=1
+    elif r[1] in EXTERNAL_SPECIES_RU:
+     russian_name_sources['birdnet']+=1
+    else:
+     lookup=BULK_NAMES.get(r[1].casefold()+'|'+r[2])
+     if lookup and lookup[0]==r[9]:
+      russian_name_sources['taxadb_'+lookup[1]]+=1
+     elif inat_ru_label(r[1],r[7],r[3],r[4],r[6],r[2])==r[9]:
+      russian_name_sources['inaturalist_official_ru']+=1
+     elif bvi_ru_label(r[1],r[3],r[2])==r[9]:
+      russian_name_sources['bvi_historical']+=1
+     elif wikidata_ru_label(r[1],r[2])==r[9]:
+      russian_name_sources['wikidata_cc0']+=1
+     elif (r[1]+'|'+r[2] in synonym_ru_evidence and
+           synonym_ru_evidence[r[1]+'|'+r[2]]['russian']==r[9]):
+      russian_name_sources['col_texttree_attested_synonym']+=1
+     else:
+      raise AssertionError('Unattributed Russian common name: '+r[1])
+   family_values.update(r[7] for r in values if r[7])
+   family_counts.update(r[7] for r in values if r[7])
+   for r in values:
+    if not r[7]:
+     missing_families[(r[3],r[4])]+=1
+     if len(missing_samples)<4000:
+      missing_samples.append({'scientific_name':r[1],'rank':r[2],'class':r[3],'order':r[4]})
+   blob=json.dumps(values,ensure_ascii=False,separators=(',',':')).encode('utf8')
+   (DATA/(str(bid)+'.json')).write_bytes(blob)
+   digest=hashlib.sha256(blob).hexdigest()
+   bucket_sha256[str(bid)]=digest
+   # Canonical full-index fingerprint, independent of filesystem enumeration.
+   # The final digest is computed later from sorted per-bucket checksums.
+   for target in (551,1258,1288):
+    if bid==target//25:
+     count=sum(r[0]==target for r in values)
+     print('CONTROL_GREEK_TAXA',target,count,flush=True)
+ family_index=[{'family':latin,'family_ru':FAMILY_RU.get(latin,''),'record_count':count,'art_key':latin}
+               for latin,count in sorted(family_counts.items())]
+ assert len(family_index)==len(family_values)
+ assert sum(x['record_count'] for x in family_index)==family_present
+ (DEST/'families_missing.json').write_text(
+  json.dumps({'source':'Catalogue of Life XR 2026-08-26',
+              'explanation':'Neither an original family ancestor nor a uniquely classified genus in this CoL release provided an unambiguous family; biological absence is not implied',
+              'count':unique-family_present,
+              'by_class_order':[{'class':cl,'order':order,'count':n}
+                                for (cl,order),n in sorted(missing_families.items(),key=lambda x:(-x[1],x[0]))],
+              'examples':missing_samples},ensure_ascii=False,separators=(',',':')),
+  encoding='utf8')
+ assert sum(missing_families.values())==unique-family_present
+ (DEST/'families.json').write_text(
+  json.dumps({'source':'Catalogue of Life XR 2026-08-26','kind':'family index for linking reviewed artwork',
+              'count':len(family_index),'families':family_index},ensure_ascii=False,separators=(',',':')),
+  encoding='utf8')
+ meta={'version':'2026-08-26 XR','source':'Catalogue of Life Extended Release','url':URL,'scanned_rows':lines,'formal_rows':formal,'unique_records':unique,'skipped_uncanonical_names':invalid_names,'buckets':len(available),'bucket_width':25,'available_buckets':sorted(available)}
+ meta['algorithm']='Same Greek numeral table for transcribed name and Greek-rendered Latinised scientific taxon; exact equality only'
+ meta['algorithm_id']=RULE_VERSION
+ meta['catalog_filter_version']=POLICY_VERSION
+ meta['excluded_extinct_rows']=excluded_extinct
+ meta['excluded_uncertain_rows']=excluded_uncertain
+ meta['excluded_out_of_scope_rows']=excluded_scope
+ meta['taxon_ranks']='species and subspecies only'
+ meta['row_schema']=['greek_score','scientific_name','rank','class','order','status','phylum','family','family_ru','common_name_ru']
+ meta['family_catalogue_file']='families.json'
+ if external_report.exists():
+  shutil.copy2(external_report,DEST/'family_external_verified.json')
+  meta_gbif_src='family_external_verified.json'
+ else:
+  meta_gbif_src=''
+ meta['family_external_evidence_file']=meta_gbif_src
+ meta['family_assignments_from_unique_genus']=family_genus_inferred
+ meta['family_assignments_from_exact_gbif']=family_external_inferred
+ meta['family_assignments_from_exact_gbif_genus']=family_external_genus_inferred
+ meta['family_assignments_from_exact_itis']=family_itis_inferred
+ meta['family_assignments_from_exact_opentree']=family_opentree_inferred
+ if opentree_report.exists():
+  shutil.copy2(opentree_report,DEST/'family_opentree_verified.json')
+  meta['family_opentree_evidence_file']='family_opentree_verified.json'
+ if itis_report.exists():
+  shutil.copy2(itis_report,DEST/'family_itis_verified.json')
+  meta['family_itis_evidence_file']='family_itis_verified.json'
+ meta['bulk_russian_names_source']=EXTERNAL_STATS
+ meta['bulk_russian_name_policy']='Only real documented Russian vernacular names of accepted, exact species/subspecies; never phonetic approximations. Matches require aligned CoL and independent provider taxonomy.'
+ meta['bulk_russian_vernacular_sources']={
+  'dataset':'taxadb 2026 open-source licensed vernacular tables',
+  'snapshot_count':RUSSIAN_SNAPSHOT['count'],
+  'providers':{k:{'rows':v['rows'],'candidate_species':v['russian_candidate_keys'],'new_names_in_snapshot':v['new_names'],'license':v['license']}
+    for k,v in RUSSIAN_SNAPSHOT['sources'].items()},
+  'source_name_counts':dict(sorted(russian_name_sources.items())),
+  'license_note':RUSSIAN_SNAPSHOT['license_notice'],
+  'snapshot_sha256':hashlib.sha256(_snapshot_path.read_bytes()).hexdigest(),
+  'inaturalist_snapshot':{'source':'official iNaturalist DarwinCore Archive',
+    'url':INAT_SNAPSHOT.get('url',''),'candidate_exact_names':INAT_SNAPSHOT['count'],
+    'sha256':INAT_SNAPSHOT.get('sha256','')},
+  'historical_bvi_snapshot':{'candidate_exact_names':BVI_SNAPSHOT['count'],
+    'url':BVI_SNAPSHOT.get('source_url','')},
+  'wikidata_sample':{'rows':WIKIDATA_SNAPSHOT['queried_rows'],
+     'accepted_cyrillic_labels':WIKIDATA_SNAPSHOT['count'],
+     'license':'CC0',
+     'sha256':hashlib.sha256((BASE/'russian_wikidata_snapshot.json').read_bytes()).hexdigest()}
+ }
+ meta['synonym_name_recovery']={
+  'authority':'Catalogue of Life XR 2026-08-26 TextTree direct synonym',
+  'source_url':URL,'source_candidate_synonym_edges':synonym_candidate_rows,
+  'matched_accepted_taxa':len(synonym_ru_evidence),
+  'conflicting_labels_rejected':synonym_ru_conflicts,
+  'evidence_file':'russian_synonym_evidence.json'}
+ (DEST/'russian_synonym_evidence.json').write_text(
+  json.dumps(synonym_ru_evidence,ensure_ascii=False,separators=(',',':')),
+  encoding='utf8')
+ meta['unverified_name_presentation']='If no documented Russian species name exists, show the exact Latin scientific name as title, without a missing-name annotation.'
+ meta['missing_family_diagnostics']='families_missing.json'
+ meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
+  'distinct_families':len(family_values),'family_ru_present':family_ru_present,
+  'verified_species_common_names':species_ru_present}
+ meta['russian_name_policy']='Curated Russian names, BirdNET+, CoL, GBIF, iNaturalist Russian lexicon, attested historic BVI zoological labels and Wikidata. No phonetic transcription or fabricated common names.'
+ meta['artwork_key']='family (the scientific family name in row[7])'
+ meta['editorial_scope_warning']='Independent/nonparasitic status is approximated from taxonomy, not individually proven for each species'
+ meta['category_filter']='Curated noncolonial independent animal groups: mammals, birds, reptiles, amphibians, fish, insects, spiders/scorpions, free-moving crustaceans, cephalopods and echinoderms. Excludes corals/polyps, sponges, attached molluscs and worms; ecology is inferred, not verified species by species.'
+ meta['animal_name_method']='ancient-Greek-alphabet approximation of the original scientific name; not verified Ancient Greek lexical translation; digamma stands in for modern v/w'
+ meta['test_vectors']=[{'latin':n,'greek':greek_transliterate(n),'score':taxon_score(n)} for n in CONTROL_NAMES]
+ if sum(audit_ranks.values())!=unique or sum(audit_classes.values())!=unique:
+  raise AssertionError('QA total diverges from indexed unique records')
+ for bucket in sorted(available):
+  index_digest.update(str(bucket).encode('ascii')+b':'+bucket_sha256[str(bucket)].encode('ascii')+b'\\n')
+ meta['bucket_sha256']=bucket_sha256
+ meta['quality_audit']={
+  'status':'passed',
+  'method':'per-record Greek recomputation, bucket, canonical name, rank, group, extinction marker, uniqueness and order',
+  'checked_records':unique,
+  'checked_buckets':len(available),
+  'casefold_duplicate_rows_removed':casefold_duplicates,
+  'rank_counts':dict(sorted(audit_ranks.items())),
+  'class_counts':dict(sorted(audit_classes.items())),
+  'index_sha256':index_digest.hexdigest(),
+  'ecological_verification':'not performed species-by-species',
+  'extant_verification':'not performed species-by-species'
+ }
+ print('QUALITY_AUDIT_PASSED',unique,'records',len(available),'files','sha256',index_digest.hexdigest(),flush=True)
+ (DEST/'meta.json').write_text(json.dumps(meta,ensure_ascii=False,separators=(',',':')),encoding='utf8')
+ print('SUCCESS',meta,'seconds',round(time.time()-t0),flush=True)
+if __name__=='__main__':build()
+)):continue
     # A species can inherit extinction from its genus/family/order/etc.
     # Propagate the dagger (†) down the hierarchy before indexing.
     is_extinct=('†' in body[:3]) or (stack[-1][3] if stack else False)
