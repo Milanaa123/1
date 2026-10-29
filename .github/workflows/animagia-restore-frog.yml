@@ -1,0 +1,63 @@
+name: Restore original user-provided frog drawing to Animagia
+on:
+  push:
+    branches: [animagia-site]
+    paths:
+      - '.github/workflows/animagia-restore-frog.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import-frog-original:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: animagia-site
+      - name: Fetch the exact uploaded transparent frog PNG
+        run: |
+          set -euo pipefail
+          curl -fLSs --retry 4 --max-time 180 \
+            'https://d2ol7oe51mr4n9.cloudfront.net/user_3IWontIKp1HpvdwOJQiSSyMEM6K/d01ef978-2379-422d-aabe-ad22578b76fe.png' \
+            -o 'art/animagia-selected-107/additional/Лягушка.png'
+          echo 'f0ba42df1e0fff5ed4e92afdfcd0e960b167510c96bfa872e3fbd080beddd4c5  art/animagia-selected-107/additional/Лягушка.png' | sha256sum -c
+      - name: Keep original bytes and register the approved artwork
+        run: |
+          python3 - <<'PY'
+          import json,struct,hashlib
+          from pathlib import Path
+          root=Path('art/animagia-selected-107')
+          path=root/'additional/Лягушка.png'
+          data=path.read_bytes()
+          assert data[:8]==b'\x89PNG\r\n\x1a\n' and data[25]==6
+          assert struct.unpack('>II',data[16:24])==(1374,1145)
+          sha=hashlib.sha256(data).hexdigest()
+          assert sha=='f0ba42df1e0fff5ed4e92afdfcd0e960b167510c96bfa872e3fbd080beddd4c5'
+          m=root/'manifest.json'
+          manifest=json.loads(m.read_text(encoding='utf8'))
+          files=manifest['files']
+          if not any(item['file']=='additional/Лягушка.png' for item in files):
+              assert manifest['count']==107 and len(files)==107
+              files.append(dict(number=None,name='Лягушка',file='additional/Лягушка.png',
+                  width=1374,height=1145,sha256=sha))
+          manifest['count']=108
+          manifest['additional']=4
+          assert manifest['animals']==104 and len(files)==108
+          m.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+          print('FROG_ORIGINAL_RGBA_VERIFIED_AND_INDEXED_108')
+          PY
+          python3 -m py_compile build_data.py selected_original_art.py
+          node --test tests/test-approved-only-art.cjs
+      - name: Publish original frog and source manifest
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add 'art/animagia-selected-107/additional/Лягушка.png' 'art/animagia-selected-107/manifest.json'
+          if ! git diff --cached --quiet; then
+            git commit -m 'Restore original frog illustration in 108 approved images'
+            git fetch origin animagia-site
+            git rebase origin/animagia-site
+            git push origin HEAD:animagia-site
+          fi
