@@ -250,6 +250,7 @@ def build():
  verify_original()
  verify_animal_scope()
  stats=load_birdnet_names()
+ SYNONYM_SOURCE_KEYS.update(k.casefold()+'|species' for k in EXTERNAL_SPECIES_RU)
  print('BIRDNET_RUSSIAN_NAMES_VALIDATED',stats,flush=True)
  verified_external={}
  verified_external_genus={}
