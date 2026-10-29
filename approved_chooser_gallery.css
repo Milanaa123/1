@@ -1,0 +1,56 @@
+/* Approved original art gallery inside the existing Animagia bottom-sheet.
+   Every tile uses one untouched source PNG, preserving its alpha channel. */
+.animal-chooser-list.approved-gallery-grid{
+ display:grid!important;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:11px!important;
+ align-content:start;
+ padding:8px 1px 22px;
+}
+.approved-art-choice{
+ display:flex;flex-direction:column;align-items:stretch;
+ background:linear-gradient(150deg,#312333,#1b1727);
+ border:1px solid #836342;border-radius:16px;
+ color:#f4dfb9;cursor:pointer;min-width:0;
+ overflow:hidden;padding:7px;gap:5px;
+}
+.approved-art-choice img{
+ display:block;width:100%;height:145px;object-fit:contain;
+ background:radial-gradient(circle,#402b2a,#1a1521 80%);
+ border-radius:11px;
+}
+.approved-art-choice .approved-art-name{
+ display:block;text-align:center;font:600 14px/1.35 system-ui,sans-serif;
+ min-height:37px;overflow-wrap:anywhere;padding:5px 2px;
+}
+.approved-art-choice:focus-visible,.approved-match-choice:focus-visible{
+ outline:3px solid #ffd6a1;outline-offset:2px;
+}
+.approved-art-choice:hover{border-color:#ebc28c}
+.approved-match-choice{
+ display:flex;align-items:center;gap:11px;width:100%;min-width:0;
+ border:1px solid #634d41;border-radius:11px;
+ background:#28202e;color:#f4dfb9;
+ padding:10px 12px;cursor:pointer;text-align:left;
+ font:14px/1.4 system-ui,sans-serif;
+}
+.approved-match-choice img{
+ display:block;flex:0 0 68px;width:68px;height:66px;
+ object-fit:contain;border-radius:8px;background:#231b24;
+}
+.approved-match-choice span{min-width:0;overflow-wrap:anywhere}
+@media(min-width:650px){
+ .animal-chooser-list.approved-gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .approved-art-choice img{height:170px}
+}
+@media(max-width:560px){
+ .nav{display:flex;flex-wrap:wrap!important;align-items:center;gap:10px;padding:18px 0 16px}
+ .nav .brand{min-width:0;font-size:clamp(24px,7vw,34px);flex:1 1 auto}
+ .nav>a[href="./animals.html"]{
+  flex:0 1 auto!important;max-width:100%;
+  font-size:12px!important;line-height:1.3!important;
+  padding:7px 10px!important;
+  min-height:34px!important;white-space:normal;
+ }
+ .nav .label{width:100%;font-size:9px}
+}
