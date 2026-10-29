@@ -18,6 +18,11 @@ _RUSSIAN_BULK_JSON=(Path(__file__).resolve().parent/'russian_vernacular_snapshot
 RUSSIAN_SNAPSHOT=json.loads(_RUSSIAN_BULK_JSON.read_text(encoding='utf-8'))
 assert RUSSIAN_SNAPSHOT['source']=='taxadb 2026, exact accepted Russian vernacular names'
 BULK_NAMES=RUSSIAN_SNAPSHOT['names']
+_WIKIDATA_RU_JSON=(Path(__file__).resolve().parent/'russian_wikidata_snapshot.json')
+WIKIDATA_SNAPSHOT=json.loads(_WIKIDATA_RU_JSON.read_text(encoding='utf-8'))
+assert WIKIDATA_SNAPSHOT['source']=='Wikidata CC0 species rank Q7432; Russian language labels'
+WIKIDATA_NAMES=WIKIDATA_SNAPSHOT['names']
+assert len(WIKIDATA_NAMES)==WIKIDATA_SNAPSHOT['count']
 assert len(BULK_NAMES)==RUSSIAN_SNAPSHOT['count'] and len(BULK_NAMES)>10000
 
 BIRDNET_URL='https://birdnet.cornell.edu/taxonomy/api/download/csv'
@@ -83,10 +88,24 @@ def source_vernacular_name(scientific, family, animal_class, order, phylum, rank
             return ''
     return name if _RUSSIAN.fullmatch(name) else ''
 
+def wikidata_ru_label(scientific,rank):
+    """Wikidata CC0 community-curated species label for exact scientific binomial."""
+    if rank!='species' or not isinstance(scientific,str):
+        return ''
+    entry=WIKIDATA_NAMES.get(scientific.casefold())
+    if not entry or len(entry)!=2:
+        return ''
+    label,qid=entry
+    if not re.fullmatch(r'Q[0-9]{1,11}',qid):
+        return ''
+    return label if _RUSSIAN.fullmatch(label) else ''
+
 def taxon_ru_labels(scientific, family, animal_class='', order='', phylum='', rank='species'):
     common=SPECIES_RU.get(scientific, '') or EXTERNAL_SPECIES_RU.get(scientific, '')
     if not common:
         common=source_vernacular_name(scientific,family,animal_class,order,phylum,rank)
+    if not common and animal_class and phylum:
+        common=wikidata_ru_label(scientific,rank)
     return FAMILY_RU.get(family, ''),common
 
 def indexed_taxon_row(score, scientific, rank, lineage):

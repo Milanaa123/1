@@ -16,7 +16,7 @@ sys.path.insert(0,str(BASE))
 from greek_taxa import greek_transliterate, taxon_score, score_greek, RULE_VERSION
 from taxon_filters import allow_animal_taxon, POLICY_VERSION
 from audit_index import audit_bucket
-from ru_catalog import indexed_taxon_row, taxon_ru_labels, genus_key, family_from_unambiguous_genus, source_vernacular_name, RUSSIAN_SNAPSHOT, BULK_NAMES
+from ru_catalog import indexed_taxon_row, taxon_ru_labels, genus_key, family_from_unambiguous_genus, source_vernacular_name, RUSSIAN_SNAPSHOT, BULK_NAMES, WIKIDATA_SNAPSHOT, WIKIDATA_NAMES, wikidata_ru_label
 
 CONTROL={
  "Naja oxiana":254,
@@ -186,6 +186,36 @@ class GreekNumericParityTests(unittest.TestCase):
         self.assertEqual(source_vernacular_name(scientific,'WrongFamily',cls,order,phylum,'species'),'')
         self.assertEqual(source_vernacular_name(scientific,family,cls,order,'WrongPhylum','species'),'')
         self.assertEqual(source_vernacular_name(scientific,family,cls,order,phylum,'subspecies'),'')
+
+    def test_wikidata_snapshot_labels_are_real_cyrillic_and_species_only(self):
+        self.assertEqual(len(WIKIDATA_NAMES),WIKIDATA_SNAPSHOT['count'])
+        self.assertGreater(WIKIDATA_SNAPSHOT['count'],2000)
+        self.assertEqual(wikidata_ru_label('Panthera leo','species'),'лев')
+        self.assertEqual(wikidata_ru_label('Panthera leo','subspecies'),'')
+        self.assertEqual(wikidata_ru_label('Unknown unknown','species'),'')
+        self.assertNotEqual(WIKIDATA_NAMES.get('panthera leo'),None)
+        for label,qid in list(WIKIDATA_NAMES.values())[:500]:
+            self.assertRegex(label,r'[А-Яа-яЁё]')
+            self.assertRegex(qid,r'^Q[0-9]+
+        valid=row()
+        bucket=valid[0]//25
+        self.assertEqual(audit_bucket([valid],bucket)["rows"],1)
+        bad_rows=[
+            [[valid[0]+25,*valid[1:]]],  # wrong bucket
+            [[valid[0],"Not a canonical name","species",*valid[3:]]],
+            [[valid[0],valid[1],"variety",*valid[3:]]],
+            [[valid[0],valid[1],"species",valid[3],valid[4],"†",valid[6]]],
+            [[valid[0],valid[1],"species","Anthozoa",valid[4],"","Cnidaria"]],
+            [valid,valid],             # duplicate
+        ]
+        for broken in bad_rows:
+            with self.subTest(broken=broken):
+                with self.assertRaises(ValueError):
+                    audit_bucket(broken,bucket)
+
+if __name__=="__main__":
+    unittest.main()
+)
 
     def test_reject_corrupt_rows(self):
         valid=row()

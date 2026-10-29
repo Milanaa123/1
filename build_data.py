@@ -5,7 +5,7 @@ from original.alphabet_maps import latin_map as CH
 from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_score, CONTROL_NAMES
 from taxon_filters import POLICY_VERSION, allow_animal_taxon
 from audit_index import audit_bucket
-from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus, RUSSIAN_SNAPSHOT, BULK_NAMES, SPECIES_RU, EXTERNAL_SPECIES_RU
+from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus, RUSSIAN_SNAPSHOT, BULK_NAMES, SPECIES_RU, EXTERNAL_SPECIES_RU, WIKIDATA_SNAPSHOT, WIKIDATA_NAMES, wikidata_ru_label
 from pathlib import Path
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
 URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
@@ -488,6 +488,8 @@ def build():
      lookup=BULK_NAMES.get(r[1].casefold()+'|'+r[2])
      if lookup and lookup[0]==r[9]:
       russian_name_sources['taxadb_'+lookup[1]]+=1
+     elif wikidata_ru_label(r[1],r[2])==r[9]:
+      russian_name_sources['wikidata_cc0']+=1
      else:
       raise AssertionError('Unattributed Russian common name: '+r[1])
    family_values.update(r[7] for r in values if r[7])
@@ -560,14 +562,18 @@ def build():
     for k,v in RUSSIAN_SNAPSHOT['sources'].items()},
   'source_name_counts':dict(sorted(russian_name_sources.items())),
   'license_note':RUSSIAN_SNAPSHOT['license_notice'],
-  'snapshot_sha256':hashlib.sha256(_snapshot_path.read_bytes()).hexdigest()
+  'snapshot_sha256':hashlib.sha256(_snapshot_path.read_bytes()).hexdigest(),
+  'wikidata_sample':{'rows':WIKIDATA_SNAPSHOT['queried_rows'],
+     'accepted_cyrillic_labels':WIKIDATA_SNAPSHOT['count'],
+     'license':'CC0',
+     'sha256':hashlib.sha256((BASE/'russian_wikidata_snapshot.json').read_bytes()).hexdigest()}
  }
  meta['unverified_name_presentation']='If no documented Russian species name exists, the interface identifies the zoological group as a fallback; scientific Latin name remains separately visible.'
  meta['missing_family_diagnostics']='families_missing.json'
  meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
   'distinct_families':len(family_values),'family_ru_present':family_ru_present,
   'verified_species_common_names':species_ru_present}
- meta['russian_name_policy']='Curated, BirdNET+, Catalogue of Life and GBIF strict exact accepted Russian species names; otherwise genus/family group labelled as such and Latin scientific identity. No fake names.'
+ meta['russian_name_policy']='Curated Russian names, BirdNET+, CoL and GBIF taxonomically aligned names, and exact Wikidata community-curated Russian species labels. No phonetic transcription or fabricated common names.'
  meta['artwork_key']='family (the scientific family name in row[7])'
  meta['editorial_scope_warning']='Independent/nonparasitic status is approximated from taxonomy, not individually proven for each species'
  meta['category_filter']='Curated noncolonial independent animal groups: mammals, birds, reptiles, amphibians, fish, insects, spiders/scorpions, free-moving crustaceans, cephalopods and echinoderms. Excludes corals/polyps, sponges, attached molluscs and worms; ecology is inferred, not verified species by species.'
