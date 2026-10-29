@@ -70,6 +70,33 @@ test('only exact accepted species get animal imagery',()=>{
  assert.equal(atlas.resolve([1878,'Panthera leo','subspecies']),null);
 });
 
+test('all 108 approved PNGs are reachable on their correct animal cards',()=>{
+ const pictured=new Set([...atlas.approvedArtworkIds].map(String));
+ const required=new Set(rows.filter(item=>item.name!=='Лягушка').map(item=>
+   item.number===null?'additional:'+item.name:String(item.number)));
+ assert.equal(required.size,107);
+ assert.equal(pictured.size,107);
+ assert.deepEqual([...pictured].sort(),[...required].sort());
+ const examples=Array.from(atlas.approvedArtworkExamples);
+ const used=new Set();
+ for(const {scientific,number,name} of examples){
+   const expected=rows.find(item=>item.number===number&&item.name===name);
+   assert(expected,'Source PNG missing for '+name+' / '+scientific);
+   const profile=atlas.resolve([1700,scientific,'species','Mammalia','Carnivora']);
+   assert.equal(profile?.file,expected.file,
+    'Wrong animal pictured for '+scientific+' ('+name+')');
+   assert.equal(profile?.name,name);
+   used.add(expected.file);
+ }
+ assert.equal(used.size,107,'Not all mapped artwork PNGs were exercised');
+ const frog=rows.find(item=>item.name==='Лягушка');
+ assert(frog,'The user's original frog PNG must remain available');
+ assert.equal(atlas.resolve([1700,'Cornufer opisthodon','species','Amphibia','Anura']).file,frog.file);
+ // Legacy art is not allowed to appear in a different species' card.
+ assert.equal(atlas.resolve([1700,'Panthera uncia','species','Mammalia','Carnivora']),null);
+ assert.equal(atlas.resolve([1700,'Canis lupus familiaris','subspecies','Mammalia','Carnivora']),null);
+});
+
 test('user-provided frog is shown for Anura with honest generic classification',()=>{
  const anura=[1878,'Cornufer opisthodon','species','Amphibia','Anura','','Chordata'];
  const profile=atlas.resolve(anura);
