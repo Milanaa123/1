@@ -361,8 +361,9 @@
   ctx.restore();return true;
  }
   window.AnimagiaAnimalAtlas=Object.freeze({
-  imageUrl:URL_SHEET,resolve,classify,style,render,drawable,drawCanvas,
-  list:data.map(([key,cell])=>({key,cell,name:names[cell]})),dietLabels:DIETS,
-  habitatLabels:HABITATS
+  // Legacy images are disabled. Classification metadata remains available.
+  resolve:()=>null,classify,style,render(container){if(container)container.replaceChildren()},
+  drawable:async()=>null,drawCanvas:()=>false,
+  list:Object.freeze([]),dietLabels:DIETS,habitatLabels:HABITATS
  });
 })();
