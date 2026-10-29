@@ -18,7 +18,7 @@ jobs:
           node-version: '22'
       - name: Check syntax of website scripts
         run: |
-          for file in app.js ru_name_lookup.js greek_taxa.js enhancements.js animal_atlas.js selected_art_107.js approved_only_cards.js relic_features.js; do node --check "$file"; done
+          for file in app.js ru_name_lookup.js greek_taxa.js enhancements.js animal_atlas.js selected_art_107.js approved_only_cards.js approved_chooser_gallery.js relic_features.js; do node --check "$file"; done
       - name: Verify 107 source PNG checksums and exclusive card rendering
         run: node --test tests/test-approved-only-art.cjs
       - name: Check Python catalogue builder syntax
