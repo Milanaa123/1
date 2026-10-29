@@ -397,7 +397,7 @@ def build():
        synonym_candidates[(accepted,rank)].add(synonym)
        synonym_candidate_rows+=1
      continue
-    if body.lstrip('†? ').strip().startswith(('=','≡','*','
+    if body.lstrip('†? ').strip().startswith(('=','≡','*',chr(36))):continue
     # A species can inherit extinction from its genus/family/order/etc.
     # Propagate the dagger (†) down the hierarchy before indexing.
     is_extinct=('†' in body[:3]) or (stack[-1][3] if stack else False)
