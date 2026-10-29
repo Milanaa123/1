@@ -8,7 +8,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
         with:
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Select exact non-Latin Russian labels for Wikidata species
+      - name: Fetch paged Wikidata scientific-to-Russian species labels
         run: python tools/import_wikidata_names.py
       - name: Commit provenance and names
         run: |
