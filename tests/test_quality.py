@@ -95,6 +95,18 @@ class GreekNumericParityTests(unittest.TestCase):
             self.assertTrue(allow_animal_taxon({
                 "kingdom":"Animalia","phylum":"Chordata","class":cls}))
 
+    def test_col_texttree_explicit_historical_synonyms(self):
+        from build_data import texttree_synonym
+        self.assertEqual(texttree_synonym('=Discodeles opisthodon (Boulenger, 1884)','species'),
+                         'Discodeles opisthodon')
+        self.assertEqual(texttree_synonym('≡Discodeles bufoniformis','species'),
+                         'Discodeles bufoniformis')
+        self.assertEqual(texttree_synonym('=Canis lupus subsp. familiaris','subspecies'),
+                         'Canis lupus familiaris')
+        self.assertEqual(texttree_synonym('Panthera leo','species'),'')
+        self.assertEqual(texttree_synonym('=Canis lupus','genus'),'')
+        self.assertEqual(texttree_synonym('=Canis lupus','species'),'Canis lupus')
+
     def test_family_inheritance_and_verified_russian_names(self):
         from ru_catalog import FAMILY_RU, SPECIES_RU
         self.assertEqual(taxon_ru_labels('Panthera uncia','Felidae'),('Кошачьи','Снежный барс'))
