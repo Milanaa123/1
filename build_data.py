@@ -5,7 +5,7 @@ from original.alphabet_maps import latin_map as CH
 from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_score, CONTROL_NAMES
 from taxon_filters import POLICY_VERSION, allow_animal_taxon
 from audit_index import audit_bucket
-from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus
+from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus, RUSSIAN_SNAPSHOT, BULK_NAMES, SPECIES_RU, EXTERNAL_SPECIES_RU
 from pathlib import Path
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
 URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
@@ -231,6 +231,7 @@ def bundle_curated_gold_art():
  print('CURATED_GOLD_ART_READY',len(raw),'bytes',expected,flush=True)
 
 def build():
+ _snapshot_path=BASE/'russian_vernacular_snapshot.json'
  verify_original()
  verify_animal_scope()
  stats=load_birdnet_names()
@@ -400,7 +401,7 @@ def build():
        formal+=1
     stack.append((indent,rank,name,is_extinct))
   for f in handles.values():f.close()
-  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=family_genus_inferred=family_external_inferred=family_external_genus_inferred=family_itis_inferred=family_opentree_inferred=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
+  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();russian_name_sources=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=family_genus_inferred=family_external_inferred=family_external_genus_inferred=family_itis_inferred=family_opentree_inferred=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
   for p in directory.glob('*.part'):
    bid=int(p.stem);seen={}
    with p.open(encoding='utf8') as f:
@@ -419,7 +420,7 @@ def build():
     inferred=family_from_unambiguous_genus(genus_families,row)
     if inferred:
      row[7]=inferred
-     row[8],row[9]=taxon_ru_labels(row[1],inferred)
+     row[8],row[9]=taxon_ru_labels(row[1],inferred,row[3],row[4],row[6],row[2])
      family_genus_inferred+=1
     else:
      evidence=verified_external.get(row[1])
@@ -430,7 +431,7 @@ def build():
          evidence.get('match_type')=='EXACT' and
          evidence.get('family','').endswith('idae')):
       row[7]=evidence['family']
-      row[8],row[9]=taxon_ru_labels(row[1],row[7])
+      row[8],row[9]=taxon_ru_labels(row[1],row[7],row[3],row[4],row[6],row[2])
       family_external_inferred+=1
      else:
       evidence=verified_external_genus.get(row[1])
@@ -477,6 +478,18 @@ def build():
    family_present+=sum(bool(r[7]) for r in values)
    family_ru_present+=sum(bool(r[8]) for r in values)
    species_ru_present+=sum(bool(r[9]) for r in values)
+   for r in values:
+    if not r[9]:continue
+    if r[1] in SPECIES_RU:
+     russian_name_sources['manual_curated']+=1
+    elif r[1] in EXTERNAL_SPECIES_RU:
+     russian_name_sources['birdnet']+=1
+    else:
+     lookup=BULK_NAMES.get(r[1].casefold()+'|'+r[2])
+     if lookup and lookup[0]==r[9]:
+      russian_name_sources['taxadb_'+lookup[1]]+=1
+     else:
+      raise AssertionError('Unattributed Russian common name: '+r[1])
    family_values.update(r[7] for r in values if r[7])
    family_counts.update(r[7] for r in values if r[7])
    for r in values:
@@ -539,13 +552,22 @@ def build():
   shutil.copy2(itis_report,DEST/'family_itis_verified.json')
   meta['family_itis_evidence_file']='family_itis_verified.json'
  meta['bulk_russian_names_source']=EXTERNAL_STATS
- meta['bulk_russian_name_policy']='Only documented Russian common names of exactly matching scientific species from a fixed BirdNET+ snapshot; no AI translation.'
+ meta['bulk_russian_name_policy']='Only real documented Russian vernacular names of accepted, exact species/subspecies; never phonetic approximations. Matches require aligned CoL and independent provider taxonomy.'
+ meta['bulk_russian_vernacular_sources']={
+  'dataset':'taxadb 2026 open-source licensed vernacular tables',
+  'snapshot_count':RUSSIAN_SNAPSHOT['count'],
+  'providers':{k:{'rows':v['rows'],'candidate_species':v['russian_candidate_keys'],'new_names_in_snapshot':v['new_names'],'license':v['license']}
+    for k,v in RUSSIAN_SNAPSHOT['sources'].items()},
+  'source_name_counts':dict(sorted(russian_name_sources.items())),
+  'license_note':RUSSIAN_SNAPSHOT['license_notice'],
+  'snapshot_sha256':hashlib.sha256(_snapshot_path.read_bytes()).hexdigest()
+ }
  meta['unverified_name_presentation']='If no documented Russian species name exists, the interface identifies the zoological group as a fallback; scientific Latin name remains separately visible.'
  meta['missing_family_diagnostics']='families_missing.json'
  meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
   'distinct_families':len(family_values),'family_ru_present':family_ru_present,
   'verified_species_common_names':species_ru_present}
- meta['russian_name_policy']='Curated and BirdNET+ exact Russian species names; otherwise explicitly labelled genus/family group with original Latin scientific name. No transliterations or invented common names.'
+ meta['russian_name_policy']='Curated, BirdNET+, Catalogue of Life and GBIF strict exact accepted Russian species names; otherwise genus/family group labelled as such and Latin scientific identity. No fake names.'
  meta['artwork_key']='family (the scientific family name in row[7])'
  meta['editorial_scope_warning']='Independent/nonparasitic status is approximated from taxonomy, not individually proven for each species'
  meta['category_filter']='Curated noncolonial independent animal groups: mammals, birds, reptiles, amphibians, fish, insects, spiders/scorpions, free-moving crustaceans, cephalopods and echinoderms. Excludes corals/polyps, sponges, attached molluscs and worms; ecology is inferred, not verified species by species.'

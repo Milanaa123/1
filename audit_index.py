@@ -44,7 +44,7 @@ def audit_bucket(rows, bucket_id: int) -> dict:
             raise ValueError(f"Out-of-scope class/order for {name!r}")
         if len(family)>160 or len(family_ru)>160 or len(common_ru)>180:
             raise ValueError(f"Overlong family or Russian label for {name!r}")
-        if (family_ru,common_ru) != taxon_ru_labels(name,family):
+        if (family_ru,common_ru) != taxon_ru_labels(name,family,cls,order,phylum,rank):
             raise ValueError(f"Unverified Russian label for {name!r}")
         if taxon_score(name) != value:
             raise ValueError(f"Bad Greek score for {name!r}")

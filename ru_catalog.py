@@ -14,6 +14,12 @@ SPECIES_RU=_DATA['species_ru']
 FAMILY_RU=_DATA['family_ru']
 EXTERNAL_SPECIES_RU={}
 EXTERNAL_STATS={}
+_RUSSIAN_BULK_JSON=(Path(__file__).resolve().parent/'russian_vernacular_snapshot.json')
+RUSSIAN_SNAPSHOT=json.loads(_RUSSIAN_BULK_JSON.read_text(encoding='utf-8'))
+assert RUSSIAN_SNAPSHOT['source']=='taxadb 2026, exact accepted Russian vernacular names'
+BULK_NAMES=RUSSIAN_SNAPSHOT['names']
+assert len(BULK_NAMES)==RUSSIAN_SNAPSHOT['count'] and len(BULK_NAMES)>10000
+
 BIRDNET_URL='https://birdnet.cornell.edu/taxonomy/api/download/csv'
 BIRDNET_SHA256='daecb2505ff16dddbafe76cfa8d15a044c506b6a2998b2349a94bcd355475ac4'
 _RUSSIAN=re.compile(r'^[А-ЯЁа-яё][А-ЯЁа-яё\s\-–—()«».,\x27’]+$')
@@ -59,12 +65,33 @@ def load_birdnet_names():
       'russian_name_candidates':len(unique),'ambiguous_names_rejected':len(conflicts)})
     return EXTERNAL_STATS
 
-def taxon_ru_labels(scientific, family):
-    return FAMILY_RU.get(family, ''), SPECIES_RU.get(scientific, '') or EXTERNAL_SPECIES_RU.get(scientific, '')
+def source_vernacular_name(scientific, family, animal_class, order, phylum, rank):
+    """Use a real Russian vernacular only for a matching accepted taxon."""
+    if not all(isinstance(v,str) for v in (scientific,family,animal_class,order,phylum,rank)):
+        return ''
+    if not animal_class or not phylum or rank not in ('species','subspecies'):
+        return ''
+    data=BULK_NAMES.get(scientific.casefold()+'|'+rank)
+    if not data or len(data)!=6:
+        return ''
+    name,source,src_phylum,src_class,src_order,src_family=data
+    if source not in ('col','gbif','itis','ncbi'):
+        return ''
+    for site_value,source_value in ((phylum,src_phylum),(animal_class,src_class),
+                                    (order,src_order),(family,src_family)):
+        if site_value and source_value and site_value!=source_value:
+            return ''
+    return name if _RUSSIAN.fullmatch(name) else ''
+
+def taxon_ru_labels(scientific, family, animal_class='', order='', phylum='', rank='species'):
+    common=SPECIES_RU.get(scientific, '') or EXTERNAL_SPECIES_RU.get(scientific, '')
+    if not common:
+        common=source_vernacular_name(scientific,family,animal_class,order,phylum,rank)
+    return FAMILY_RU.get(family, ''),common
 
 def indexed_taxon_row(score, scientific, rank, lineage):
     family=lineage.get('family','').strip()
-    family_ru, common_ru=taxon_ru_labels(scientific, family)
+    family_ru, common_ru=taxon_ru_labels(scientific, family,lineage.get('class',''),lineage.get('order',''),lineage.get('phylum',''),rank)
     # Do not assign a species name to subspecies merely because they share a binomial.
     return [score,scientific,rank,lineage.get('class',''),
             lineage.get('order',''),'',lineage.get('phylum',''),

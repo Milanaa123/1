@@ -16,7 +16,7 @@ sys.path.insert(0,str(BASE))
 from greek_taxa import greek_transliterate, taxon_score, score_greek, RULE_VERSION
 from taxon_filters import allow_animal_taxon, POLICY_VERSION
 from audit_index import audit_bucket
-from ru_catalog import indexed_taxon_row, taxon_ru_labels, genus_key, family_from_unambiguous_genus
+from ru_catalog import indexed_taxon_row, taxon_ru_labels, genus_key, family_from_unambiguous_genus, source_vernacular_name, RUSSIAN_SNAPSHOT, BULK_NAMES
 
 CONTROL={
  "Naja oxiana":254,
@@ -170,6 +170,22 @@ class GreekNumericParityTests(unittest.TestCase):
             self.assertTrue(record['family'].endswith('idae'))
             if record['phylum']: full+=1
         self.assertEqual(full,20,'Only records with phylum evidence can be published')
+
+    def test_external_russian_names_are_exact_and_taxonomically_aligned(self):
+        self.assertEqual(RUSSIAN_SNAPSHOT['count'],len(BULK_NAMES))
+        self.assertGreater(len(BULK_NAMES),10000)
+        samples=[(key,v) for key,v in BULK_NAMES.items()
+                 if v[2] and v[3] and v[4] and v[5] and key.endswith('|species')]
+        self.assertGreater(len(samples),100)
+        key,entry=samples[0]
+        scientific=key.split('|')[0]
+        name,provider,phylum,cls,order,family=entry
+        self.assertEqual(source_vernacular_name(scientific,family,cls,order,phylum,'species'),name)
+        self.assertEqual(source_vernacular_name(scientific,family,'WrongClass',order,phylum,'species'),'')
+        self.assertEqual(source_vernacular_name(scientific,family,cls,'WrongOrder',phylum,'species'),'')
+        self.assertEqual(source_vernacular_name(scientific,'WrongFamily',cls,order,phylum,'species'),'')
+        self.assertEqual(source_vernacular_name(scientific,family,cls,order,'WrongPhylum','species'),'')
+        self.assertEqual(source_vernacular_name(scientific,family,cls,order,phylum,'subspecies'),'')
 
     def test_reject_corrupt_rows(self):
         valid=row()
