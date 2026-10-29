@@ -1,78 +1,151 @@
 #!/usr/bin/env python3
-"""Select published Russian species labels from Wikidata CC0 structured data.
+"""Expand attested Russian species names from Wikidata (CC0), page by page.
 
-This is a bounded, single SPARQL query, not a crawl. Latin fallbacks, ambiguous
-scientific identifiers and non-binomial species are excluded.
+Only Wikidata records explicitly marked species (P105=Q7432), with an exact
+Latin scientific binomial P225 and an actual Cyrillic Russian-language label,
+are accepted. Existing validated labels are preserved. The database build
+matches only exact scientific names already present in the animal catalogue;
+no translation, interpolation or genus-wide copying is performed.
 """
-import collections,hashlib,json,re,time,urllib.parse,urllib.request
+from __future__ import annotations
+import collections
+import hashlib
+import json
+import re
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
 from pathlib import Path
+
 ROOT=Path(__file__).resolve().parents[1]
-RUSSIAN=re.compile(r"^[А-ЯЁа-яё][А-ЯЁа-яё\s.,'’()\-–—«»]+$")
-SCIENTIFIC=re.compile(r'^[A-Z][a-z-]+ [a-z-]+$')
-prefix='''PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+OUT=ROOT/"russian_wikidata_snapshot.json"
+SOURCE="Wikidata CC0 species rank Q7432; Russian language labels"
+QUERY_PREFIX='''PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 '''
-query=prefix+'''SELECT ?taxon ?scientific ?ru WHERE {
+QUERY_BODY='''SELECT ?taxon ?scientific ?ru WHERE {
  ?taxon wdt:P105 wd:Q7432 .
  ?taxon wdt:P225 ?scientific .
  ?taxon rdfs:label ?ru .
  FILTER(LANG(?ru) = "ru")
-} LIMIT 2000 OFFSET 7000'''
-url='https://query.wikidata.org/sparql?'+urllib.parse.urlencode({'query':query,'format':'json'})
-req=urllib.request.Request(url,headers={'Accept':'application/sparql-results+json',
- 'User-Agent':'Animagia-Russian-Taxon-Labels/1.0 (public biodiversity educational site)',
- 'Accept-Encoding':'identity'})
-started=time.monotonic()
-try:
- with urllib.request.urlopen(req,timeout=90) as response:
-  data=json.load(response)
-except Exception as error:
- print('WIKIDATA_SECOND_PAGE_UNAVAILABLE_RETAIN_VERIFIED_NAMES',type(error).__name__,str(error)[:450],flush=True)
- existing=json.loads((ROOT/'russian_wikidata_snapshot.json').read_text(encoding='utf8'))
- assert existing['count']==len(existing['names']) and existing['count']>=2000
- raise SystemExit(0)
-rejected=collections.Counter()
-collected=collections.defaultdict(dict)
-for record in data.get('results',{}).get('bindings',[]):
- try:
-  scientific=record['scientific']['value'].strip()
-  label=record['ru']['value'].strip()
-  qid=record['taxon']['value'].rsplit('/',1)[-1]
- except (KeyError,TypeError,AttributeError):
-  rejected['invalid_sparql']+=1;continue
- if not SCIENTIFIC.fullmatch(scientific):
-  rejected['not_binomial']+=1;continue
- if not RUSSIAN.fullmatch(label) or len(label)>130:
-  rejected['not_russian_common']+=1;continue
- if not re.fullmatch(r'Q[0-9]{1,11}',qid):
-  rejected['invalid_id']+=1;continue
- collected[scientific.casefold()][label]=(qid,scientific)
-verified={}
-# Extend, never erase, independently verified exact names from first query page.
-previous=json.loads((ROOT/'russian_wikidata_snapshot.json').read_text(encoding='utf8'))
-assert previous['source']=='Wikidata CC0 species rank Q7432; Russian language labels'
-verified.update(previous['names'])
-added=0
-for scientific,labels in collected.items():
- if len(labels)!=1:
-  rejected['ambiguous_labels']+=1;continue
- label,(qid,display)=next(iter(labels.items()))
- if scientific in verified and verified[scientific][0]!=label:
-  rejected['conflicting_existing_label']+=1;continue
- if scientific not in verified:added+=1
- verified[scientific]=[label,qid]
-result={'source':'Wikidata CC0 species rank Q7432; Russian language labels',
- 'source_url':'https://www.wikidata.org','license':'CC0',
- 'retrieved':'2026-10-29','query_limit':9000,
- 'queried_rows':previous.get('queried_rows',0)+len(data.get('results',{}).get('bindings',[])),
- 'new_names_added_in_second_page':added,
- 'count':len(verified),'rejected':dict(rejected),'names':dict(sorted(verified.items()))}
-out=json.dumps(result,ensure_ascii=False,separators=(',',':'))+'\n'
-assert 150<len(verified)<14000,len(verified)
-assert len(out.encode())<4500000,len(out)
-(ROOT/'russian_wikidata_snapshot.json').write_text(out,encoding='utf8')
-print('WIKIDATA_RUSSIAN_LABELS_READY',json.dumps({k:v for k,v in result.items() if k!='names'},ensure_ascii=False),
- 'elapsed',round(time.monotonic()-started,2),'sha256',hashlib.sha256(out.encode()).hexdigest(),flush=True)
-for name in ('Panthera leo','Canis lupus','Cygnus cygnus'):
- print('WIKIDATA_CONTROL',name,verified.get(name.casefold()),flush=True)
+}'''
+RUSSIAN=re.compile(r"^[А-ЯЁа-яё][А-ЯЁа-яё\s.,'’()\-–—«»]+$")
+BINOMIAL=re.compile(r"^[A-Z][a-z-]+ [a-z-]+$")
+QID=re.compile(r"Q[1-9][0-9]{0,11}")
+PAGE_SIZE=2000
+MAX_PAGES=16
+MAX_DATA_BYTES=6500000
+
+def fetch_page(offset):
+    query=QUERY_PREFIX+QUERY_BODY+f" LIMIT {PAGE_SIZE} OFFSET {offset}"
+    url="https://query.wikidata.org/sparql?"+urllib.parse.urlencode({
+        "query":query,"format":"json"})
+    req=urllib.request.Request(url,headers={
+        "Accept":"application/sparql-results+json",
+        "User-Agent":"AnimagiaEducationalTaxonNames/2.0 (GitHub repository Milanaa123/1)",
+        "Accept-Encoding":"identity"})
+    for attempt in range(2):
+        try:
+            with urllib.request.urlopen(req,timeout=85) as response:
+                raw=response.read(MAX_DATA_BYTES+1)
+                if len(raw)>MAX_DATA_BYTES:
+                    raise ValueError("Wikidata response exceeded size limit")
+                payload=json.loads(raw)
+            bindings=payload["results"]["bindings"]
+            if not isinstance(bindings,list):
+                raise ValueError("Unexpected SPARQL result")
+            return bindings
+        except (urllib.error.URLError,TimeoutError,ValueError,KeyError,TypeError) as e:
+            print("WIKIDATA_PAGE_ERROR",offset,type(e).__name__,str(e)[:170],flush=True)
+            if attempt==0: time.sleep(5)
+    return None
+
+def valid(r):
+    try:
+        taxon=r["taxon"]["value"].rsplit("/",1)[-1]
+        latin=r["scientific"]["value"].strip()
+        label=r["ru"]["value"].strip()
+        lang=r["ru"].get("xml:lang","ru").lower()
+    except (KeyError,TypeError,AttributeError):
+        return None
+    if not QID.fullmatch(taxon) or not BINOMIAL.fullmatch(latin):
+        return None
+    if lang!="ru" or len(label)<3 or len(label)>130:
+        return None
+    if not RUSSIAN.fullmatch(label):
+        return None
+    return latin.casefold(),label,taxon
+
+def main():
+    start=time.monotonic()
+    previous=json.loads(OUT.read_text(encoding="utf8"))
+    assert previous["source"]==SOURCE
+    assert previous["count"]==len(previous["names"])
+    verified=dict(previous["names"])
+    collisions=set()
+    stats=collections.Counter()
+    completed=[]
+    for page in range(MAX_PAGES):
+        offset=page*PAGE_SIZE
+        records=fetch_page(offset)
+        if records is None:
+            print("WIKIDATA_PARTIAL_STOP",offset,flush=True)
+            break
+        completed.append(offset)
+        stats["raw_rows"]+=len(records)
+        grouped=collections.defaultdict(dict)
+        for row in records:
+            entry=valid(row)
+            if not entry:
+                stats["rejected"]+=1
+                continue
+            latin,label,qid=entry
+            grouped[latin][label]=qid
+        for latin,labels in grouped.items():
+            if len(labels)>1:
+                collisions.add(latin)
+                stats["conflicting_labels"]+=1
+                continue
+            label,qid=next(iter(labels.items()))
+            old=verified.get(latin)
+            if old and old[0]!=label:
+                collisions.add(latin)
+                stats["different_from_prior"]+=1
+                continue
+            if not old:
+                verified[latin]=[label,qid]
+                stats["new_unique_names"]+=1
+        print("WIKIDATA_PAGE",offset,"ROWS",len(records),
+              "TOTAL",len(verified),"ADDED",stats["new_unique_names"],flush=True)
+        if len(records)<PAGE_SIZE:
+            stats["fully_exhausted"]=1
+            break
+        time.sleep(0.7)
+    # Prevent incorrect labels for binomials where authoritative records
+    # actually disagree. Do not discard existing names solely because a
+    # separate future Wikidata record differs; retain prior curated mappings.
+    for latin in collisions:
+        if latin not in previous["names"]:
+            verified.pop(latin,None)
+    result={
+        "source":SOURCE,"source_url":"https://www.wikidata.org",
+        "license":"CC0","retrieved":"2026-10-29",
+        "query_limit":MAX_PAGES*PAGE_SIZE,
+        "queried_rows":stats["raw_rows"],
+        "completed_offsets":completed,
+        "new_names_added_in_second_page":stats["new_unique_names"],
+        "count":len(verified),
+        "rejected":dict(stats),
+        "names":dict(sorted(verified.items()))}
+    blob=json.dumps(result,ensure_ascii=False,separators=(",",":"))+"\n"
+    assert len(verified)>=previous["count"]
+    assert len(blob.encode())<10000000
+    OUT.write_text(blob,encoding="utf8")
+    print("WIKIDATA_RUSSIAN_LABELS_READY",
+          json.dumps({k:v for k,v in result.items() if k!="names"},ensure_ascii=False),
+          "elapsed",round(time.monotonic()-start,1),
+          "sha256",hashlib.sha256(blob.encode()).hexdigest(),flush=True)
+
+if __name__=="__main__":main()
