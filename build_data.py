@@ -226,26 +226,6 @@ def bundle_public_domain_silhouettes():
   encoding='utf8')
  print('SILHOUETTE_BUNDLE_RESULT',len(records),'of',len(sources),flush=True)
 
-def bundle_curated_gold_art():
- """Publish the user-approved gold animal sheet on our OWN domain.
-
- Using a same-origin PNG avoids cross-origin Canvas restrictions and ensures
- exactly the displayed art can be included in the downloaded card.
- Verify the uploaded original by SHA-256 before publishing.
- """
- url='https://d2ol7oe51mr4n9.cloudfront.net/user_3IWontIKp1HpvdwOJQiSSyMEM6K/9617c2f3-64c8-4ed4-81d2-11bc33934bba.png'
- expected='4e41a446b94d9efc52250823b9486e96429caf4e62db12e3a4a57822f6b30c69'
- req=urllib.request.Request(url,headers={'User-Agent':'Animagia-Bestiary/1.0','Accept':'image/png'})
- with urllib.request.urlopen(req,timeout=40) as response:
-  raw=response.read(6000000)
- if len(raw)<200000 or raw[:8]!=bytes([137,80,78,71,13,10,26,10]):
-  raise ValueError('Approved gold artwork is not a valid PNG')
- if hashlib.sha256(raw).hexdigest()!=expected:
-  raise ValueError('Approved gold artwork SHA-256 mismatch; deployment blocked')
- dest=DEST/'art';dest.mkdir(parents=True,exist_ok=True)
- (dest/'animals-gold-v1.png').write_bytes(raw)
- print('CURATED_GOLD_ART_READY',len(raw),'bytes',expected,flush=True)
-
 def build():
  _snapshot_path=BASE/'russian_vernacular_snapshot.json'
  verify_original()
@@ -289,77 +269,9 @@ def build():
   print('Downloading CoL data',URL,flush=True)
   urllib.request.urlretrieve(URL,str(zpath))
  if DATA.exists():shutil.rmtree(DATA)
- DATA.mkdir(exist_ok=True,parents=True);bundle_curated_gold_art();approved_original_art=publish_selected_original_art(BASE,DEST);shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'animals.html',DEST/'animals.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'ru_name_lookup.js',DEST/'ru_name_lookup.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'relic_card_stage1.css',DEST/'relic_card_stage1.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'animal_atlas.js',DEST/'animal_atlas.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
- # Include the approved 100-image asset in the *published* site, not only Git.
- # Fail the build if the optimized alpha sheet was lost or replaced.
- art100=BASE/'art'/'animagia-100-alpha.webp'
- raw100=art100.read_bytes()
- expected100='2c459c934ae208f1f7c0686575a0f348df1503bf4e6fec32ed0ee1237026e291'
- assert raw100[:4]==b'RIFF' and raw100[8:12]==b'WEBP'
- assert hashlib.sha256(raw100).hexdigest()==expected100,'Corrupt 100-image atlas'
- shutil.copy2(art100,DEST/'art'/'animagia-100-alpha.webp')
- shutil.copy2(BASE/'animal_atlas_100.js',DEST/'animal_atlas_100.js')
+ DATA.mkdir(exist_ok=True,parents=True);approved_original_art=publish_selected_original_art(BASE,DEST);shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'animals.html',DEST/'animals.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'ru_name_lookup.js',DEST/'ru_name_lookup.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'relic_card_stage1.css',DEST/'relic_card_stage1.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'animal_atlas.js',DEST/'animal_atlas.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
+ # Ship only curated, checksum-verified original art; never publish older assets.
  shutil.copy2(BASE/'selected_art_107.js',DEST/'selected_art_107.js')
- # Species-specific art corrections: keep approved 100-image master untouched.
- corrected=BASE/'art'/'animagia-corrected-22.webp'
- replacement=corrected.read_bytes()
- assert replacement[:4]==b'RIFF' and replacement[8:12]==b'WEBP'
- assert hashlib.sha256(replacement).hexdigest()=='9876d77dfcee8e0859581678d5273b13fd1ca77d8a45b5792f334ffb1a07687b','Corrected animal art checksum mismatch'
- shutil.copy2(corrected,DEST/'art'/'animagia-corrected-22.webp')
- snake_art=BASE/'art'/'animagia-grass-snake-87.svg'
- snake_raw=snake_art.read_bytes()
- assert snake_raw.startswith(b'<svg ') and b'</svg>' in snake_raw
- assert hashlib.sha256(snake_raw).hexdigest()=='31a6276434eef7f5a5593f94885fcc40b36cc096e03f0b59f82369571dfaa216','Grass snake SVG checksum mismatch'
- shutil.copy2(snake_art,DEST/'art'/'animagia-grass-snake-87.svg')
- print('CURATED_GRASS_SNAKE_87_READY',len(snake_raw),'bytes',flush=True)
- # Publish prebuilt high-resolution transparent sprites with SHA256 verification.
- manifest=json.loads((BASE/'art'/'sharp-art-manifest.json').read_text(encoding='utf8'))
- assert manifest['scale']==4 and manifest['sourceCells']==100
- required={'animagia-100-sharp4x.webp','animagia-corrected-22-sharp4x.webp','animals-approved-01-05-sharp4x.png'}
- assert {e['file'] for e in manifest['results']}==required
- for e in manifest['results']:
-  name=e['file'];data=(BASE/'art'/name).read_bytes()
-  assert len(data)==e['bytes'] and hashlib.sha256(data).hexdigest()==e['sha256'],'Corrupt sharper art '+name
-  shutil.copy2(BASE/'art'/name,DEST/'art'/name)
- # Preserve the 60 not-yet-replaced species 41–100 and five
- # historical approved previews. First 40 use a pixel-exact shared PNG.
- solo_dir=BASE/'art'/'individual-4x'
- solo=json.loads((solo_dir/'manifest.json').read_text(encoding='utf8'))
- assert solo['count']==0 and solo['approvedCount']==5 and len(solo['items'])==5
- outdir=DEST/'art'/'individual-4x';outdir.mkdir(parents=True,exist_ok=True)
- retained_bytes=0
- for entry in solo['items']:
-  name=entry['file'];raw=(solo_dir/name).read_bytes()
-  assert len(raw)==entry['size'] and hashlib.sha256(raw).hexdigest()==entry['sha256'] and raw[:4]==b'RIFF','Bad remaining animal art '+name
-  shutil.copy2(solo_dir/name,outdir/name)
-  retained_bytes+=len(raw)
- shutil.copy2(solo_dir/'manifest.json',outdir/'manifest.json')
- ref_source=BASE/'art'/'reference-original-01-40.png'
- ref_data=ref_source.read_bytes()
- assert ref_data[:8]==bytes([137,80,78,71,13,10,26,10])
- assert len(ref_data)==1284104
- assert hashlib.sha256(ref_data).hexdigest()=='de19956a431cd33018f7acf6b52012bf2ba3425227857bfa7b6ffe0fad816e1b','Reference must be the untouched crop of the uploaded original'
- assert int.from_bytes(ref_data[16:20],'big')==1536 and int.from_bytes(ref_data[20:24],'big')==424
- shutil.copy2(ref_source,DEST/'art'/'reference-original-01-40.png')
- print('ANIMAGIA_UNMODIFIED_REFERENCE_01_40_PUBLISHED',len(ref_data),'bytes',flush=True)
- print('ANIMAGIA_APPROVED_FIVE_LEGACY_IMAGES_READY',retained_bytes,'bytes',flush=True)
- print('CURATED_100_ART_READY',len(raw100),'bytes',expected100,flush=True)
- # First review batch is a separate alpha PNG with five individually cleaned
- # visitor-selected originals; prevent Render from serving an older cached sheet.
- art5=BASE/'art'/'animals-approved-01-05.png'
- raw5=art5.read_bytes()
- expected5='84480643a1b174fb2fc3a7f85f2db25b647ef8720448d0e8ae8d24819558f235'
- assert raw5[:8]==bytes([137,80,78,71,13,10,26,10])
- assert hashlib.sha256(raw5).hexdigest()==expected5,'First-five approved alpha atlas corrupted'
- shutil.copy2(BASE/'animal_cutout_40.js',DEST/'animal_cutout_40.js')
- shutil.copy2(BASE/'gold_contour_40.js',DEST/'gold_contour_40.js')
- for batch in ('41_60','61_80','81_100'):
-  source=BASE/f'gold_contour_{batch}.js'
-  assert source.stat().st_size>120000,'Missing vector batch '+batch
-  shutil.copy2(source,DEST/f'gold_contour_{batch}.js')
- print('ANIMAGIA_VECTOR_100_BATCHES_PUBLISHED',flush=True)
- shutil.copy2(art5,DEST/'art'/'animals-approved-01-05.png')
- print('CURATED_FIRST_FIVE_ALPHA_READY',len(raw5),'bytes',expected5,flush=True)
  stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();genus_families=collections.defaultdict(set);synonym_candidates=collections.defaultdict(set);synonym_candidate_rows=0;t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
   directory=Path(temp)
