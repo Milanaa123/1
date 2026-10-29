@@ -1719,12 +1719,14 @@
    const art=elem('article');art.className='print-relic-animal';
    art.append(elem('span','✧ '+String(i+1).padStart(2,'0')));
    const illustration=atlas()?.resolve(r);
-   if(illustration&&picture){
+   const originalSprite=illustration?.artSet==='original107'?await gallery.drawable(illustration):null;
+   const artSprite=originalSprite||picture;
+   if(illustration&&artSprite){
     const windowArt=elem('canvas');windowArt.className='print-art-cell';
     windowArt.width=400;windowArt.height=330;
     windowArt.setAttribute('role','img');
     windowArt.setAttribute('aria-label','Золотой образ '+r[1]);
-    gallery.drawCanvas(windowArt.getContext('2d'),picture,illustration,0,0,400,330);
+    gallery.drawCanvas(windowArt.getContext('2d'),artSprite,illustration,0,0,400,330);
     art.append(windowArt);
    }
    art.append(elem('h3',label(r)));
