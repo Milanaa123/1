@@ -1,0 +1,25 @@
+{
+  "source": "ITIS Solr exact accepted taxonomy",
+  "source_url": "https://services.itis.gov/",
+  "taxon_source": "Catalogue of Life XR 2026-08-26",
+  "verified_on": "2026-10-29",
+  "initial_missing": 459,
+  "verified_count": 1,
+  "remaining": 458,
+  "rejected": {
+    "no_family": 77,
+    "not_unique_valid": 380,
+    "order_mismatch": 1
+  },
+  "families": {
+    "Hyparrheniaspis campbelli": {
+      "family": "Diaspididae",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Hemiptera",
+      "phylum": "Arthropoda",
+      "name": "Hyparrheniaspis campbelli",
+      "source": "ITIS Solr exact valid hierarchy"
+    }
+  }
+}
