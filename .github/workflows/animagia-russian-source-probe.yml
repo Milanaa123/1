@@ -1,0 +1,19 @@
+name: Probe Russian-language taxonomic common-name sources
+on:
+  push:
+    branches: [animagia-site]
+    paths: ['tools/probe_russian_sources.py','.github/workflows/animagia-russian-source-probe.yml']
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pyarrow==20.0.0
+      - name: Inspect real source columns, sample rows and sizes
+        run: python tools/probe_russian_sources.py
