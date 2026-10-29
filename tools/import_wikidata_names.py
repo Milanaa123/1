@@ -18,7 +18,7 @@ query=prefix+'''SELECT ?taxon ?scientific ?ru WHERE {
  ?taxon wdt:P225 ?scientific .
  ?taxon rdfs:label ?ru .
  FILTER(LANG(?ru) = "ru")
-} LIMIT 7000'''
+} LIMIT 7000 OFFSET 7000'''
 url='https://query.wikidata.org/sparql?'+urllib.parse.urlencode({'query':query,'format':'json'})
 req=urllib.request.Request(url,headers={'Accept':'application/sparql-results+json',
  'User-Agent':'Animagia-Russian-Taxon-Labels/1.0 (public biodiversity educational site)',
@@ -47,19 +47,28 @@ for record in data.get('results',{}).get('bindings',[]):
   rejected['invalid_id']+=1;continue
  collected[scientific.casefold()][label]=(qid,scientific)
 verified={}
+# Extend, never erase, independently verified exact names from first query page.
+previous=json.loads((ROOT/'russian_wikidata_snapshot.json').read_text(encoding='utf8'))
+assert previous['source']=='Wikidata CC0 species rank Q7432; Russian language labels'
+verified.update(previous['names'])
+added=0
 for scientific,labels in collected.items():
  if len(labels)!=1:
   rejected['ambiguous_labels']+=1;continue
  label,(qid,display)=next(iter(labels.items()))
+ if scientific in verified and verified[scientific][0]!=label:
+  rejected['conflicting_existing_label']+=1;continue
+ if scientific not in verified:added+=1
  verified[scientific]=[label,qid]
 result={'source':'Wikidata CC0 species rank Q7432; Russian language labels',
  'source_url':'https://www.wikidata.org','license':'CC0',
- 'retrieved':'2026-10-29','query_limit':7000,
- 'queried_rows':len(data.get('results',{}).get('bindings',[])),
+ 'retrieved':'2026-10-29','query_limit':14000,
+ 'queried_rows':previous.get('queried_rows',0)+len(data.get('results',{}).get('bindings',[])),
+ 'new_names_added_in_second_page':added,
  'count':len(verified),'rejected':dict(rejected),'names':dict(sorted(verified.items()))}
 out=json.dumps(result,ensure_ascii=False,separators=(',',':'))+'\n'
-assert 150<len(verified)<7000,len(verified)
-assert len(out.encode())<3000000,len(out)
+assert 150<len(verified)<14000,len(verified)
+assert len(out.encode())<4500000,len(out)
 (ROOT/'russian_wikidata_snapshot.json').write_text(out,encoding='utf8')
 print('WIKIDATA_RUSSIAN_LABELS_READY',json.dumps({k:v for k,v in result.items() if k!='names'},ensure_ascii=False),
  'elapsed',round(time.monotonic()-started,2),'sha256',hashlib.sha256(out.encode()).hexdigest(),flush=True)
