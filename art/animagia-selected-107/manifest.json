@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "count": 107,
+  "count": 108,
   "animals": 104,
-  "additional": 3,
+  "additional": 4,
   "format": "original unmodified transparent RGBA PNG",
   "approval": "visually selected 2026-10-29; not scientific anatomy certification",
   "files": [
@@ -861,6 +861,14 @@
       "width": 1254,
       "height": 1254,
       "sha256": "62179a4c8c0d15a82ed131a5f9162ecc7306cb0a55b11952c5f576d74c4135b6"
+    },
+    {
+      "number": null,
+      "name": "Лягушка",
+      "file": "additional/Лягушка.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "f0ba42df1e0fff5ed4e92afdfcd0e960b167510c96bfa872e3fbd080beddd4c5"
     }
   ]
 }
