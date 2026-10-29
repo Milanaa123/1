@@ -80,7 +80,8 @@ test('все основные названия в подборке написа�
 });
 test('непризнанные русские имена не маскируются под официальные',()=>{
   const row=[551,'Arctosa capensis','species','Arachnida','Araneae','','Arthropoda'];
-  assert.equal(api.display(row),'Паук-волк');
+  assert.equal(api.display(row),'Паук-волк · арктоса капенсис (транскрипция)');
+  assert.doesNotMatch(api.display(row),/[A-Za-z]/);
   assert.equal(row[1],'Arctosa capensis','Scientific identity must remain available separately');
 });
 

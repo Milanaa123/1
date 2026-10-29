@@ -18,7 +18,7 @@ jobs:
           node-version: '22'
       - name: Check syntax of website scripts
         run: |
-          for file in app.js greek_taxa.js enhancements.js animal_atlas.js animal_atlas_100.js animal_cutout_40.js gold_contour_40.js gold_contour_41_60.js gold_contour_61_80.js gold_contour_81_100.js relic_features.js; do node --check "$file"; done
+          for file in app.js ru_name_lookup.js greek_taxa.js enhancements.js animal_atlas.js animal_atlas_100.js animal_cutout_40.js gold_contour_40.js gold_contour_41_60.js gold_contour_61_80.js gold_contour_81_100.js relic_features.js; do node --check "$file"; done
       - name: Validate unchanged reference source and all 100 routed vector originals
         run: node tests/check_exact_reference_01_40.cjs
       - name: Verify 100 paths draw on Canvas and have no empty vector slots
@@ -29,5 +29,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_quality.py' -v
       - name: Check exact-species Russian name lookup with mocked API
         run: node tests/test_ru_name_lookup.cjs
+      - name: Verify static build includes Russian name lookup
+        run: grep -F "shutil.copy2(BASE/'ru_name_lookup.js',DEST/'ru_name_lookup.js')" build_data.py
       - name: Verify animal name calculator remains unchanged
         run: node --test tests/phonetic.test.cjs tests/strict-original.test.cjs

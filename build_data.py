@@ -237,6 +237,15 @@ def build():
  print('BIRDNET_RUSSIAN_NAMES_VALIDATED',stats,flush=True)
  verified_external={}
  verified_external_genus={}
+ verified_itis={}
+ itis_report=BASE/'family_itis_verified.json'
+ if itis_report.exists():
+  itis=json.loads(itis_report.read_text(encoding='utf8'))
+  assert itis['taxon_source']=='Catalogue of Life XR 2026-08-26'
+  assert itis['source']=='ITIS Solr exact accepted taxonomy'
+  verified_itis=itis['families']
+  assert len(verified_itis)==itis['verified_count']
+  print('ITIS_EXACT_FAMILIES_LOADED',len(verified_itis),flush=True)
  external_report=BASE/'family_external_verified.json'
  if external_report.exists():
   ext=json.loads(external_report.read_text(encoding='utf8'))
@@ -252,7 +261,7 @@ def build():
   print('Downloading CoL data',URL,flush=True)
   urllib.request.urlretrieve(URL,str(zpath))
  if DATA.exists():shutil.rmtree(DATA)
- DATA.mkdir(exist_ok=True,parents=True);bundle_curated_gold_art();shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'relic_card_stage1.css',DEST/'relic_card_stage1.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'animal_atlas.js',DEST/'animal_atlas.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
+ DATA.mkdir(exist_ok=True,parents=True);bundle_curated_gold_art();shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'ru_name_lookup.js',DEST/'ru_name_lookup.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'relic_card_stage1.css',DEST/'relic_card_stage1.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'animal_atlas.js',DEST/'animal_atlas.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
  # Include the approved 100-image asset in the *published* site, not only Git.
  # Fail the build if the optimized alpha sheet was lost or replaced.
  art100=BASE/'art'/'animagia-100-alpha.webp'
@@ -381,7 +390,7 @@ def build():
        formal+=1
     stack.append((indent,rank,name,is_extinct))
   for f in handles.values():f.close()
-  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=family_genus_inferred=family_external_inferred=family_external_genus_inferred=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
+  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=family_genus_inferred=family_external_inferred=family_external_genus_inferred=family_itis_inferred=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
   for p in directory.glob('*.part'):
    bid=int(p.stem);seen={}
    with p.open(encoding='utf8') as f:
@@ -425,6 +434,18 @@ def build():
        row[7]=evidence['family']
        row[8],row[9]=taxon_ru_labels(row[1],row[7])
        family_external_genus_inferred+=1
+    if not row[7]:
+     itis_match=verified_itis.get(row[1])
+     if (itis_match and itis_match.get('rank')==row[2] and
+         itis_match.get('name')==row[1] and
+         itis_match.get('class')==row[3] and
+         itis_match.get('order')==row[4] and
+         itis_match.get('phylum')==row[6] and
+         itis_match.get('source')=='ITIS Solr exact valid hierarchy' and
+         re.fullmatch(r'[A-Z][a-z]+idae',itis_match.get('family',''))):
+      row[7]=itis_match['family']
+      row[8],row[9]=taxon_ru_labels(row[1],row[7])
+      family_itis_inferred+=1
    unique+=len(values);available.append(bid)
    # Fail the entire publication if ANY row is invalid, misplaced,
    # duplicated, excluded, incorrectly scored or out of sorted order.
@@ -486,8 +507,13 @@ def build():
  meta['family_assignments_from_unique_genus']=family_genus_inferred
  meta['family_assignments_from_exact_gbif']=family_external_inferred
  meta['family_assignments_from_exact_gbif_genus']=family_external_genus_inferred
+ meta['family_assignments_from_exact_itis']=family_itis_inferred
+ if itis_report.exists():
+  shutil.copy2(itis_report,DEST/'family_itis_verified.json')
+  meta['family_itis_evidence_file']='family_itis_verified.json'
  meta['bulk_russian_names_source']=EXTERNAL_STATS
  meta['bulk_russian_name_policy']='Only documented Russian common names of exactly matching scientific species from a fixed BirdNET+ snapshot; no AI translation.'
+ meta['unverified_name_presentation']='Other taxa retain a scientific name and gain an explicitly labelled Russian phonetic reading in the interface; not claimed as Russian species common name.'
  meta['missing_family_diagnostics']='families_missing.json'
  meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
   'distinct_families':len(family_values),'family_ru_present':family_ru_present,

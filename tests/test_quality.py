@@ -144,6 +144,18 @@ class GreekNumericParityTests(unittest.TestCase):
             self.assertEqual(entry['match_type'],'EXACT')
             self.assertTrue(entry['family'].endswith('idae'))
 
+    def test_strict_itis_family_snapshot(self):
+        data=json.loads((BASE/'family_itis_verified.json').read_text(encoding='utf-8'))
+        entries=data['families']
+        self.assertEqual(data['source'],'ITIS Solr exact accepted taxonomy')
+        self.assertEqual(len(entries),data['verified_count'])
+        for name,entry in entries.items():
+            self.assertEqual(entry['name'],name)
+            self.assertEqual(entry['source'],'ITIS Solr exact valid hierarchy')
+            self.assertTrue(entry['family'].endswith('idae'))
+            self.assertEqual(entry['rank'],'species')
+        self.assertEqual(data['initial_missing'],459)
+
     def test_reject_corrupt_rows(self):
         valid=row()
         bucket=valid[0]//25
