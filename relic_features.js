@@ -1791,10 +1791,10 @@
 
    if(!ok){
     if(typeof closeAnimalChooser==='function')closeAnimalChooser();
-    const chooser=get('animalChooserOpen');if(chooser)chooser.disabled=true;
-    const title=get('animalChosenName');if(title)title.textContent='Сначала выполни расчёт';
-    const sci=get('animalChosenScientific');if(sci)sci.textContent='Выбери найденное животное';
-    svg.replaceChildren();picker.replaceChildren(elem('option','Сначала выполни поиск'));
+    const chooser=get('animalChooserOpen');if(chooser)chooser.disabled=false; // The approved artwork gallery is always available.
+    const title=get('animalChosenName');if(title)title.textContent='Выбери рисунок животного';
+    const sci=get('animalChosenScientific');if(sci)sci.textContent='108 готовых рисунков · расчёт отдельно';
+    svg.replaceChildren();picker.replaceChildren(elem('option','Рисунки доступны в каталоге'));
     void composeScreenCard(null);
     picker.dataset.signature='';previous=null;
     syncSilhouette(picker);
