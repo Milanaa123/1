@@ -5,6 +5,7 @@ from original.alphabet_maps import latin_map as CH
 from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_score, CONTROL_NAMES
 from taxon_filters import POLICY_VERSION, allow_animal_taxon
 from audit_index import audit_bucket
+from family_evidence import load_exact_families, family_for_row
 from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus, RUSSIAN_SNAPSHOT, BULK_NAMES, SPECIES_RU, EXTERNAL_SPECIES_RU, WIKIDATA_SNAPSHOT, WIKIDATA_NAMES, wikidata_ru_label, INAT_NAMES, INAT_SNAPSHOT, inat_ru_label, BVI_NAMES, BVI_SNAPSHOT, bvi_ru_label, WIKIDATA_FAMILY_STATS, PUBLISHED_NAMES, PUBLISHED_RU_SHA256, published_ru_label
 from pathlib import Path
 from selected_original_art import publish_selected_original_art
@@ -241,6 +242,9 @@ def build():
  verified_external_genus={}
  verified_itis={}
  verified_opentree={}
+ exact_family_path=BASE/'family_inat_worms_verified.json'
+ verified_independent=load_exact_families(exact_family_path) if exact_family_path.exists() else {}
+ print('EXACT_INAT_WORMS_FAMILIES_LOADED',len(verified_independent),flush=True)
  opentree_report=BASE/'family_opentree_verified.json'
  if opentree_report.exists():
   ot=json.loads(opentree_report.read_text(encoding='utf8'))
@@ -350,7 +354,7 @@ def build():
     stack.append((indent,rank,name,is_extinct))
   for f in handles.values():f.close()
   synonym_ru_evidence={};synonym_ru_conflicts=0
-  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();russian_name_sources=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=family_genus_inferred=family_external_inferred=family_external_genus_inferred=family_itis_inferred=family_opentree_inferred=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
+  unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();russian_name_sources=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=family_genus_inferred=family_external_inferred=family_external_genus_inferred=family_itis_inferred=family_opentree_inferred=family_independent_inferred=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
   for p in directory.glob('*.part'):
    bid=int(p.stem);seen={}
    with p.open(encoding='utf8') as f:
@@ -419,6 +423,12 @@ def build():
       row[7]=ott['family']
       row[8],row[9]=taxon_ru_labels(row[1],row[7])
       family_opentree_inferred+=1
+    if not row[7] and verified_independent:
+     validated=family_for_row(row,verified_independent)
+     if validated:
+      row[7]=validated
+      row[8],row[9]=taxon_ru_labels(row[1],row[7],row[3],row[4],row[6],row[2])
+      family_independent_inferred+=1
    # Historical Russian species names may be published under a previous
    # genus. CoL supplies the identity equivalence as a direct synonym edge.
    # An exact, unique label is accepted only after taxonomic cross-checks.
@@ -526,6 +536,10 @@ def build():
  meta['family_assignments_from_exact_gbif_genus']=family_external_genus_inferred
  meta['family_assignments_from_exact_itis']=family_itis_inferred
  meta['family_assignments_from_exact_opentree']=family_opentree_inferred
+ meta['family_assignments_from_exact_inaturalist_worms']=family_independent_inferred
+ if exact_family_path.exists():
+  shutil.copy2(exact_family_path,DEST/'family_inat_worms_verified.json')
+  meta['family_independent_evidence_file']='family_inat_worms_verified.json'
  if opentree_report.exists():
   shutil.copy2(opentree_report,DEST/'family_opentree_verified.json')
   meta['family_opentree_evidence_file']='family_opentree_verified.json'

@@ -205,6 +205,23 @@ class GreekNumericParityTests(unittest.TestCase):
             self.assertTrue(evidence['russian_article'].startswith('https://ru.wikipedia.org/wiki/'))
             self.assertTrue(evidence['source'].startswith('http://www.wikidata.org/entity/Q'))
 
+    def test_exact_inaturalist_worms_family_evidence(self):
+        from family_evidence import load_exact_families,family_for_row
+        evidence=load_exact_families(BASE/'family_inat_worms_verified.json')
+        self.assertEqual(len(evidence),16)
+        for scientific,entry in evidence.items():
+            with self.subTest(scientific=scientific):
+                candidate=[1000,scientific,entry['rank'],entry['class'],entry['order'],'',
+                           entry['phylum'],'','','']
+                self.assertEqual(family_for_row(candidate,evidence),entry['family'])
+                for changed_index in (2,3,4,6):
+                    mismatched=candidate[:]
+                    mismatched[changed_index]='incorrect'
+                    self.assertEqual(family_for_row(mismatched,evidence),'')
+                with_existing=candidate[:]
+                with_existing[7]='Alreadyidae'
+                self.assertEqual(family_for_row(with_existing,evidence),'')
+
     def test_col_texttree_explicit_historical_synonyms(self):
         from build_data import texttree_synonym
         self.assertEqual(texttree_synonym('=Discodeles opisthodon (Boulenger, 1884)','species'),
