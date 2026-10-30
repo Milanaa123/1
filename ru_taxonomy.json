@@ -267,7 +267,15 @@
     "Chitonidae": "Хитоны",
     "Drosophilidae": "Плодовые мушки",
     "Pyralidae": "Огнёвки настоящие",
-    "Tipulidae": "Комары-долгоножки"
+    "Tipulidae": "Комары-долгоножки",
+    "Calliphoridae": "Каллифориды",
+    "Lampyridae": "Светляки",
+    "Tortricidae": "Листовёртки",
+    "Tephritidae": "Пестрокрылки",
+    "Pterophoridae": "Пальцекрылки",
+    "Crambidae": "Огнёвки-травянки",
+    "Tabanidae": "Слепни",
+    "Elateridae": "Щелкуны"
   },
   "ru_name_sources": {
     "Cornufer bufoniformis": {

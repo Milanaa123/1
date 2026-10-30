@@ -175,7 +175,11 @@ class GreekNumericParityTests(unittest.TestCase):
     def test_explicit_ru_family_names_from_zoological_sources(self):
         from ru_catalog import taxon_ru_labels
         controls={'Drosophilidae':'Плодовые мушки','Pyralidae':'Огнёвки настоящие',
-                  'Tipulidae':'Комары-долгоножки'}
+                  'Tipulidae':'Комары-долгоножки',
+                  'Calliphoridae':'Каллифориды','Lampyridae':'Светляки',
+                  'Tortricidae':'Листовёртки','Tephritidae':'Пестрокрылки',
+                  'Pterophoridae':'Пальцекрылки','Crambidae':'Огнёвки-травянки',
+                  'Tabanidae':'Слепни','Elateridae':'Щелкуны'}
         for latin,russian in controls.items():
             with self.subTest(family=latin):
                 self.assertEqual(taxon_ru_labels('Unknown species',latin)[0],russian)
