@@ -76,6 +76,41 @@ BIRDNET_SHA256='daecb2505ff16dddbafe76cfa8d15a044c506b6a2998b2349a94bcd355475ac4
 _RUSSIAN=re.compile(r'^[А-ЯЁа-яё][А-ЯЁа-яё\s\-–—()«».,\x27’]+$')
 _CANONICAL=re.compile(r'^[A-Z][a-z-]+ [a-z-]+$')
 
+# TKS: authoritative source records, never phonetic Russian translations.
+# Read-only verified names for accepted animal species, exact Latin binomial.
+_TKS_PATH=Path(__file__).resolve().parent/'russian_tks_verified_species.json'
+TKS_RU_STATS={'available':False,'count':0}
+TKS_RU_NAMES={}
+if _TKS_PATH.exists():
+    _doc=json.loads(_TKS_PATH.read_text(encoding='utf8'))
+    if (_doc.get('source')!='Russian Taxonomy TKS: exact accepted Russian-named Animalia species'
+        or _doc.get('source_endpoint')!='/api/taxa?kingdom=Animalia&rank=species&has_ru_name=true'
+        or _doc.get('count')!=len(_doc.get('names',{}))
+        or not 3000<=_doc.get('count',0)<=300000
+        or _doc.get('source_total',0)<_doc['count']):
+        raise ValueError('Invalid TKS species source snapshot')
+    TKS_RU_NAMES=_doc['names']
+    TKS_RU_STATS={'available':True,'count':len(TKS_RU_NAMES),
+        'source_total':_doc['source_total'],
+        'snapshot_sha256':hashlib.sha256(_TKS_PATH.read_bytes()).hexdigest(),
+        'source_url':_doc['source_url']}
+
+def tks_ru_label(scientific,family,animal_class,order,phylum,rank):
+    """Never apply a Russian name to a mismatched family, rank or class."""
+    if (rank!='species' or not isinstance(scientific,str) or
+        not animal_class or not phylum):return ''
+    data=TKS_RU_NAMES.get(scientific.casefold()+'|species')
+    if not isinstance(data,list) or len(data)!=8:return ''
+    ru,src_phylum,src_class,src_order,src_family,tks_id,gbif_id,inat_id=data
+    if (not isinstance(ru,str) or len(ru)>130 or not _RUSSIAN.fullmatch(ru)
+        or type(tks_id) is not int or tks_id<=0
+        or not isinstance(src_phylum,str) or not src_phylum):return ''
+    for ours,source in ((phylum,src_phylum),(animal_class,src_class),
+                        (order,src_order),(family,src_family)):
+        if ours and source and ours!=source:return ''
+    return ru
+
+
 # Optional separately sourced Russian-Wikipedia species labels.
 # Exact Wikidata species rank and real Russian Wikipedia article are mandatory.
 WIKIPEDIA_RU_PATH=Path(__file__).resolve().parent/'russian_wikipedia_species_verified.json'
@@ -252,6 +287,8 @@ def taxon_ru_labels(scientific, family, animal_class='', order='', phylum='', ra
         common=wikipedia_ru_label(scientific,rank)
     if not common and animal_class and phylum:
         common=published_ru_label(scientific,family,animal_class,order,phylum,rank)
+    if not common and animal_class and phylum:
+        common=tks_ru_label(scientific,family,animal_class,order,phylum,rank)
     return FAMILY_RU.get(family, ''),common
 
 def indexed_taxon_row(score, scientific, rank, lineage):

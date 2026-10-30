@@ -263,6 +263,29 @@ class GreekNumericParityTests(unittest.TestCase):
             if samples>=15:break
         self.assertEqual(samples,15)
 
+    def test_tks_source_russian_species_not_fabricated(self):
+        from ru_catalog import TKS_RU_NAMES, TKS_RU_STATS, tks_ru_label
+        self.assertEqual(tks_ru_label('Inventus fictivus','Inventidae','Mammalia',
+                                      'Carnivora','Chordata','species'),'')
+        if not TKS_RU_NAMES:
+            self.assertFalse(TKS_RU_STATS['available'])
+            return
+        self.assertGreaterEqual(len(TKS_RU_NAMES),3000)
+        self.assertTrue(TKS_RU_STATS['available'])
+        for key,row in list(TKS_RU_NAMES.items())[:100]:
+            self.assertTrue(key.endswith('|species'))
+            latin=key[:-8]
+            russian,phylum,cls,order,family,tks_id,gbif_id,inat_id=row
+            self.assertEqual(tks_ru_label(latin,family,cls or 'Mammalia',
+                                          order,phylum,'species'),russian)
+            self.assertEqual(tks_ru_label(latin,'WrongFamily',cls or 'Mammalia',
+                                          order,phylum,'species'),'')
+            self.assertEqual(tks_ru_label(latin,family,cls or 'Mammalia',
+                                          order,phylum,'subspecies'),'')
+            if cls:
+                self.assertEqual(tks_ru_label(latin,family,'WrongClass',
+                                              order,phylum,'species'),'')
+
     def test_col_texttree_explicit_historical_synonyms(self):
         from build_data import texttree_synonym
         self.assertEqual(texttree_synonym('=Discodeles opisthodon (Boulenger, 1884)','species'),
