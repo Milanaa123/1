@@ -915,7 +915,13 @@ test('Exactly 100 approved subjects have an appropriate visual family',()=>{
  for(const [russian,name,cls,order,diet,habitat,expected] of ROSTER){
   const row=[1878,name,'species',cls,order,'','Chordata'];
   const frame=cardAdornment(row,{diet,habitat},'Φρέιζερ');
-  assert.equal(frame.kind,expected,russian+' / '+name);
+  const neutral=diet==='unknown'
+   ? order==='Araneae'?'spider'
+    :cls==='Aves'?'avian'
+    :cls==='Reptilia'?(habitat==='aquatic'?'aquatic':'reptile')
+    :['aquatic','semiaquatic'].includes(habitat)?'aquatic':'celestial'
+   :expected;
+  assert.equal(frame.kind,neutral,russian+' / '+name);
   assert.ok(Number.isInteger(frame.variant)&&frame.variant>=0&&frame.variant<5);
  }
 });
@@ -1010,4 +1016,17 @@ test('True transparent tiny ivy eyelets and restrained spider web remain within 
  const foot=painter.slice(painter.indexOf(' function webbedFoot('),
  painter.indexOf(' function waterDrop('));
  assert.ok(foot.includes('ctx.lineWidth=4.2'));
+});
+
+test('Diet ornaments cannot invent ecology when species data are unknown',()=>{
+ const row=(name,cls,order)=>[1878,name,'species',cls,order,'','Chordata'];
+ const ornament=(name,cls,order,diet,habitat)=>cardAdornment(row(name,cls,order),
+  {diet,habitat},'Φρέιζερ').kind;
+ assert.equal(ornament('Canis aureus','Mammalia','Carnivora','unknown','terrestrial'),'celestial');
+ assert.equal(ornament('Canis lupus','Mammalia','Carnivora','predator','terrestrial'),'predator');
+ assert.equal(ornament('Canis latrans','Mammalia','Carnivora','omnivore','terrestrial'),'omnivore');
+ assert.equal(ornament('Xenohyla truncata','Amphibia','Anura','omnivore','unknown'),'omnivore');
+ assert.equal(ornament('Bagheera kiplingi','Arachnida','Araneae','herbivore','unknown'),'herbivore');
+ assert.equal(ornament('Ursus fictus','Mammalia','Carnivora','unknown','unknown'),'celestial');
+ assert.equal(ornament('Unknown aqua','Malacostraca','Decapoda','unknown','aquatic'),'aquatic');
 });
