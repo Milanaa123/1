@@ -1,0 +1,39 @@
+name: Animagia import verified Russian animal names from TKS
+on:
+  workflow_dispatch:
+  push:
+    branches: [animagia-site]
+    paths:
+      - tools/import_tks_russian_species.py
+      - .github/workflows/animagia-tks-russian-species.yml
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 19
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read every available accepted animal species Russian name
+        run: python tools/import_tks_russian_species.py
+      - name: Preserve exact source-backed taxonomy
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add russian_tks_verified_species.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Add source-backed Russian names of accepted Animalia species"
+          git fetch origin animagia-site
+          git rebase origin/animagia-site
+          git push origin HEAD:animagia-site
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: animagia-tks-russian-species-dataset
+          path: russian_tks_verified_species.json
+          if-no-files-found: ignore
