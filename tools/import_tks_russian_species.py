@@ -23,7 +23,7 @@ _LOCK=Lock()
 _LAST=[0.0]
 def throttle():
     with _LOCK:
-        delay=max(0,0.65-(time.monotonic()-_LAST[0]))
+        delay=max(0,0.55-(time.monotonic()-_LAST[0]))
         if delay:time.sleep(delay)
         _LAST[0]=time.monotonic()
 def page(offset):
@@ -69,7 +69,10 @@ def validate(item):
     cl=item.get('class_name') or ''
     order=item.get('order_name') or ''
     family=item.get('family') or ''
-    if not phylum or not order or not family:return None
+    # Some accepted reptile taxa in TKS misplace Squamata in class_name and
+    # leave order_name empty. Keep exact source identity; the builder checks
+    # the source class against CoL order (and independently matching family).
+    if not phylum or not family or (not order and not cl):return None
     if (item.get('accepted_id') is not None or
         not isinstance(phylum,str) or not isinstance(cl,str)
         or not isinstance(order,str) or not isinstance(family,str)):
@@ -96,7 +99,7 @@ def main():
     offsets=list(range(SIZE,total,SIZE))
     docs=[(0,first)]
     failures={}
-    with ThreadPoolExecutor(max_workers=3) as pool:
+    with ThreadPoolExecutor(max_workers=4) as pool:
         for off,doc,err in pool.map(page,offsets):
             if err:failures[off]=err
             else:docs.append((off,doc))

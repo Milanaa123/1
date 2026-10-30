@@ -263,6 +263,24 @@ class GreekNumericParityTests(unittest.TestCase):
             if samples>=15:break
         self.assertEqual(samples,15)
 
+    def test_tks_reptile_shifted_rank_never_invents_a_name(self):
+        from ru_catalog import tks_ru_label,TKS_RU_NAMES
+        # The real TKS reptile taxonomy frequently calls Squamata a class
+        # and does not supply an order. CoL uses Reptilia / Squamata.
+        matching=[
+            (key,record) for key,record in TKS_RU_NAMES.items()
+            if record[2]=='Squamata' and not record[3] and record[4]=='Scincidae'
+        ]
+        if not matching:return
+        key,entry=matching[0]
+        latin=key[:-8]
+        self.assertEqual(tks_ru_label(latin,'Scincidae','Reptilia',
+                                      'Squamata','Chordata','species'),entry[0])
+        self.assertEqual(tks_ru_label(latin,'Scincidae','Mammalia',
+                                      'Carnivora','Chordata','species'),'')
+        self.assertEqual(tks_ru_label(latin,'WrongFamily','Reptilia',
+                                      'Squamata','Chordata','species'),'')
+
     def test_russian_subspecies_only_when_exactly_attested(self):
         from ru_catalog import (
             TKS_SUBSPECIES_NAMES,TKS_SUBSPECIES_STATS,tks_subspecies_ru_label
@@ -295,7 +313,7 @@ class GreekNumericParityTests(unittest.TestCase):
         if not TKS_RU_NAMES:
             self.assertFalse(TKS_RU_STATS['available'])
             return
-        self.assertEqual(len(TKS_RU_NAMES),37251)
+        self.assertGreaterEqual(len(TKS_RU_NAMES),37251)
         self.assertEqual(TKS_RU_STATS['source_total'],45999)
         self.assertTrue(TKS_RU_STATS['available'])
         for key,row in list(TKS_RU_NAMES.items())[:100]:

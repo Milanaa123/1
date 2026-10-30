@@ -105,9 +105,15 @@ def tks_ru_label(scientific,family,animal_class,order,phylum,rank):
     if (not isinstance(ru,str) or len(ru)>130 or not _RUSSIAN.fullmatch(ru)
         or type(tks_id) is not int or tks_id<=0
         or not isinstance(src_phylum,str) or not src_phylum):return ''
-    for ours,source in ((phylum,src_phylum),(animal_class,src_class),
-                        (order,src_order),(family,src_family)):
+    for ours,source in ((phylum,src_phylum),(order,src_order),
+                        (family,src_family)):
         if ours and source and ours!=source:return ''
+    if animal_class and src_class and animal_class!=src_class:
+        # TKS has a limited number of shifted-rank reptile records: its
+        # class_name=Squamata while CoL class=Reptilia, order=Squamata.
+        # Accept only an exact CoL order AND independently matching family.
+        if not (not src_order and src_class==order and family and family==src_family):
+            return ''
     return ru
 
 
