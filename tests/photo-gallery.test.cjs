@@ -125,6 +125,7 @@ test('Photo preview is retained on collapse, and a second open does not create a
  const s=simulate('valid',makeRows().slice(0,1));
  const state=vm.runInContext(`(()=>{
   let created=0;
+  globalThis.display=row=>row[1];
   document.createElement=(tag)=>{created++;return {tag,src:'',isConnected:true,dataset:{},remove(){this.removed=true}};};
   const attr=new Map([['aria-expanded','false']]);
   const button={getAttribute:k=>attr.get(k),setAttribute:(k,v)=>attr.set(k,v),textContent:''};
