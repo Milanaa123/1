@@ -63,7 +63,8 @@ async function downloadList(page,kind){
   const data=fs.readFileSync(await item.path());
   check(data.length>100,'Export was empty: '+kind);
   assert.match(item.suggestedFilename(),new RegExp('\\.'+kind+'$'));
-  check(data.includes(Buffer.from('Fraser Harold Brown','utf8')),'Export should include example input');
+  if(kind==='txt')check(data.includes(Buffer.from('Fraser Harold Brown','utf8')),'TXT should include example input');
+  else check(data.includes(Buffer.from('Русское название','utf8')),'CSV must contain column headers');
   return {filename:item.suggestedFilename(),bytes:data.length};
 }
 async function inspectViewport(page,where){
