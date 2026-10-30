@@ -197,9 +197,13 @@ class GreekNumericParityTests(unittest.TestCase):
             return
         record=json.loads(f.read_text(encoding='utf8'))
         self.assertEqual(record['count'],len(record['families']))
-        self.assertGreater(record['count'],500)
+        self.assertGreaterEqual(record['count'],979)
         self.assertTrue(WIKIDATA_FAMILY_STATS['available'])
+        self.assertEqual(WIKIDATA_FAMILY_STATS['snapshot_entries'],record['count'])
         self.assertGreater(WIKIDATA_FAMILY_STATS['imported'],0)
+        self.assertEqual(len(record['failed_batches']),0)
+        self.assertEqual(record['source'],
+                         'Wikidata P225 + P105 Q35409 + Russian Wikipedia verified article')
         for latin,evidence in record['families'].items():
             self.assertIn(latin,FAMILY_RU)
             self.assertTrue(evidence['russian_article'].startswith('https://ru.wikipedia.org/wiki/'))
