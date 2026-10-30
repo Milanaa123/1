@@ -330,7 +330,7 @@ class GreekNumericParityTests(unittest.TestCase):
         if not TKS_RU_NAMES:
             self.assertFalse(TKS_RU_STATS['available'])
             return
-        self.assertGreaterEqual(len(TKS_RU_NAMES),37251)
+        self.assertEqual(len(TKS_RU_NAMES),41097)
         self.assertEqual(TKS_RU_STATS['source_total'],45999)
         self.assertTrue(TKS_RU_STATS['available'])
         for key,row in list(TKS_RU_NAMES.items())[:100]:
