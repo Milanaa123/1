@@ -1631,6 +1631,12 @@
 
 
 
+ function cardDownloadFilename(number,row){
+  // Several species can have one number; their cards must not overwrite.
+  const scientific=String(row?.[1]||'animal').replace(/[^A-Za-z0-9]+/g,'_')
+   .replace(/^_+|_+$/g,'').slice(0,90);
+  return 'Анимагия_форма_'+number+'_'+scientific+'.png';
+ }
  async function savePNG(picker,status){
   const row=selection(picker),greek=get('greek').value.trim();
   if(!row||!validGreek(greek)||score(greek)!==sum){
@@ -1644,7 +1650,7 @@
     try{canvas.toBlob(resolve,'image/png');}catch(error){reject(error);}
    });
    if(!blob)throw Error('Не удалось создать PNG');
-   const filename='Анимагия_форма_'+sum+'.png';
+   const filename=cardDownloadFilename(sum,row);
    const url=URL.createObjectURL(blob),link=elem('a');
    link.href=url;link.download=filename;
    document.body.append(link);link.click();link.remove();

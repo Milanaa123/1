@@ -62,6 +62,20 @@ test('Only mobile scroll overflow is clipped, not layout or card geometry',()=>{
  assert.match(page,/app\.js\?v=verified-six-russian-names-20261030/);
  assert.match(page,/id="relicCardBackdrop"[^>]+width="1200" height="2000"/);
 });
+test('Saving different species with the same number generates distinct PNG filenames',()=>{
+ const start=renderer.indexOf(' function cardDownloadFilename(');
+ const end=renderer.indexOf(' async function savePNG(',start);
+ assert.ok(start>=0 && end>start);
+ const filename=vm.runInNewContext(renderer.slice(start,end)+
+  ';cardDownloadFilename', {});
+ assert.equal(filename(1531,[1531,'Canis lupus']),
+  'Анимагия_форма_1531_Canis_lupus.png');
+ assert.equal(filename(1531,[1531,'Chinchilla lanigera']),
+  'Анимагия_форма_1531_Chinchilla_lanigera.png');
+ assert.notEqual(filename(1531,[1531,'Canis lupus']),
+  filename(1531,[1531,'Chinchilla lanigera']));
+ assert.ok(renderer.includes('const filename=cardDownloadFilename(sum,row)'));
+});
 test('Existing PNG and PDF mechanisms stay in the same code path',()=>{
  assert.ok(renderer.includes('async function composeScreenCard(row)'));
  assert.ok(renderer.includes("canvas.toBlob(resolve,'image/png')"));
