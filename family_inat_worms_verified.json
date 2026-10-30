@@ -1,0 +1,187 @@
+{
+  "source": "iNaturalist taxa v1 + WoRMS Aphia v1 direct live API strict exact lineage",
+  "base_source": "Catalogue of Life XR 2026-08-26",
+  "reviewed_on": "2026-10-30",
+  "verified_count": 16,
+  "source_request_count": 490,
+  "source_errors": 40,
+  "accepted_only_with_exact_rank_and_lineage": true,
+  "families": {
+    "Allpamayu suyuwixsa": {
+      "name": "Allpamayu suyuwixsa",
+      "rank": "species",
+      "class": "Arachnida",
+      "order": "Araneae",
+      "phylum": "Arthropoda",
+      "family": "Theraphosidae",
+      "source": "iNaturalist",
+      "source_id": 1688064,
+      "source_url": "https://www.inaturalist.org/taxa/1688064"
+    },
+    "Asiosilis birmanica": {
+      "name": "Asiosilis birmanica",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Coleoptera",
+      "phylum": "Arthropoda",
+      "family": "Cantharidae",
+      "source": "iNaturalist",
+      "source_id": 1077277,
+      "source_url": "https://www.inaturalist.org/taxa/1077277"
+    },
+    "Asiosilis singularicornis": {
+      "name": "Asiosilis singularicornis",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Coleoptera",
+      "phylum": "Arthropoda",
+      "family": "Cantharidae",
+      "source": "iNaturalist",
+      "source_id": 1077280,
+      "source_url": "https://www.inaturalist.org/taxa/1077280"
+    },
+    "Atara arata": {
+      "name": "Atara arata",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Lycaenidae",
+      "source": "iNaturalist",
+      "source_id": 1336770,
+      "source_url": "https://www.inaturalist.org/taxa/1336770"
+    },
+    "Aulocera brahminus": {
+      "name": "Aulocera brahminus",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Nymphalidae",
+      "source": "iNaturalist",
+      "source_id": 1023934,
+      "source_url": "https://www.inaturalist.org/taxa/1023934"
+    },
+    "Aulocera saraswati": {
+      "name": "Aulocera saraswati",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Nymphalidae",
+      "source": "iNaturalist",
+      "source_id": 125557,
+      "source_url": "https://www.inaturalist.org/taxa/125557"
+    },
+    "Embiophila sinica": {
+      "name": "Embiophila sinica",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Hemiptera",
+      "phylum": "Arthropoda",
+      "family": "Plokiophilidae",
+      "source": "iNaturalist",
+      "source_id": 1712047,
+      "source_url": "https://www.inaturalist.org/taxa/1712047"
+    },
+    "Grapsodes notatus": {
+      "name": "Grapsodes notatus",
+      "rank": "species",
+      "class": "Malacostraca",
+      "order": "Decapoda",
+      "phylum": "Arthropoda",
+      "family": "Epigrapsidae",
+      "source": "iNaturalist",
+      "source_id": 1693232,
+      "source_url": "https://www.inaturalist.org/taxa/1693232"
+    },
+    "Haplophthalmus gibbus moracchini": {
+      "name": "Haplophthalmus gibbus moracchini",
+      "rank": "subspecies",
+      "class": "Malacostraca",
+      "order": "Isopoda",
+      "phylum": "Arthropoda",
+      "family": "Trichoniscidae",
+      "source": "WoRMS",
+      "source_id": 264491,
+      "source_url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=264491"
+    },
+    "Idmon distanti": {
+      "name": "Idmon distanti",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Hesperiidae",
+      "source": "iNaturalist",
+      "source_id": 816342,
+      "source_url": "https://www.inaturalist.org/taxa/816342"
+    },
+    "Imeretioniscus tricostatus": {
+      "name": "Imeretioniscus tricostatus",
+      "rank": "species",
+      "class": "Malacostraca",
+      "order": "Isopoda",
+      "phylum": "Arthropoda",
+      "family": "Trichoniscidae",
+      "source": "WoRMS",
+      "source_id": 1888015,
+      "source_url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=1888015"
+    },
+    "Languriophasma cyanea": {
+      "name": "Languriophasma cyanea",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Coleoptera",
+      "phylum": "Arthropoda",
+      "family": "Erotylidae",
+      "source": "iNaturalist",
+      "source_id": 1581358,
+      "source_url": "https://www.inaturalist.org/taxa/1581358"
+    },
+    "Parastrachia nagaensis": {
+      "name": "Parastrachia nagaensis",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Hemiptera",
+      "phylum": "Arthropoda",
+      "family": "Sehiridae",
+      "source": "iNaturalist",
+      "source_id": 897793,
+      "source_url": "https://www.inaturalist.org/taxa/897793"
+    },
+    "Peribona venosa": {
+      "name": "Peribona venosa",
+      "rank": "species",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Crambidae",
+      "source": "iNaturalist",
+      "source_id": 1118083,
+      "source_url": "https://www.inaturalist.org/taxa/1118083"
+    },
+    "Phocyx australis": {
+      "name": "Phocyx australis",
+      "rank": "species",
+      "class": "Arachnida",
+      "order": "Opiliones",
+      "phylum": "Arthropoda",
+      "family": "Buemarinoidae",
+      "source": "iNaturalist",
+      "source_id": 1579141,
+      "source_url": "https://www.inaturalist.org/taxa/1579141"
+    },
+    "Virachola perse perse": {
+      "name": "Virachola perse perse",
+      "rank": "subspecies",
+      "class": "Insecta",
+      "order": "Lepidoptera",
+      "phylum": "Arthropoda",
+      "family": "Lycaenidae",
+      "source": "iNaturalist",
+      "source_id": 1674919,
+      "source_url": "https://www.inaturalist.org/taxa/1674919"
+    }
+  }
+}
