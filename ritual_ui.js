@@ -29,10 +29,8 @@
     let stage = 1;
     let allOpen = false;
     const entries = Array.from(track.querySelectorAll('[data-ritual-step]'));
-    const nameIsReady = () => {
-      const raw = russian.value.trim();
-      return /^[А-Яа-яЁё\s'’\-]+$/.test(raw) && /[А-Яа-яЁё]{2,}/.test(raw);
-    };
+    const nameIsReady = () =>
+      typeof validSourceName === 'function' && validSourceName(russian.value);
     const latinIsReady = () =>
       typeof validLatinName === 'function' && validLatinName(latin.value);
 
@@ -73,7 +71,7 @@
       // Programmatic focus on a text field opens the mobile keyboard.
       // A new step only reveals its input; only a direct tap focuses it.
       if (next === 2 && !nameIsReady()) {
-        announce('Сначала введи полное имя на русском.');
+        announce('Сначала введи полное имя на русском или английском.');
         return false;
       }
       if (next === 3 && !latinIsReady()) {

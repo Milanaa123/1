@@ -168,8 +168,8 @@ function showAuditReport(fresh){
  let lastVerifiedShard=null;
 run=async function(){
  const raw=el('name').value.trim(),latin=el('latin').value.trim(),greek=el('greek').value.trim();
- if(!/^[А-Яа-яЁё\s\-'’]+$/.test(raw)||!validLatinName(latin)||!validGreek(greek)){
-  reset();el('error').textContent='Проверь три записи имени: русскую, латинскую и греческую. Допустимы только буквы соответствующих алфавитов.';return;
+ if(!validSourceName(raw)||!validLatinName(latin)||!validGreek(greek)){
+  reset();el('error').textContent='Проверь имя, латинскую запись и греческую запись. В первом поле допускаются русский или английский, но не смешение алфавитов.';return;
  }
  const target=score(greek),id=++serial;
  if(!target){reset();el('error').textContent='Число имени не определено';return;}

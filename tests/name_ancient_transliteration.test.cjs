@@ -11,7 +11,7 @@ const root=path.join(__dirname,'..');
 const script=fs.readFileSync(path.join(root,'app.js'),'utf8');
 const ctx={document:{addEventListener(){}}};
 const api=vm.runInNewContext(script+`
-;({nameGreekFromLatin,validLatinName,validGreek,score,nameLatin})
+;({nameGreekFromLatin,validLatinName,validGreek,score,nameLatin,validSourceName,sourceNameIsLatin})
 `,ctx,{filename:'app.js'});
 const keycases=[
  ['Fraser','Φρασερ',906],
@@ -43,9 +43,21 @@ test('no English phonetic overrides or automatic Greek suffixes',()=>{
  assert.equal(api.nameGreekFromLatin('Brown'), 'Βροϝν');
  assert.notEqual(api.nameGreekFromLatin('Brown'),'Μπραουν');
 });
-test('Latin input is human-approved, Russian->Latin is only a hint',()=>{
+test('English original is accepted directly without Russian-name guessing',()=>{
+ assert.equal(api.validSourceName('Fraser Harold Brown'),true);
+ assert.equal(api.validSourceName('Гарольд Фрейзер Браун'),true);
+ assert.equal(api.validSourceName('Фрейзер Brown'),false,'never mix alphabets');
+ assert.equal(api.validSourceName('Fraser5 Brown'),false);
  assert.equal(api.validLatinName('Fraser Harold Brown'),true);
+ assert.equal(api.sourceNameIsLatin('Fraser Harold Brown'),true);
+ assert.equal(api.nameLatin('Fraser Harold Brown'),'Fraser Harold Brown');
+ assert.equal(api.nameLatin("O'Connor-Jones"),"O'Connor-Jones");
+ assert.equal(api.nameGreekFromLatin(api.nameLatin('Fraser Harold Brown')),
+              'Φρασερ Ἁρολδ Βροϝν');
+});
+test('Cyrillic input never pretends to recover exact original English spelling',()=>{
  assert.equal(api.nameLatin('Гарольд Фрейзер Браун'),'Garold Freyzer Braun');
+ assert.notEqual(api.nameLatin('Гарольд Фрейзер Браун'),'Harold Fraser Brown');
  assert.equal(api.nameGreekFromLatin('Harold'), 'Ἁρολδ');
 });
 test('Greek digit sum ignores smooth and rough breathings',()=>{
@@ -63,5 +75,6 @@ test('visible example accurately explains written transliteration',()=>{
  const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
  assert.ok(html.includes('Harold Fraser Brown → Ἁρολδ Φρασερ Βροϝν'));
  assert.ok(html.includes('транслитерация латинских букв'));
+ assert.ok(html.includes('Если известен английский оригинал, введи его сразу латиницей'));
  assert.ok(!html.includes('placeholder="Φρέιζερ Ἁρολδός Βρούν"'));
 });
