@@ -1,0 +1,38 @@
+name: Animagia real Russian species names from Russian Wikipedia and Wikidata
+on:
+  workflow_dispatch:
+  push:
+    branches: [animagia-site]
+    paths:
+      - tools/import_wikipedia_species_names.py
+      - .github/workflows/animagia-wikipedia-species.yml
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python tools/import_wikipedia_species_names.py
+      - name: Commit exact species-name and source evidence
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add russian_wikipedia_species_verified.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Import documented Russian Wikipedia animal species names"
+          git fetch origin animagia-site
+          git rebase origin/animagia-site
+          git push origin HEAD:animagia-site
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: animagia-wikipedia-russian-species
+          path: russian_wikipedia_species_verified.json
+          if-no-files-found: ignore
