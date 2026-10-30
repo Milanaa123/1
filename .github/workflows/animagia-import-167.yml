@@ -21,6 +21,7 @@ jobs:
           node-version: '22'
       - name: Download original art and verify all 167 hashes
         run: |
+          python3 - <<'PY'
           from pathlib import Path
           from concurrent.futures import ThreadPoolExecutor
           import csv, hashlib, io, time, urllib.request, zipfile
@@ -78,6 +79,7 @@ jobs:
           assert {int(row['Номер']) for row in listing}==set(range(109,277))-{269}
           print('ALL_NEW_167_ORIGINAL_RGBA_PNGS_SHA256_MATCH_THE_USER_ARCHIVE',flush=True)
           
+          PY
       - name: Commit original PNGs in bounded batches without touching the website UI
         run: |
           set -euo pipefail
