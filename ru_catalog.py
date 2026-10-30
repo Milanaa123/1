@@ -44,9 +44,49 @@ BIRDNET_SHA256='daecb2505ff16dddbafe76cfa8d15a044c506b6a2998b2349a94bcd355475ac4
 _RUSSIAN=re.compile(r'^[А-ЯЁа-яё][А-ЯЁа-яё\s\-–—()«».,\x27’]+$')
 _CANONICAL=re.compile(r'^[A-Z][a-z-]+ [a-z-]+$')
 
+_PUBLISHED_PATH=Path(__file__).resolve().parent/'russian_published_verified_snapshot.json'
+PUBLISHED_RU_SHA256='5d907c37bc674c3024201b15dd0c5798a3d3e602e00d8be8cd53930f6d248af5'
+PUBLISHED_NAMES={}
+PUBLISHED_SNAPSHOT={}
+if _PUBLISHED_PATH.exists():
+    raw=_PUBLISHED_PATH.read_bytes()
+    if hashlib.sha256(raw).hexdigest()!=PUBLISHED_RU_SHA256:
+        raise ValueError('Prior verified Russian snapshot checksum changed')
+    PUBLISHED_SNAPSHOT=json.loads(raw)
+    if (PUBLISHED_SNAPSHOT['source']!='Previously published SHA-audited Animagia Catalogue of Life XR 2026-08-26 index'
+        or PUBLISHED_SNAPSHOT['count']!=34432
+        or len(PUBLISHED_SNAPSHOT['names'])!=34432):
+        raise ValueError('Prior verified Russian snapshot metadata invalid')
+    PUBLISHED_NAMES=PUBLISHED_SNAPSHOT['names']
+
+def published_ru_label(scientific,family,animal_class,order,phylum,rank):
+    """Exact previously published scientific name, rank and CoL lineage only."""
+    if not all(isinstance(v,str) for v in (scientific,family,animal_class,order,phylum,rank)):
+        return ''
+    item=PUBLISHED_NAMES.get(scientific.casefold()+'|'+rank)
+    if not isinstance(item,list) or len(item)!=5:return ''
+    label,cls,ord_,phy,fam=item
+    if (cls,ord_,phy,fam)!=(animal_class,order,phylum,family):return ''
+    return label if _RUSSIAN.fullmatch(label) else ''
+
+
+
 def load_birdnet_names():
     """Pin the exact open-MIT dataset to avoid silent taxonomy drift."""
     global EXTERNAL_STATS
+    # The remote CSV changed; retain only labels verified in the prior release.
+    if PUBLISHED_NAMES:
+        EXTERNAL_SPECIES_RU.clear()
+        EXTERNAL_STATS.clear()
+        EXTERNAL_STATS.update({
+            'source':'SHA-audited previously published CoL XR Russian labels',
+            'source_url':PUBLISHED_SNAPSHOT['source_url'],
+            'source_index_sha256':PUBLISHED_SNAPSHOT['source_index_sha256'],
+            'snapshot_sha256':PUBLISHED_RU_SHA256,
+            'verified_russian_labels':len(PUBLISHED_NAMES),
+            'external_birdnet_csv_used':False
+        })
+        return EXTERNAL_STATS
     request=urllib.request.Request(BIRDNET_URL,headers={'User-Agent':'Animagia-catalogue-builder/1.0'})
     with urllib.request.urlopen(request,timeout=70) as response:
         content=response.read(24_000_001)
@@ -148,6 +188,8 @@ def taxon_ru_labels(scientific, family, animal_class='', order='', phylum='', ra
         common=bvi_ru_label(scientific,animal_class,rank)
     if not common and animal_class and phylum:
         common=wikidata_ru_label(scientific,rank)
+    if not common and animal_class and phylum:
+        common=published_ru_label(scientific,family,animal_class,order,phylum,rank)
     return FAMILY_RU.get(family, ''),common
 
 def indexed_taxon_row(score, scientific, rank, lineage):

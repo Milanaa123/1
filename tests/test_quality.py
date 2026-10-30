@@ -128,6 +128,21 @@ class GreekNumericParityTests(unittest.TestCase):
             "class":"Insecta","order":"Coleoptera"
         }))
 
+    def test_previous_publication_snapshot_is_pinned(self):
+        import hashlib
+        from ru_catalog import PUBLISHED_NAMES, PUBLISHED_RU_SHA256, published_ru_label, load_birdnet_names
+        snap=BASE/'russian_published_verified_snapshot.json'
+        self.assertEqual(hashlib.sha256(snap.read_bytes()).hexdigest(),PUBLISHED_RU_SHA256)
+        self.assertEqual(len(PUBLISHED_NAMES),34432)
+        key,item=next(iter(PUBLISHED_NAMES.items()))
+        scientific,rank=key.rsplit('|',1)
+        label,cls,order,phylum,family=item
+        self.assertEqual(published_ru_label(scientific,family,cls,order,phylum,rank),label)
+        self.assertEqual(published_ru_label(scientific,'WrongFamily',cls,order,phylum,rank),'')
+        self.assertEqual(published_ru_label(scientific,family,'WrongClass',order,phylum,rank),'')
+        stats=load_birdnet_names()
+        self.assertFalse(stats['external_birdnet_csv_used'])
+
     def test_col_texttree_explicit_historical_synonyms(self):
         from build_data import texttree_synonym
         self.assertEqual(texttree_synonym('=Discodeles opisthodon (Boulenger, 1884)','species'),

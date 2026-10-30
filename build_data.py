@@ -5,7 +5,7 @@ from original.alphabet_maps import latin_map as CH
 from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_score, CONTROL_NAMES
 from taxon_filters import POLICY_VERSION, allow_animal_taxon
 from audit_index import audit_bucket
-from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus, RUSSIAN_SNAPSHOT, BULK_NAMES, SPECIES_RU, EXTERNAL_SPECIES_RU, WIKIDATA_SNAPSHOT, WIKIDATA_NAMES, wikidata_ru_label, INAT_NAMES, INAT_SNAPSHOT, inat_ru_label, BVI_NAMES, BVI_SNAPSHOT, bvi_ru_label
+from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus, RUSSIAN_SNAPSHOT, BULK_NAMES, SPECIES_RU, EXTERNAL_SPECIES_RU, WIKIDATA_SNAPSHOT, WIKIDATA_NAMES, wikidata_ru_label, INAT_NAMES, INAT_SNAPSHOT, inat_ru_label, BVI_NAMES, BVI_SNAPSHOT, bvi_ru_label, PUBLISHED_NAMES, PUBLISHED_RU_SHA256, published_ru_label
 from pathlib import Path
 from selected_original_art import publish_selected_original_art
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
@@ -236,7 +236,7 @@ def build():
  verify_animal_scope()
  stats=load_birdnet_names()
  SYNONYM_SOURCE_KEYS.update(k.casefold()+'|species' for k in EXTERNAL_SPECIES_RU)
- print('BIRDNET_RUSSIAN_NAMES_VALIDATED',stats,flush=True)
+ print('RUSSIAN_NAME_SOURCE_AUDITED',stats,flush=True)
  verified_external={}
  verified_external_genus={}
  verified_itis={}
@@ -463,6 +463,8 @@ def build():
       russian_name_sources['bvi_historical']+=1
      elif wikidata_ru_label(r[1],r[2])==r[9]:
       russian_name_sources['wikidata_cc0']+=1
+     elif published_ru_label(r[1],r[7],r[3],r[4],r[6],r[2])==r[9]:
+      russian_name_sources['previous_sha_verified_publication']+=1
      elif (r[1]+'|'+r[2] in synonym_ru_evidence and
            synonym_ru_evidence[r[1]+'|'+r[2]]['russian']==r[9]):
       russian_name_sources['col_texttree_attested_synonym']+=1
@@ -537,6 +539,9 @@ def build():
   'providers':{k:{'rows':v['rows'],'candidate_species':v['russian_candidate_keys'],'new_names_in_snapshot':v['new_names'],'license':v['license']}
     for k,v in RUSSIAN_SNAPSHOT['sources'].items()},
   'source_name_counts':dict(sorted(russian_name_sources.items())),
+  'previous_published_snapshot':{'sha256':PUBLISHED_RU_SHA256 if PUBLISHED_NAMES else '',
+    'verified_labels':len(PUBLISHED_NAMES),
+    'authority':'Prior SHA-audited CoL XR release'},
   'license_note':RUSSIAN_SNAPSHOT['license_notice'],
   'snapshot_sha256':hashlib.sha256(_snapshot_path.read_bytes()).hexdigest(),
   'inaturalist_snapshot':{'source':'official iNaturalist DarwinCore Archive',
