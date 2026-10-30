@@ -263,6 +263,31 @@ class GreekNumericParityTests(unittest.TestCase):
             if samples>=15:break
         self.assertEqual(samples,15)
 
+    def test_russian_subspecies_only_when_exactly_attested(self):
+        from ru_catalog import (
+            TKS_SUBSPECIES_NAMES,TKS_SUBSPECIES_STATS,tks_subspecies_ru_label
+        )
+        self.assertEqual(tks_subspecies_ru_label(
+            'Inventus fictivus sample','Inventidae','Mammalia',
+            'Carnivora','Chordata','subspecies'),'')
+        if not TKS_SUBSPECIES_NAMES:
+            self.assertFalse(TKS_SUBSPECIES_STATS['available'])
+            return
+        self.assertGreaterEqual(TKS_SUBSPECIES_STATS['count'],1000)
+        for key,row in list(TKS_SUBSPECIES_NAMES.items())[:130]:
+            self.assertTrue(key.endswith('|subspecies'))
+            latin=key.rsplit('|',1)[0]
+            name,phylum,cl,order,family,tks_id,gbif_id,inat_id=row
+            self.assertEqual(tks_subspecies_ru_label(
+                latin,family,cl or 'Mammalia',order,phylum,'subspecies'),name)
+            self.assertEqual(tks_subspecies_ru_label(
+                latin,family,cl or 'Mammalia',order,phylum,'species'),'')
+            self.assertEqual(tks_subspecies_ru_label(
+                latin,'WrongFamily',cl or 'Mammalia',order,phylum,'subspecies'),'')
+            if cl:
+                self.assertEqual(tks_subspecies_ru_label(
+                    latin,family,'WrongClass',order,phylum,'subspecies'),'')
+
     def test_tks_source_russian_species_not_fabricated(self):
         from ru_catalog import TKS_RU_NAMES, TKS_RU_STATS, tks_ru_label
         self.assertEqual(tks_ru_label('Inventus fictivus','Inventidae','Mammalia',
