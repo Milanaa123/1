@@ -99,6 +99,9 @@
  ]);
  const exactProfiles=new Map([
   ['Ursus arctos',['omnivore','terrestrial',[]]],['Ursus maritimus',['predator','semiaquatic',['terrestrial']]],
+   // Coyote diet includes both animal prey and plant food (NPS, Animal Diversity Web).
+   // https://home.nps.gov/jeca/learn/nature/coyote-canis-latrans.htm
+   ['Canis latrans',['omnivore','terrestrial',[]]],
   ['Ursus americanus',['omnivore','terrestrial',[]]],['Chelonia mydas',['herbivore','aquatic',[]]],
   ['Caretta caretta',['predator','aquatic',[]]],['Vulpes vulpes',['omnivore','terrestrial',['subterranean']]],
   ['Canis lupus',['predator','terrestrial',[]]],['Panthera uncia',['predator','terrestrial',[]]],
@@ -146,7 +149,10 @@
   const [diet,habitat,secondary]=known||[candidate.diet,candidate.habitat,candidate.secondary];
   // Conservative exception: some large bears have very different diets;
   // avoid assigning a genus-wide diet when species wasn't checked.
-  const safeDiet=candidate.id==='bear'&&!known?null:diet;
+  // Canis includes species with different feeding strategies: a wolf
+  // illustration never establishes a coyote/jackal or subspecies diet.
+  const safeDiet=!known&&(candidate.id==='bear'||
+     (candidate.id==='wolf'&&!candidate.exact))?null:diet;
   return {...candidate,diet:safeDiet,habitat,secondary, scientific:name,
     note:candidate.exact?'Художественная иллюстрация указанного вида':
       'Обобщённый рисунок биологической группы · '+candidate.label};

@@ -57,6 +57,12 @@ test('Ecological metadata is independent of whether approved artwork exists',()=
   'Felidae diet documented by zoological and veterinary sources');
  assert.equal(val(row('Panthera leo','Mammalia','Carnivora','Felidae')).habitat,'unknown',
   'Family-level evidence does not justify inventing an exact habitat');
+ assert.equal(val(row('Canis latrans','Mammalia','Carnivora','Canidae')).diet,'omnivore');
+ assert.equal(val(row('Canis lupus','Mammalia','Carnivora','Canidae')).diet,'predator');
+ assert.equal(val([9999,'Canis lupus familiaris','subspecies','Mammalia','Carnivora','','Chordata','Canidae','','']).diet,'unknown',
+  'A wolf illustration does not prove the domestic subspecies diet');
+ assert.equal(val(row('Canis aureus','Mammalia','Carnivora','Canidae')).diet,'unknown',
+  'An unverified canid must not inherit an automatic wolf diet');
  assert.equal(val(row('Procyon lotor','Mammalia','Carnivora','Procyonidae')).diet,'unknown',
   'Carnivora as an order does not establish a predatory diet');
  assert.equal(val(row('Suncus etruscus','Mammalia','Eulipotyphla')).diet,'unknown',
