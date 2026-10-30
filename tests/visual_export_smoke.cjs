@@ -69,7 +69,17 @@ const listen=()=>new Promise(ok=>server.listen(0,'127.0.0.1',ok));
  await page.waitForFunction(()=>window.__printed>0,{timeout:20000});
  const printed=await page.locator('#printRelicList .print-relic-animal').count();
  assert.equal(printed,1);
+ await page.emulateMedia({media:'print'});
+ const printLayout=await page.evaluate(()=>({
+  gallery:getComputedStyle(document.getElementById('previewSection')).display,
+  cards:getComputedStyle(document.getElementById('printRelicList')).display,
+  columns:getComputedStyle(document.getElementById('printRelicList')).gridTemplateColumns
+ }));
+ assert.equal(printLayout.gallery,'none','Interactive TOP-30 must not leak into the booklet PDF');
+ assert.equal(printLayout.cards,'grid');
+ assert.equal(printLayout.columns.trim().split(/\\s+/).length,1,'One selected card must not leave an unused right column');
  const pdf=await page.pdf({format:'A4',printBackground:true,preferCSSPageSize:true});
+ await page.emulateMedia({media:'screen'});
  assert.equal(pdf.subarray(0,5).toString(),'%PDF-');
  assert(pdf.length>10000);
  fs.writeFileSync(path.join(out,'print-bestiary.pdf'),pdf);

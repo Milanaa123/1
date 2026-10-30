@@ -1740,3 +1740,13 @@ html{overflow-x:clip}
 @media print{
  .bestiary-card .bestiary-inline-photo{display:none!important}
 }
+
+/* Dedicated booklet PDF: never print the interactive verified TOP-30 gallery.
+   A single selected animal occupies a centered one-column page. */
+@media print{
+ .results>#previewSection{display:none!important}
+ .print-relic-list:has(>.print-relic-animal:only-child){
+  grid-template-columns:minmax(0,1fr)!important;
+  max-width:160mm;margin:0 auto
+ }
+}
