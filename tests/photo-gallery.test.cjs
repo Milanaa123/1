@@ -107,3 +107,13 @@ test('Verified real iNaturalist photographs expand inline rather than opening a 
  assert.ok(!src.includes("document.body.classList.add('photo-dialog-open')"));
  assert.ok(css.includes('.bestiary-card .bestiary-inline-photo[hidden]{display:none!important}'));
 });
+
+
+test('Gallery updates reuse opened cards so inline photos do not collapse while loading',()=>{
+ const source=fs.readFileSync('photo_gallery.js','utf8');
+ assert.ok(source.includes("li.dataset.scientificKey=row[1]+'|'+row[2];"));
+ assert.ok(source.includes("const existingCards=new Map(Array.from(el('preview').querySelectorAll('.bestiary-card[data-scientific-key]'))"));
+ assert.ok(source.includes("const previousCard=existingCards.get(key);"));
+ assert.ok(source.includes('fragment.append(previousCard)'));
+ assert.ok(source.includes('fragment.append(photoMakeCard(item,index))'));
+});

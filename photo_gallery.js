@@ -242,6 +242,7 @@ function photoMakeCard(item,index) {
  const row=item.row,li=document.createElement('li');
  li.className='species-row verified-animal-card bestiary-card';
  li.dataset.animalGroup=photoBroadGroup(row);
+ li.dataset.scientificKey=row[1]+'|'+row[2];
  const atlas=typeof window!=='undefined'?window.AnimagiaAnimalAtlas:null;
  const profile=atlas?.resolve(row)||null;
  const style=atlas?.style(atlas.classify(row))||null;
@@ -379,6 +380,10 @@ function photoDraw() {
   const text=(display(r)+' '+r[1]+' '+bestiaryGroupName(r)).toLocaleLowerCase('ru');
   return selectedClass&&(!query||text.includes(query));
  });
+ // Reuse existing card DOM nodes when new verified photo matches arrive.
+ // This preserves expanded inline photos and their button state.
+ const existingCards=new Map(Array.from(el('preview').querySelectorAll('.bestiary-card[data-scientific-key]'))
+  .map(card=>[card.dataset.scientificKey,card]));
  const fragment=document.createDocumentFragment();
  let lastClass='';
  for(const item of visible){
@@ -389,7 +394,14 @@ function photoDraw() {
    chapter.textContent='✧ '+bestiaryGroupName(item.row);
    fragment.append(chapter);
   }
-  fragment.append(photoMakeCard(item,selected.indexOf(item)));
+  const index=selected.indexOf(item);
+  const key=item.row[1]+'|'+item.row[2];
+  const previousCard=existingCards.get(key);
+  if(previousCard){
+   const folio=previousCard.querySelector('.bestiary-folio');
+   if(folio)folio.textContent='ФОЛИАНТ · '+String(index+1).padStart(2,'0');
+   fragment.append(previousCard);
+  }else fragment.append(photoMakeCard(item,index));
  }
  el('preview').replaceChildren(fragment);
  const summary=document.getElementById('bestiarySummary');
