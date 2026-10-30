@@ -1703,3 +1703,7 @@ body.animal-chooser-opened{overflow:hidden!important}
  .relic-seal-wrap .relic-preview-numbers>div>span{font-size:9px}
  .animal-chooser-panel{gap:10px}
 }
+
+/* Mobile-only horizontal bleed from the existing ornamental layers must not
+   create a 4px sideways scroll. This does not change the card or layout. */
+html{overflow-x:clip}

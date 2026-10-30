@@ -85,6 +85,22 @@ function validGreek(raw){return !!raw.trim()&&[...norm(raw)].every(c=>W[c]!==und
 function breakdown(raw){return raw.trim().split(/\s+/).map(word=>word+' ('+score(word)+')').join(' + ');}
 
 const SPECIES_NAME_RU = {
+  // Independently documented Russian names of these exact accepted species.
+  // These are never inferred from the Latin epithet. Rebuilding the 1.19M
+  // CoL shards is unnecessary for this display-only correction.
+  // ВНИИПРХ / ВНИРО: https://www.vniiprh.vniro.ru/announcement/veslonos_novyy_obekt_rybovodstva_i_akklimatizatsii/
+  'Polyodon spathula':'Веслонос',
+  // EPPO Global Database: https://gd.eppo.int/taxon/ONCRMY
+  'Oncorhynchus mykiss':'Радужная форель',
+  // https://ru.wikipedia.org/wiki/Голубой_хирург and FishBase (Paracanthurus hepatus).
+  'Paracanthurus hepatus':'Голубой хирург',
+  // Иваненко А. М., Амбрамчук А. В., «Система ныне живущих ... рыб», 2019.
+  // Earlier Manta birostris is the current Mobula birostris.
+  'Mobula birostris':'Гигантский морской дьявол',
+  // https://elementy.ru/kartinka_dnya/591/Adskiy_vampir
+  'Vampyroteuthis infernalis':'Адский вампир',
+  // https://ru.wikipedia.org/wiki/Трубчатая_голотурия
+  'Holothuria tubulosa':'Трубчатая голотурия',
   // Only established or well-attested common names. Others are marked as phonetic renderings.
   // Proven widespread species names; never infer a common name from Latin letters.
   'Castor fiber':'Обыкновенный бобр',
