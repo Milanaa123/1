@@ -67,6 +67,18 @@ test('Ecological metadata is independent of whether approved artwork exists',()=
   'Carnivora as an order does not establish a predatory diet');
  assert.equal(val(row('Suncus etruscus','Mammalia','Eulipotyphla')).diet,'unknown',
   'Unknown species must not be assigned a diet without evidence');
+ assert.equal(val(row('Bagheera kiplingi','Arachnida','Araneae')).diet,'herbivore');
+ assert.equal(val(row('Xenohyla truncata','Amphibia','Anura')).diet,'omnivore');
+ assert.equal(val(row('Cornufer unknownensis','Amphibia','Anura')).diet,'unknown');
+ assert.equal(val(row('Araneus unknownensis','Arachnida','Araneae')).diet,'unknown');
+ assert.equal(val(row('Castor fiber','Mammalia','Rodentia')).diet,'herbivore');
+ assert.equal(val(row('Castor canadensis','Mammalia','Rodentia')).habitat,'semiaquatic');
+ assert.equal(val(row('Castor unknownensis','Mammalia','Rodentia')).diet,'unknown');
+ assert.equal(val([9999,'Ursus arctos horribilis','subspecies','Mammalia','Carnivora','','Chordata','Ursidae']).diet,'unknown',
+  'No species-level evidence may leak into an unverified subspecies');
+ assert.equal(val(row('Panthera nebulosa','Mammalia','Carnivora','Felidae')).diet,'predator');
+ assert.equal(val(row('Ailuropoda unknownensis','Mammalia','Carnivora','Ursidae')).diet,'unknown',
+  'Carnivora is a taxonomic order, not a diet');
 });
 test('Only mobile scroll overflow is clipped, not layout or card geometry',()=>{
  assert.ok(css.includes('html{overflow-x:clip}'));
