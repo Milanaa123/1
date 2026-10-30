@@ -71,7 +71,7 @@ test('Ecological metadata is independent of whether approved artwork exists',()=
 test('Only mobile scroll overflow is clipped, not layout or card geometry',()=>{
  assert.ok(css.includes('html{overflow-x:clip}'));
  assert.match(page,/<link rel="stylesheet" href="\.\/magic_theme\.css\?v=[^"]+">/);
- assert.match(page,/app\.js\?v=verified-six-russian-names-20261030/);
+ assert.match(page,/app\.js\?v=latin-ancient-letter-transliteration-20261031/);
  assert.match(page,/id="relicCardBackdrop"[^>]+width="1200" height="2000"/);
 });
 test('Saving different species with the same number generates distinct PNG filenames',()=>{
