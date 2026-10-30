@@ -396,7 +396,7 @@ def build():
           evidence.get('match_type')=='EXACT' and
           evidence.get('family','').endswith('idae')):
        row[7]=evidence['family']
-       row[8],row[9]=taxon_ru_labels(row[1],row[7])
+       row[8],row[9]=taxon_ru_labels(row[1],row[7],row[3],row[4],row[6],row[2])
        family_external_genus_inferred+=1
     if not row[7]:
      itis_match=verified_itis.get(row[1])
@@ -408,7 +408,7 @@ def build():
          itis_match.get('source')=='ITIS Solr exact valid hierarchy' and
          re.fullmatch(r'[A-Z][a-z]+idae',itis_match.get('family',''))):
       row[7]=itis_match['family']
-      row[8],row[9]=taxon_ru_labels(row[1],row[7])
+      row[8],row[9]=taxon_ru_labels(row[1],row[7],row[3],row[4],row[6],row[2])
       family_itis_inferred+=1
     if not row[7]:
      ott=verified_opentree.get(row[1])
@@ -421,7 +421,7 @@ def build():
          isinstance(ott.get('ott_id'),int) and
          re.fullmatch(r'[A-Z][a-z]+idae',ott.get('family',''))):
       row[7]=ott['family']
-      row[8],row[9]=taxon_ru_labels(row[1],row[7])
+      row[8],row[9]=taxon_ru_labels(row[1],row[7],row[3],row[4],row[6],row[2])
       family_opentree_inferred+=1
     if not row[7] and verified_independent:
      validated=family_for_row(row,verified_independent)
