@@ -264,7 +264,10 @@
     "Ophiuridae": "Офиуры",
     "Echinidae": "Морские ежи",
     "Holothuriidae": "Голотурии",
-    "Chitonidae": "Хитоны"
+    "Chitonidae": "Хитоны",
+    "Drosophilidae": "Плодовые мушки",
+    "Pyralidae": "Огнёвки настоящие",
+    "Tipulidae": "Комары-долгоножки"
   },
   "ru_name_sources": {
     "Cornufer bufoniformis": {

@@ -171,6 +171,15 @@ class GreekNumericParityTests(unittest.TestCase):
                    'kingdom':'Animalia','phylum':phylum,
                    'class':cls,'order':order,'scientific_name':scientific}))
 
+
+    def test_explicit_ru_family_names_from_zoological_sources(self):
+        from ru_catalog import taxon_ru_labels
+        controls={'Drosophilidae':'Плодовые мушки','Pyralidae':'Огнёвки настоящие',
+                  'Tipulidae':'Комары-долгоножки'}
+        for latin,russian in controls.items():
+            with self.subTest(family=latin):
+                self.assertEqual(taxon_ru_labels('Unknown species',latin)[0],russian)
+
     def test_col_texttree_explicit_historical_synonyms(self):
         from build_data import texttree_synonym
         self.assertEqual(texttree_synonym('=Discodeles opisthodon (Boulenger, 1884)','species'),
