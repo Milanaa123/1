@@ -497,46 +497,26 @@
  function cardAdornment(row,styl,greekName=''){
   let hash=2166136261;for(const ch of String(row?.[1]||'')+'|'+String(greekName||''))
    hash=Math.imul(hash^ch.charCodeAt(0),16777619)>>>0;
-  const genus=String(row?.[1]||'').split(' ')[0],cls=row?.[3],order=row?.[4];
+  const cls=row?.[3],order=row?.[4];
   const diet=['predator','herbivore','omnivore'].includes(styl?.diet)?styl.diet:'unknown';
-  const water=['aquatic','semiaquatic'].includes(styl?.habitat);
-  const belongs=(list)=>list.includes(genus);
-  // These are artistic families, NOT scientific diet declarations. They
-  // cover the user's 100 selected species, even where no art is uploaded.
-  const cat=['Panthera','Puma','Acinonyx','Neofelis','Leopardus','Lynx','Caracal',
-    'Felis','Canis','Cuon','Lycaon','Gulo'];
-  const flora=['Cervus','Alces','Capreolus','Rangifer','Bison','Bubalus',
-    'Ovis','Capra','Rupicapra','Equus','Giraffa','Gazella','Antilope',
-    'Camelus','Lama','Vicugna','Oryctolagus','Lepus','Macropus',
-    'Phascolarctos','Vombatus','Ailuropoda','Hystrix','Testudo','Bos'];
-  const mixed=['Vulpes','Procyon','Meles','Sus','Ursus','Sciurus',
-    'Cricetus','Mesocricetus','Mus','Rattus','Spermophilus'];
-  // Illustration families account for all 100 approved reference subjects.
-  // Fictional Pegasus is an illustration motif only, never a real taxonomy row.
-  const extraWater=['Zalophus','Eumetopias','Otaria','Arctocephalus',
-    'Neogale','Neovison','Homarus','Cancer','Scyphozoa'];
-  const seaTurtles=['Chelonia','Caretta','Dermochelys','Eretmochelys','Lepidochelys'];
+  const habitat=styl?.habitat||'unknown';
+  const water=['aquatic','semiaquatic'].includes(habitat);
+  // Diet-themed bites, claws and vines only follow verified diet metadata.
+  // Carnivora, illustrations and genus names are NOT dietary evidence.
   let kind='celestial';
-  if(order==='Araneae'||belongs(['Araneus','Argiope','Nephila','Trichonephila',
-    'Latrodectus','Loxosceles','Steatoda','Tegenaria','Eratigena','Pholcus',
-    'Theridion','Tetragnatha','Salticus','Pardosa']))kind='spider';
-  else if(order==='Anura')kind='soft-predator'; // webbed frog footprints
-  else if(order==='Chiroptera'||belongs(['Pteropus','Myotis','Pipistrellus',
-      'Rhinolophus','Desmodus','Eptesicus']))kind='nocturnal';
-  else if(cls==='Aves')kind=order==='Sphenisciformes'||belongs(['Aptenodytes',
-      'Spheniscus','Pygoscelis','Eudyptes'])?'aquatic':'avian';
-  else if(cls==='Reptilia')kind=belongs(seaTurtles)?'aquatic':'reptile';
-  else if(water||['Malacostraca','Scyphozoa','Cubozoa','Hydrozoa'].includes(cls)
-      ||belongs(extraWater)||belongs(['Orcinus','Delphinus','Megaptera','Balaenoptera',
-      'Hippocampus','Trichechus','Lutra','Lontra','Enhydra',
-      'Phoca','Odobenus','Octopus','Loligo','Castor','Carcharodon',
-      'Mobula','Manta','Mustela']))kind='aquatic';
-  else if(diet==='herbivore'||belongs(flora)||genus==='Marmota')kind='herbivore';
-  else if(genus==='Sarcophilus'||genus==='Dasyurus')kind='predator';
-  else if(diet==='omnivore'||belongs(mixed))kind='omnivore';
-  else if(diet==='predator'||belongs(cat))kind='predator';
-  else if(['Insecta','Arachnida'].includes(cls))kind='nocturnal';
-  else if(cls==='Mammalia')kind=order==='Carnivora'?'predator':'woodland';
+  if(diet==='unknown'){
+   if(order==='Araneae')kind='spider';
+   else if(cls==='Aves')kind='avian';
+   else if(cls==='Reptilia')kind=habitat==='aquatic'?'aquatic':'reptile';
+   else if(water)kind='aquatic';
+  }else if(order==='Araneae'&&diet==='predator')kind='spider';
+  else if(order==='Anura'&&diet==='predator')kind='soft-predator';
+  else if(cls==='Aves')kind=water?'aquatic':'avian';
+  else if(cls==='Reptilia')kind=habitat==='aquatic'?'aquatic':'reptile';
+  else if(water)kind='aquatic';
+  else if(diet==='herbivore')kind='herbivore';
+  else if(diet==='omnivore')kind='omnivore';
+  else if(diet==='predator')kind='predator';
   return {kind,variant:hash%5};
  }
  // All bites/cuts remove the backing color, border, stars AND previously
@@ -1424,11 +1404,11 @@
   if(!row)paintCardBackdropOnScreen(meta.diet);
   if(box){
    box.dataset.diet=meta.diet;box.dataset.habitat=meta.habitat;
-   box.hidden=meta.diet==='unknown'&&meta.habitat==='unknown'&&!meta.secondaryText.length;
+   box.hidden=!row;
   }
   const d=get('animalDiet'),h=get('animalHabitat'),extra=get('animalSecondary');
-  if(d){d.textContent=meta.dietText;d.parentElement.hidden=meta.diet==='unknown';}
-  if(h){h.textContent=meta.habitatText;h.parentElement.hidden=meta.habitat==='unknown';}
+  if(d){d.textContent=meta.dietText;d.parentElement.hidden=!row;}
+  if(h){h.textContent=meta.habitatText;h.parentElement.hidden=!row;}
   if(extra)extra.textContent=meta.secondaryText.length?'Также: '+meta.secondaryText.join(' · '):'';
   const inside=get('relicPreviewTraits');
   if(inside){
@@ -1440,7 +1420,7 @@
     const item=elem('span');
     item.className='relic-trait relic-trait-'+id+(known?'':' relic-trait-unverified');
     const heading=elem('small',title);
-    const detail=elem('strong',known?symbol+' '+value:'Уточняется');
+    const detail=elem('strong',known?symbol+' '+value:value);
     item.append(heading,detail);
     inside.append(item);
    }
