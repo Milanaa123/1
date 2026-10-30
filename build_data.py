@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Generate Greek-scored taxon shards for the complete Catalogue of Life XR."""
-import os,re,zipfile,json,urllib.request,shutil,tempfile,collections,time,unicodedata,hashlib
+import os,re,zipfile,json,urllib.request,shutil,tempfile,collections,time,unicodedata,hashlib,csv
 from original.alphabet_maps import latin_map as CH
 from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_score, CONTROL_NAMES
 from taxon_filters import POLICY_VERSION, allow_animal_taxon
@@ -355,7 +355,12 @@ def build():
   for f in handles.values():f.close()
   synonym_ru_evidence={};synonym_ru_conflicts=0
   unique=0;available=[];audit_ranks=collections.Counter();audit_classes=collections.Counter();family_values=set();family_counts=collections.Counter();russian_name_sources=collections.Counter();missing_families=collections.Counter();missing_samples=[];family_present=family_ru_present=species_ru_present=family_genus_inferred=family_external_inferred=family_external_genus_inferred=family_itis_inferred=family_opentree_inferred=family_independent_inferred=0;bucket_sha256={};index_digest=hashlib.sha256();casefold_duplicates=0
-  for p in directory.glob('*.part'):
+  russian_csv=DEST/'animals_with_verified_russian_names.csv'
+  russian_handle=russian_csv.open('w',encoding='utf-8-sig',newline='')
+  russian_writer=csv.writer(russian_handle)
+  russian_writer.writerow(('scientific_name','rank','russian_name','phylum','class','order','family_latin','family_russian'))
+  russian_csv_count=0
+  for p in sorted(directory.glob('*.part'),key=lambda p:int(p.stem)):
    bid=int(p.stem);seen={}
    with p.open(encoding='utf8') as f:
     for line in f:
@@ -486,6 +491,11 @@ def build():
       russian_name_sources['col_texttree_attested_synonym']+=1
      else:
       raise AssertionError('Unattributed Russian common name: '+r[1])
+   for russian_row in values:
+    if russian_row[9]:
+     russian_writer.writerow((russian_row[1],russian_row[2],russian_row[9],
+         russian_row[6],russian_row[3],russian_row[4],russian_row[7],russian_row[8]))
+     russian_csv_count+=1
    family_values.update(r[7] for r in values if r[7])
    family_counts.update(r[7] for r in values if r[7])
    for r in values:
@@ -503,6 +513,10 @@ def build():
     if bid==target//25:
      count=sum(r[0]==target for r in values)
      print('CONTROL_GREEK_TAXA',target,count,flush=True)
+  russian_handle.close()
+  assert russian_csv_count==species_ru_present,(
+      'Russian CSV names diverge from audited source',russian_csv_count,species_ru_present)
+  print('VERIFIED_RUSSIAN_CSV_READY',russian_csv_count,'records',russian_csv.stat().st_size,'bytes',flush=True)
  family_index=[{'family':latin,'family_ru':FAMILY_RU.get(latin,''),'record_count':count,'art_key':latin}
                for latin,count in sorted(family_counts.items())]
  assert len(family_index)==len(family_values)
@@ -606,7 +620,10 @@ def build():
  meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
   'distinct_families':len(family_values),'family_ru_present':family_ru_present,
   'verified_species_common_names':species_ru_present}
- meta['russian_name_policy']='Curated Russian names, BirdNET+, CoL, GBIF, iNaturalist Russian lexicon, attested historic BVI zoological labels and Wikidata. No phonetic transcription or fabricated common names.'
+ meta['russian_name_policy']='Curated Russian names, BirdNET+, CoL, GBIF, iNaturalist Russian lexicon, attested historic BVI zoological labels, Wikidata and exact TKS Animalia. No phonetic transcription or fabricated common names.'
+ meta['verified_russian_names_csv']={'file':russian_csv.name,'count':russian_csv_count,'sha256':hashlib.sha256(russian_csv.read_bytes()).hexdigest(),
+     'columns':['scientific_name','rank','russian_name','phylum','class','order','family_latin','family_russian'],
+     'policy':'Only verified, actually recorded source labels; all other taxa keep Latin name'}
  meta['artwork_key']='exact accepted species scientific name; approved 275 original PNG assets only'
  meta['editorial_scope_warning']='Independent/nonparasitic status is approximated from taxonomy, not individually proven for each species'
  meta['category_filter']='Curated noncolonial independent animal groups: mammals, birds, reptiles, amphibians, fish, insects, spiders/scorpions, free-moving crustaceans, cephalopods and echinoderms. Excludes corals/polyps, sponges, attached molluscs and worms; ecology is inferred, not verified species by species.'
