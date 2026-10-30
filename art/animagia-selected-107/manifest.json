@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "count": 108,
+  "count": 275,
   "animals": 104,
   "additional": 4,
   "format": "original unmodified transparent RGBA PNG",
-  "approval": "visually selected 2026-10-29; not scientific anatomy certification",
+  "approval": "108 originally approved PNG plus 167 original PNG in 2026-10-30 new batch; artistic selection, not species-anatomy certification",
   "files": [
     {
       "number": 1,
@@ -869,6 +869,1343 @@
       "width": 1374,
       "height": 1145,
       "sha256": "f0ba42df1e0fff5ed4e92afdfcd0e960b167510c96bfa872e3fbd080beddd4c5"
+    },
+    {
+      "number": 109,
+      "name": "Малая панда",
+      "file": "new/109_Ailurus_fulgens.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "2e96e7a3d7366a454d388dcd80eedc53ae77fbb0859b7960f9a745d6b96c158e"
+    },
+    {
+      "number": 110,
+      "name": "Вилорог",
+      "file": "new/110_Antilocapra_americana.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "823189d3fb33def9d1325759d7f4fcdebce70a0acb834a5cba5433b7645354ae"
+    },
+    {
+      "number": 111,
+      "name": "Утконос",
+      "file": "new/111_Ornithorhynchus_anatinus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "86b33e58ab6ced5d39b0230c42d5434bc4a7355e81971479f82456ae09d70ee2"
+    },
+    {
+      "number": 112,
+      "name": "Проехидна Бруийна",
+      "file": "new/112_Zaglossus_bruijni.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "be7d2b2d62aa0b6f5e78e931e65e59a6c954ec44322f9a24bd6a1b19ce2d7def"
+    },
+    {
+      "number": 113,
+      "name": "Карликовая многозубка",
+      "file": "new/113_Suncus_etruscus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "8e43e9c875ff6a8e7f7b1200825440994ebfc96cce9dbf2683a771d40cee7530"
+    },
+    {
+      "number": 114,
+      "name": "Звездорыл",
+      "file": "new/114_Condylura_cristata.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "f1c7b28f23df9bea0ca3eed42e60a4e79e29ca50ec7d56fa2df9470aa3d7618f"
+    },
+    {
+      "number": 115,
+      "name": "Кубинский щелезуб",
+      "file": "new/115_Atopogale_cubana.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "2b9e84423fe7eb3a5459c038d76a723e90fb2c19e04b006b8fdced70a37532a2"
+    },
+    {
+      "number": 116,
+      "name": "Трубкозуб",
+      "file": "new/116_Orycteropus_afer.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "2aefe18bbf8db15d30e2d5725ad185d041fca29277ca96d7249a445228dd76a1"
+    },
+    {
+      "number": 117,
+      "name": "Степной ящер",
+      "file": "new/117_Smutsia_temminckii.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "c8c45eb1bbf9a38bdabe93ed1abfe16e058379daa36b4ab32337bf26c6f95b21"
+    },
+    {
+      "number": 118,
+      "name": "Гигантский муравьед",
+      "file": "new/118_Myrmecophaga_tridactyla.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "6a44e02fa80db34f41f421610f77a6ba2d9a4ff509588a3ec47d4834504d0868"
+    },
+    {
+      "number": 119,
+      "name": "Двупалый муравьед",
+      "file": "new/119_Cyclopes_didactylus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "7e3f1ea2ff46e2971068b77b26f4c25acab864febdfa79eeb0a2a07f16897448"
+    },
+    {
+      "number": 120,
+      "name": "Броненосец тату",
+      "file": "new/120_Cabassous_tatouay.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "0376fdc57a80457c058f9f9b99f8754467a88ddff33842ebdd87eedc4c0e2ff3"
+    },
+    {
+      "number": 121,
+      "name": "Мохнатый броненосец",
+      "file": "new/121_Dasypus_pilosus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "c1c3f7c81e709a84910afe28cd280253718ab4db1c0d97d642f205480360c192"
+    },
+    {
+      "number": 122,
+      "name": "Малайский шерстокрыл",
+      "file": "new/122_Galeopterus_variegatus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "2108b92b00df601bd0f8040eda4b5d83d7de3e1720b1c811333cce08e28a31d4"
+    },
+    {
+      "number": 123,
+      "name": "Долгопят диана",
+      "file": "new/123_Tarsius_dentatus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "dcaf0c391920a74d3a874d678ef59bd5b5c1c6d0bc14375f1cb63e747d9d5224"
+    },
+    {
+      "number": 124,
+      "name": "Мадагаскарская руконожка",
+      "file": "new/124_Daubentonia_madagascariensis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "c6aebc4754f67de15236aacfe336486921646d2ab4d52e961c4ce517f98ec7e4"
+    },
+    {
+      "number": 125,
+      "name": "Кошачий лемур",
+      "file": "new/125_Lemur_catta.png",
+      "width": 1199,
+      "height": 1312,
+      "sha256": "0c1808f88d6dd5e23a67aaac5b3e45689ca83aa6ad51303fa66f73ee9082644d"
+    },
+    {
+      "number": 126,
+      "name": "Индри",
+      "file": "new/126_Indri_indri.png",
+      "width": 1199,
+      "height": 1312,
+      "sha256": "76a6f675e2c134fb707c7e5499cb0a03070468e64eae275aa60a1bf1035f41da"
+    },
+    {
+      "number": 127,
+      "name": "Игрунка Куля",
+      "file": "new/127_Callithrix_kuhlii.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "df9006cf2a516f04db0fd3f2d6e3fc319cb70bfd54341a1f114520e8047cab9d"
+    },
+    {
+      "number": 128,
+      "name": "Южный галаго",
+      "file": "new/128_Galago_moholi.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "c90c5b05f9876626f2caebf5328964f93fdc7949dd23dd4614c577882747f2de"
+    },
+    {
+      "number": 129,
+      "name": "Хулок",
+      "file": "new/129_Hoolock_hoolock.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "d6e4a73e626e69caaa4ad74f34b7d6553fe631c8e986cdce2d5901ccb2da4451"
+    },
+    {
+      "number": 130,
+      "name": "Свиноносая летучая мышь",
+      "file": "new/130_Craseonycteris_thonglongyai.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "8e09265caebf914ee11d1e5481f8918e072ca72fe1384df3238ff5fda13e4608"
+    },
+    {
+      "number": 131,
+      "name": "Гигантская летучая лисица",
+      "file": "new/131_Pteropus_vampyrus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "791af90dd4a0b5f9742a2960ffca37e9b03d4c9b4161ba1ef9bc79f984b1f094"
+    },
+    {
+      "number": 132,
+      "name": "Малый зайцегуб",
+      "file": "new/132_Noctilio_albiventris.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "5159cab955b8db9fdcbb9358a7160486f4e9b24065820020b969a16b909dfbd6"
+    },
+    {
+      "number": 133,
+      "name": "Листонос Дориа",
+      "file": "new/133_Hipposideros_doriae.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "29b2446e7dc08e7e6955271fce9e51244956a6473427ce72531f268b815b5135"
+    },
+    {
+      "number": 134,
+      "name": "Голый землекоп",
+      "file": "new/134_Heterocephalus_glaber.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "818e86d3c7b53b2860db775846fb42de9aa05751947f0d126d465c1ee57f5720"
+    },
+    {
+      "number": 135,
+      "name": "Шиншилла",
+      "file": "new/135_Chinchilla_lanigera.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "0fe51da6aaa197135b55f4801b56530a6f269cfa6a91ffd96458576508e0aca2"
+    },
+    {
+      "number": 136,
+      "name": "Чёрный дикобраз",
+      "file": "new/136_Coendou_nycthemera.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "35ce9e673248c28451091997b9b21cb8a8abea3a9bf1a620423fc35987c164eb"
+    },
+    {
+      "number": 137,
+      "name": "Моко",
+      "file": "new/137_Kerodon_rupestris.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "dd0c443ba1cc3903461339c9f081574735ac0a1575d9fc577520f8a495816d19"
+    },
+    {
+      "number": 138,
+      "name": "Степная мышовка",
+      "file": "new/138_Sicista_subtilis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "142afef973256d44341fdc70aebafdbdc9805295fe6b8b86b953a33d55cab0a0"
+    },
+    {
+      "number": 139,
+      "name": "Пескорой Бокаге",
+      "file": "new/139_Fukomys_bocagei.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "96157f6e276f0713c6d54a3e2899b88d590cc58e8b9733dbe7c9a0b49d8d2449"
+    },
+    {
+      "number": 140,
+      "name": "Гофер Ботта",
+      "file": "new/140_Megascapheus_bottae.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "fda53180eb41d18fc4e232a14e42ad227eff8d0a94a2c6c866114d357f67f5aa"
+    },
+    {
+      "number": 141,
+      "name": "Капский долгоног",
+      "file": "new/141_Pedetes_capensis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "0a59cdaecd4eb5c2752494c93c866154556f290793dee8340eff5d7da23dc881"
+    },
+    {
+      "number": 142,
+      "name": "Пищуха Ройли",
+      "file": "new/142_Ochotona_roylii.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "cfad299920f43ade1d198e0fc49bcb5cda166dc66803cd153ec475c6611c066e"
+    },
+    {
+      "number": 143,
+      "name": "Обыкновенный дюгонь",
+      "file": "new/143_Dugong_dugon.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "4bd92113dbbbd00c025949ad9440798d81c59a6bb073afb988358439c4b538b3"
+    },
+    {
+      "number": 144,
+      "name": "Африканский ламантин",
+      "file": "new/144_Trichechus_senegalensis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "38b5c7d197d98a2ed0cfb80b0d6e86b29ca0fe21fb90b856dca7e65504e90232"
+    },
+    {
+      "number": 145,
+      "name": "Морж",
+      "file": "new/145_Odobenus_rosmarus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "03d16410387210167237e54964713b6f01b5d6e8fe06ccb163aa2c57a10b518e"
+    },
+    {
+      "number": 146,
+      "name": "Южный морской лев",
+      "file": "new/146_Otaria_byronia.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "04910824204a996a609ff8f708f1a202c6f3f0d1f117cc2d66949b1464e5cbb9"
+    },
+    {
+      "number": 147,
+      "name": "Нарвал",
+      "file": "new/147_Monodon_monoceros.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "60306f1d5976437399ad47bce9523b5e17503e4e565d876daf9b7f282ec21914"
+    },
+    {
+      "number": 148,
+      "name": "Кашалот",
+      "file": "new/148_Physeter_macrocephalus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "7589e00741e4af4d753b1fb8d0bd5ed512fb1da8cb56b99d54ab0b8f260433a1"
+    },
+    {
+      "number": 149,
+      "name": "Амазонский дельфин",
+      "file": "new/149_Inia_geoffrensis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "8b5b1c6ab374f64d0b8e90f247dd6b1e7d3c99b68fddb37054c85d6c679b8858"
+    },
+    {
+      "number": 150,
+      "name": "Гренландский кит",
+      "file": "new/150_Balaena_mysticetus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "689c6c9902aab62afb0cf257118e915e04c45b1aa7fe91109aa49af8ea6eb2dc"
+    },
+    {
+      "number": 151,
+      "name": "Горный тапир",
+      "file": "new/151_Tapirus_pinchaque.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "3551b8487b7bc0c90fb58adf9dee98286febf641e8b408a0b4a9d582ce764bcc"
+    },
+    {
+      "number": 152,
+      "name": "Белый носорог",
+      "file": "new/152_Ceratotherium_simum.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "741c96754d31208ad7d0bfff5f219a6eda1cd34f0cfcb2d403ba84e58e3aae8a"
+    },
+    {
+      "number": 153,
+      "name": "Чёрная кабарга",
+      "file": "new/153_Moschus_fuscus.png",
+      "width": 1206,
+      "height": 1305,
+      "sha256": "d10bc4b0b22d2253bdb9c0fdb791ded786cb0b858b713d73167678b83b55bc9b"
+    },
+    {
+      "number": 154,
+      "name": "Малый оленёк",
+      "file": "new/154_Tragulus_kanchil.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "5b3f6d091194d5f1249f402eeb74364bba1046d1b771ef6cbef7642f7aba8081"
+    },
+    {
+      "number": 155,
+      "name": "Фосса",
+      "file": "new/155_Cryptoprocta_ferox.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "6dcfd961a5671e586871d56f57ad69172640b5469f1f5d6c6ff3cb4397a3912e"
+    },
+    {
+      "number": 156,
+      "name": "Малый скунс",
+      "file": "new/156_Spilogale_gracilis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "8d881532d83bb87245c254933f6fe231f72fa103559b767cd6fe38ab6f24d667"
+    },
+    {
+      "number": 157,
+      "name": "Кускус Тейта",
+      "file": "new/157_Dactylopsila_tatei.png",
+      "width": 1447,
+      "height": 1087,
+      "sha256": "a041ba63f0482fe5f0199e3532a9f5f55f6307cad8df34e061ee4f843d6fe60f"
+    },
+    {
+      "number": 158,
+      "name": "Кроличий бандикут",
+      "file": "new/158_Macrotis_lagotis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "9e16e983f87d2959a1b75aada16b5ce98979387180ab3b09a3d2d7994c17733f"
+    },
+    {
+      "number": 159,
+      "name": "Малый киви",
+      "file": "new/159_Apteryx_owenii.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "32e59ed1f39d78c6992f53a24ac44fa1db5681b8e19df0e8b45c8858ffbce6f0"
+    },
+    {
+      "number": 160,
+      "name": "Казуар-мурук",
+      "file": "new/160_Casuarius_bennetti.png",
+      "width": 1181,
+      "height": 1331,
+      "sha256": "4861542f1fc8dc4490c53ff5ae8b3f058f8f725e6f5456d8622986ac20d1f686"
+    },
+    {
+      "number": 161,
+      "name": "Африканский страус",
+      "file": "new/161_Struthio_camelus.png",
+      "width": 1208,
+      "height": 1302,
+      "sha256": "3042fa573f1217e7205d3714637a9cd7b26d2a9594ca399d8e6f17be68bab0e5"
+    },
+    {
+      "number": 162,
+      "name": "Нанду",
+      "file": "new/162_Rhea_americana.png",
+      "width": 1199,
+      "height": 1312,
+      "sha256": "e63d880f4ec30d80ee4bd019cf26cf5417ba38aec9e98cc1dcd016b4ed11d8e1"
+    },
+    {
+      "number": 163,
+      "name": "Тао",
+      "file": "new/163_Tinamus_tao.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "0fabbb50376af9651bb54a90c8fc2e476271190ea9f9eebdc25d22a5ed747554"
+    },
+    {
+      "number": 164,
+      "name": "Китоглав",
+      "file": "new/164_Balaeniceps_rex.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "789e1b8c71493a61acb9288877de3ded0a1e8325143822f8d4a894157c90ed50"
+    },
+    {
+      "number": 165,
+      "name": "Южный токо",
+      "file": "new/165_Tockus_leucomelas.png",
+      "width": 1240,
+      "height": 1268,
+      "sha256": "954f47972b5c7729161a2e9858f292f0683909f4ef89b57190b1ccc9d2529b04"
+    },
+    {
+      "number": 166,
+      "name": "Кафрский рогатый ворон",
+      "file": "new/166_Bucorvus_leadbeateri.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "dcabda5b750511f20edeec0f4487371d8e50c02dcb09e858d4555cd53810dbc2"
+    },
+    {
+      "number": 167,
+      "name": "Зимородок",
+      "file": "new/167_Alcedo_atthis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "04d1ebd6bd3dec4ce2303517ee6eeddb79ec68a849f0ce05182077405bb28e2c"
+    },
+    {
+      "number": 168,
+      "name": "Чёрная щурка",
+      "file": "new/168_Merops_gularis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "026ecee230e0a672ad5652b341cdc9573b3cdc6f6b77649625739717672753ab"
+    },
+    {
+      "number": 169,
+      "name": "Тукан-токо",
+      "file": "new/169_Ramphastos_toco.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "cf677e9395d04a8f3cd3863cc8293fcd99282c9c6ebe65eb70dde488b8ffeca0"
+    },
+    {
+      "number": 170,
+      "name": "Желна",
+      "file": "new/170_Dryocopus_martius.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "961b8447a2b184773f030680a4f7f2b96b5fb52576216beac7417377e4f261b9"
+    },
+    {
+      "number": 171,
+      "name": "Корелла",
+      "file": "new/171_Nymphicus_hollandicus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "c06d06d8c318090e1d99825981e96a2bc3fee797513848faa70bad03f0642864"
+    },
+    {
+      "number": 172,
+      "name": "Яндая",
+      "file": "new/172_Aratinga_jandaya.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "eeae223a0df55a896eaf7832ec7a31c155c6ec76b27137c85c8ccec59f0e1c52"
+    },
+    {
+      "number": 173,
+      "name": "Кетцаль",
+      "file": "new/173_Pharomachrus_mocinno.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "27ccf04aac978f7fca1f8e39f3f50b0ea3f1782ddab578d1752d5ae7cee765b0"
+    },
+    {
+      "number": 174,
+      "name": "Удод",
+      "file": "new/174_Upupa_epops.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "bdaea23ae4e8838b956a42bc67fddfeda3f7c1dbb3661f1744e6b7f3e8475a3f"
+    },
+    {
+      "number": 175,
+      "name": "Серый бананоед",
+      "file": "new/175_Crinifer_concolor.png",
+      "width": 1199,
+      "height": 1312,
+      "sha256": "b091ef93123db0f6d35358b7bb5937b883973001e5fc408ff15dc0142527e546"
+    },
+    {
+      "number": 176,
+      "name": "Андский кондор",
+      "file": "new/176_Vultur_gryphus.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "db592f688bcd2b87c9fe09585d435230caf55e31c08a0cdade5c3f773a2f39e6"
+    },
+    {
+      "number": 177,
+      "name": "Фрегат-ариель",
+      "file": "new/177_Fregata_ariel.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "db8ea5c609f97b458a69e6e242777993eccf994768049199dad9abfe9be2e874"
+    },
+    {
+      "number": 178,
+      "name": "Дымчатый альбатрос",
+      "file": "new/178_Phoebetria_fusca.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "899bedc244f808752c313786b718b18bbc1a17656a2c7cc5e932d8f31da7b79a"
+    },
+    {
+      "number": 179,
+      "name": "Белохвостый фаэтон",
+      "file": "new/179_Phaethon_lepturus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "28ffea1baf3b1c9e01794570e043e56fc0c63b5148bc223f7904a1970432150d"
+    },
+    {
+      "number": 180,
+      "name": "Бурая олуша",
+      "file": "new/180_Sula_leucogaster.png",
+      "width": 1199,
+      "height": 1312,
+      "sha256": "8a6ced367f88189cbf33e196d7a4e90d15a6d19de07d8b1f41b143e9dee5a783"
+    },
+    {
+      "number": 181,
+      "name": "Азиатская змеешейка",
+      "file": "new/181_Anhinga_melanogaster.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "18bce3d7c0af3bcc2da6e133da65e4cf259962237f9138fc1a52bb805e8af1d8"
+    },
+    {
+      "number": 182,
+      "name": "Люрик",
+      "file": "new/182_Alle_alle.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "e57359cd7f5e9b6e1e6d0e643556e7ac9d352bc017f9c2020b65bfb76fddf0f2"
+    },
+    {
+      "number": 183,
+      "name": "Ходулочник",
+      "file": "new/183_Himantopus_himantopus.png",
+      "width": 1199,
+      "height": 1312,
+      "sha256": "8a6ebf87ae3786dc2699055597f0078af285d986ef998801d5a4cecd960363f2"
+    },
+    {
+      "number": 184,
+      "name": "Малая якана",
+      "file": "new/184_Microparra_capensis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "a0beaa28ad87f4acecd768535e828f62b94d91d23c425ff21678cdf7858f3333"
+    },
+    {
+      "number": 185,
+      "name": "Агами",
+      "file": "new/185_Agamia_agami.png",
+      "width": 1199,
+      "height": 1312,
+      "sha256": "14ed2d1e344bbfaa28f38089b04685b7f0e6b1120a5b89f33a374a0c6ef4104c"
+    },
+    {
+      "number": 186,
+      "name": "Колпица",
+      "file": "new/186_Platalea_leucorodia.png",
+      "width": 1199,
+      "height": 1312,
+      "sha256": "6699f6e94a4aa604014ccbdefb3c07b262d7c1a223e1fade1541df91dc92f035"
+    },
+    {
+      "number": 187,
+      "name": "Ушастый лягушкорот",
+      "file": "new/187_Batrachostomus_auritus.png",
+      "width": 1199,
+      "height": 1312,
+      "sha256": "10cc87b30895c7cc192a9090ba8ffc4509245b5ea19a08c9deafc59e4b736ba2"
+    },
+    {
+      "number": 188,
+      "name": "Чёрная сипуха",
+      "file": "new/188_Tyto_tenebricosa.png",
+      "width": 1157,
+      "height": 1360,
+      "sha256": "fc7d0a0e3d36e5c9d290adbd92ba4c9180623c9876f83987aed7dc68b56f6e9b"
+    },
+    {
+      "number": 189,
+      "name": "Молох",
+      "file": "new/189_Moloch_horridus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "332d82c59fe0cd787f237abe8bfbc8eda1cddb6f865ab109f437c1787d203b60"
+    },
+    {
+      "number": 190,
+      "name": "Киниска Ганса",
+      "file": "new/190_Cynisca_gansi.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "d024f830e379000edf1eb084e69450f836dbc317f1885e3d6a9212c74bf1b8de"
+    },
+    {
+      "number": 191,
+      "name": "Желтопузик",
+      "file": "new/191_Pseudopus_apodus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "ca95f4086c7f80c339ea8276e78760402fca84ad4fd632ebe975f2ea3a5cbbd7"
+    },
+    {
+      "number": 192,
+      "name": "Хирот",
+      "file": "new/192_Bipes_canaliculatus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "cf88d56920e7f3ea72236b13e2c5f6df896a05f3b0194bf16a34f7480103cf54"
+    },
+    {
+      "number": 193,
+      "name": "Шишкохвостый геккон",
+      "file": "new/193_Nephrurus_asper.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "47b09207662efdb2dd738b9d065865fe8daa6e6ff6cd7dce7f32d4369a9dcb19"
+    },
+    {
+      "number": 194,
+      "name": "Грифовая Черепаха",
+      "file": "new/194_Macrochelys_temminckii.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "fe43b5f371a0b6eab041ceeafa592abe7095f2bb525fede721bd23fd297e306e"
+    },
+    {
+      "number": 195,
+      "name": "Двухкоготная черепаха",
+      "file": "new/195_Carettochelys_insculpta.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "0e4da32f3bb8625ea2167d7b920d10042c28b01f5bd5e4292e0d75dc80b61452"
+    },
+    {
+      "number": 196,
+      "name": "Малый платизавр",
+      "file": "new/196_Platysaurus_minor.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "27773fbf339ab40f5bf9cd8b416e0cb68c6d98cf412a37960c00c5e5fdef59be"
+    },
+    {
+      "number": 197,
+      "name": "Хохлатый василиск",
+      "file": "new/197_Basiliscus_galeritus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "8c439a8ed4afe3ab45dccd6ce643b39a1714e10ffe75f6c380a5bbd108ffe178"
+    },
+    {
+      "number": 198,
+      "name": "Кожистая черепаха",
+      "file": "new/198_Dermochelys_coriacea.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "660fd79ddc84616af708d594fe2fa3d2f63482e6cbfc91d70a24e27458477d79"
+    },
+    {
+      "number": 199,
+      "name": "Эублефар Хардвика",
+      "file": "new/199_Eublepharis_pictus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "80403c70607c55e182c5d3a1b609a80160cbdc6ff1510cfd4a6a950fd95d6297"
+    },
+    {
+      "number": 200,
+      "name": "Жилатье",
+      "file": "new/200_Heloderma_suspectum.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "3365dea93035cb2f82a4522ffe0f87962fd391115cf0b98cf5070e7fe851ee58"
+    },
+    {
+      "number": 201,
+      "name": "Чаквала",
+      "file": "new/201_Sauromalus_ater.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "d331084090007db1f7151036ecec856ea446c5be52f11ad1048394cdc404e50e"
+    },
+    {
+      "number": 202,
+      "name": "Калимантанский безухий варан",
+      "file": "new/202_Lanthanotus_borneensis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "bb9a38ef1b3d086319a4dceba53f7ccf1bbd95f3bc0c8a964e92406dcfc55d6d"
+    },
+    {
+      "number": 203,
+      "name": "Дельма Грея",
+      "file": "new/203_Delma_grayii.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "86d95991c0ab61aef3858f11cded589331957cf7d1faf6ce909056dabf5e30de"
+    },
+    {
+      "number": 204,
+      "name": "Сепсина Копа",
+      "file": "new/204_Sepsina_copei.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "94b1c0dae2c706a601b4589cfce44258cbbe81ab45058428ffc93b5a4ada60a8"
+    },
+    {
+      "number": 205,
+      "name": "Таутара",
+      "file": "new/205_Sphenodon_punctatus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "3e28cea0e872775f88914c42208381765f37349dfb9b84f00fbfd7f56b01e7bb"
+    },
+    {
+      "number": 206,
+      "name": "Серый варан",
+      "file": "new/206_Varanus_griseus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "b4e147bddb2a5d03abeec232ef0db668a6406003bee91c7aca344fd6cadb8e64"
+    },
+    {
+      "number": 207,
+      "name": "Иловая черепаха Данна",
+      "file": "new/207_Kinosternon_dunni.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "11d69fde3859218026b24318a3c4f54a743542b7f87b363bd93f05861d622dd5"
+    },
+    {
+      "number": 208,
+      "name": "Крокодиловый шинизавр",
+      "file": "new/208_Shinisaurus_crocodilurus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "eb9ad736bde427439ca4826f22a2d9505ea77550b048cbe6f5f261c23538c517"
+    },
+    {
+      "number": 209,
+      "name": "Балеарская жаба-повитуха",
+      "file": "new/209_Alytes_muletensis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "7893e5d04b56a285681cfedf294b20b6d22c13cc6ed73d36b24dee228db507e6"
+    },
+    {
+      "number": 210,
+      "name": "Амбистома Копа",
+      "file": "new/210_Dicamptodon_copei.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "d7ce9105aae832dec0356f60cc19bdf9dbc77d0641800116bd1269cd9edfc22d"
+    },
+    {
+      "number": 211,
+      "name": "Однопалая амфиума",
+      "file": "new/211_Amphiuma_pholeter.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "952cfd02059e1125a60b09fbc9b41ebaf0ae8cdf56509e5e1e26155d2300e671"
+    },
+    {
+      "number": 212,
+      "name": "Большая жерлянка",
+      "file": "new/212_Bombina_maxima.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "dfc7c36891178a744d33c4ca01f6c11059c5539f08f4ee794ea1eece1eca0e68"
+    },
+    {
+      "number": 213,
+      "name": "Двупалая жаба",
+      "file": "new/213_Brachycephalus_didactylus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "1eb7c4d98392bf550b0e4f2b25dd21a0637c18d447f6fef2ba47e13aff386a7b"
+    },
+    {
+      "number": 214,
+      "name": "Гекконовая лягушка",
+      "file": "new/214_Centrolene_geckoidea.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "3a6987463baec7599b5cc8823566e0b09640cb6ec11823c23c7d04e13c824227"
+    },
+    {
+      "number": 215,
+      "name": "Пьеротка",
+      "file": "new/215_Chacophrys_pierottii.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "ffcd938f2fed5db2127f2a56d90e32869a3858418391e8635fcdea02eb733b10"
+    },
+    {
+      "number": 216,
+      "name": "Аллеганский скрытожаберник",
+      "file": "new/216_Cryptobranchus_alleganiensis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "dfd69f8e9d74564694be0863d68a56098a309a93920be99173e3a38cee4f9e2a"
+    },
+    {
+      "number": 217,
+      "name": "Древолаз Линча",
+      "file": "new/217_Colostethus_lynchi.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "ac2445d0aa472cdb4f698bd72b33dba2c52fcca891bdcc0c766b3689582a8f6b"
+    },
+    {
+      "number": 218,
+      "name": "Фиолетовая жаба",
+      "file": "new/218_Nasikabatrachus_sahyadrensis.png",
+      "width": 1419,
+      "height": 1108,
+      "sha256": "e9c9f463c5f655b334c5cc74a1e1baa3d53e545f3fec65d29fdda8d7f09a4850"
+    },
+    {
+      "number": 219,
+      "name": "Малая пипа",
+      "file": "new/219_Pipa_snethlageae.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "a957f77aacdea43a859ae39aa9439cd06144aee27b5491f9a0fd594d796238c6"
+    },
+    {
+      "number": 220,
+      "name": "Речной протей",
+      "file": "new/220_Necturus_lewisi.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "45db62fa39bde81b3f7bc8ee94f050efcac0bd83a5ff07faa82e9997c109b89d"
+    },
+    {
+      "number": 221,
+      "name": "Ринодерма Дарвина",
+      "file": "new/221_Rhinoderma_darwinii.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "70e63107db9c6ab22a3ccbf85fff48bb9b386d9521d579a32f2d4f0ab7186333"
+    },
+    {
+      "number": 222,
+      "name": "Веслоног-молох",
+      "file": "new/222_Theloderma_moloch.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "b7a4186ce4f76bdf8eb71654151007feb71b34e87ad06f4c729f803a26a04023"
+    },
+    {
+      "number": 223,
+      "name": "Пигоплит",
+      "file": "new/223_Pygoplites_diacanthus.png",
+      "width": 1402,
+      "height": 1122,
+      "sha256": "c7374518380388b3dc381613ca42e0f8d205a83a8fbbe359ae24123a9b039311"
+    },
+    {
+      "number": 224,
+      "name": "Кабуба белоперая",
+      "file": "new/224_Heniochus_acuminatus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "fdb8d23a8fea907ec198e3a60a70fd93aabcbd2200ed4b43a424f598ea103b43"
+    },
+    {
+      "number": 225,
+      "name": "таутога",
+      "file": "new/225_Tautoga_onitis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "e5023cbb2e974e13c315bb4f337597e1ee3ac227914c9d99e3479328d50a9bc1"
+    },
+    {
+      "number": 226,
+      "name": "куткутия",
+      "file": "new/226_Leiodon_cutcutia.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "8a66a6f863a5a97bfb1cecc1e6fcb375a4cd6dff0ac5c8bc960e83e8524fbc07"
+    },
+    {
+      "number": 227,
+      "name": "шар-рыба",
+      "file": "new/227_Cyclichthys_orbicularis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "85d82533b21ed005b526dd0f97f982d037367acf4ba1de60fa5309753ad4e9af"
+    },
+    {
+      "number": 228,
+      "name": "Кузовок трехугольный",
+      "file": "new/228_Tetrosomus_concatenatus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "bee66d7266b1664ac8fd376b8bb85d2f07219351019994acd8a3f9895aad12fc"
+    },
+    {
+      "number": 229,
+      "name": "Спинорог",
+      "file": "new/229_Rhinecanthus_aculeatus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "95e910b71e675ed9b09946860916ddd6729a916eb1201ed2551bd299bba03c20"
+    },
+    {
+      "number": 230,
+      "name": "Гнатофис",
+      "file": "new/230_Gnathophis_nystromi.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "c69c5dceddfb04731a3c03df98f636f4e0d69af4d11cc9328bf06c6de01f5bf3"
+    },
+    {
+      "number": 231,
+      "name": "боро",
+      "file": "new/231_Pisodonophis_boro.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "7f246a9d5f65b069a143520b4b2cb0a404b9c45ae77d2f82c4735b2841960d1c"
+    },
+    {
+      "number": 232,
+      "name": "сарган лентовидный",
+      "file": "new/232_Ablennes_hians.png",
+      "width": 2172,
+      "height": 724,
+      "sha256": "c6ea08edd2338cee26e6d52c4ea7f64d78dfa89536977344ea8f5093a7f5c396"
+    },
+    {
+      "number": 233,
+      "name": "летучая рыба малая",
+      "file": "new/233_Fodiator_acutus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "b2f8f2d0eeb070d0886525d1624c5edfd599b289cfaa6f97973893cdd8fe7e99"
+    },
+    {
+      "number": 234,
+      "name": "тунец желтопёрый",
+      "file": "new/234_Thunnus_albacares.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "5f07bff1bbe281eb0704569ca57635be942da35e7f25714df92bbcdbc0fbfcf8"
+    },
+    {
+      "number": 235,
+      "name": "меч-рыба",
+      "file": "new/235_Xiphias_gladius.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "a6ef4101fa02a84d4fb0b1bfaf78390979e7e9a8da2909a2cac38b83de32c8ac"
+    },
+    {
+      "number": 236,
+      "name": "Полосатый копьеносец (марлин)",
+      "file": "new/236_Kajikia_audax.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "aa43c46b83027d8dec8293e68a832eaaab0b871d45d091066892d0ff50e9f757"
+    },
+    {
+      "number": 237,
+      "name": "Морской черт",
+      "file": "new/237_Lophius_piscatorius.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "2a1877b915b0836fffe35d5e1ea2a6feedf5f3555ba3f61ef668b108746c4d10"
+    },
+    {
+      "number": 238,
+      "name": "нетопырь длиннорылый",
+      "file": "new/238_Ogcocephalus_vespertilio.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "9f04281604f7838fd0964096e178b9ffbfc6fda1028ae4caf14029dd84435e0d"
+    },
+    {
+      "number": 239,
+      "name": "саргассовый",
+      "file": "new/239_Histrio_histrio.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "0c76482c3a1abe7b9acc7bb61e8c67f0c128b9772659f7ca88a1714047cc8973"
+    },
+    {
+      "number": 240,
+      "name": "Рогатый удильщик Коуса",
+      "file": "new/240_Cryptopsaras_couesii.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "46ccd7cb9e6fa9f8457c6129579b09ff0438298cec16a769230e9f6d6aa88fbb"
+    },
+    {
+      "number": 241,
+      "name": "Черный удильщик Джонсона",
+      "file": "new/241_Melanocetus_johnsonii.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "d1c89ef9c376ba187a3f8559f0024a1ab633e23405905a0b3bfc30deebc9a7e2"
+    },
+    {
+      "number": 242,
+      "name": "Батигадус",
+      "file": "new/242_Bathygadus_antrodes.png",
+      "width": 1774,
+      "height": 887,
+      "sha256": "62eff459f969ae097d0488eada419565993ed8777d2c722aa09ecd7f89b49bf1"
+    },
+    {
+      "number": 243,
+      "name": "Трёхиглая колюшка",
+      "file": "new/243_Gasterosteus_aculeatus.png",
+      "width": 1774,
+      "height": 887,
+      "sha256": "0c3f78029673eb58592602014cdfb3747cde53dd2dd9865c979dc88d10f4dfd2"
+    },
+    {
+      "number": 244,
+      "name": "Бекас морской",
+      "file": "new/244_Macroramphosus_scolopax.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "d6dd54fce942dda766da35f83035bc7c51f96c64b865d8d89d94a1132bd40071"
+    },
+    {
+      "number": 245,
+      "name": "свистулька зеленая",
+      "file": "new/245_Fistularia_tabacaria.png",
+      "width": 1774,
+      "height": 887,
+      "sha256": "48fbdfbbaba200096eedcedd821c7db3347fcadad51fae73eafe9550b6439f27"
+    },
+    {
+      "number": 246,
+      "name": "флейторыл",
+      "file": "new/246_Aulostomus_maculatus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "3b3dc8a6dc21f8448181dfae9aae4e8eff9a39651d463b55f7b44217cdf2ba03"
+    },
+    {
+      "number": 247,
+      "name": "Скорпена",
+      "file": "new/247_Scorpaena_porcus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "b9c99601a95591232573f94470e91efa76880b10faba43d6b0be18d02684f099"
+    },
+    {
+      "number": 248,
+      "name": "Erosa erosa",
+      "file": "new/248_Erosa_erosa.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "40f45a43ff55eada4034be9dfbaaba909dce69b4a0e7a30b53d2735e2383f6b4"
+    },
+    {
+      "number": 249,
+      "name": "Долгопер средиземноморский",
+      "file": "new/249_Dactylopterus_volitans.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "7b5f29a6e9e6e1b9f595b8f56f0f13e36b811ccb3521f05e3a85d52353a0180a"
+    },
+    {
+      "number": 250,
+      "name": "Морской петух серый",
+      "file": "new/250_Eutrigla_gurnardus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "c5c010495da0123d59df1e06670d06ea30dba3b2ccc3511f981c3912473c5efc"
+    },
+    {
+      "number": 251,
+      "name": "Дексист",
+      "file": "new/251_Dexistes_rikuzenius.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "9ea5a9c7290b6fbf9004604251dd967787a3c34891507dfc1a9341d8e150dc2e"
+    },
+    {
+      "number": 252,
+      "name": "камбала",
+      "file": "new/252_Austroglossus_pectoralis.png",
+      "width": 1774,
+      "height": 887,
+      "sha256": "8814084ce4addaedf01ccc367547cf86024c621a262d1a44e26a01a2062eb32c"
+    },
+    {
+      "number": 253,
+      "name": "ботус лунный",
+      "file": "new/253_Bothus_lunatus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "86e201cb2efbe07054e36c0d0c9140324558376319f09707c4b48bedcd96f846"
+    },
+    {
+      "number": 254,
+      "name": "Лихия",
+      "file": "new/254_Lichia_amia.png",
+      "width": 1774,
+      "height": 887,
+      "sha256": "85f4ee9527d2afb9ed057ffc2b52de88f43498c541de489200daebaf6576eeb6"
+    },
+    {
+      "number": 255,
+      "name": "Шпрот Мюллера",
+      "file": "new/255_Sprattus_muelleri.png",
+      "width": 1774,
+      "height": 887,
+      "sha256": "bef7c0129a284b656829fec87e9a5435766ddac339be5e93f2bb3946ae18aa9b"
+    },
+    {
+      "number": 256,
+      "name": "Сайда",
+      "file": "new/256_Pollachius_virens.png",
+      "width": 1774,
+      "height": 887,
+      "sha256": "cbae661a33a77c728987e75174e76a2917d257b77aba2547b78709d23b497687"
+    },
+    {
+      "number": 257,
+      "name": "Бычок рысь",
+      "file": "new/257_Gobius_bucchichi.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "65eb7f4101510875d8fd1939f494c321f48c7e05644e35ef1c928a2429d6f2f7"
+    },
+    {
+      "number": 258,
+      "name": "Зеленая собачка",
+      "file": "new/258_Parablennius_incognitus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "1b8d3b920e4945b037b688356e0a454191cc6256e8ad62a7f5e636f10c8d9531"
+    },
+    {
+      "number": 259,
+      "name": "макулеза",
+      "file": "new/259_Thalassophryne_maculosa.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "4c0bec08a7e372233a057814da65fdf66ba0dd97ce88926f9eeb6b1c95f73a05"
+    },
+    {
+      "number": 260,
+      "name": "слонорыл",
+      "file": "new/260_Mormyrus_kannume.png",
+      "width": 1774,
+      "height": 887,
+      "sha256": "0687e11fa83cffd48207a696246433750051b77228013d84dd3bd93021ca3696"
+    },
+    {
+      "number": 261,
+      "name": "угорь электрический",
+      "file": "new/261_Electrophorus_electricus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "16fc9dfe97673333bb4fb8b10d2399814ca7ef0ded1c55f857e6faad2fd94f5e"
+    },
+    {
+      "number": 262,
+      "name": "Зелёная ножетелка",
+      "file": "new/262_Eigenmannia_virescens.png",
+      "width": 1774,
+      "height": 887,
+      "sha256": "bb82a5f876e702ebd6f1e0140d5f5db636ce65fe7201728ba5f511eceaecb40a"
+    },
+    {
+      "number": 263,
+      "name": "Рыба-ползун",
+      "file": "new/263_Anabas_testudineus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "c0802f6afe59f0d7e4faff1e520caedac59db963b7fc73daf043eec96149f4cd"
+    },
+    {
+      "number": 264,
+      "name": "Лялиус",
+      "file": "new/264_Trichogaster_lalius.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "01e14628dbbc6dfed85e20e6fe98849f7fd745777ea24dafe38acf69390f452b"
+    },
+    {
+      "number": 265,
+      "name": "Лисья акула",
+      "file": "new/265_Alopias_vulpinus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "9549c414e1796005b94144dc54e18ce87fe90e012bd547b444b14c66514e1215"
+    },
+    {
+      "number": 266,
+      "name": "Акула гигантская",
+      "file": "new/266_Cetorhinus_maximus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "5d134523f6202b268897d8aab163952ed7e5408bc4b7f21daa395b9ff5b56194"
+    },
+    {
+      "number": 267,
+      "name": "акула плащеносная",
+      "file": "new/267_Chlamydoselachus_africana.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "d87b3dae4f6d0200d4bf7db80390e1899f6dbe7dcf72794fccf97362d24630f0"
+    },
+    {
+      "number": 268,
+      "name": "Шестижаберная акула",
+      "file": "new/268_Hexanchus_griseus.png",
+      "width": 1774,
+      "height": 887,
+      "sha256": "1d45e6e323ae6920aa5d464d586c1db6d00676adecdc5c69c8792d6d6c2e90da"
+    },
+    {
+      "number": 270,
+      "name": "пилорыл",
+      "file": "new/270_Pristis_pristis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "194576366fc7f993b242ebfefe257eac04173b8c16ee3e31b9c3ea84465055ad"
+    },
+    {
+      "number": 271,
+      "name": "Морской кот",
+      "file": "new/271_Dasyatis_pastinaca.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "b1f7916917c0cb00b003c291fa77c1a5b3df0ce2e5413a1d32e70e40ae4a79c0"
+    },
+    {
+      "number": 272,
+      "name": "рыба гитара",
+      "file": "new/272_Rhinobatos_rhinobatos.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "1906cafcbd977f7d855dc9d8d2df782ad39194fde0f9d2d7dd61afc3b40622f5"
+    },
+    {
+      "number": 273,
+      "name": "Морской ангел",
+      "file": "new/273_Squatina_squatina.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "eeaafeda1ab40b7ed090fc2f46038995c40267fba91013b43ae5db94bd0564b1"
+    },
+    {
+      "number": 274,
+      "name": "скат мраморный",
+      "file": "new/274_Torpedo_marmorata.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "5d997eb0130761eea7c1aeee8d635fc1e08b8c4fc1face7b477cdd51503c93d5"
+    },
+    {
+      "number": 275,
+      "name": "Капский каллоринх",
+      "file": "new/275_Callorhinchus_capensis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "a993a8bab92857af01dc56c0a4d541413662ba9d36e59aecff1cac49dd274a04"
+    },
+    {
+      "number": 276,
+      "name": "Polyodon spathula",
+      "file": "new/276_Polyodon_spathula.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "bac4cc22229f131b4d7415b5ad05d3a17191e0212fd0aadca1b04812eb2d4a4c"
     }
-  ]
+  ],
+  "new": 167
 }

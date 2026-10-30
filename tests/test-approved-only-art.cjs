@@ -24,17 +24,17 @@ function loadAtlas(){
  }};
  const ctx=vm.createContext({window,document,Image:FakeImage,Promise,URL,
      encodeURIComponent,console});
- for(const source of ['animal_atlas.js','selected_art_107.js']){
+ for(const source of ['animal_atlas.js','selected_art_107.js','new_art_167.js']){
   vm.runInContext(fs.readFileSync(source,'utf8'),ctx,{filename:source});
  }
  return window.AnimagiaAnimalAtlas;
 }
 const atlas=loadAtlas();
 
-test('only the 108 accepted unmodified transparent PNGs remain available',()=>{
- assert.equal(manifest.count,108);
- assert.equal(rows.length,108);
- assert.equal(new Set(rows.map(x=>x.file)).size,108);
+test('only the 275 accepted unmodified transparent PNGs remain available',()=>{
+ assert.equal(manifest.count,275);
+ assert.equal(rows.length,275);
+ assert.equal(new Set(rows.map(x=>x.file)).size,275);
  assert.equal(manifest.animals,104);
  assert.equal(manifest.additional,4);
  for(const item of rows){
@@ -49,7 +49,7 @@ test('only the 108 accepted unmodified transparent PNGs remain available',()=>{
 });
 
 test('only exact accepted species get animal imagery',()=>{
- assert.equal(atlas.originalArtworkCount,108);
+ assert.equal(atlas.originalArtworkCount,275);
  for(const [latin,expectedFile] of [
   ['Panthera leo','animals/001-Лев.png'],
   ['Panthera tigris','animals/002-Тигр.png'],
@@ -72,7 +72,7 @@ test('only exact accepted species get animal imagery',()=>{
 
 test('all 108 approved PNGs are reachable on their correct animal cards',()=>{
  const pictured=new Set([...atlas.approvedArtworkIds].map(String));
- const required=new Set(rows.filter(item=>item.name!=='Лягушка').map(item=>
+ const required=new Set(rows.filter(item=>item.name!=='Лягушка'&&!item.file.startsWith('new/')).map(item=>
    item.number===null?'additional:'+item.name:String(item.number)));
  assert.equal(required.size,107);
  assert.equal(pictured.size,107);
@@ -138,4 +138,20 @@ test('site build and index cannot publish or load the old atlas',()=>{
   assert(!builder.includes(banned),'Old art in build: '+banned);
   assert(!html.includes(banned),'Old art in page: '+banned);
  }
+});
+
+test('all 167 new original PNGs belong to their own approved cards',()=>{
+ assert.equal(manifest.new,167);
+ const newRows=rows.filter(x=>x.file.startsWith('new/'));
+ assert.equal(newRows.length,167);
+ assert.equal(atlas.newOriginalArtworkExamples.length,167);
+ for(const item of atlas.newOriginalArtworkExamples){
+   const entry=newRows.find(x=>x.file===item.file);
+   assert(entry,'new original image missing: '+item.file);
+   const profile=atlas.resolve([1540,item.scientific,'species','Mammalia','Carnivora']);
+   assert.equal(profile?.file,item.file,'wrong original drawing: '+item.scientific);
+   assert.equal(profile?.name,item.name);
+   assert.equal(profile?.exact,true);
+ }
+ assert.equal(atlas.resolve([1540,'NoSuchAnimal noanimal','species']),null);
 });
