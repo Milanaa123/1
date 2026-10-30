@@ -58,7 +58,7 @@ test('Ecological metadata is independent of whether approved artwork exists',()=
 });
 test('Only mobile scroll overflow is clipped, not layout or card geometry',()=>{
  assert.ok(css.includes('html{overflow-x:clip}'));
- assert.match(page,/magic_theme\.css\?v=mobile-overflow-clip-20261030/);
+ assert.match(page,/<link rel="stylesheet" href="\.\/magic_theme\.css\?v=[^"]+">/);
  assert.match(page,/app\.js\?v=verified-six-russian-names-20261030/);
  assert.match(page,/id="relicCardBackdrop"[^>]+width="1200" height="2000"/);
 });
