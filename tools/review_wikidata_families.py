@@ -45,7 +45,7 @@ if not isinstance(families,dict) or not isinstance(families.get('families'),list
 familylist=families['families']
 missing=sorted((x for x in familylist if F.fullmatch(x.get('family','')) and
     not x.get('family_ru')),key=lambda x:(-x.get('record_count',0),x['family']))
-target=missing[:1200]
+target=missing
 all_ids={x['family']:x for x in target}
 accepted,conflicts,failed={}, {},[]
 by_name=collections.defaultdict(list)
