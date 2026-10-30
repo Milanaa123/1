@@ -53,6 +53,12 @@ test('Ecological metadata is independent of whether approved artwork exists',()=
  assert.equal(val(row('Caretta caretta','Reptilia','Testudines')).diet,'predator');
  assert.equal(val(row('Polyodon spathula','Chondrostei','Acipenseriformes')).habitat,'aquatic');
  assert.equal(val(row('Polyodon spathula','Chondrostei','Acipenseriformes')).diet,'unknown');
+ assert.equal(val(row('Panthera leo','Mammalia','Carnivora','Felidae')).diet,'predator',
+  'Felidae diet documented by zoological and veterinary sources');
+ assert.equal(val(row('Panthera leo','Mammalia','Carnivora','Felidae')).habitat,'unknown',
+  'Family-level evidence does not justify inventing an exact habitat');
+ assert.equal(val(row('Procyon lotor','Mammalia','Carnivora','Procyonidae')).diet,'unknown',
+  'Carnivora as an order does not establish a predatory diet');
  assert.equal(val(row('Suncus etruscus','Mammalia','Eulipotyphla')).diet,'unknown',
   'Unknown species must not be assigned a diet without evidence');
 });

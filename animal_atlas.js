@@ -175,6 +175,13 @@
   if(['Hippocampus','Orcinus','Physeter','Balaenoptera','Eubalaena'].includes(genus))
    return make('predator','aquatic');
   if(aquaticClasses.has(cls))return make(null,'aquatic');
+  // Family Felidae consists of obligate carnivores. Do not infer a
+  // narrower habitat from family alone: arboreal/terrestrial ecology varies.
+  // References: Merck Veterinary Manual (Sept 2025), Animal Diversity Web.
+  // https://www.merckvetmanual.com/management-and-nutrition/nutrition-exotic-and-zoo-animals/nutrition-in-zoo-carnivores
+  // https://animaldiversity.org/accounts/Felidae/
+  if(cls==='Mammalia'&&order==='Carnivora'&&row[7]==='Felidae')
+   return make('predator',null);
   // Only relatively stable, recognisable groups receive dietary labels.
   if(['Cetacea','Sirenia'].includes(order))return make(
    order==='Sirenia'?'herbivore':'predator','aquatic');
