@@ -143,6 +143,34 @@ class GreekNumericParityTests(unittest.TestCase):
         stats=load_birdnet_names()
         self.assertFalse(stats['external_birdnet_csv_used'])
 
+    def test_independent_scientific_reclassification_and_fossil_exclusions(self):
+        from taxon_filters import REJECTED_NON_ANIMAL_NAMES
+        rejected={
+           "Ophiocordyceps taiwanensis":("Insecta","Arthropoda","Coleoptera"),
+           "Myrmozercon iainkayi":("Insecta","Arthropoda","Hymenoptera"),
+           "Petalomium brevicaudus":("Insecta","Arthropoda","Hymenoptera"),
+           "Petalomium tothi":("Insecta","Arthropoda","Hymenoptera"),
+           "Dipsas irregularis":("Amphibia","Chordata",""),
+           "Cadurcogekko piveteaui":("Reptilia","Chordata","Squamata"),
+           "Euclastes wielandi":("Reptilia","Chordata","Testudines"),
+           "Eutawichthys maastrichtiensis":("Teleostei","Chordata","Beryciformes"),
+           "Eutawichthys zideki":("Teleostei","Chordata","Beryciformes"),
+        }
+        for scientific,(cls,phylum,order) in rejected.items():
+            with self.subTest(scientific=scientific):
+                self.assertIn(scientific,REJECTED_NON_ANIMAL_NAMES)
+                self.assertFalse(allow_animal_taxon({
+                    'kingdom':'Animalia','phylum':phylum,
+                    'class':cls,'order':order,'scientific_name':scientific}))
+        for scientific,cls,phylum,order in [
+            ('Canis lupus','Mammalia','Chordata','Carnivora'),
+            ('Petalomium genericus','Arachnida','Arthropoda','Araneae'),
+            ('Dipsas indica','Reptilia','Chordata','Squamata')]:
+            with self.subTest(scientific=scientific):
+                self.assertTrue(allow_animal_taxon({
+                   'kingdom':'Animalia','phylum':phylum,
+                   'class':cls,'order':order,'scientific_name':scientific}))
+
     def test_col_texttree_explicit_historical_synonyms(self):
         from build_data import texttree_synonym
         self.assertEqual(texttree_synonym('=Discodeles opisthodon (Boulenger, 1884)','species'),

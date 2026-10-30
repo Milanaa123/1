@@ -14,6 +14,28 @@ POLICY_VERSION = "independent-noncolonial-fauna-v3"
 REJECTED_NON_ANIMAL_NAMES = frozenset({
     "Eimeria psittacarae",
     "Dactylosoma piperis",
+    # Described as a fungus, erroneously listed in Insecta/Coleoptera.
+    # https://doi.org/10.11646/phytotaxa.660.2.1
+    "Ophiocordyceps taiwanensis",
+    # Mites wrongly inherited their ant-host Hymenoptera classification.
+    # https://doi.org/10.11646/zootaxa.4137.3.5
+    # https://doi.org/10.1080/01647950308684325
+    # https://www.researchgate.net/publication/269872816
+    "Petalomium brevicaudus",
+    "Petalomium tothi",
+    "Myrmozercon iainkayi",
+    # This name refers to a synonym of the reptile Boiga irregularis,
+    # not an amphibian (Reptile Database).
+    # https://reptile-database.reptarium.cz/Boiga/irregularis
+    "Dipsas irregularis",
+    # Mesozoic/Paleogene fossils were not dagger-marked in the source.
+    # https://doi.org/10.1002/ar.22856
+    # https://escholarship.org/uc/item/7253p3tf
+    # https://doi.org/10.1073/pnas.2322863121
+    "Cadurcogekko piveteaui",
+    "Euclastes wielandi",
+    "Eutawichthys maastrichtiensis",
+    "Eutawichthys zideki",
 })
 
 
