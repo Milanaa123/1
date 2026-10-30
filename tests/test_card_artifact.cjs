@@ -145,7 +145,7 @@ test('All fifty frame presets are reachable; cuts erase canvas pixels last',()=>
  ];
  for(const [kind,className,needHoles] of categories){
   const diets={predator:'predator','soft-predator':'predator',herbivore:'herbivore',omnivore:'omnivore',aquatic:'predator',avian:'predator',reptile:'predator',woodland:'unknown',nocturnal:'unknown',celestial:'unknown'};
-  const styl={diet:diets[kind],habitat:kind==='aquatic'?'aquatic':'terrestrial'},species=[...sample];
+  const styl={diet:diets[kind],habitat:kind==='aquatic'?'aquatic':kind==='nocturnal'?'aerial':'terrestrial'},species=[...sample];
   species[3]=className;species[4]=kind==='soft-predator'?'Anura':kind==='nocturnal'?'Chiroptera':kind==='woodland'?'Eulipotyphla':'Carnivora';
   if(kind==='woodland')species[1]='Sorex araneus';if(kind==='celestial')species[1]='Unknownus mysticus';
   const variants=new Map();
