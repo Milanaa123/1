@@ -306,6 +306,22 @@ class GreekNumericParityTests(unittest.TestCase):
                 self.assertEqual(tks_subspecies_ru_label(
                     latin,family,'WrongClass',order,phylum,'subspecies'),'')
 
+    def test_tks_subspecies_rank_shift_has_exact_family_safeguard(self):
+        from ru_catalog import TKS_SUBSPECIES_NAMES,tks_subspecies_ru_label
+        matches=[(k,v) for k,v in TKS_SUBSPECIES_NAMES.items()
+                 if v[2]=='Squamata' and not v[3] and v[4]=='Scincidae']
+        if not matches:return
+        key,entry=matches[0]
+        latin=key.rsplit('|',1)[0]
+        self.assertEqual(tks_subspecies_ru_label(
+            latin,'Scincidae','Reptilia','Squamata','Chordata','subspecies'),entry[0])
+        self.assertEqual(tks_subspecies_ru_label(
+            latin,'Otheridae','Reptilia','Squamata','Chordata','subspecies'),'')
+        self.assertEqual(tks_subspecies_ru_label(
+            latin,'Scincidae','Mammalia','Rodentia','Chordata','subspecies'),'')
+        self.assertEqual(tks_subspecies_ru_label(
+            latin,'Scincidae','Reptilia','Squamata','Chordata','species'),'')
+
     def test_tks_source_russian_species_not_fabricated(self):
         from ru_catalog import TKS_RU_NAMES, TKS_RU_STATS, tks_ru_label
         self.assertEqual(tks_ru_label('Inventus fictivus','Inventidae','Mammalia',

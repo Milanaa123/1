@@ -147,9 +147,15 @@ def tks_subspecies_ru_label(scientific,family,animal_class,order,phylum,rank):
         or type(tks_id) is not int or tks_id<=0
         or not source_phylum or not source_family):
         return ''
-    for ours,theirs in ((phylum,source_phylum),(animal_class,source_class),
-                        (order,source_order),(family,source_family)):
+    for ours,theirs in ((phylum,source_phylum),(order,source_order),
+                        (family,source_family)):
         if ours and theirs and ours!=theirs:return ''
+    if animal_class and source_class and animal_class!=source_class:
+        # Rank shift in the source (e.g. Squamata recorded as class):
+        # only accept exact CoL order AND exact family; never guess lineage.
+        if not (not source_order and source_class==order and
+                family and family==source_family):
+            return ''
     return ru
 
 # Optional separately sourced Russian-Wikipedia species labels.
