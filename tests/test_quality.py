@@ -241,6 +241,28 @@ class GreekNumericParityTests(unittest.TestCase):
             self.assertEqual(wikipedia_ru_label(scientific,'subspecies'),'')
             self.assertTrue(record[2].startswith('https://ru.wikipedia.org/wiki/'))
 
+    def test_family_recovery_passes_full_taxonomic_lineage_for_russian_names(self):
+        # Recovering a family must not lose externally verified species names.
+        from ru_catalog import BULK_NAMES, source_vernacular_name, taxon_ru_labels
+        from pathlib import Path
+        builder=(BASE/'build_data.py').read_text(encoding='utf-8')
+        self.assertNotIn('taxon_ru_labels(row[1],row[7])',builder)
+        self.assertGreaterEqual(builder.count(
+            'taxon_ru_labels(row[1],row[7],row[3],row[4],row[6],row[2])'),5)
+        samples=0
+        for key,entry in BULK_NAMES.items():
+            if not isinstance(entry,list) or len(entry)!=6:continue
+            ru,provider,phylum,cls,order,family=entry
+            if not all((ru,phylum,cls,order,family)):continue
+            latin,rank=key.rsplit('|',1)
+            actual=source_vernacular_name(latin,family,cls,order,phylum,rank)
+            if not actual:continue
+            self.assertEqual(actual,ru)
+            self.assertTrue(taxon_ru_labels(latin,family,cls,order,phylum,rank)[1])
+            samples+=1
+            if samples>=15:break
+        self.assertEqual(samples,15)
+
     def test_col_texttree_explicit_historical_synonyms(self):
         from build_data import texttree_synonym
         self.assertEqual(texttree_synonym('=Discodeles opisthodon (Boulenger, 1884)','species'),
