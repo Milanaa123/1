@@ -1,0 +1,56 @@
+name: Animagia stages 3-6 independent QA
+on:
+  push:
+    branches: [animagia-site]
+    paths:
+      - app.js
+      - animal_atlas.js
+      - relic_features.js
+      - index.html
+      - greek_taxa.js
+      - ru_catalog.py
+      - build_data.py
+      - tests/nonart_stages.test.cjs
+      - tests/test_quality.py
+      - tests/test_card_artifact.cjs
+      - tests/test_mobile_performance.cjs
+      - tests/test_ru_name_lookup.cjs
+      - .github/workflows/animagia-nonart-qa.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  taxonomy:
+    name: Stage 3 - names, families and Greek scores
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -m unittest discover -s tests -p 'test_quality.py' -v
+      - run: node tests/test_ru_name_lookup.cjs
+      - run: node --test tests/phonetic.test.cjs tests/strict-original.test.cjs
+  ecology:
+    name: Stage 4 - ecology and name-independent classification
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/nonart_stages.test.cjs
+      - run: node --test tests/test_animal_vibes.cjs
+  export_and_mobile:
+    name: Stages 5-6 - card rendering, export and mobile regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/test_mobile_performance.cjs
+      - run: node --test tests/test_card_artifact.cjs
