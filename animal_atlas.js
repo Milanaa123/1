@@ -106,7 +106,16 @@
   ['Caretta caretta',['predator','aquatic',[]]],['Vulpes vulpes',['omnivore','terrestrial',['subterranean']]],
   ['Canis lupus',['predator','terrestrial',[]]],['Panthera uncia',['predator','terrestrial',[]]],
   ['Draco volans',['predator','arboreal',['aerial']]],
-  ['Equus caballus',['herbivore','terrestrial',[]]],['Equus ferus',['herbivore','terrestrial',[]]]
+  ['Equus caballus',['herbivore','terrestrial',[]]],['Equus ferus',['herbivore','terrestrial',[]]],
+  // Peer-reviewed exception: mostly herbivorous jumping spider.
+  // https://pubmed.ncbi.nlm.nih.gov/19825348/
+  ['Bagheera kiplingi',['herbivore',null,[]]],
+  // Fruit, nectar and invertebrates: https://www.sciencedirect.com/science/article/pii/S2352249623000101
+  ['Xenohyla truncata',['omnivore',null,[]]],
+  // https://animaldiversity.org/accounts/Castor_fiber/
+  // https://wildlife.ca.gov/Conservation/Mammals/Beaver
+  ['Castor fiber',['herbivore','semiaquatic',[]]],
+  ['Castor canadensis',['herbivore','semiaquatic',[]]]
  ]);
  const fixedLabels={wolf:'Обобщённый рисунок волка',owl:'Обобщённый рисунок совы', 'snow-leopard':'Снежный барс'};
  let loaded=null;
@@ -158,59 +167,50 @@
       'Обобщённый рисунок биологической группы · '+candidate.label};
  }
  function classify(row){
-  if(!Array.isArray(row)||!row[1])return null;
-  const approved=resolve(row);
-  const name=normalize(row[1]),genus=name.split(' ')[0];
-  const verified=habitatVerifiedBySpecies.get(name);
-  if(verified)return {...(approved||{
-   diet:row[4]==='Anura'?'predator':genus==='Castor'?'herbivore':null,
-   secondary:[],scientific:name,id:null,cell:null
-  }),habitat:verified};
-  if(approved)return approved;
-  const cls=row[3],order=row[4];
-  const aquaticClasses=new Set(['Actinopterygii','Actinopteri','Teleostei',
-    'Chondrichthyes','Elasmobranchii','Holocephali','Chondrostei',
-    'Dipnoi','Sarcopterygii','Cephalopoda','Asteroidea','Ophiuroidea',
-    'Echinoidea','Holothuroidea','Polyplacophora']);
-  const make=(diet,habitat,secondary=[])=>({
+  if(!Array.isArray(row)||typeof row[1]!=='string'||!row[1].trim())return null;
+  const scientific=row[1].trim().replace(/\s+/g,' ');
+  const tokens=scientific.split(' '),name=tokens.slice(0,2).join(' ');
+  const genus=tokens[0],cls=row[3],order=row[4],family=row[7];
+  // Species evidence must never transfer to subspecies or other genus members.
+  const speciesRecord=row[2]==='species'&&tokens.length===2;
+  const make=(diet=null,habitat=null,secondary=[])=>({
    diet,habitat,secondary,scientific:name,id:null,cell:null,
-   note:'Среда/питание по надёжно распознаваемой группе, без рисунка вида'
+   note:'Экологические сведения не зависят от наличия иллюстрации'
   });
-  // A class identifies habitat for fish and permanently aquatic invertebrates,
-  // but never an individual diet without ecological data.
-  if(['Hippocampus','Orcinus','Physeter','Balaenoptera','Eubalaena'].includes(genus))
-   return make('predator','aquatic');
-  if(aquaticClasses.has(cls))return make(null,'aquatic');
-  // Family Felidae consists of obligate carnivores. Do not infer a
-  // narrower habitat from family alone: arboreal/terrestrial ecology varies.
-  // References: Merck Veterinary Manual (Sept 2025), Animal Diversity Web.
+  if(speciesRecord){
+   const exact=exactProfiles.get(scientific);
+   const evidencedHabitat=habitatVerifiedBySpecies.get(scientific);
+   if(exact||evidencedHabitat){
+    const [diet,habitat,secondary]=exact||[null,null,[]];
+    return make(diet||null,evidencedHabitat||habitat||null,secondary);
+   }
+  }
+  // Carnivora contains herbivorous/omnivorous mammals. Felidae are obligate
+  // carnivores, but their family name alone does NOT prove a precise habitat.
   // https://www.merckvetmanual.com/management-and-nutrition/nutrition-exotic-and-zoo-animals/nutrition-in-zoo-carnivores
-  // https://animaldiversity.org/accounts/Felidae/
-  if(cls==='Mammalia'&&order==='Carnivora'&&row[7]==='Felidae')
-   return make('predator',null);
-  // Only relatively stable, recognisable groups receive dietary labels.
-  if(['Cetacea','Sirenia'].includes(order))return make(
-   order==='Sirenia'?'herbivore':'predator','aquatic');
-  // Well-established lifestyles, independent of whether artwork exists.
-  if(genus==='Castor')return make('herbivore','semiaquatic');
-  if(genus==='Bufo')return make('predator','terrestrial');
-  if(['Tyto','Strix'].includes(genus))return make('predator','aerial');
-  if(genus==='Pteropus')return make('herbivore','aerial');
+  if(cls==='Mammalia'&&order==='Carnivora'&&family==='Felidae')
+   return make('predator');
+  const aquaticClasses=new Set(['Actinopterygii','Actinopteri','Teleostei',
+   'Chondrichthyes','Elasmobranchii','Holocephali','Chondrostei',
+   'Dipnoi','Sarcopterygii','Cephalopoda','Asteroidea','Ophiuroidea',
+   'Echinoidea','Holothuroidea','Polyplacophora']);
+  if(aquaticClasses.has(cls))return make(null,'aquatic');
+  if(order==='Sirenia')return make('herbivore','aquatic');
+  if(order==='Cetacea')return make('predator','aquatic');
+  if(['Orcinus','Physeter','Balaenoptera','Eubalaena','Megaptera','Delphinus'].includes(genus))
+   return make('predator','aquatic');
+  if(genus==='Pteropus'&&order==='Chiroptera')return make('herbivore','aerial');
   if(order==='Chiroptera')return make(null,'aerial');
-  if(order==='Sphenisciformes')return make('predator','semiaquatic');
   if(order==='Strigiformes')return make('predator','aerial');
-  // These are adult life-stage dietary categories. Frog habitats vary
-  // enormously; never assume every Anura is semi-aquatic.
-  if(order==='Anura')return make('predator',null);
-  if(order==='Araneae')return make('predator',null);
-  if(['Mantodea','Scorpiones'].includes(order))return make('predator','terrestrial');
+  if(order==='Sphenisciformes')return make('predator','semiaquatic');
+  if(order==='Scorpiones')return make('predator','terrestrial');
   if(['Talpa','Heterocephalus','Spalax','Cryptomys','Fukomys'].includes(genus))
-   return make(genus==='Talpa'?'predator':'herbivore','subterranean');
+   return make(null,'subterranean');
   if(['Sciurus','Pongo','Petaurus','Dendrolagus'].includes(genus))
    return make(null,'arboreal');
-  if(genus==='Ailuropoda')return make('herbivore','terrestrial');
-  if(['Crocodylus','Alligator','Caiman','Gavialis'].includes(genus))
-   return make('predator','semiaquatic');
+  // Exceptions exist among frogs and spiders: no Anura/Araneae diet inference.
+  // https://www.sciencedirect.com/science/article/pii/S2352249623000101
+  // https://pubmed.ncbi.nlm.nih.gov/19825348/
   return null;
  }
  function style(profile){
