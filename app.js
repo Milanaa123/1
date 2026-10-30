@@ -32,46 +32,56 @@ function nameLatin(raw){
   return letters.slice(0,1).toUpperCase()+letters.slice(1);
  }).replace(/\s+/g,' ');
 }
-// Step 2 -> 3: explicitly approximate Ancient Greek phonetic notation.
-// English spellings do not uniquely specify sounds; every result stays editable.
-// This is an explicitly APPROXIMATE classical Greek rendering, NOT modern
-// pronunciation: β=/b/, δ=/d/, γ=/g/. Classical Greek has no exact
-// equivalents for English /v/, /f/ or /dʒ/. Archaic ϝ represents /w/, used
-// here as an approximation, never as a claim that ancient Greek had /v/.
-// Name transcription is independent of scientific taxon transliteration.
+// Step 2 -> 3: transliteration of the CHECKED Latin spelling, not a
+// guess at English pronunciation and not a translation into a Greek word.
+// Common Latin digraphs follow the same declared Ancient-alphabet spelling
+// convention as the animal catalogue in greek_taxa.js. English sounds have
+// no universally agreed reverse transliteration into Classical Greek.
+// Conventions: β /b/, δ /d/, γ /g/; ϝ /w/ (archaic digamma), used also
+// as an explicitly imperfect stand-in for English /v/. φ is Classical /pʰ/,
+// not historically /f/. Never silently add a Greek ending such as -ος.
 const NAME_LAT_TO_GREEK={
  a:'α',b:'β',c:'κ',d:'δ',e:'ε',f:'φ',g:'γ',h:'χ',i:'ι',
- j:'ζ',k:'κ',l:'λ',m:'μ',n:'ν',o:'ο',p:'π',q:'κ',
+ j:'ι',k:'κ',l:'λ',m:'μ',n:'ν',o:'ο',p:'π',q:'κ',
  r:'ρ',s:'σ',t:'τ',u:'ου',v:'ϝ',w:'ϝ',x:'ξ',
  y:'υ',z:'ζ'
 };
 const NAME_LAT_CLUSTERS={
- aser:'ειζερ',ow:'αου',sh:'σ',ch:'χ',th:'θ',ph:'φ',
- ck:'κ',zh:'ζ',qu:'κου',ee:'ι',oo:'ου',
- ei:'ει',ai:'αι',ou:'ου',au:'αυ',eu:'ευ'
+ ph:'φ',th:'θ',ch:'χ',ps:'ψ',rh:'ρ',ae:'αι',oe:'οι',
+ au:'αυ',eu:'ευ',ei:'ει',ai:'αι',ou:'ου'
+};
+// Classical breathing marks belong to the INITIAL vowel of a word, or the
+// SECOND letter of an initial diphthong (e.g. Αἰ / Αἱ). A Latin initial
+// h+vowel is rendered with rough breathing (Ἁ), not an invented Greek word.
+// As with accents, breathings do not change the isopsephy total.
+const GREEK_BREATHING={
+ smooth:{α:'ἀ',ε:'ἐ',η:'ἠ',ι:'ἰ',ο:'ὀ',υ:'ὐ',ω:'ὠ'},
+ rough:{α:'ἁ',ε:'ἑ',η:'ἡ',ι:'ἱ',ο:'ὁ',υ:'ὑ',ω:'ὡ'}
 };
 function nameGreekFromLatin(raw){
  return raw.trim().replace(/[A-Za-z]+(?:-[A-Za-z]+)*/g,token=>{
-  const hyphenated=token.toLowerCase().split('-');
-  const greek=hyphenated.map(word=>{
-   let i=0,out='',aspirate=false;
-   if(/^h[aeiou]/.test(word)){
-    aspirate=true; i=1;
-   }
+  const greek=token.toLowerCase().split('-').map(word=>{
+   let i=0,out='';
+   const rough=/^h[aeiouy]/.test(word);
+   if(rough)i=1;
    while(i<word.length){
-    let found=false;
-    for(const n of [4,2]){
-     const chunk=word.slice(i,i+n);
-     if(NAME_LAT_CLUSTERS[chunk]){
-      out+=NAME_LAT_CLUSTERS[chunk];i+=n;found=true;break;
-     }
+    const pair=word.slice(i,i+2);
+    if(Object.prototype.hasOwnProperty.call(NAME_LAT_CLUSTERS,pair)){
+     out+=NAME_LAT_CLUSTERS[pair];i+=2;
+    }else{
+     out+=NAME_LAT_TO_GREEK[word[i]];i++;
     }
-    if(!found){out+=NAME_LAT_TO_GREEK[word[i]]||'';i++;}
    }
    out=out.replace(/σ$/,'ς');
-   if(aspirate){
-    const rough={'α':'ἁ','ε':'ἑ','η':'ἡ','ι':'ἱ','ο':'ὁ','υ':'ὑ','ω':'ὡ'};
-    out=(rough[out[0]]||out[0])+out.slice(1);
+   // Initial rho (including Latin rh) takes rough breathing in Classical
+   // Greek. It is an orthographic mark, not a new phonetic mapping.
+   if(/^rh/.test(word)||/^r/.test(word))out=out.replace(/^ρ/,'ῥ');
+   else {
+    const initial=out.match(/^(αι|αυ|ει|ευ|οι|ου|υι)/);
+    const vowelIndex=initial?1:0;
+    const original=out[vowelIndex];
+    const marked=GREEK_BREATHING[rough?'rough':'smooth'][original];
+    if(marked)out=out.slice(0,vowelIndex)+marked+out.slice(vowelIndex+1);
    }
    return out;
   }).join('-');
