@@ -31,6 +31,8 @@ jobs:
         run: node tests/test_ru_name_lookup.cjs
       - name: Verify static build includes Russian name lookup
         run: grep -F "shutil.copy2(BASE/'ru_name_lookup.js',DEST/'ru_name_lookup.js')" build_data.py
+      - name: Verify the exact Latin-name to Ancient-Greek letter transliteration
+        run: node --test tests/name_ancient_transliteration.test.cjs
       - name: Verify animal name calculator remains unchanged
         run: node --test tests/phonetic.test.cjs tests/strict-original.test.cjs
       - name: Verify non-artwork stages (scientific labels, ecology, exports and mobile containment)

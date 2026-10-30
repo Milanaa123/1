@@ -11,6 +11,7 @@ on:
       - ru_catalog.py
       - build_data.py
       - tests/nonart_stages.test.cjs
+      - tests/name_ancient_transliteration.test.cjs
       - tests/test_quality.py
       - tests/test_card_artifact.cjs
       - tests/test_mobile_performance.cjs
@@ -31,7 +32,7 @@ jobs:
           node-version: '22'
       - run: python -m unittest discover -s tests -p 'test_quality.py' -v
       - run: node tests/test_ru_name_lookup.cjs
-      - run: node --test tests/phonetic.test.cjs tests/strict-original.test.cjs
+      - run: node --test tests/phonetic.test.cjs tests/strict-original.test.cjs tests/name_ancient_transliteration.test.cjs
   ecology:
     name: Stage 4 - ecology and name-independent classification
     runs-on: ubuntu-latest
