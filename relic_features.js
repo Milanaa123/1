@@ -506,11 +506,14 @@
   let kind='celestial';
   if(diet==='unknown'){
    if(order==='Araneae')kind='spider';
+   else if(order==='Chiroptera'&&habitat==='aerial')kind='nocturnal';
+   else if(cls==='Mammalia'&&order==='Eulipotyphla'&&habitat==='terrestrial')kind='woodland';
    else if(cls==='Aves')kind='avian';
    else if(cls==='Reptilia')kind=habitat==='aquatic'?'aquatic':'reptile';
    else if(water)kind='aquatic';
   }else if(order==='Araneae'&&diet==='predator')kind='spider';
   else if(order==='Anura'&&diet==='predator')kind='soft-predator';
+  else if(order==='Chiroptera'&&habitat==='aerial')kind='nocturnal';
   else if(cls==='Aves')kind=water?'aquatic':'avian';
   else if(cls==='Reptilia')kind=habitat==='aquatic'?'aquatic':'reptile';
   else if(water)kind='aquatic';
