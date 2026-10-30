@@ -179,7 +179,11 @@ class GreekNumericParityTests(unittest.TestCase):
                   'Calliphoridae':'Каллифориды','Lampyridae':'Светляки',
                   'Tortricidae':'Листовёртки','Tephritidae':'Пестрокрылки',
                   'Pterophoridae':'Пальцекрылки','Crambidae':'Огнёвки-травянки',
-                  'Tabanidae':'Слепни','Elateridae':'Щелкуны'}
+                  'Tabanidae':'Слепни','Elateridae':'Щелкуны',
+                  'Dytiscidae':'Плавунцы','Meloidae':'Нарывники',
+                  'Dermestidae':'Кожееды','Silphidae':'Мертвоеды',
+                  'Cantharidae':'Мягкотелки','Raphidiidae':'Настоящие верблюдки',
+                  'Myrmeleontidae':'Муравьиные львы'}
         for latin,russian in controls.items():
             with self.subTest(family=latin):
                 self.assertEqual(taxon_ru_labels('Unknown species',latin)[0],russian)

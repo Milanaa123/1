@@ -275,7 +275,14 @@
     "Pterophoridae": "Пальцекрылки",
     "Crambidae": "Огнёвки-травянки",
     "Tabanidae": "Слепни",
-    "Elateridae": "Щелкуны"
+    "Elateridae": "Щелкуны",
+    "Dytiscidae": "Плавунцы",
+    "Meloidae": "Нарывники",
+    "Dermestidae": "Кожееды",
+    "Silphidae": "Мертвоеды",
+    "Cantharidae": "Мягкотелки",
+    "Raphidiidae": "Настоящие верблюдки",
+    "Myrmeleontidae": "Муравьиные львы"
   },
   "ru_name_sources": {
     "Cornufer bufoniformis": {
