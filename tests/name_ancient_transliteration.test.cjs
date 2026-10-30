@@ -24,7 +24,7 @@ const keycases=[
  ['Philip','Φιλιπ',null],
  ['Rhys','Ῥυς',null],
  ['Steven','Στεϝεν',null],
- ['Chloe','Χλοε',null],
+ ['Chloe','Χλοι',null],
  ['Aiden','Αἰδεν',null],
  ['Helen','Ἑλεν',null]
 ];
