@@ -1,0 +1,26 @@
+name: Animagia TOP-30 real photo regression
+on:
+  push:
+    branches: [animagia-site]
+    paths:
+      - photo_gallery.js
+      - enhancements.js
+      - index.html
+      - tests/photo-gallery.test.cjs
+      - .github/workflows/animagia-top30.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  photo-gallery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check photo JavaScript syntax
+        run: node --check photo_gallery.js && node --check enhancements.js
+      - name: Check photo-only TOP-30, attribution and inline reveal
+        run: node --test tests/photo-gallery.test.cjs
