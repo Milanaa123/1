@@ -7,6 +7,16 @@ or ecology flags sufficient to guarantee absence of every parasite.
 """
 POLICY_VERSION = "independent-noncolonial-fauna-v3"
 
+# Source-backed exclusions: these are Apicomplexa parasites, not the animals
+# from whose host-class branches the published CoL records were derived.
+# Eimeria: https://pubmed.ncbi.nlm.nih.gov/30314136/
+# Dactylosoma: https://pmc.ncbi.nlm.nih.gov/articles/PMC7746082/
+REJECTED_NON_ANIMAL_NAMES = frozenset({
+    "Eimeria psittacarae",
+    "Dactylosoma piperis",
+})
+
+
 # Exclude entire worm-like or mostly parasitic clades and known ectoparasitic
 # arthropod taxa. Conservatively omit some free-living members of mixed clades.
 EXCLUDED_TAXA = frozenset({
@@ -88,20 +98,26 @@ def allow_animal_taxon(lineage: dict) -> bool:
     """
     if lineage.get("kingdom") != "Animalia" or not lineage.get("phylum"):
         return False
+    if lineage.get("scientific_name") in REJECTED_NON_ANIMAL_NAMES:
+        return False
     if EXCLUDED_TAXA.intersection(lineage.values()):
         return False
     if lineage.get("genus") in EXCLUDED_GENERA:
         return False
     group = lineage.get("class", "")
     order = lineage.get("order", "")
+    # Taxonomic class and phylum must agree; host-derived or malformed
+    # lineages must never turn parasites into vertebrate animal matches.
+    phylum = lineage["phylum"]
     if group in TERRESTRIAL_VERTEBRATES or group in FISH:
-        return True
+        return phylum == "Chordata"
     if group == "Insecta":
-        return True
+        return phylum == "Arthropoda"
     if group in AQUATIC_INVERTEBRATES:
-        return True
+        return (phylum == "Mollusca" if group in {"Cephalopoda","Polyplacophora"}
+                else phylum == "Echinodermata")
     if group == "Malacostraca" and order in AQUATIC_CRUSTACEAN_ORDERS:
-        return True
+        return phylum == "Arthropoda"
     if group == "Arachnida" and order in RECOGNIZABLE_ARACHNID_ORDERS:
-        return True
+        return phylum == "Arthropoda"
     return False

@@ -76,6 +76,10 @@ def canonical(body,rank):
  if not w:return ''
  if w[0]=='×':i+=1
  if i>=len(w):return ''
+ # Reject vernacular placeholders such as "a weevil" before scoring.
+ # A rank marker alone is not proof of a valid scientific species name.
+ if not re.fullmatch(r'[A-Z][a-z]+(?:-[a-z]+)*',w[i]):
+  return ''
  out=[w[i]];i+=1
  if i<len(w) and w[i].startswith('(') and w[i].endswith(')'):i+=1
  for x in w[i:]:
@@ -329,7 +333,7 @@ def build():
       excluded_extinct+=1
      elif is_uncertain:
       excluded_uncertain+=1
-     elif not allow_animal_taxon(lin):
+     elif not allow_animal_taxon({**lin,'scientific_name':name}):
       excluded_scope+=1
      else:
       try:

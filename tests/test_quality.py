@@ -95,6 +95,39 @@ class GreekNumericParityTests(unittest.TestCase):
             self.assertTrue(allow_animal_taxon({
                 "kingdom":"Animalia","phylum":"Chordata","class":cls}))
 
+    def test_reject_source_host_contamination_and_vernacular_placeholders(self):
+        from build_data import canonical
+        examples=[
+            ("Eimeria psittacarae","Mammalia","Chordata","Didelphimorphia"),
+            ("Dactylosoma piperis","Amphibia","Chordata","Anura"),
+        ]
+        for scientific,animal_class,phylum,order in examples:
+            with self.subTest(scientific=scientific):
+                self.assertFalse(allow_animal_taxon({
+                    "kingdom":"Animalia","scientific_name":scientific,
+                    "phylum":phylum,"class":animal_class,"order":order
+                }))
+        for name in ("a weevil","some beetle","unknown fish",""):
+            with self.subTest(name=name):
+                self.assertEqual(canonical(name,"species"),"")
+                with self.assertRaises(ValueError):
+                    taxon_score(name)
+        self.assertEqual(canonical("Panthera leo","species"),"Panthera leo")
+        self.assertEqual(canonical("Canis lupus subsp. familiaris","subspecies"),
+                         "Canis lupus familiaris")
+        for phylum,cls in (("Arthropoda","Mammalia"),
+                           ("Mollusca","Insecta"),
+                           ("Chordata","Cephalopoda"),
+                           ("Echinodermata","Malacostraca")):
+            self.assertFalse(allow_animal_taxon({
+                "kingdom":"Animalia","phylum":phylum,"class":cls,
+                "order":"Decapoda"
+            }))
+        self.assertTrue(allow_animal_taxon({
+            "kingdom":"Animalia","phylum":"Arthropoda",
+            "class":"Insecta","order":"Coleoptera"
+        }))
+
     def test_col_texttree_explicit_historical_synonyms(self):
         from build_data import texttree_synonym
         self.assertEqual(texttree_synonym('=Discodeles opisthodon (Boulenger, 1884)','species'),

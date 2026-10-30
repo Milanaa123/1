@@ -39,7 +39,7 @@ def audit_bucket(rows, bucket_id: int, synonym_evidence: dict | None = None) -> 
             raise ValueError(f"Malformed classification for {name!r}")
         if not cls or not phylum or not allow_animal_taxon({
             "kingdom":"Animalia", "phylum":phylum, "class":cls,
-            "order":order,"genus":name.split()[0]
+            "order":order,"genus":name.split()[0],"scientific_name":name
         }):
             raise ValueError(f"Out-of-scope class/order for {name!r}")
         if len(family)>160 or len(family_ru)>160 or len(common_ru)>180:

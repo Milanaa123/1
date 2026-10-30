@@ -26,7 +26,10 @@ SINGLE = {
 WEIGHTS = dict(zip("αβγδεζηθικλμνξοπρστυφχψω",
                    [1,2,3,4,5,7,8,9,10,20,30,40,50,60,70,80,100,200,300,400,500,600,700,800]))
 WEIGHTS.update({"ς":200, "ϝ":6, "ϛ":6, "ϙ":90, "ϟ":90, "ϡ":900})
-SCIENTIFIC_RE = re.compile(r"[A-Za-z]+(?:-[A-Za-z]+)*(?: [A-Za-z]+(?:-[A-Za-z]+)*)+")
+# Capitalized genus required. Synthetic uppercase epithets used in score
+# parity controls remain acceptable to this mathematical helper; the catalogue
+# builder separately enforces stricter zoological canonical names.
+SCIENTIFIC_RE = re.compile(r"[A-Z][A-Za-z]*(?:-[A-Za-z]+)*(?: [A-Za-z]+(?:-[A-Za-z]+)*)+")
 
 def greek_transliterate(scientific_name: str) -> str:
     """Render alphabetic Latin name using a declared, reproducible convention."""
