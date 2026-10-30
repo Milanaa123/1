@@ -4,7 +4,7 @@ Does not crawl, bulk-download, or submit user data.
 """
 import json,urllib.request,urllib.error,urllib.parse
 base='https://taxonomy.polevoy-vorobey.ru'
-paths=['/openapi.json','/api/stats','/api/taxa?q='+urllib.parse.quote('Canis lupus'),'/', '/api/taxa?q='+urllib.parse.quote('Cornufer opisthodon')]
+paths=['/openapi.json','/api/stats','/api/taxa?q='+urllib.parse.quote('Canis lupus'),'/', '/api/taxa?q='+urllib.parse.quote('Cornufer opisthodon'), '/api/taxa?kingdom=Animalia&rank=species&has_ru_name=true&limit=3&offset=0', '/api/taxa/1217405']
 for path in paths:
     try:
         req=urllib.request.Request(base+path,headers={'User-Agent':'Animagia-Research-Taxonomic-Names/1.0 (GitHub Milanaa123/1)','Accept':'application/json'})
@@ -26,6 +26,10 @@ for path in paths:
                         'response_schema':definition.get('responses',{}).get('200',{})
                     },ensure_ascii=False)[:9000],flush=True)
             print('API_SCHEMA_NAMES',list(doc.get('components',{}).get('schemas',{}))[:80],flush=True)
+            for schema_name in ('BulkNameRequest','BulkNameItem'):
+                print('API_BULK_SCHEMA',schema_name,json.dumps(
+                    doc.get('components',{}).get('schemas',{}).get(schema_name,{}),
+                    ensure_ascii=False)[:4000],flush=True)
         elif data.lstrip().startswith((b'{',b'[')):
             o=json.loads(data)
             print('API_PROBE_SAMPLE',path,json.dumps(o,ensure_ascii=False)[:2500],flush=True)
