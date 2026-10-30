@@ -100,7 +100,10 @@ test('Verified real iNaturalist photographs expand inline rather than opening a 
  assert.ok(src.includes("photoButton.setAttribute('aria-expanded','false')"));
  assert.ok(src.includes("button.setAttribute('aria-expanded','true')"));
  assert.ok(src.includes("button.textContent='Скрыть фотографию'"));
- assert.ok(src.includes('image.src=preview'));\n assert.ok(src.includes('if(!panel.firstChild)'));\n assert.ok(!src.includes('panel.replaceChildren();'));\n assert.ok(src.includes('full.onload=()=>{if(image.isConnected)image.src=item.photo.src;}'));
+ assert.ok(src.includes('image.src=preview'));
+ assert.ok(src.includes('if(!panel.firstChild)'));
+ assert.ok(!src.includes('panel.replaceChildren();'));
+ assert.ok(src.includes('full.onload=()=>{if(image.isConnected)image.src=item.photo.src;}'));
  assert.ok(src.indexOf('image.src=item.photo.src')>src.indexOf('function photoToggleInline('));
  assert.ok(src.includes('link.href=item.photo.source'));
  assert.ok(!src.includes('dlg.hidden=false'));
