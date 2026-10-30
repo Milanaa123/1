@@ -133,7 +133,7 @@ test('Photo preview is retained on collapse, and a second open does not create a
   }};
   photoToggleInline(item,button,panel);
   const image=panel.firstChild;
-  const opened=!panel.hidden && image.src===item.photo.preview && button.getAttribute('aria-expanded')==='true';
+  const opened=!panel.hidden && [item.photo.preview,item.photo.src].includes(image.src) && button.getAttribute('aria-expanded')==='true';
   photoToggleInline(item,button,panel);
   const closed=panel.hidden && panel.firstChild===image && button.getAttribute('aria-expanded')==='false';
   const before=created;

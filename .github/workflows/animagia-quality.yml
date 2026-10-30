@@ -19,6 +19,8 @@ jobs:
       - name: Check syntax of website scripts
         run: |
           for file in app.js ru_name_lookup.js greek_taxa.js enhancements.js photo_gallery.js animal_atlas.js selected_art_107.js new_art_167.js approved_only_cards.js approved_chooser_gallery.js relic_features.js; do node --check "$file"; done
+      - name: Verify exact photo-only TOP-30, category order and insect cap
+        run: node --test tests/photo-gallery.test.cjs
       - name: Verify 275 source PNG checksums and exclusive card rendering
         run: node --test tests/test-approved-only-art.cjs
       - name: Check Python catalogue builder syntax
@@ -35,5 +37,3 @@ jobs:
         run: node --test tests/nonart_stages.test.cjs
       - name: Verify mobile keyboard and performance regressions
         run: node --test tests/test_mobile_performance.cjs
-      - name: Verify exact photo-only TOP-30, category order and insect cap
-        run: node --test tests/photo-gallery.test.cjs
