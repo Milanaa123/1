@@ -5,6 +5,7 @@ on:
     branches: [animagia-site]
     paths:
       - tests/visual_export_smoke.cjs
+      - tests/stage8_live_acceptance.cjs
       - .github/workflows/animagia-visual-export.yml
 permissions:
   contents: read
