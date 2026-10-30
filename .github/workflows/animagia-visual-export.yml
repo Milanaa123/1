@@ -23,10 +23,14 @@ jobs:
           npx playwright install chromium
       - name: Exercise screen canvas, PNG download, print PDF and mobile
         run: node tests/visual_export_smoke.cjs
+      - name: Stage 8 live Render desktop and mobile end-to-end acceptance
+        run: node tests/stage8_live_acceptance.cjs
       - name: Preserve QA captures
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: animagia-real-browser-export-qa
-          path: qa-artifacts/browser-export/
+          path: |
+            qa-artifacts/browser-export/
+            qa-artifacts/stage8-live/
           if-no-files-found: ignore
