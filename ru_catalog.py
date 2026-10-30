@@ -12,6 +12,38 @@ from pathlib import Path
 _DATA=json.loads((Path(__file__).resolve().parent/'ru_taxonomy.json').read_text(encoding='utf-8'))
 SPECIES_RU=_DATA['species_ru']
 FAMILY_RU=_DATA['family_ru']
+# Independently attested Russian family labels: exact scientific name P225,
+# family rank P105 and the same taxon's Russian Wikipedia article.
+# Do not derive or transliterate Latin names. Preserve curated names on conflict.
+_FAMILY_WIKI_PATH=Path(__file__).resolve().parent/'family_ru_wikidata_verified.json'
+WIKIDATA_FAMILY_STATS={'available':False,'imported':0,'conflicts':0}
+if _FAMILY_WIKI_PATH.exists():
+    _familydata=json.loads(_FAMILY_WIKI_PATH.read_text(encoding='utf8'))
+    if (_familydata.get('source')!='Wikidata P225 + P105 Q35409 + Russian Wikipedia verified article'
+        or _familydata.get('count')!=len(_familydata.get('families',{}))):
+        raise ValueError('Source-verified Russian families snapshot metadata invalid')
+    _russian_family=re.compile(r'^[А-ЯЁа-яё][А-ЯЁа-яё\s\-–—()«».]+$',re.U)
+    _families=_familydata['families']
+    _loaded=_conflicts=0
+    for _latin,_evidence in _families.items():
+        _ru=_evidence.get('russian','')
+        if (not re.fullmatch(r'[A-Z][a-zA-Z-]+idae',_latin)
+            or not isinstance(_ru,str) or len(_ru)>120 or not _russian_family.fullmatch(_ru)
+            or not _evidence.get('russian_article','').startswith('https://ru.wikipedia.org/wiki/')
+            or not _evidence.get('source','').startswith('http://www.wikidata.org/entity/Q')):
+            raise ValueError('Unattributed / invalid Russian family: '+_latin)
+        if _latin in FAMILY_RU:
+            if FAMILY_RU[_latin]!=_ru:_conflicts+=1
+        else:
+            FAMILY_RU[_latin]=_ru
+            _loaded+=1
+    WIKIDATA_FAMILY_STATS={
+        'available':True,'snapshot_entries':len(_families),'imported':_loaded,
+        'conflicts_with_curated':_conflicts,
+        'snapshot_sha256':hashlib.sha256(_FAMILY_WIKI_PATH.read_bytes()).hexdigest(),
+        'source':'Wikidata CC0 + Russian Wikipedia family rank and exact names'
+    }
+
 EXTERNAL_SPECIES_RU={}
 EXTERNAL_STATS={}
 _RUSSIAN_BULK_JSON=(Path(__file__).resolve().parent/'russian_vernacular_snapshot.json')

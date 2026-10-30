@@ -5,7 +5,7 @@ from original.alphabet_maps import latin_map as CH
 from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_score, CONTROL_NAMES
 from taxon_filters import POLICY_VERSION, allow_animal_taxon
 from audit_index import audit_bucket
-from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus, RUSSIAN_SNAPSHOT, BULK_NAMES, SPECIES_RU, EXTERNAL_SPECIES_RU, WIKIDATA_SNAPSHOT, WIKIDATA_NAMES, wikidata_ru_label, INAT_NAMES, INAT_SNAPSHOT, inat_ru_label, BVI_NAMES, BVI_SNAPSHOT, bvi_ru_label, PUBLISHED_NAMES, PUBLISHED_RU_SHA256, published_ru_label
+from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus, RUSSIAN_SNAPSHOT, BULK_NAMES, SPECIES_RU, EXTERNAL_SPECIES_RU, WIKIDATA_SNAPSHOT, WIKIDATA_NAMES, wikidata_ru_label, INAT_NAMES, INAT_SNAPSHOT, inat_ru_label, BVI_NAMES, BVI_SNAPSHOT, bvi_ru_label, WIKIDATA_FAMILY_STATS, PUBLISHED_NAMES, PUBLISHED_RU_SHA256, published_ru_label
 from pathlib import Path
 from selected_original_art import publish_selected_original_art
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
@@ -514,6 +514,7 @@ def build():
  meta['taxon_ranks']='species and subspecies only'
  meta['row_schema']=['greek_score','scientific_name','rank','class','order','status','phylum','family','family_ru','common_name_ru']
  meta['family_catalogue_file']='families.json'
+ meta['verified_russian_family_source']=WIKIDATA_FAMILY_STATS
  if external_report.exists():
   shutil.copy2(external_report,DEST/'family_external_verified.json')
   meta_gbif_src='family_external_verified.json'

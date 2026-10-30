@@ -188,6 +188,23 @@ class GreekNumericParityTests(unittest.TestCase):
             with self.subTest(family=latin):
                 self.assertEqual(taxon_ru_labels('Unknown species',latin)[0],russian)
 
+    def test_verified_ru_family_source_is_exactly_attributed(self):
+        from ru_catalog import WIKIDATA_FAMILY_STATS, FAMILY_RU
+        import json, pathlib
+        f=BASE/'family_ru_wikidata_verified.json'
+        if not f.exists():
+            self.assertFalse(WIKIDATA_FAMILY_STATS['available'])
+            return
+        record=json.loads(f.read_text(encoding='utf8'))
+        self.assertEqual(record['count'],len(record['families']))
+        self.assertGreater(record['count'],500)
+        self.assertTrue(WIKIDATA_FAMILY_STATS['available'])
+        self.assertGreater(WIKIDATA_FAMILY_STATS['imported'],0)
+        for latin,evidence in record['families'].items():
+            self.assertIn(latin,FAMILY_RU)
+            self.assertTrue(evidence['russian_article'].startswith('https://ru.wikipedia.org/wiki/'))
+            self.assertTrue(evidence['source'].startswith('http://www.wikidata.org/entity/Q'))
+
     def test_col_texttree_explicit_historical_synonyms(self):
         from build_data import texttree_synonym
         self.assertEqual(texttree_synonym('=Discodeles opisthodon (Boulenger, 1884)','species'),
