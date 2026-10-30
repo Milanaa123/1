@@ -100,7 +100,7 @@ test('Verified real iNaturalist photographs expand inline rather than opening a 
  assert.ok(src.includes("photoButton.setAttribute('aria-expanded','false')"));
  assert.ok(src.includes("button.setAttribute('aria-expanded','true')"));
  assert.ok(src.includes("button.textContent='Скрыть фотографию'"));
- assert.ok(src.includes('image.src=item.photo.src'));
+ assert.ok(src.includes('image.src=preview'));\n assert.ok(src.includes('if(!panel.firstChild)'));\n assert.ok(!src.includes('panel.replaceChildren();'));\n assert.ok(src.includes('full.onload=()=>{if(image.isConnected)image.src=item.photo.src;}'));
  assert.ok(src.indexOf('image.src=item.photo.src')>src.indexOf('function photoToggleInline('));
  assert.ok(src.includes('link.href=item.photo.source'));
  assert.ok(!src.includes('dlg.hidden=false'));
@@ -116,4 +116,40 @@ test('Gallery updates reuse opened cards so inline photos do not collapse while 
  assert.ok(source.includes("const previousCard=existingCards.get(key);"));
  assert.ok(source.includes('fragment.append(previousCard)'));
  assert.ok(source.includes('fragment.append(photoMakeCard(item,index))'));
+});
+
+test('Photo preview is retained on collapse, and a second open does not create a new image',()=>{
+ const s=simulate('valid',makeRows().slice(0,1));
+ const state=vm.runInContext(`(()=>{
+  let created=0;
+  document.createElement=(tag)=>{created++;return {tag,src:'',isConnected:true,dataset:{},remove(){this.removed=true}};};
+  const attr=new Map([['aria-expanded','false']]);
+  const button={getAttribute:k=>attr.get(k),setAttribute:(k,v)=>attr.set(k,v),textContent:''};
+  const panel={hidden:true,firstChild:null,replaceChildren(...children){this.firstChild=children[0]||null;}};
+  const item={row:rows[0],photo:{
+   src:'https://static.inaturalist.org/photos/1/medium.jpg',
+   preview:'https://static.inaturalist.org/photos/1/square.jpg',
+   credit:'Example · CC-BY',source:'https://www.inaturalist.org/taxa/1'
+  }};
+  photoToggleInline(item,button,panel);
+  const image=panel.firstChild;
+  const opened=!panel.hidden && image.src===item.photo.preview && button.getAttribute('aria-expanded')==='true';
+  photoToggleInline(item,button,panel);
+  const closed=panel.hidden && panel.firstChild===image && button.getAttribute('aria-expanded')==='false';
+  const before=created;
+  photoToggleInline(item,button,panel);
+  return {opened,closed,reopened:!panel.hidden && panel.firstChild===image,
+    unchanged:created===before,button:button.textContent};
+ })()`,s.ctx);
+ assert.equal(state.opened,true);
+ assert.equal(state.closed,true);
+ assert.equal(state.reopened,true);
+ assert.equal(state.unchanged,true);
+ assert.equal(state.button,'Скрыть фотографию');
+});
+test('TOP-30 has no obsolete full-screen photo modal and keeps stable per-species controls',()=>{
+ const html=fs.readFileSync('index.html','utf8');
+ assert.ok(!html.includes('id="animalPhotoDialog"'));
+ assert.match(source,/photoPanel\.id='bestiary-inline-photo-'\+row\[1\]/);
+ assert.match(source,/photoCheckImage\(match.preview\|\|match.src,stamp\)/);
 });

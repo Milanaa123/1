@@ -282,7 +282,7 @@ function photoMakeCard(item,index) {
  // Expand this verified real iNaturalist photograph inside its own card.
  const photoPanel=document.createElement('div');
  photoPanel.className='bestiary-inline-photo';
- photoPanel.id='bestiary-inline-photo-'+index;
+ photoPanel.id='bestiary-inline-photo-'+row[1].toLowerCase().replace(/[^a-z0-9]+/g,'-')+'-'+row[2];
  photoPanel.hidden=true;
  photoButton.setAttribute('aria-controls',photoPanel.id);
  photoButton.setAttribute('aria-expanded','false');
@@ -470,33 +470,49 @@ render=function(){
 function photoToggleInline(item,button,panel) {
  if(!item?.photo||!button||!panel)return;
  if(button.getAttribute('aria-expanded')==='true'){
-  panel.hidden=true;panel.replaceChildren();
+  // Keep the already loaded photo in the hidden panel. Reopening is instant.
+  panel.hidden=true;
   button.setAttribute('aria-expanded','false');
   button.textContent='Посмотреть фотографию';
   return;
  }
- const image=document.createElement('img');
- image.className='bestiary-inline-photo-image';
- image.alt='Реальная фотография вида '+display(item.row);
- image.loading='eager';image.decoding='async';
- const credit=document.createElement('p');
- credit.className='bestiary-inline-photo-credit';
- credit.textContent='Реальная фотография · '+item.photo.credit;
- const link=document.createElement('a');
- link.className='bestiary-inline-photo-source';
- link.href=item.photo.source;
- link.target='_blank';link.rel='noopener noreferrer';
- link.textContent='Источник фотографии · iNaturalist';
- image.onerror=()=>{
-  image.remove();
-  credit.textContent='Фотография временно недоступна · '+item.photo.credit;
- };
- panel.replaceChildren(image,credit,link);
+ if(!panel.firstChild){
+  const image=document.createElement('img');
+  image.className='bestiary-inline-photo-image';
+  image.alt='Реальная фотография вида '+display(item.row);
+  image.loading='eager';image.decoding='async';
+  const credit=document.createElement('p');
+  credit.className='bestiary-inline-photo-credit';
+  credit.textContent='Реальная фотография · '+item.photo.credit;
+  const link=document.createElement('a');
+  link.className='bestiary-inline-photo-source';
+  link.href=item.photo.source;
+  link.target='_blank';link.rel='noopener noreferrer';
+  link.textContent='Источник фотографии · iNaturalist';
+  image.onerror=()=>{
+   // The verified thumbnail can fail later; retry with the source photo.
+   if(image.src!==item.photo.src){
+    image.src=item.photo.src;
+    return;
+   }
+   image.remove();
+   credit.textContent='Фотография временно недоступна · '+item.photo.credit;
+  };
+  panel.replaceChildren(image,credit,link);
+  // Thumbnail was verified and downloaded before this card entered TOP-30:
+  // show that cached image immediately, then upgrade without a blank panel.
+  const preview=item.photo.preview||item.photo.src;
+  image.src=preview;
+  if(preview!==item.photo.src){
+   const full=new Image();
+   full.decoding='async';
+   full.onload=()=>{if(image.isConnected)image.src=item.photo.src;};
+   full.src=item.photo.src;
+  }
+ }
  panel.hidden=false;
  button.setAttribute('aria-expanded','true');
  button.textContent='Скрыть фотографию';
- // High-resolution photo is loaded only in response to the click.
- image.src=item.photo.src;
 }
 document.addEventListener('DOMContentLoaded',()=>{
  const search=document.getElementById('bestiarySearch');
