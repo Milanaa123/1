@@ -4,7 +4,7 @@ Does not crawl, bulk-download, or submit user data.
 """
 import json,urllib.request,urllib.error,urllib.parse
 base='https://taxonomy.polevoy-vorobey.ru'
-paths=['/openapi.json','/api/stats','/api/taxa?q='+urllib.parse.quote('Canis lupus'),'/', '/api/taxa?q='+urllib.parse.quote('Cornufer opisthodon'), '/api/taxa?kingdom=Animalia&rank=species&has_ru_name=true&limit=3&offset=0', '/api/taxa/1217405']
+paths=['/openapi.json','/api/stats','/api/taxa?q='+urllib.parse.quote('Canis lupus'),'/', '/api/taxa?q='+urllib.parse.quote('Cornufer opisthodon'), '/api/taxa?kingdom=Animalia&rank=species&has_ru_name=true&limit=3&offset=0', '/api/taxa/1217405', '/api/taxa?kingdom=Animalia&rank=subspecies&has_ru_name=true&hide_subspecies=false&limit=3&offset=0']
 for path in paths:
     try:
         req=urllib.request.Request(base+path,headers={'User-Agent':'Animagia-Research-Taxonomic-Names/1.0 (GitHub Milanaa123/1)','Accept':'application/json'})
