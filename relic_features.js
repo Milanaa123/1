@@ -1626,6 +1626,8 @@
   const gallery=atlas(),profile=gallery?.resolve(row)||null;
   const sprite=profile?await gallery.drawable(profile):null;
   if(serial!==posterSerial)return false;
+  // Do not save a supposedly illustrated card if the approved art failed.
+  if(profile&&!sprite)return false;
   const ctx=canvas.getContext('2d');if(!ctx)return false;
   canvas.width=1200;canvas.height=2000;
   const styl=gallery?.style(gallery.classify(row))||{};
@@ -1653,7 +1655,7 @@
   }
   try{
    status.textContent='Создаём PNG с прозрачной рамкой…';
-   if(!await composeScreenCard(row))throw Error('Карточка обновляется, повтори сохранение.');
+   if(!await composeScreenCard(row))throw Error('Карточка не готова: проверь загрузку рисунка и повтори сохранение.');
    const canvas=get('relicCardBackdrop');
    const blob=await new Promise((resolve,reject)=>{
     try{canvas.toBlob(resolve,'image/png');}catch(error){reject(error);}
@@ -1745,8 +1747,9 @@
    }
    art.append(elem('h3',label(r)));
    art.append(elem('p',r[1]+' · '+(r[2]==='subspecies'?'подвид':'вид')));
-   if(illustration){
-    const nature=atlas().style(atlas().classify(r));
+   if(gallery){
+    // Verified ecology exists independently of whether the animal has art.
+    const nature=gallery.style(gallery.classify(r));
     const labels=[nature.diet!=='unknown'?nature.dietText:null,
       nature.habitat!=='unknown'?nature.habitatText:null,...nature.secondaryText].filter(Boolean);
     if(labels.length)art.append(elem('p',labels.join(' · ')));

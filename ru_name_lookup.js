@@ -10,11 +10,14 @@
  const scientific=/^[A-Z][a-z-]+ [a-z-]+(?: [a-z-]+)?$/;
  const exact=(a,b)=>String(a||'').toLowerCase()===String(b||'').toLowerCase();
  const validRussian=s=>typeof s==='string' && s.length<=130 && cyrillic.test(s.trim());
+ // Include rank and lineage to avoid cross-taxon cache collisions.
+ const taxonKey=row=>[row?.[1],row?.[2],row?.[3],row?.[4],row?.[6],row?.[7]]
+  .map(part=>String(part||'').trim().toLowerCase()).join('|');
  function fromRow(row){
   return Array.isArray(row)&&typeof row[9]==='string'&&row[9]
-    ?row[9]:verified.get(row?.[1])||'';
+    ?row[9]:verified.get(taxonKey(row))||'';
  }
- function sourceFor(row){return row?.[9]?'Catalogue of Life / BirdNET+':provenance.get(row?.[1])||'';}
+ function sourceFor(row){return row?.[9]?'Проверенное название из каталога':provenance.get(taxonKey(row))||'';}
  async function lookupINaturalist(row){
   try{
    const url='https://api.inaturalist.org/v1/taxa?q='+
@@ -23,7 +26,10 @@
    if(!response.ok)return '';
    const data=await response.json();
    const matches=(Array.isArray(data.results)?data.results:[]).filter(t=>
-    exact(t.name,row[1])&&t.rank===row[2]&&Number.isSafeInteger(t.id));
+    exact(t.name,row[1])&&t.rank===row[2]&&Number.isSafeInteger(t.id)&&
+    t.is_active!==false&&(!row[3]||!t.iconic_taxon_name||
+      !['Mammalia','Aves','Reptilia','Amphibia','Insecta','Arachnida'].includes(row[3])||
+      t.iconic_taxon_name===row[3]));
    if(matches.length!==1)return '';
    const name=String(matches[0].preferred_common_name||'').trim();
    return validRussian(name)?name:'';
@@ -65,8 +71,8 @@
   if(!Array.isArray(row)||!scientific.test(row[1]||'')||
      !['species','subspecies'].includes(row[2]))return '';
   if(row[9])return row[9];
-  const taxon=row[1],key=taxon+'|'+row[2];
-  if(verified.has(taxon))return verified.get(taxon);
+  const key=taxonKey(row);
+  if(verified.has(key))return verified.get(key);
   if(noName.has(key))return '';
   if(pending.has(key))return pending.get(key);
   const request=(async()=>{
@@ -74,8 +80,8 @@
     const first=await lookupINaturalist(row);
     const name=first||await lookupGBIF(row);
     if(name){
-     verified.set(taxon,name);
-     provenance.set(taxon,first?'iNaturalist':'GBIF');
+     verified.set(key,name);
+     provenance.set(key,first?'iNaturalist':'GBIF');
      return name;
     }
     noName.add(key);
@@ -90,8 +96,9 @@
   const ticket=++serial;
   const unique=new Map();
   for(const row of rows||[]){
-   if(!row?.[9]&&!verified.has(row?.[1])&&row?.[1]&&!noName.has(row[1]+'|'+row[2])&&!unique.has(row[1]))
-    unique.set(row[1],row);
+   const key=taxonKey(row);
+   if(!row?.[9]&&!verified.has(key)&&row?.[1]&&!noName.has(key)&&!unique.has(key))
+    unique.set(key,row);
    if(unique.size>=maxRequestsPerSearch)break;
   }
   const queued=[...unique.values()];

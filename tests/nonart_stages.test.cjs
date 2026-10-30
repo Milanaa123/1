@@ -82,6 +82,8 @@ test('Existing PNG and PDF mechanisms stay in the same code path',()=>{
  assert.ok(renderer.includes("async function printBooklet(status)"));
  assert.ok(renderer.includes('window.print()'));
  assert.ok(renderer.includes('await gallery.drawable(illustration)'));
+ assert.ok(renderer.includes('if(profile&&!sprite)return false;'));
+ assert.ok(renderer.includes('if(gallery){\n    // Verified ecology exists independently of whether the animal has art.'));
  assert.match(page,/id="downloadRelic"/);
  assert.match(page,/id="printRelic"/);
 });

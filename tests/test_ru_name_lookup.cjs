@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const path=require('node:path');
 const script=fs.readFileSync(path.join(__dirname,'..','ru_name_lookup.js'),'utf8');
 const responses={
- 'Castor fiber':[{name:'Castor fiber',rank:'species',id:10,preferred_common_name:'Бобр обыкновенный'}],
+ 'Castor fiber':[{name:'Castor fiber',rank:'species',id:10,preferred_common_name:'Бобр обыкновенный',iconic_taxon_name:'Mammalia'}],
  'Panthera uncia':[{name:'Panthera tigris',rank:'species',id:12,preferred_common_name:'Тигр'}],
  'Lutra lutra':[{name:'Lutra lutra',rank:'genus',id:13,preferred_common_name:'Выдра'}],
  'Vulpes vulpes':[{name:'Vulpes vulpes',rank:'species',id:14,preferred_common_name:'Red fox'}],
@@ -45,6 +45,16 @@ const row=(name,family='Canidae')=>[1,name,'species','Mammalia','Carnivora','','
 (async()=>{
  assert.equal(await api.resolve(row('Castor fiber','Castoridae')),'Бобр обыкновенный');
  assert.equal(api.sourceFor(row('Castor fiber','Castoridae')),'iNaturalist');
+ // A cache entry cannot be reused for a different family or class.
+ const alien=row('Castor fiber','Felidae');
+ assert.equal(api.get(alien),'');
+ assert.equal(api.sourceFor(alien),'');
+ const beforeAlien=calls.length;
+ assert.equal(await api.resolve(alien),'Бобр обыкновенный'); // same exact binomial; independent lookup
+ assert.ok(calls.length>beforeAlien,'Different lineage must not reuse a cached result');
+ const wrongClass=[...row('Castor fiber','Castoridae')];
+ wrongClass[3]='Reptilia';
+ assert.equal(await api.resolve(wrongClass),'','Reject conflicting iNaturalist iconic class and GBIF class');
  assert.equal(await api.resolve(row('Panthera uncia','Felidae')),'');
  assert.equal(await api.resolve(row('Lutra lutra','Mustelidae')),'');
  assert.equal(await api.resolve(row('Vulpes vulpes')),'');
