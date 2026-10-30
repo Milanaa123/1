@@ -1,0 +1,20 @@
+name: Animagia check independent Russian scientific-name catalogue API
+on:
+  workflow_dispatch:
+  push:
+    branches: [animagia-site]
+    paths:
+      - tools/probe_russian_taxonomy_api.py
+      - .github/workflows/animagia-russian-taxonomy-probe.yml
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python tools/probe_russian_taxonomy_api.py
