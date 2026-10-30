@@ -1,0 +1,118 @@
+name: Import 167 original Animagia illustrations
+on:
+  push:
+    branches: [animagia-site]
+    paths:
+      - '.github/workflows/animagia-import-167.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import-original-pngs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: animagia-site
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Download original art and verify all 167 hashes
+        run: |
+          from pathlib import Path
+          from concurrent.futures import ThreadPoolExecutor
+          import csv, hashlib, io, time, urllib.request, zipfile
+          
+          media_ids=["85c6a4d4-5b3c-4740-beaf-fb12d93036bf","76f8943b-5637-43c2-a077-b2a15d00d446","4e403f8b-906b-40bb-bebd-7465bab0995d","16d78baa-b4e6-4ae6-8ed1-31624f7b847c","5748638c-5b08-4206-93df-1eb330f26ac9","8bc434cd-b979-4575-bfd6-f4684ccee4d9","1de577a7-0b9f-402f-8bb2-44e9b58ccc42","7ea84ca9-04eb-4e4d-b129-ed680da2cff7","ddf58147-c7e2-4efd-9933-ad3061f3cd6c","245b0de7-c700-46b5-a275-4dca427178d2","720296f4-ea13-4d2d-8f0d-6c92c6482da1","a609486d-b259-4b1f-a96c-f8195b065181","a5c1de63-20dd-4abe-8a89-195f58a90091","e3c20d61-b6e1-4ec5-bd9a-47db48d4029e","148ea7dd-d9a1-49af-b152-f80ee476b8f8","82b5d2a0-f409-4153-b786-d336f20acae6","fc1b1292-33b5-4b5a-8289-95f63a2344f5","9c982026-5946-4274-92cf-056e9d2c2d29","60ee0d67-4238-4b55-ac2f-1f156ff7cf36","ae2e66f4-81cf-409e-b78d-3b54fbb52897","303e93ff-84ca-4310-9289-c67898b73e5b","19f7fd1c-44b3-4c0e-a065-226a242c3549","d36d1d51-f490-4461-a762-43e3769a50bb","b77eb8e1-5103-4b5a-87ce-fed52ac5d1f4","084db6a5-eaed-4d62-95f1-e6bb4e06b6af","63514456-abb5-4859-8d48-0ff81167a31f","9864fcc3-51b0-4da6-ab6d-7696ed7bb34e","3554fee9-1602-451c-83da-264fe696d67a","4b57683b-3858-4d6d-95d9-21ca3fb077f3"]
+          base='https://d2ol7oe51mr4n9.cloudfront.net/user_3IWontIKp1HpvdwOJQiSSyMEM6K/'
+          directory=Path('art/animagia-selected-107/new')
+          directory.mkdir(parents=True,exist_ok=True)
+          temporary=Path('/tmp/animagia-original-new-batches')
+          temporary.mkdir(exist_ok=True)
+          def get_pair(pair):
+              i,media=pair
+              target=temporary/('batch-%02d.zip' % i)
+              if not target.exists():
+                  for attempt in range(5):
+                      try:
+                          req=urllib.request.Request(base+media+'.zip',headers={'User-Agent':'Animagia-original-art-import/1.0'})
+                          with urllib.request.urlopen(req,timeout=120) as src,target.open('wb') as dest:
+                              while True:
+                                  buf=src.read(1048576)
+                                  if not buf:break
+                                  dest.write(buf)
+                          break
+                      except Exception:
+                          target.unlink(missing_ok=True)
+                          if attempt==4:raise
+                          time.sleep(3*(attempt+1))
+              with zipfile.ZipFile(target) as z:
+                  assert z.testzip() is None
+                  return i,target,len([n for n in z.namelist() if n.startswith('PNG/')])
+          with ThreadPoolExecutor(max_workers=6) as pool:
+              downloaded=list(pool.map(get_pair,enumerate(media_ids,1)))
+          print('VERIFIED_ZIP_PARTS',len(downloaded),'PNG_COUNT',sum(x[2] for x in downloaded),flush=True)
+          assert len(downloaded)==29 and sum(x[2] for x in downloaded)==167
+          seen={}
+          for i,archive,_ in sorted(downloaded):
+              with zipfile.ZipFile(archive) as z:
+                  for name in z.namelist():
+                      if name.startswith('PNG/') and name.endswith('.png'):
+                          file=Path(name).name
+                          assert name=='PNG/'+file
+                          data=z.read(name)
+                          digest=hashlib.sha256(data).hexdigest()
+                          assert file not in seen
+                          seen[file]=digest
+                          (directory/file).write_bytes(data)
+                      elif name=='manifest.csv':
+                          (directory/'manifest.csv').write_bytes(z.read(name))
+          assert len(seen)==167
+          with (directory/'manifest.csv').open(encoding='utf-8-sig',newline='') as stream:
+              listing=list(csv.DictReader(stream))
+          assert len(listing)==167
+          for row in listing:
+              assert seen[row['Файл']]==row['SHA256'],row['Файл']
+          assert {int(row['Номер']) for row in listing}==set(range(109,277))-{269}
+          print('ALL_NEW_167_ORIGINAL_RGBA_PNGS_SHA256_MATCH_THE_USER_ARCHIVE',flush=True)
+          
+      - name: Commit original PNGs in bounded batches without touching the website UI
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          root=Path('art/animagia-selected-107/new')
+          images=sorted(root.glob('*.png'))
+          assert len(images)==167
+          for start in range(0,len(images),16):
+              group=[str(p) for p in images[start:start+16]]
+              subprocess.run(['git','add','--',*group],check=True)
+              subprocess.run(['git','commit','-m','Import original new Animagia PNG '+str(start+1)+'-'+str(start+len(group))],check=True)
+              subprocess.run(['git','push','origin','HEAD:animagia-site'],check=True)
+              print('PUSHED_IMAGE_GROUP',start+1,start+len(group),flush=True)
+          PY
+      - name: Register exact-species mapping and preserve the original site
+        run: |
+          set -euo pipefail
+          python3 scripts/import_new_167_art.py
+          python3 -m py_compile scripts/import_new_167_art.py build_data.py selected_original_art.py
+          node --check selected_art_107.js
+          node --check new_art_167.js
+          node --test tests/test-approved-only-art.cjs
+          node --test tests/phonetic.test.cjs tests/strict-original.test.cjs
+          python3 -m unittest discover -s tests -p 'test_quality.py' -v
+      - name: Publish 275 verified originals and card mapping
+        run: |
+          set -euo pipefail
+          git add art/animagia-selected-107/manifest.json art/animagia-selected-107/new/manifest.csv
+          git add selected_original_art.py new_art_167.js index.html build_data.py
+          git add tests/test-approved-only-art.cjs .github/workflows/animagia-quality.yml
+          git diff --cached --check
+          git commit -m 'Enable all 275 approved original PNGs in existing Animagia cards'
+          git push origin HEAD:animagia-site
+          git rev-parse HEAD
