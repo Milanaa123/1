@@ -1,0 +1,21 @@
+name: Animagia live Russian-name export integrity
+on:
+  workflow_dispatch:
+  push:
+    branches: [animagia-site]
+    paths:
+      - tools/check_live_russian_export.py
+      - .github/workflows/animagia-live-russian-export.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download and verify live Russian-only taxon registry
+        run: python tools/check_live_russian_export.py
