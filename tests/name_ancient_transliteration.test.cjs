@@ -10,9 +10,9 @@ const path=require('node:path');
 const root=path.join(__dirname,'..');
 const script=fs.readFileSync(path.join(root,'app.js'),'utf8');
 const ctx={document:{addEventListener(){}}};
-const api=vm.runInNewContext(script+\`
+const api=vm.runInNewContext(script+`
 ;({nameGreekFromLatin,validLatinName,validGreek,score,nameLatin})
-\`,ctx,{filename:'app.js'});
+`,ctx,{filename:'app.js'});
 const keycases=[
  ['Fraser','Φρασερ',906],
  ['Harold','Ἁρολδ',205],
