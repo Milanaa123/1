@@ -1,0 +1,27 @@
+name: Animagia published taxonomy provenance audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [animagia-site]
+    paths:
+      - tools/audit_published_taxonomy.py
+      - .github/workflows/animagia-taxonomy-audit.yml
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read published CoL manifest and unresolved family examples
+        run: python tools/audit_published_taxonomy.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: animagia-published-taxonomy-review
+          path: qa-artifacts/taxonomy-review/
+          if-no-files-found: ignore
