@@ -37,14 +37,14 @@ def main():
         assert number not in numbers and 109 <= number <= 276 and number != 269
         numbers.add(number)
         filename = row['Файл']
-        assert re.fullmatch(r'[0-9]{3}_[A-Za-z0-9_]+\\.png', filename), filename
+        assert re.fullmatch(r'[0-9]{3}_[A-Za-z0-9_]+\.png', filename), filename
         assert filename.startswith(str(number) + '_')
         scientific = filename[:-4].split('_', 1)[1].replace('_', ' ')
         assert re.fullmatch(r'[A-Z][a-zA-Z-]+(?: [a-z-]+){1,2}', scientific), scientific
         name = row['Животное'].split('  (')[0].strip()
         assert name
         data = (EXTRA / filename).read_bytes()
-        assert data[:8] == b'\\x89PNG\\r\\n\\x1a\\n'
+        assert data[:8] == b'\x89PNG\r\n\x1a\n'
         assert data[25] == 6, 'RGBA expected: ' + filename
         width, height = struct.unpack('>II', data[16:24])
         assert (width, height) == (int(row['Ширина']), int(row['Высота']))
@@ -66,7 +66,7 @@ def main():
         '108 originally approved PNG plus 167 original PNG in 2026-10-30 new batch; '
         'artistic selection, not species-anatomy certification'
     )
-    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\\n', encoding='utf-8')
+    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
     validator = ROOT / 'selected_original_art.py'
     s = validator.read_text(encoding='utf-8')
@@ -123,7 +123,7 @@ def main():
     extra_copy = "shutil.copy2(BASE/'new_art_167.js',DEST/'new_art_167.js')"
     if extra_copy not in s:
         assert existing in s
-        s = s.replace(existing, existing + '\\n shutil.copy2(BASE/\'new_art_167.js\',DEST/\'new_art_167.js\')')
+        s = s.replace(existing, existing + '\n shutil.copy2(BASE/\'new_art_167.js\',DEST/\'new_art_167.js\')')
     s = s.replace('approved 107 original PNG assets only', 'approved 275 original PNG assets only')
     builder.write_text(s, encoding='utf-8')
 
