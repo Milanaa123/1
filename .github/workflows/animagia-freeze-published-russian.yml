@@ -1,0 +1,37 @@
+name: Freeze verified published Russian zoological names
+on:
+  push:
+    branches: [animagia-site]
+    paths:
+      - tools/freeze_published_russian.py
+      - .github/workflows/animagia-freeze-published-russian.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  freeze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify all published shards and capture Russian names
+        run: python tools/freeze_published_russian.py
+      - name: Commit source-audited snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add russian_published_verified_snapshot.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Freeze published verified Russian names against mutable BirdNET download"
+          git push origin HEAD:animagia-site
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: animagia-frozen-published-russian-names
+          path: russian_published_verified_snapshot.json
+          if-no-files-found: ignore
