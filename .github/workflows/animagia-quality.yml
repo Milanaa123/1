@@ -33,3 +33,5 @@ jobs:
         run: node --test tests/phonetic.test.cjs tests/strict-original.test.cjs
       - name: Verify non-artwork stages (scientific labels, ecology, exports and mobile containment)
         run: node --test tests/nonart_stages.test.cjs
+      - name: Verify mobile keyboard and performance regressions
+        run: node --test tests/test_mobile_performance.cjs

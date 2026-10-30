@@ -1602,12 +1602,16 @@
    paintDietAdornment(ctx,row,styl,greek);
 
  }
- let posterSerial=0;
+ // Large 1200x2000 gold canvases must not be painted on every keystroke.
+ // The idle backdrop is visually identical until a result changes it.
+ let posterSerial=0,blankPosterPainted=false,renderedPosterKey='';
  async function composeScreenCard(row){
   const wrap=get('relicCard'),canvas=get('relicCardBackdrop');
   if(!wrap||!canvas)return false;
-  const serial=++posterSerial;
   if(!row){
+   if(blankPosterPainted&&canvas.dataset.posterReady==='0')return false;
+   ++posterSerial; // Cancel any pending animal image before clearing.
+   blankPosterPainted=true;renderedPosterKey='';
    wrap.classList.remove('is-poster-rendered');
    canvas.dataset.posterReady='0';
    paintCardBackdropOnScreen(null);
@@ -1615,6 +1619,10 @@
   }
   const greek=get('greek').value.trim();
   if(!validGreek(greek)||score(greek)!==row[0]||row[0]!==sum)return false;
+  const key=row[0]+'|'+row[1]+'|'+row[2]+'|'+greek;
+  if(canvas.dataset.posterReady==='1'&&renderedPosterKey===key)return true;
+  const serial=++posterSerial;
+  blankPosterPainted=false;
   const gallery=atlas(),profile=gallery?.resolve(row)||null;
   const sprite=profile?await gallery.drawable(profile):null;
   if(serial!==posterSerial)return false;
@@ -1625,6 +1633,7 @@
   const ornament=cardAdornment(row,styl,greek);
   wrap.dataset.cardVariant=ornament.kind+'-'+(ornament.variant+1);
   canvas.dataset.posterReady='1';
+  renderedPosterKey=key;
   wrap.classList.add('is-poster-rendered');
   return true;
  }

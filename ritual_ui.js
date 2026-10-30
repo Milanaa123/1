@@ -69,17 +69,17 @@
       if (twoWasHidden && twoVisible) markArrival(stageTwo);
       if (threeWasHidden && threeVisible) markArrival(stageThree);
     }
-    function moveTo(next, focusIt) {
+    function moveTo(next) {
+      // Programmatic focus on a text field opens the mobile keyboard.
+      // A new step only reveals its input; only a direct tap focuses it.
       if (next === 2 && !nameIsReady()) {
         announce('Сначала введи полное имя на русском.');
-        russian.focus();
         return false;
       }
       if (next === 3 && !latinIsReady()) {
         announce('Проверь написание латиницей.');
         if (stage < 2) stage = 2;
         updateLayout();
-        latin.focus();
         return false;
       }
       if (stage < next) {
@@ -89,7 +89,6 @@
           ? 'Латинская запись открыта. Уточни оригинальное написание имени.'
           : 'Открыта древнегреческая запись. Проверь буквы и их числовую сумму.');
       }
-      if (focusIt) (next === 2 ? latin : greek).focus();
       return true;
     }
     function weightRows(value) {
@@ -136,8 +135,8 @@
       ).join(' + ');
       weightRows(phrase);
     }
-    nextLatin.addEventListener('click', () => moveTo(2, true));
-    nextGreek.addEventListener('click', () => moveTo(3, true));
+    nextLatin.addEventListener('click', () => moveTo(2));
+    nextGreek.addEventListener('click', () => moveTo(3));
     expand.addEventListener('click', () => {
       allOpen = !allOpen;
       // Returning from full view must never unexpectedly hide a name
@@ -154,7 +153,7 @@
         stage = 1;
         updateLayout();
       } else if (!allOpen && stage < 2 && nameIsReady()) {
-        moveTo(2, false);
+        moveTo(2);
       }
       updatePreview(); // app.js has already updated the downstream fields
       copyStatus.textContent = '';
@@ -181,15 +180,14 @@
       if (!allOpen && stage < 3) {
         event.preventDefault();
         event.stopImmediatePropagation();
-        if (stage < 2) moveTo(2, true);
-        else moveTo(3, true);
+        if (stage < 2) moveTo(2);
+        else moveTo(3);
       }
     }, true);
     copy.addEventListener('click', async () => {
       const phrase = greek.value.trim();
       if (!phrase || !validGreek(phrase)) {
         copyStatus.textContent = 'Проверь греческую запись.';
-        greek.focus();
         return;
       }
       try {
@@ -197,9 +195,7 @@
         await navigator.clipboard.writeText(phrase);
         copyStatus.textContent = 'Скопировано';
       } catch (_) {
-        greek.focus();
-        greek.select();
-        copyStatus.textContent = 'Выделено — скопируй вручную';
+        copyStatus.textContent = 'Нажми на греческое поле, чтобы скопировать вручную';
       }
     });
     updateLayout();

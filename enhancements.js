@@ -164,6 +164,8 @@ function showAuditReport(fresh){
     (GROUP[name]||CLASS_RU[name]||name)+' — '+count.toLocaleString('ru-RU')).join('; ')+'.';
  }
 }
+// Keep just one SHA-256 verified animal shard in memory; never store names.
+ let lastVerifiedShard=null;
 run=async function(){
  const raw=el('name').value.trim(),latin=el('latin').value.trim(),greek=el('greek').value.trim();
  if(!/^[А-Яа-яЁё\s\-'’]+$/.test(raw)||!validLatinName(latin)||!validGreek(greek)){
@@ -196,13 +198,20 @@ run=async function(){
   meta=fresh;
   let matches=[];const bucket=Math.floor(target/25);
   if(meta.available_buckets.includes(bucket)){
-   const response=await fetch('./data/'+bucket+'.json',{cache:'no-store'});
-   if(!response.ok)throw Error('Большой каталог животных недоступен');
-   const body=await response.text();if(id!==serial)return;
-   await verifyShardBody(body,bucket,fresh.bucket_sha256);
-   if(id!==serial)return;
-   const data=JSON.parse(body);
-   if(!Array.isArray(data))throw Error('Некорректный формат индекса');
+   const digest=fresh.bucket_sha256[String(bucket)];
+   let data=lastVerifiedShard?.bucket===bucket&&lastVerifiedShard.digest===digest
+    ?lastVerifiedShard.rows:null;
+   if(!data){
+    const response=await fetch('./data/'+bucket+'.json',{cache:'no-store'});
+    if(!response.ok)throw Error('Большой каталог животных недоступен');
+    const body=await response.text();if(id!==serial)return;
+    await verifyShardBody(body,bucket,fresh.bucket_sha256);
+    if(id!==serial)return;
+    data=JSON.parse(body);
+    if(!Array.isArray(data))throw Error('Некорректный формат индекса');
+    // Cache only AFTER the original SHA verification has passed.
+    lastVerifiedShard={bucket,digest,rows:data};
+   }
    matches=data.filter(row=>Array.isArray(row)&&row[0]===target);
    if(matches.some(row=>row.length!==10 ||
       !['species','subspecies'].includes(row[2]) || row[5]!=='' ||
