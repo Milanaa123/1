@@ -6,7 +6,7 @@ from greek_taxa import RULE_VERSION, greek_transliterate, score_greek, taxon_sco
 from taxon_filters import POLICY_VERSION, allow_animal_taxon
 from audit_index import audit_bucket
 from family_evidence import load_exact_families, family_for_row
-from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus, RUSSIAN_SNAPSHOT, BULK_NAMES, SPECIES_RU, EXTERNAL_SPECIES_RU, WIKIDATA_SNAPSHOT, WIKIDATA_NAMES, wikidata_ru_label, INAT_NAMES, INAT_SNAPSHOT, inat_ru_label, BVI_NAMES, BVI_SNAPSHOT, bvi_ru_label, WIKIDATA_FAMILY_STATS, PUBLISHED_NAMES, PUBLISHED_RU_SHA256, published_ru_label
+from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus, RUSSIAN_SNAPSHOT, BULK_NAMES, SPECIES_RU, EXTERNAL_SPECIES_RU, WIKIDATA_SNAPSHOT, WIKIDATA_NAMES, wikidata_ru_label, INAT_NAMES, INAT_SNAPSHOT, inat_ru_label, BVI_NAMES, BVI_SNAPSHOT, bvi_ru_label, WIKIDATA_FAMILY_STATS, PUBLISHED_NAMES, PUBLISHED_RU_SHA256, published_ru_label, WIKIPEDIA_RU_PATH, WIKIPEDIA_RU_NAMES, WIKIPEDIA_RU_SNAPSHOT, wikipedia_ru_label
 from pathlib import Path
 from selected_original_art import publish_selected_original_art
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
@@ -20,7 +20,7 @@ SYNONYM_SOURCE_KEYS=(
  {k.casefold()+'|species' for k in SPECIES_RU}|
  {k.casefold()+'|species' for k in EXTERNAL_SPECIES_RU}|
  set(BULK_NAMES)|set(INAT_NAMES)|set(BVI_NAMES)|
- {k+'|species' for k in WIKIDATA_NAMES}
+ {k+'|species' for k in WIKIDATA_NAMES}|set(WIKIPEDIA_RU_NAMES)
 )
 # Historical Latin scoring is retained only as a regression check for the old programme.
 # Matching NOW uses the same Greek-numeral values for names and Greek-rendered taxa.
@@ -473,6 +473,8 @@ def build():
       russian_name_sources['bvi_historical']+=1
      elif wikidata_ru_label(r[1],r[2])==r[9]:
       russian_name_sources['wikidata_cc0']+=1
+     elif wikipedia_ru_label(r[1],r[2])==r[9]:
+      russian_name_sources['wikidata_russian_wikipedia_article']+=1
      elif published_ru_label(r[1],r[7],r[3],r[4],r[6],r[2])==r[9]:
       russian_name_sources['previous_sha_verified_publication']+=1
      elif (r[1]+'|'+r[2] in synonym_ru_evidence and
@@ -546,6 +548,16 @@ def build():
  if itis_report.exists():
   shutil.copy2(itis_report,DEST/'family_itis_verified.json')
   meta['family_itis_evidence_file']='family_itis_verified.json'
+ if WIKIPEDIA_RU_PATH.exists():
+  shutil.copy2(WIKIPEDIA_RU_PATH,DEST/'russian_wikipedia_species_verified.json')
+  meta['wikipedia_verified_species_source']={
+      'source':WIKIPEDIA_RU_SNAPSHOT['source'],
+      'count':len(WIKIPEDIA_RU_NAMES),
+      'queried_rows':WIKIPEDIA_RU_SNAPSHOT.get('queried_rows',0),
+      'failed_offsets':WIKIPEDIA_RU_SNAPSHOT.get('failed_offsets',{}),
+      'license':'Wikidata CC0',
+      'snapshot_sha256':hashlib.sha256(WIKIPEDIA_RU_PATH.read_bytes()).hexdigest(),
+  }
  meta['bulk_russian_names_source']=EXTERNAL_STATS
  meta['bulk_russian_name_policy']='Only real documented Russian vernacular names of accepted, exact species/subspecies; never phonetic approximations. Matches require aligned CoL and independent provider taxonomy.'
  meta['bulk_russian_vernacular_sources']={

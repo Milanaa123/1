@@ -76,6 +76,34 @@ BIRDNET_SHA256='daecb2505ff16dddbafe76cfa8d15a044c506b6a2998b2349a94bcd355475ac4
 _RUSSIAN=re.compile(r'^[А-ЯЁа-яё][А-ЯЁа-яё\s\-–—()«».,\x27’]+$')
 _CANONICAL=re.compile(r'^[A-Z][a-z-]+ [a-z-]+$')
 
+# Optional separately sourced Russian-Wikipedia species labels.
+# Exact Wikidata species rank and real Russian Wikipedia article are mandatory.
+WIKIPEDIA_RU_PATH=Path(__file__).resolve().parent/'russian_wikipedia_species_verified.json'
+WIKIPEDIA_RU_SOURCE='Wikidata P225 scientific species Q7432 + Russian Wikipedia article and Russian label (CC0)'
+WIKIPEDIA_RU_SNAPSHOT={}
+WIKIPEDIA_RU_NAMES={}
+if WIKIPEDIA_RU_PATH.exists():
+    WIKIPEDIA_RU_SNAPSHOT=json.loads(WIKIPEDIA_RU_PATH.read_text(encoding='utf8'))
+    if (WIKIPEDIA_RU_SNAPSHOT.get('source')!=WIKIPEDIA_RU_SOURCE or
+        WIKIPEDIA_RU_SNAPSHOT.get('source_rank')!='Wikidata P105=Q7432 (species only)' or
+        WIKIPEDIA_RU_SNAPSHOT.get('count')!=len(WIKIPEDIA_RU_SNAPSHOT.get('names',{}))):
+        raise ValueError('Invalid documented Wikipedia species-name snapshot')
+    WIKIPEDIA_RU_NAMES=WIKIPEDIA_RU_SNAPSHOT['names']
+
+def wikipedia_ru_label(scientific,rank):
+    if rank!='species' or not isinstance(scientific,str):return ''
+    entry=WIKIPEDIA_RU_NAMES.get(scientific.casefold()+'|species')
+    if not isinstance(entry,list) or len(entry)!=3:return ''
+    name,qid,article=entry
+    if (not isinstance(name,str) or len(name)>130 or
+        not _RUSSIAN.fullmatch(name) or
+        not re.fullmatch(r'Q[1-9][0-9]{0,11}',str(qid)) or
+        not isinstance(article,str) or
+        not article.startswith('https://ru.wikipedia.org/wiki/')):
+        return ''
+    return name
+
+
 _PUBLISHED_PATH=Path(__file__).resolve().parent/'russian_published_verified_snapshot.json'
 PUBLISHED_RU_SHA256='5d907c37bc674c3024201b15dd0c5798a3d3e602e00d8be8cd53930f6d248af5'
 PUBLISHED_NAMES={}
@@ -220,6 +248,8 @@ def taxon_ru_labels(scientific, family, animal_class='', order='', phylum='', ra
         common=bvi_ru_label(scientific,animal_class,rank)
     if not common and animal_class and phylum:
         common=wikidata_ru_label(scientific,rank)
+    if not common and animal_class and phylum:
+        common=wikipedia_ru_label(scientific,rank)
     if not common and animal_class and phylum:
         common=published_ru_label(scientific,family,animal_class,order,phylum,rank)
     return FAMILY_RU.get(family, ''),common

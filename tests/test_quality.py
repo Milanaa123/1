@@ -226,6 +226,21 @@ class GreekNumericParityTests(unittest.TestCase):
                 with_existing[7]='Alreadyidae'
                 self.assertEqual(family_for_row(with_existing,evidence),'')
 
+    def test_attested_russian_wikipedia_species_only(self):
+        from ru_catalog import WIKIPEDIA_RU_NAMES, WIKIPEDIA_RU_SNAPSHOT, wikipedia_ru_label
+        self.assertEqual(wikipedia_ru_label('Fictivus inventus','species'),'')
+        if not WIKIPEDIA_RU_NAMES:
+            self.assertEqual(WIKIPEDIA_RU_SNAPSHOT,{})
+            return
+        self.assertEqual(WIKIPEDIA_RU_SNAPSHOT['count'],len(WIKIPEDIA_RU_NAMES))
+        self.assertEqual(WIKIPEDIA_RU_SNAPSHOT['source_rank'],'Wikidata P105=Q7432 (species only)')
+        for key,record in list(WIKIPEDIA_RU_NAMES.items())[:100]:
+            self.assertTrue(key.endswith('|species'))
+            scientific=key[:-8]
+            self.assertEqual(wikipedia_ru_label(scientific,'species'),record[0])
+            self.assertEqual(wikipedia_ru_label(scientific,'subspecies'),'')
+            self.assertTrue(record[2].startswith('https://ru.wikipedia.org/wiki/'))
+
     def test_col_texttree_explicit_historical_synonyms(self):
         from build_data import texttree_synonym
         self.assertEqual(texttree_synonym('=Discodeles opisthodon (Boulenger, 1884)','species'),
