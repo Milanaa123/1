@@ -291,7 +291,8 @@ class GreekNumericParityTests(unittest.TestCase):
         if not TKS_SUBSPECIES_NAMES:
             self.assertFalse(TKS_SUBSPECIES_STATS['available'])
             return
-        self.assertGreaterEqual(TKS_SUBSPECIES_STATS['count'],1000)
+        self.assertEqual(TKS_SUBSPECIES_STATS['count'],19380)
+        self.assertEqual(TKS_SUBSPECIES_STATS['source_total'],19623)
         for key,row in list(TKS_SUBSPECIES_NAMES.items())[:130]:
             self.assertTrue(key.endswith('|subspecies'))
             latin=key.rsplit('|',1)[0]
