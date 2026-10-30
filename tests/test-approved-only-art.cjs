@@ -130,10 +130,13 @@ test('site build and index cannot publish or load the old atlas',()=>{
  const html=fs.readFileSync('index.html','utf8');
  assert(builder.includes('publish_selected_original_art(BASE,DEST)'));
  assert(builder.includes("shutil.copy2(BASE/'approved_only_cards.js'"));
+ // Photo gallery is the ACTIVE verified TOP-30 module, not abandoned artwork.
+ assert(builder.includes("shutil.copy2(BASE/'photo_gallery.js'"));
+ assert.match(html, /<script src="\.\/photo_gallery\.js\?v=[^"]+" defer><\/script>/);
  for(const banned of [
  'animagia-100-alpha.webp','animals-gold-v1.png','animagia-corrected-22.webp',
  'animals-approved-01-05.png','animal_atlas_100.js','animal_cutout_40.js',
- 'gold_contour_40.js','photo_gallery.js'
+ 'gold_contour_40.js'
  ]){
   assert(!builder.includes(banned),'Old art in build: '+banned);
   assert(!html.includes(banned),'Old art in page: '+banned);
