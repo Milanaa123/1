@@ -136,8 +136,7 @@ function photoCancel() {
  photoGallery.chosen=[];photoGallery.reserve=[];photoGallery.checked=0;photoGallery.scanning=false;
  photoGallery.current=null;photoGallery.error=null;
  const search=document.getElementById('bestiarySearch');if(search)search.value='';
- const modal=document.getElementById('animalPhotoDialog');
- if(modal&&!modal.hidden)photoClose();
+ // A new search discards old inline cards and their images.
 }
 const photoOriginalReset=reset;
 reset=function(){photoCancel();photoOriginalReset();};
@@ -279,7 +278,14 @@ function photoMakeCard(item,index) {
  photoButton.className='view-photo-button';
  photoButton.textContent='Посмотреть фотографию';
  photoButton.setAttribute('aria-label','Посмотреть фотографию: '+display(row));
- photoButton.addEventListener('click',()=>photoOpen(item,photoButton));
+ // Expand this verified real iNaturalist photograph inside its own card.
+ const photoPanel=document.createElement('div');
+ photoPanel.className='bestiary-inline-photo';
+ photoPanel.id='bestiary-inline-photo-'+index;
+ photoPanel.hidden=true;
+ photoButton.setAttribute('aria-controls',photoPanel.id);
+ photoButton.setAttribute('aria-expanded','false');
+ photoButton.addEventListener('click',()=>photoToggleInline(item,photoButton,photoPanel));
 
  const details=document.createElement('details');details.className='animal-detail bestiary-verification';
  const toggle=document.createElement('summary');toggle.textContent='Проверить вычисление и классификацию';
@@ -308,7 +314,7 @@ function photoMakeCard(item,index) {
   }
   body.append(tags);
  }
- body.append(rank,name,origin,science,engraving,photoButton,details);
+ body.append(rank,name,origin,science,engraving,photoButton,photoPanel,details);
  if(profile&&atlas){
   const drawing=document.createElement('div');drawing.className='bestiary-illustration';
   atlas.render(drawing,profile);
@@ -449,60 +455,41 @@ render=function(){
  photoDraw(); // Initially empty: only successful photo checks add cards.
  void photoCollect();
 };
-function photoOpen(item,trigger) {
- if(!item||!item.photo)return;
- const dlg=document.getElementById('animalPhotoDialog');
- const title=document.getElementById('photoDialogTitle');
- const image=document.getElementById('photoDialogImage');
- const credit=document.getElementById('photoDialogCredit');
- const source=document.getElementById('photoDialogSource');
- photoGallery.current=trigger;
- title.textContent=display(item.row);
- image.src=item.photo.src;image.alt='Фотография вида '+display(item.row);
- document.getElementById('photoDialogScientific').textContent=item.row[1];
- const cl=document.getElementById('photoDialogClass');
- if(cl)cl.textContent=bestiaryGroupName(item.row)+' · '+
-   (item.row[2]==='subspecies'?'подвид':'вид')+' · число '+item.row[0];
- credit.textContent=item.photo.credit;
- // The large image is requested ONLY when this photo button is pressed.
- image.onerror=()=>{credit.textContent='Фотография временно недоступна · '+item.photo.credit;};
- source.href=item.photo.source;
- dlg.hidden=false;document.body.classList.add('photo-dialog-open');
- document.getElementById('closeAnimalPhoto').focus();
-}
-function photoClose(){
- const dlg=document.getElementById('animalPhotoDialog');
- if(!dlg)return;
- dlg.hidden=true;
- document.body.classList.remove('photo-dialog-open');
- const image=document.getElementById('photoDialogImage');
- if(image){image.onerror=null;image.removeAttribute('src');}
- const button=photoGallery.current;
- photoGallery.current=null;
- if(button&&button.isConnected)button.focus();
+function photoToggleInline(item,button,panel) {
+ if(!item?.photo||!button||!panel)return;
+ if(button.getAttribute('aria-expanded')==='true'){
+  panel.hidden=true;panel.replaceChildren();
+  button.setAttribute('aria-expanded','false');
+  button.textContent='Посмотреть фотографию';
+  return;
+ }
+ const image=document.createElement('img');
+ image.className='bestiary-inline-photo-image';
+ image.alt='Реальная фотография вида '+display(item.row);
+ image.loading='eager';image.decoding='async';
+ const credit=document.createElement('p');
+ credit.className='bestiary-inline-photo-credit';
+ credit.textContent='Реальная фотография · '+item.photo.credit;
+ const link=document.createElement('a');
+ link.className='bestiary-inline-photo-source';
+ link.href=item.photo.source;
+ link.target='_blank';link.rel='noopener noreferrer';
+ link.textContent='Источник фотографии · iNaturalist';
+ image.onerror=()=>{
+  image.remove();
+  credit.textContent='Фотография временно недоступна · '+item.photo.credit;
+ };
+ panel.replaceChildren(image,credit,link);
+ panel.hidden=false;
+ button.setAttribute('aria-expanded','true');
+ button.textContent='Скрыть фотографию';
+ // High-resolution photo is loaded only in response to the click.
+ image.src=item.photo.src;
 }
 document.addEventListener('DOMContentLoaded',()=>{
  const search=document.getElementById('bestiarySearch');
  if(search)search.addEventListener('input',()=>{
   if(photoGallery.source===results&&photoGallery.sum===sum)photoDraw();
  });
- document.getElementById('closeAnimalPhoto').addEventListener('click',photoClose);
- document.getElementById('photoDialogBackdrop').addEventListener('click',photoClose);
- document.addEventListener('keydown',ev=>{
-  const dialog=document.getElementById('animalPhotoDialog');
-  if(dialog.hidden)return;
-  if(ev.key==='Escape'){ev.preventDefault();photoClose();return;}
-  if(ev.key==='Tab'){
-   // A small, accessible focus loop over the close button and photo credit link.
-   const a=document.getElementById('closeAnimalPhoto');
-   const b=document.getElementById('photoDialogSource');
-   if(ev.shiftKey&&(document.activeElement===a||document.activeElement===dialog)){
-    ev.preventDefault();b.focus();
-   }else if(!ev.shiftKey&&document.activeElement===b){
-    ev.preventDefault();a.focus();
-   }else if(document.activeElement!==a&&document.activeElement!==b){
-    ev.preventDefault();a.focus();
-   }
-  }
- });
+
 });

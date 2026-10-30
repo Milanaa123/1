@@ -90,3 +90,20 @@ test('published index loads historical photo-gated gallery after generic rendere
  assert.match(source,/render=function\(\)/);
 });
 
+
+
+test('Verified real iNaturalist photographs expand inline rather than opening a modal',()=>{
+ const src=fs.readFileSync('photo_gallery.js','utf8');
+ const css=fs.readFileSync('magic_theme.css','utf8');
+ assert.ok(src.includes("photoPanel.className='bestiary-inline-photo'"));
+ assert.ok(src.includes("photoButton.addEventListener('click',()=>photoToggleInline(item,photoButton,photoPanel))"));
+ assert.ok(src.includes("photoButton.setAttribute('aria-expanded','false')"));
+ assert.ok(src.includes("button.setAttribute('aria-expanded','true')"));
+ assert.ok(src.includes("button.textContent='Скрыть фотографию'"));
+ assert.ok(src.includes('image.src=item.photo.src'));
+ assert.ok(src.indexOf('image.src=item.photo.src')>src.indexOf('function photoToggleInline('));
+ assert.ok(src.includes('link.href=item.photo.source'));
+ assert.ok(!src.includes('dlg.hidden=false'));
+ assert.ok(!src.includes("document.body.classList.add('photo-dialog-open')"));
+ assert.ok(css.includes('.bestiary-card .bestiary-inline-photo[hidden]{display:none!important}'));
+});

@@ -1707,3 +1707,36 @@ body.animal-chooser-opened{overflow:hidden!important}
 /* Mobile-only horizontal bleed from the existing ornamental layers must not
    create a 4px sideways scroll. This does not change the card or layout. */
 html{overflow-x:clip}
+
+/* TOP-30: expand verified iNaturalist photographs inside the same animal card. */
+.bestiary-card .bestiary-inline-photo[hidden]{display:none!important}
+.bestiary-card .bestiary-inline-photo{
+ display:flex;flex-direction:column;align-items:stretch;gap:10px;
+ width:100%;min-width:0;margin:9px 0 8px;padding:12px;
+ border:1px solid #9e81566b;border-radius:12px;
+ background:linear-gradient(145deg,#191b29,#252332);
+ box-shadow:inset 0 0 25px #0c0b132a;
+}
+.bestiary-card .bestiary-inline-photo-image{
+ display:block;width:100%;height:auto;max-height:520px;
+ object-fit:contain;border-radius:8px;background:#10111b;
+}
+.bestiary-card .bestiary-inline-photo-credit{
+ font-size:10px;line-height:1.55;color:#e2d2bf;
+ margin:0;overflow-wrap:anywhere;
+}
+.bestiary-card .bestiary-inline-photo-source{
+ color:#efcf91;font-size:11px;line-height:1.5;
+ text-decoration:underline;text-underline-offset:3px;
+ overflow-wrap:anywhere;
+}
+.bestiary-card .view-photo-button[aria-expanded="true"]{
+ background:#322d3c;color:#efd6a7;border:1px solid #bea479;
+}
+@media(max-width:530px){
+ .bestiary-card .bestiary-inline-photo{padding:9px;gap:8px}
+ .bestiary-card .bestiary-inline-photo-image{max-height:60dvh}
+}
+@media print{
+ .bestiary-card .bestiary-inline-photo{display:none!important}
+}
