@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "count": 275,
+  "count": 400,
   "animals": 104,
   "additional": 4,
   "format": "original unmodified transparent RGBA PNG",
-  "approval": "108 originally approved PNG plus 167 original PNG in 2026-10-30 new batch; artistic selection, not species-anatomy certification",
+  "approval": "108 established original PNG + 167 previous new PNG + 125 user-generated accepted drawings (2026-11-01). Hash verification, original RGBA bytes; artistic accuracy is not established for every species.",
   "files": [
     {
       "number": 1,
@@ -647,230 +647,6 @@
       "sha256": "ca270bb22eefd3c2bf42a559839cfc0b6c225eb20010ec863673f12f1f7b5f14"
     },
     {
-      "number": 112,
-      "name": "Тритон гребенчатый",
-      "file": "animals/112-Тритон_гребенчатый.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "23d9cc81003efa4c4031283f6eaf914963ae1c4455f27dff4b959b187796b4f9"
-    },
-    {
-      "number": 113,
-      "name": "Червяга",
-      "file": "animals/113-Червяга.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "98f8331bba656c37189bb53e9fddebf4912ca2f0561fbea5a321a4e353a187bc"
-    },
-    {
-      "number": 114,
-      "name": "Акула белая",
-      "file": "animals/114-Акула_белая.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "ad7b3743845cb458fe9ed3234ae2b880154c9516c122c9d1e1a51b665d7b8312"
-    },
-    {
-      "number": 115,
-      "name": "Акула-молот",
-      "file": "animals/115-Акула-молот.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "99e11ceff852a3b8e8a76e975b3efc02ec8b2b93e9890b064775771ef721b7cb"
-    },
-    {
-      "number": 116,
-      "name": "Китовая акула",
-      "file": "animals/116-Китовая_акула.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "4c2f90958ce24ea7417095130f59663d4d8534b0cf7a2e1d2696806ab5634afa"
-    },
-    {
-      "number": 117,
-      "name": "Скат манта",
-      "file": "animals/117-Скат_манта.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "f5ebd3fde2334a73946de44c24ba77c6beb9fb6acaa9333fc43b46c0f091e18f"
-    },
-    {
-      "number": 118,
-      "name": "Рыба-клоун",
-      "file": "animals/118-Рыба-клоун.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "9414742c8e47bb5ecba7fcb52964815365cfaf0eca32afdd1ce4706224de8238"
-    },
-    {
-      "number": 119,
-      "name": "Голубой хирург",
-      "file": "animals/119-Голубой_хирург.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "30a07287e1392544a9d7d76e4615d924ea1b01f8853170005c2a922904e9ea2d"
-    },
-    {
-      "number": 120,
-      "name": "Морской конёк",
-      "file": "animals/120-Морской_конёк.png",
-      "width": 1024,
-      "height": 1536,
-      "sha256": "a89e3972182c5b7f2b8f800f22418e75d8ebb6341994eb2c644d43af359843de"
-    },
-    {
-      "number": 122,
-      "name": "Рыба-луна",
-      "file": "animals/122-Рыба-луна.png",
-      "width": 1312,
-      "height": 1199,
-      "sha256": "3cd3169e3dfceabe59273edd525d058a3143069938c121f2d6884ef72989a6ae"
-    },
-    {
-      "number": 123,
-      "name": "Угорь европейский",
-      "file": "animals/123-Угорь_европейский.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "18bf184ec5d74853a034b200f7b58eed66e345c77a32db55b6d0af401a015f64"
-    },
-    {
-      "number": 124,
-      "name": "Щука",
-      "file": "animals/124-Щука.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "0433732b138237a52fe4733d2b4342cde873e2e4025604d12e220efebd0a7fcd"
-    },
-    {
-      "number": 125,
-      "name": "Окунь речной",
-      "file": "animals/125-Окунь_речной.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "277565e8bc9add0a0159233ffdb41d5648ec92e825e7e0d042a3362df4b78ffe"
-    },
-    {
-      "number": 127,
-      "name": "Сом европейский",
-      "file": "animals/127-Сом_европейский.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "ba6646a092f6d8cc1fb2a92246abccf3ec1600db1c4dbabfcb4ff27eda10ea16"
-    },
-    {
-      "number": 128,
-      "name": "Лосось атлантический",
-      "file": "animals/128-Лосось_атлантический.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "fd609a5712b024b67b61d46bec07892c33289239dab7b3c332ce4edbc4dceafb"
-    },
-    {
-      "number": 129,
-      "name": "Форель радужная",
-      "file": "animals/129-Форель_радужная.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "780e45544437eaa173ff2522f0563b1c35d0bccd2af38c10012bf219e085a1bc"
-    },
-    {
-      "number": 132,
-      "name": "Мурена",
-      "file": "animals/132-Мурена.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "b71aa0e5af9162e0dd220ebbfbdd4d28a9b713ecf0da4cc20d684d0e30668017"
-    },
-    {
-      "number": 133,
-      "name": "Пиранья краснобрюхая",
-      "file": "animals/133-Пиранья_краснобрюхая.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "1c528a766cee807d892fed6ffb2acacd23f442877718b46f8dbc9e267d1d17eb"
-    },
-    {
-      "number": 161,
-      "name": "Осьминог обыкновенный",
-      "file": "animals/161-Осьминог_обыкновенный.png",
-      "width": 1376,
-      "height": 1143,
-      "sha256": "29c83ff1538738e7076fcb597711e91d40d1b65b5030918b288834dc4651f37d"
-    },
-    {
-      "number": 164,
-      "name": "Наутилус",
-      "file": "animals/164-Наутилус.png",
-      "width": 1374,
-      "height": 1145,
-      "sha256": "d82c95d5978b4f241fe8e41d7f411e104abe76c409bcf91504debf2674837dd0"
-    },
-    {
-      "number": 165,
-      "name": "Кальмар-вампир",
-      "file": "animals/165-Кальмар-вампир.png",
-      "width": 1312,
-      "height": 1199,
-      "sha256": "63c0b71085755a1b69a461bdad69fcef8eced791364155afeb1551dd8ee59d91"
-    },
-    {
-      "number": 166,
-      "name": "Морская звезда",
-      "file": "animals/166-Морская_звезда.png",
-      "width": 1312,
-      "height": 1199,
-      "sha256": "8e79d641a214412ae7c6359097915f9b0495778c0414df2213d3fbdaf1625131"
-    },
-    {
-      "number": 167,
-      "name": "Морской ёж",
-      "file": "animals/167-Морской_ёж.png",
-      "width": 1254,
-      "height": 1254,
-      "sha256": "483882fd84ec68ab3b9a7f1cadea8d345d556902e101c772f11e1e5330ecb121"
-    },
-    {
-      "number": 168,
-      "name": "Морской огурец",
-      "file": "animals/168-Морской_огурец.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "67014e562d0a6004714b10472498481d2004819ea0ae391224d468039a3f2812"
-    },
-    {
-      "number": null,
-      "name": "Филин",
-      "file": "additional/Филин.png",
-      "width": 1254,
-      "height": 1254,
-      "sha256": "a740fcecb822bdadd26bc5dc504c2a653fd6a47756339ebf37f6dec7988fe9fd"
-    },
-    {
-      "number": null,
-      "name": "Кошка",
-      "file": "additional/Кошка.png",
-      "width": 1312,
-      "height": 1199,
-      "sha256": "0dcd44eb745180616585e04d90c7dccf3302e5933f2bff55700bbcefcb998ed8"
-    },
-    {
-      "number": null,
-      "name": "Волк",
-      "file": "additional/Волк.png",
-      "width": 1254,
-      "height": 1254,
-      "sha256": "62179a4c8c0d15a82ed131a5f9162ecc7306cb0a55b11952c5f576d74c4135b6"
-    },
-    {
-      "number": null,
-      "name": "Лягушка",
-      "file": "additional/Лягушка.png",
-      "width": 1374,
-      "height": 1145,
-      "sha256": "f0ba42df1e0fff5ed4e92afdfcd0e960b167510c96bfa872e3fbd080beddd4c5"
-    },
-    {
       "number": 109,
       "name": "Малая панда",
       "file": "new/109_Ailurus_fulgens.png",
@@ -896,11 +672,27 @@
     },
     {
       "number": 112,
+      "name": "Тритон гребенчатый",
+      "file": "animals/112-Тритон_гребенчатый.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "23d9cc81003efa4c4031283f6eaf914963ae1c4455f27dff4b959b187796b4f9"
+    },
+    {
+      "number": 112,
       "name": "Проехидна Бруийна",
       "file": "new/112_Zaglossus_bruijni.png",
       "width": 1536,
       "height": 1024,
       "sha256": "be7d2b2d62aa0b6f5e78e931e65e59a6c954ec44322f9a24bd6a1b19ce2d7def"
+    },
+    {
+      "number": 113,
+      "name": "Червяга",
+      "file": "animals/113-Червяга.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "98f8331bba656c37189bb53e9fddebf4912ca2f0561fbea5a321a4e353a187bc"
     },
     {
       "number": 113,
@@ -912,11 +704,27 @@
     },
     {
       "number": 114,
+      "name": "Акула белая",
+      "file": "animals/114-Акула_белая.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "ad7b3743845cb458fe9ed3234ae2b880154c9516c122c9d1e1a51b665d7b8312"
+    },
+    {
+      "number": 114,
       "name": "Звездорыл",
       "file": "new/114_Condylura_cristata.png",
       "width": 1536,
       "height": 1024,
       "sha256": "f1c7b28f23df9bea0ca3eed42e60a4e79e29ca50ec7d56fa2df9470aa3d7618f"
+    },
+    {
+      "number": 115,
+      "name": "Акула-молот",
+      "file": "animals/115-Акула-молот.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "99e11ceff852a3b8e8a76e975b3efc02ec8b2b93e9890b064775771ef721b7cb"
     },
     {
       "number": 115,
@@ -928,11 +736,27 @@
     },
     {
       "number": 116,
+      "name": "Китовая акула",
+      "file": "animals/116-Китовая_акула.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "4c2f90958ce24ea7417095130f59663d4d8534b0cf7a2e1d2696806ab5634afa"
+    },
+    {
+      "number": 116,
       "name": "Трубкозуб",
       "file": "new/116_Orycteropus_afer.png",
       "width": 1312,
       "height": 1199,
       "sha256": "2aefe18bbf8db15d30e2d5725ad185d041fca29277ca96d7249a445228dd76a1"
+    },
+    {
+      "number": 117,
+      "name": "Скат манта",
+      "file": "animals/117-Скат_манта.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "f5ebd3fde2334a73946de44c24ba77c6beb9fb6acaa9333fc43b46c0f091e18f"
     },
     {
       "number": 117,
@@ -944,6 +768,14 @@
     },
     {
       "number": 118,
+      "name": "Рыба-клоун",
+      "file": "animals/118-Рыба-клоун.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "9414742c8e47bb5ecba7fcb52964815365cfaf0eca32afdd1ce4706224de8238"
+    },
+    {
+      "number": 118,
       "name": "Гигантский муравьед",
       "file": "new/118_Myrmecophaga_tridactyla.png",
       "width": 1536,
@@ -952,11 +784,27 @@
     },
     {
       "number": 119,
+      "name": "Голубой хирург",
+      "file": "animals/119-Голубой_хирург.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "30a07287e1392544a9d7d76e4615d924ea1b01f8853170005c2a922904e9ea2d"
+    },
+    {
+      "number": 119,
       "name": "Двупалый муравьед",
       "file": "new/119_Cyclopes_didactylus.png",
       "width": 1312,
       "height": 1199,
       "sha256": "7e3f1ea2ff46e2971068b77b26f4c25acab864febdfa79eeb0a2a07f16897448"
+    },
+    {
+      "number": 120,
+      "name": "Морской конёк",
+      "file": "animals/120-Морской_конёк.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "a89e3972182c5b7f2b8f800f22418e75d8ebb6341994eb2c644d43af359843de"
     },
     {
       "number": 120,
@@ -976,11 +824,27 @@
     },
     {
       "number": 122,
+      "name": "Рыба-луна",
+      "file": "animals/122-Рыба-луна.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "3cd3169e3dfceabe59273edd525d058a3143069938c121f2d6884ef72989a6ae"
+    },
+    {
+      "number": 122,
       "name": "Малайский шерстокрыл",
       "file": "new/122_Galeopterus_variegatus.png",
       "width": 1312,
       "height": 1199,
       "sha256": "2108b92b00df601bd0f8040eda4b5d83d7de3e1720b1c811333cce08e28a31d4"
+    },
+    {
+      "number": 123,
+      "name": "Угорь европейский",
+      "file": "animals/123-Угорь_европейский.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "18bf184ec5d74853a034b200f7b58eed66e345c77a32db55b6d0af401a015f64"
     },
     {
       "number": 123,
@@ -992,11 +856,27 @@
     },
     {
       "number": 124,
+      "name": "Щука",
+      "file": "animals/124-Щука.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "0433732b138237a52fe4733d2b4342cde873e2e4025604d12e220efebd0a7fcd"
+    },
+    {
+      "number": 124,
       "name": "Мадагаскарская руконожка",
       "file": "new/124_Daubentonia_madagascariensis.png",
       "width": 1312,
       "height": 1199,
       "sha256": "c6aebc4754f67de15236aacfe336486921646d2ab4d52e961c4ce517f98ec7e4"
+    },
+    {
+      "number": 125,
+      "name": "Окунь речной",
+      "file": "animals/125-Окунь_речной.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "277565e8bc9add0a0159233ffdb41d5648ec92e825e7e0d042a3362df4b78ffe"
     },
     {
       "number": 125,
@@ -1016,6 +896,14 @@
     },
     {
       "number": 127,
+      "name": "Сом европейский",
+      "file": "animals/127-Сом_европейский.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "ba6646a092f6d8cc1fb2a92246abccf3ec1600db1c4dbabfcb4ff27eda10ea16"
+    },
+    {
+      "number": 127,
       "name": "Игрунка Куля",
       "file": "new/127_Callithrix_kuhlii.png",
       "width": 1312,
@@ -1024,11 +912,27 @@
     },
     {
       "number": 128,
+      "name": "Лосось атлантический",
+      "file": "animals/128-Лосось_атлантический.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "fd609a5712b024b67b61d46bec07892c33289239dab7b3c332ce4edbc4dceafb"
+    },
+    {
+      "number": 128,
       "name": "Южный галаго",
       "file": "new/128_Galago_moholi.png",
       "width": 1312,
       "height": 1199,
       "sha256": "c90c5b05f9876626f2caebf5328964f93fdc7949dd23dd4614c577882747f2de"
+    },
+    {
+      "number": 129,
+      "name": "Форель радужная",
+      "file": "animals/129-Форель_радужная.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "780e45544437eaa173ff2522f0563b1c35d0bccd2af38c10012bf219e085a1bc"
     },
     {
       "number": 129,
@@ -1056,11 +960,27 @@
     },
     {
       "number": 132,
+      "name": "Мурена",
+      "file": "animals/132-Мурена.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "b71aa0e5af9162e0dd220ebbfbdd4d28a9b713ecf0da4cc20d684d0e30668017"
+    },
+    {
+      "number": 132,
       "name": "Малый зайцегуб",
       "file": "new/132_Noctilio_albiventris.png",
       "width": 1536,
       "height": 1024,
       "sha256": "5159cab955b8db9fdcbb9358a7160486f4e9b24065820020b969a16b909dfbd6"
+    },
+    {
+      "number": 133,
+      "name": "Пиранья краснобрюхая",
+      "file": "animals/133-Пиранья_краснобрюхая.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "1c528a766cee807d892fed6ffb2acacd23f442877718b46f8dbc9e267d1d17eb"
     },
     {
       "number": 133,
@@ -1288,6 +1208,14 @@
     },
     {
       "number": 161,
+      "name": "Осьминог обыкновенный",
+      "file": "animals/161-Осьминог_обыкновенный.png",
+      "width": 1376,
+      "height": 1143,
+      "sha256": "29c83ff1538738e7076fcb597711e91d40d1b65b5030918b288834dc4651f37d"
+    },
+    {
+      "number": 161,
       "name": "Африканский страус",
       "file": "new/161_Struthio_camelus.png",
       "width": 1208,
@@ -1312,11 +1240,27 @@
     },
     {
       "number": 164,
+      "name": "Наутилус",
+      "file": "animals/164-Наутилус.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "d82c95d5978b4f241fe8e41d7f411e104abe76c409bcf91504debf2674837dd0"
+    },
+    {
+      "number": 164,
       "name": "Китоглав",
       "file": "new/164_Balaeniceps_rex.png",
       "width": 1024,
       "height": 1536,
       "sha256": "789e1b8c71493a61acb9288877de3ded0a1e8325143822f8d4a894157c90ed50"
+    },
+    {
+      "number": 165,
+      "name": "Кальмар-вампир",
+      "file": "animals/165-Кальмар-вампир.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "63c0b71085755a1b69a461bdad69fcef8eced791364155afeb1551dd8ee59d91"
     },
     {
       "number": 165,
@@ -1328,6 +1272,14 @@
     },
     {
       "number": 166,
+      "name": "Морская звезда",
+      "file": "animals/166-Морская_звезда.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "8e79d641a214412ae7c6359097915f9b0495778c0414df2213d3fbdaf1625131"
+    },
+    {
+      "number": 166,
       "name": "Кафрский рогатый ворон",
       "file": "new/166_Bucorvus_leadbeateri.png",
       "width": 1312,
@@ -1336,11 +1288,27 @@
     },
     {
       "number": 167,
+      "name": "Морской ёж",
+      "file": "animals/167-Морской_ёж.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "483882fd84ec68ab3b9a7f1cadea8d345d556902e101c772f11e1e5330ecb121"
+    },
+    {
+      "number": 167,
       "name": "Зимородок",
       "file": "new/167_Alcedo_atthis.png",
       "width": 1312,
       "height": 1199,
       "sha256": "04d1ebd6bd3dec4ce2303517ee6eeddb79ec68a849f0ce05182077405bb28e2c"
+    },
+    {
+      "number": 168,
+      "name": "Морской огурец",
+      "file": "animals/168-Морской_огурец.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "67014e562d0a6004714b10472498481d2004819ea0ae391224d468039a3f2812"
     },
     {
       "number": 168,
@@ -2151,6 +2119,14 @@
       "sha256": "1d45e6e323ae6920aa5d464d586c1db6d00676adecdc5c69c8792d6d6c2e90da"
     },
     {
+      "number": 269,
+      "name": "Pristiophorus cirratus",
+      "file": "new/269_Pristiophorus_cirratus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "f7ff643bb94fb432c8f4e9655f9b4bd6203baf0003a7294fc820c152822ad9aa"
+    },
+    {
       "number": 270,
       "name": "пилорыл",
       "file": "new/270_Pristis_pristis.png",
@@ -2205,7 +2181,1031 @@
       "width": 1536,
       "height": 1024,
       "sha256": "bac4cc22229f131b4d7415b5ad05d3a17191e0212fd0aadca1b04812eb2d4a4c"
+    },
+    {
+      "number": 277,
+      "name": "Mesoprionus angustatus",
+      "file": "new/277_Mesoprionus_angustatus.png",
+      "width": 1145,
+      "height": 1374,
+      "sha256": "57c384f1d9a4b59af08981c6e33156278a9d1e968af3a4374001d09debd8ba95"
+    },
+    {
+      "number": 278,
+      "name": "Larinus ursus",
+      "file": "new/278_Larinus_ursus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "8a8067f419fe87821e1510ffef76f65ec084dc2fa9e45c301c9357dbe4b1239c"
+    },
+    {
+      "number": 279,
+      "name": "Scarabaeus sacer",
+      "file": "new/279_Scarabaeus_sacer.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "32e95393e2ad25e2736dbbfa58df17f9a5c1122038a0accc122a1d0d296a2131"
+    },
+    {
+      "number": 280,
+      "name": "Lucanus cervus",
+      "file": "new/280_Lucanus_cervus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "92f1c2ba7fcf14d6eebacd4193d18d2c5e82618582693d6e6c82f507a5e485f2"
+    },
+    {
+      "number": 281,
+      "name": "Coccinella septempunctata",
+      "file": "new/281_Coccinella_septempunctata.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "7d1a4bc0c44bf9e809cb48900573f78b0473e0cd80e534c17f83b060c86f676f"
+    },
+    {
+      "number": 282,
+      "name": "Perotis lugubris",
+      "file": "new/282_Perotis_lugubris.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "4930e100c25fbcbcdcc5edd91e5f26fc54b182040c6671ce55e04d4742660880"
+    },
+    {
+      "number": 283,
+      "name": "Ophonus puncticollis",
+      "file": "new/283_Ophonus_puncticollis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "1286d2fa518e38f86bd2accf6c0cf6ae35c83749f543444c95961df1d9adcb81"
+    },
+    {
+      "number": 284,
+      "name": "Pyrocoelia rufa",
+      "file": "new/284_Pyrocoelia_rufa.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "f7e40a399d58dfcad7705eca61f21bdfc99f560cfca445690c961a6493049ff3"
+    },
+    {
+      "number": 285,
+      "name": "Nebrioporus depressus",
+      "file": "new/285_Nebrioporus_depressus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "a8b030a28010ef8df821a88954fcd17b28d7add4f0e46647cb491cb39a2b492f"
+    },
+    {
+      "number": 286,
+      "name": "Gyrinus paykulli",
+      "file": "new/286_Gyrinus_paykulli.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "66b779c1650153bac87522ed614edeed398c59d82eae1ff1f64be3b8718999e5"
+    },
+    {
+      "number": 287,
+      "name": "Sericus brunneus",
+      "file": "new/287_Sericus_brunneus.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "333ee853c42946accb0f7ac65bd4ad78cdb1824661f0f6232ce04683da60148b"
+    },
+    {
+      "number": 288,
+      "name": "Paederus littoralis",
+      "file": "new/288_Paederus_littoralis.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "ce7ffa1b37a58127c71b8cdcff1d2ca1c5658e6763b2c7fe2f23b493d36d6070"
+    },
+    {
+      "number": 289,
+      "name": "Lema cyanella",
+      "file": "new/289_Lema_cyanella.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "10051e7202c99cd40673d583c8c43ccdcf8fa52c6979f69bbe67d21034a4c0d5"
+    },
+    {
+      "number": 290,
+      "name": "Papilio machaon",
+      "file": "new/290_Papilio_machaon.png",
+      "width": 1402,
+      "height": 1122,
+      "sha256": "657ef8c0617b720914d0060bb856aa2c3350ea2466a64c2c6d563fe384788acc"
+    },
+    {
+      "number": 291,
+      "name": "Danaus plexippus",
+      "file": "new/291_Danaus_plexippus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "2b5582da146e3b6b83162c39efa8b15df0ff554030794d54552ce2902905c6ed"
+    },
+    {
+      "number": 292,
+      "name": "Pieris brassicae",
+      "file": "new/292_Pieris_brassicae.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "1d1f616b3f4ee4665c4113f69daa3fc8b4a16f83cea3c61978676c4bd1968462"
+    },
+    {
+      "number": 293,
+      "name": "Acherontia atropos",
+      "file": "new/293_Acherontia_atropos.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "09aee058bf5d2ead2dddb323e8de0d94fa24c8e50062f45cfe914e6d9fb07ce1"
+    },
+    {
+      "number": 294,
+      "name": "Saturnia pyri",
+      "file": "new/294_Saturnia_pyri.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "498a4d71d693cc47b2091162d1a0cf883c0c7e24390b758daa60d5b38abce1e8"
+    },
+    {
+      "number": 295,
+      "name": "Lomaspilis opis",
+      "file": "new/295_Lomaspilis_opis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "2d56529e9a515aeb1e4e88ab0af5a9ed3914782486ac6689b9e087b1792e454c"
+    },
+    {
+      "number": 296,
+      "name": "Thestor callimachus",
+      "file": "new/296_Thestor_callimachus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "d13634ef4324fb406761491e09319874c98fa4e74e6243d2c575ea0d7f0f4d23"
+    },
+    {
+      "number": 297,
+      "name": "Pyrgus sidae",
+      "file": "new/297_Pyrgus_sidae.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "ad6ec318482f633903b8a33ca577565051720264f7bdec9babfc282adaa2b21f"
+    },
+    {
+      "number": 298,
+      "name": "Triodia sylvina",
+      "file": "new/298_Triodia_sylvina.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "9febbefd8e069b27dd33dd5fabd3053d29513d79734676df47ff9317d1dc5dcc"
+    },
+    {
+      "number": 299,
+      "name": "Formica rufa",
+      "file": "new/299_Formica_rufa.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "3f577b85ff24696dd4256d1fdbf0318da84ee219575729669b41427950293186"
+    },
+    {
+      "number": 300,
+      "name": "Apis mellifera",
+      "file": "new/300_Apis_mellifera.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "4b927d07293c7c97b688515e6f9f30aa12f86361cd5aa34f7caf1450263ce24d"
+    },
+    {
+      "number": 301,
+      "name": "Polistes biglumis",
+      "file": "new/301_Polistes_biglumis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "3a830c820d2b62b7d29ee1aa05399dcc59df3090e25a838ed7ed7d8230d829c8"
+    },
+    {
+      "number": 302,
+      "name": "Anoplius nigerrimus",
+      "file": "new/302_Anoplius_nigerrimus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "20aba00511d7bc68d8b08b06e6c4c09e8db84ecf4384aad6bdf6aa3ead4d6319"
+    },
+    {
+      "number": 303,
+      "name": "Chrysis solida",
+      "file": "new/303_Chrysis_solida.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "55ecf11f0467bb6544d5f544d50c1c99b362c8c00f5eab867ac63f0078894100"
+    },
+    {
+      "number": 304,
+      "name": "Sirex juvencus",
+      "file": "new/304_Sirex_juvencus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "0f70b706c1680f66e14d84af2d35f380c7b1836ef3fea9e67d56242c35e593ca"
+    },
+    {
+      "number": 305,
+      "name": "Empria tridens",
+      "file": "new/305_Empria_tridens.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "c4b66f0fa0cb5f8d73325279542b049cf3180563686739f798d6fa7bb96ef59f"
+    },
+    {
+      "number": 306,
+      "name": "Nigrotipula nigra",
+      "file": "new/306_Nigrotipula_nigra.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "114eaa28593152023ac31ec21a174edc093884d447cf73a83784af0c8739f59b"
+    },
+    {
+      "number": 307,
+      "name": "Heringia heringi",
+      "file": "new/307_Heringia_heringi.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "a9767424f5dd9d8a7f01d3d8b01c98002608748d219d32a6f109ba79872f337b"
+    },
+    {
+      "number": 308,
+      "name": "Lamyra fuliginosa",
+      "file": "new/308_Lamyra_fuliginosa.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "96120a51511f27b8d0e43eddf7e88d92724104fc980cde83bd9bc00d2a0af3df"
+    },
+    {
+      "number": 309,
+      "name": "Bombylius minor",
+      "file": "new/309_Bombylius_minor.png",
+      "width": 1481,
+      "height": 1062,
+      "sha256": "d2c1dd8b421c029cab12f01fe7af1aeb78febf9338afd8f8a2fefa561c137d77"
+    },
+    {
+      "number": 310,
+      "name": "Cordylobia anthropophaga",
+      "file": "new/310_Cordylobia_anthropophaga.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "b256912f82731e97cfb7d88dfadf11f300c83d1bb312e1984c3d270b74f0664f"
+    },
+    {
+      "number": 311,
+      "name": "Cicada orni",
+      "file": "new/311_Cicada_orni.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "118d5cd071bb59fd531e19a243fb55169997947a858208b4bf4ba090804662fd"
+    },
+    {
+      "number": 312,
+      "name": "Stictocephala bisonia",
+      "file": "new/312_Stictocephala_bisonia.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "0b4538838a7ca787786d6251fb70804a74a90a85eb4aea28892c8b6641e15b02"
+    },
+    {
+      "number": 313,
+      "name": "Dolycoris penicillatus",
+      "file": "new/313_Dolycoris_penicillatus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "37c63dbdf70820ad664f70320e1c677008202334aebdce2371fb08bc8fbaa2c8"
+    },
+    {
+      "number": 314,
+      "name": "Empicoris vagabundus",
+      "file": "new/314_Empicoris_vagabundus.png",
+      "width": 1402,
+      "height": 1122,
+      "sha256": "aa2a64b78a0a12f995fb3547aa746df7b02d755d5539554262ccf4bed9dd7d04"
+    },
+    {
+      "number": 315,
+      "name": "Gerris asper",
+      "file": "new/315_Gerris_asper.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "e12e6b771156edb6d08e7486001adc6fa397f66831c913e38ce2a3809047e2e3"
+    },
+    {
+      "number": 316,
+      "name": "Ranatra unicolor",
+      "file": "new/316_Ranatra_unicolor.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "fce9238f28c114d7954f99dccd9418e55cb0ec200485387fbea70002396d7c10"
+    },
+    {
+      "number": 317,
+      "name": "Parasaissetia nigra",
+      "file": "new/317_Parasaissetia_nigra.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "d221e87183a1a7de3e9134fd0177e0c337e3700c8e28f930b47f88511f9b1abb"
+    },
+    {
+      "number": 318,
+      "name": "Aeshna cyanea",
+      "file": "new/318_Aeshna_cyanea.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "7ad4c69130605a13a8b2a3381370f7cc5f9dd33b9e04a5591e1a2ff4af23f74c"
+    },
+    {
+      "number": 319,
+      "name": "Sympetrum risi",
+      "file": "new/319_Sympetrum_risi.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "e98d7ad863b3705f1667d439a3c9afa454c46ffd2c3a2b1cff7e5466558a89f4"
+    },
+    {
+      "number": 320,
+      "name": "Ischnura pumilio",
+      "file": "new/320_Ischnura_pumilio.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "2b591e7bd6e1c4ce4fba46541e75fab910201c448675056c107f089b71b0a896"
+    },
+    {
+      "number": 321,
+      "name": "Mnais costalis",
+      "file": "new/321_Mnais_costalis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "57f0c79a70a514b9110bd811420c32ceea12e9d08330f3f9483d1e37b1a156c5"
+    },
+    {
+      "number": 322,
+      "name": "Egnatius apicalis",
+      "file": "new/322_Egnatius_apicalis.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "a3b2f726fe2c20c29fba1652c38483c780d5bd60ce2fc84c21443307e3345f77"
+    },
+    {
+      "number": 323,
+      "name": "Acridoxena hewaniana",
+      "file": "new/323_Acridoxena_hewaniana.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "f96b954f8bab2de305f3da6d01119f48676ade3e140bf3ac68f2e5eb5bde6e9f"
+    },
+    {
+      "number": 324,
+      "name": "Teleogryllus infernalis",
+      "file": "new/324_Teleogryllus_infernalis.png",
+      "width": 1199,
+      "height": 1312,
+      "sha256": "6b6d1e7f83449f60291cf253ecdf6d0c9e456052bd955ba889014cb1a0fdcada"
+    },
+    {
+      "number": 325,
+      "name": "Neoscapteriscus borellii",
+      "file": "new/325_Neoscapteriscus_borellii.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "9e1f9d446fd1875e88d2a0cbf6b48a03bc1bb12a4d1dcfb17f8c4f45dcd46774"
+    },
+    {
+      "number": 326,
+      "name": "Orthodera ministralis",
+      "file": "new/326_Orthodera_ministralis.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "179e9fdfc5be5ba3404a8991f43404e8a8b7650c6d863b5f525a83702778c68a"
+    },
+    {
+      "number": 327,
+      "name": "Hymenopus coronatus",
+      "file": "new/327_Hymenopus_coronatus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "81d06aaa72a8a954a2f500b197d66239bd8fbab32de09ae907aae0832b2f565a"
+    },
+    {
+      "number": 328,
+      "name": "Acrophylla titan",
+      "file": "new/328_Acrophylla_titan.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "cc4ec158884a7fb501dde6dfc565f1e6dcedff62e4906b74476de3ef5191b68e"
+    },
+    {
+      "number": 329,
+      "name": "Pulchriphyllium crurifolium",
+      "file": "new/329_Pulchriphyllium_crurifolium.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "96b1fb051f710a851ff82b1b6786ba06278fce642b0dc2f117b91b73f9d4ecfc"
+    },
+    {
+      "number": 330,
+      "name": "Myrmeleon formicarius",
+      "file": "new/330_Myrmeleon_formicarius.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "1b0cbeafa348c546ccb09f195757f1b6baebb105369706a7fad22c8f7bd7daf7"
+    },
+    {
+      "number": 331,
+      "name": "Chrysopa walkeri",
+      "file": "new/331_Chrysopa_walkeri.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "0b4649e6a2ce9e36d8e8c321f94f91a16d5f47e807c08d0fb8ec458b6376c638"
+    },
+    {
+      "number": 332,
+      "name": "Forficula decipiens",
+      "file": "new/332_Forficula_decipiens.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "07c966bd6ed4255378e98c3de45af8e57c0297135a0f25eaa85c0637967dd533"
+    },
+    {
+      "number": 333,
+      "name": "Diplex moorei",
+      "file": "new/333_Diplex_moorei.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "01322251e5459ad8d5336221a8abf84fd96aff87490bc8e638a5e51bf2fb0418"
+    },
+    {
+      "number": 334,
+      "name": "Ephemera lineata",
+      "file": "new/334_Ephemera_lineata.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "cb99b1c63da7f384add649b562182ae853b23823f1ef69422a1a49385d4ceb25"
+    },
+    {
+      "number": 335,
+      "name": "Perla abdominalis",
+      "file": "new/335_Perla_abdominalis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "e3584ea837c294abb5055e157daa227e72ff5fd130d066437dadecb2386576f8"
+    },
+    {
+      "number": 336,
+      "name": "Panorpa cognata",
+      "file": "new/336_Panorpa_cognata.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "b008a8b741f244dfc2978699cc070b3067bc22a4e3eeda1bec4a6687900827bd"
+    },
+    {
+      "number": 337,
+      "name": "Thermobia domestica",
+      "file": "new/337_Thermobia_domestica.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "5c87379c9516789540cbc702d597f3d2e4e1bfe0b1dc326012d5368480f108b5"
+    },
+    {
+      "number": 338,
+      "name": "Thrips flavus",
+      "file": "new/338_Thrips_flavus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "7ab3af66cb5c58002fcdb017dd2182103888f598d898691cc6e7acaaef2ed9fe"
+    },
+    {
+      "number": 339,
+      "name": "Acanthacorydalis orientalis",
+      "file": "new/339_Acanthacorydalis_orientalis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "a4325aac9cd109b3dedc11cca4c81f56631a58c0f38ab7f2cfcf05b79fd3c03c"
+    },
+    {
+      "number": 340,
+      "name": "Phaeostigma notatum",
+      "file": "new/340_Phaeostigma_notatum.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "c8cacd337825660ef5d1bf1181760f49a40089798593915eb52d326655b413f3"
+    },
+    {
+      "number": 341,
+      "name": "Lepismachilis notata",
+      "file": "new/341_Lepismachilis_notata.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "523e87dc6058dab4eee1b5ea5a76c70382bf0103cdd9ac2f3183b8dabd6f9521"
+    },
+    {
+      "number": 342,
+      "name": "Neon valentulus",
+      "file": "new/342_Neon_valentulus.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "c601739c0e4d0f7499694de7c55d4679ec6a54fa8b99317fe5946937152caf77"
+    },
+    {
+      "number": 343,
+      "name": "Lasiodora parahybana",
+      "file": "new/343_Lasiodora_parahybana.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "f567d7899d6d239b760bfa605107520a985ea92586f9a81adc628357fd091764"
+    },
+    {
+      "number": 344,
+      "name": "Zilla diodia",
+      "file": "new/344_Zilla_diodia.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "b63654683ce4f82216b0e472ebcb8a00b3eaf80e14209dd85ea9410b10ecb075"
+    },
+    {
+      "number": 345,
+      "name": "Xysticus kochi",
+      "file": "new/345_Xysticus_kochi.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "c592002877d201062f019dc11a3dbb2aec6089e1f9cbf4a832481c787a5b17c0"
+    },
+    {
+      "number": 346,
+      "name": "Menneus wa",
+      "file": "new/346_Menneus_wa.png",
+      "width": 1448,
+      "height": 1086,
+      "sha256": "2353a23048da1807b7fe17370cf971eaaa65ae81ac35de81702ef8273ddccba4"
+    },
+    {
+      "number": 347,
+      "name": "Scytodes thoracica",
+      "file": "new/347_Scytodes_thoracica.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "059486fd7c29d5b74f9dae13c7b37b4a3479e5122abba741620501b8af4af7b1"
+    },
+    {
+      "number": 348,
+      "name": "Loxosceles reclusa",
+      "file": "new/348_Loxosceles_reclusa.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "503292b5e81972fb7f6a23764e4158ccaf45eede5e6f30c90fbfecfedd012867"
+    },
+    {
+      "number": 349,
+      "name": "Pirata piscatorius",
+      "file": "new/349_Pirata_piscatorius.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "11e76c70a3ec4e576fa09ce11b435dda71621dc88943d8eeb67207f49a6b2d02"
+    },
+    {
+      "number": 350,
+      "name": "Pisaura novicia",
+      "file": "new/350_Pisaura_novicia.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "7142f37e4f3de395b9ecb33c37578664cdc2e5aef89dc754a00db0afdb5fa6c1"
+    },
+    {
+      "number": 351,
+      "name": "Atrax robustus",
+      "file": "new/351_Atrax_robustus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "50a956dc1c5b88eeafba46a0eb83a2164cea2a75c8509a607ac105970c1569a5"
+    },
+    {
+      "number": 352,
+      "name": "Pholcus phalangioides",
+      "file": "new/352_Pholcus_phalangioides.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "8f604611dce523602b54998075e217129eecf0158ac9bb51d82352ecb0cb4f72"
+    },
+    {
+      "number": 353,
+      "name": "Argyroneta aquatica",
+      "file": "new/353_Argyroneta_aquatica.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "1f42f3051d168cb0e4717f527fdbeeec1c1406f393c363895b2cc7df4911ff5a"
+    },
+    {
+      "number": 354,
+      "name": "Eresus da",
+      "file": "new/354_Eresus_da.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "7196d2fc1b2cf6494e5d9cf0c04c3239bebba3434dc81fe14807a2e1334d4f49"
+    },
+    {
+      "number": 355,
+      "name": "Ryuthela nago",
+      "file": "new/355_Ryuthela_nago.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "6006ca36d7ddb69623564ec9b328c160c0086df6ef18155905a40a47f4ec0107"
+    },
+    {
+      "number": 356,
+      "name": "Mesobuthus eupeus",
+      "file": "new/356_Mesobuthus_eupeus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "3c264cd6ab6d8ed469387299eb90f542b1a6d5c9f4dd17665199827bc0453813"
+    },
+    {
+      "number": 357,
+      "name": "Scorpio fuscus",
+      "file": "new/357_Scorpio_fuscus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "770e40c096fc700cac0eb746c51939528d2f154276aa549c95f26fc70a12316f"
+    },
+    {
+      "number": 358,
+      "name": "Hadrurus arizonensis",
+      "file": "new/358_Hadrurus_arizonensis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "a3fce30da456ce2fd17771353f96c57347557f266eaef26f8a0f68afe31b4391"
+    },
+    {
+      "number": 359,
+      "name": "Mitopus morio",
+      "file": "new/359_Mitopus_morio.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "8b2903fdf14ec61cb81088033052cee7a83c3819eeb49a42d89cde5a30b209ff"
+    },
+    {
+      "number": 360,
+      "name": "Penaeus silasi",
+      "file": "new/360_Penaeus_silasi.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "ab8705e0d233266489bcc431191d49def057bae5c514f17f9940da04a17dc4b7"
+    },
+    {
+      "number": 361,
+      "name": "Palaemon serratus",
+      "file": "new/361_Palaemon_serratus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "d88445c294dc9c9928d899120587be94773b4335de928694f7a77f6e7248ca5b"
+    },
+    {
+      "number": 362,
+      "name": "Alpheus brevicristatus",
+      "file": "new/362_Alpheus_brevicristatus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "440337f87271bef74709c1b77d916069b789399806e0a473eb2eb3a061c274b7"
+    },
+    {
+      "number": 363,
+      "name": "Stenopus goyi",
+      "file": "new/363_Stenopus_goyi.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "664a3c33147be0ce3954616e621ba9094786f4e3607efd0ae633d4283839de36"
+    },
+    {
+      "number": 364,
+      "name": "Procambarus virginalis",
+      "file": "new/364_Procambarus_virginalis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "b37323997d210e01e41f3d750849060861f071d723566eced90c957daf9fd3b3"
+    },
+    {
+      "number": 365,
+      "name": "Pontastacus danubialis",
+      "file": "new/365_Pontastacus_danubialis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "604a9f1309dc7c0ab005d5634096bb697bc337d33e1b6fddfad0d988d1be927c"
+    },
+    {
+      "number": 366,
+      "name": "Homarus gammarus",
+      "file": "new/366_Homarus_gammarus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "7adb0800969568a2d02cd42be186a5b8fa0f8a441804e888422b5a00c40594b9"
+    },
+    {
+      "number": 367,
+      "name": "Pagurus pubescens",
+      "file": "new/367_Pagurus_pubescens.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "f754447d53b74542eb3665f6d691344484571d4331019dbc5f90122ce9f303b9"
+    },
+    {
+      "number": 368,
+      "name": "Birgus latro",
+      "file": "new/368_Birgus_latro.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "9d3f5b84c6044a7a3911314163c68e7c4c014fdc53c25d1940e65a39d7a948c7"
+    },
+    {
+      "number": 369,
+      "name": "Gecarcoidea humei",
+      "file": "new/369_Gecarcoidea_humei.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "065e94a12c3ab59753acb750bfc0a78203e9531c1b71315495c92325707a49d3"
+    },
+    {
+      "number": 370,
+      "name": "Callinectes sapidus",
+      "file": "new/370_Callinectes_sapidus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "1706c6d2def742d7a11eedbe0f666ab00538836f9407bb28f8d0b72e7add84ca"
+    },
+    {
+      "number": 371,
+      "name": "Pachygrapsus marmoratus",
+      "file": "new/371_Pachygrapsus_marmoratus.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "aee3d814cb65adfd290408b92afb76f80b2a519bc4294ae7d58dce30b73d87b7"
+    },
+    {
+      "number": 372,
+      "name": "Naxia aries",
+      "file": "new/372_Naxia_aries.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "07049fc1cd64c5dc5258728697236b410353f0d5523a775969902e15b3d025a5"
+    },
+    {
+      "number": 373,
+      "name": "Paralithodes platypus",
+      "file": "new/373_Paralithodes_platypus.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "ab94f342cc10480617cb8e0fdd5518c4f8e1ecb777dc73dccf1be5bdf61bc0aa"
+    },
+    {
+      "number": 374,
+      "name": "Hoplosquilla said",
+      "file": "new/374_Hoplosquilla_said.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "d40c16b0acf6d0c558c8924ee0f8085f3e8593fa642bc3a6b6be82e4e63e95ed"
+    },
+    {
+      "number": 375,
+      "name": "Architeuthis dux",
+      "file": "new/375_Architeuthis_dux.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "327cc8c1202ff9e63084feb69ed59995530a81c480c65e1f791c9c81cd218f4c"
+    },
+    {
+      "number": 376,
+      "name": "Sepia officinalis",
+      "file": "new/376_Sepia_officinalis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "d2355daf3f9d1aa5a5c48fd7dca0a186f46fd5e3d91ab79aeb7834a079d6f511"
+    },
+    {
+      "number": 377,
+      "name": "Iridoteuthis iris",
+      "file": "new/377_Iridoteuthis_iris.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "6ff467cf5941eeef0c2cf8b4e1837071b0fa9f53fb816475a2c8e8694e52502f"
+    },
+    {
+      "number": 378,
+      "name": "Argonauta argo",
+      "file": "new/378_Argonauta_argo.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "893abe9a44023fd535692f655087ec38fb2d09eb82e8a36b632e0ece5ab52e58"
+    },
+    {
+      "number": 379,
+      "name": "Cranchia scabra",
+      "file": "new/379_Cranchia_scabra.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "01cdbdcbd859223d9e78fcc555e75ed7734ef5fef348f764dafdb7204f1d9ed8"
+    },
+    {
+      "number": 380,
+      "name": "Froekenia clara",
+      "file": "new/380_Froekenia_clara_reconstruction.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "bd71291a85dc87d82efb2043c4e2162b8411b9454704c45edc24e8558de05f2e"
+    },
+    {
+      "number": 381,
+      "name": "Spirula spirula",
+      "file": "new/381_Spirula_spirula.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "ccc45472dfcd2403fd3bb12438ad70aa74619797a34012c7c0bf62aadf308080"
+    },
+    {
+      "number": 382,
+      "name": "Abralia similis",
+      "file": "new/382_Abralia_similis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "2f2235464d54d8f48d5d8a0c1e5e71a82c9593a65c84d1752adf5aea3b2748d4"
+    },
+    {
+      "number": 383,
+      "name": "Hyaloteuthis pelagica",
+      "file": "new/383_Hyaloteuthis_pelagica.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "e22f376bc3675737bffae131c21b61cfb905c329ed7ed2f5b97ca8b5c7819f89"
+    },
+    {
+      "number": 384,
+      "name": "Acanthaster planci",
+      "file": "new/384_Acanthaster_planci.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "62a5be5d09af1e105c3651a2d2cbc931bbca4774f7c243313c14171e2236775d"
+    },
+    {
+      "number": 385,
+      "name": "Lokiella parva",
+      "file": "new/385_Lokiella_parva.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "94d11e171ea6b10274db88cf455e70290b6c9fc1b884af985acdba3d2c9fe5d8"
+    },
+    {
+      "number": 386,
+      "name": "Patiria pectinifera",
+      "file": "new/386_Patiria_pectinifera.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "b3a338460e7ba2083cc5c91debbb2fc4b188b558e1cbc320e13b578268130206"
+    },
+    {
+      "number": 387,
+      "name": "Dipsacaster borealis",
+      "file": "new/387_Dipsacaster_borealis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "cd3be1160da24b740d320d985efa539cd28702b9f02a9af07bbdf6ac0929f074"
+    },
+    {
+      "number": 388,
+      "name": "Gorgonocephalus eucnemis",
+      "file": "new/388_Gorgonocephalus_eucnemis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "020c8b844c7de95967435b141632931ce8c04ece4fe7a4e234d02e31ec3e676c"
+    },
+    {
+      "number": 389,
+      "name": "Ophiopenia vicina",
+      "file": "new/389_Ophiopenia_vicina.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "dfebb5810d66c5349caa53e0fe8ad620ab48a8b026a0d185b67aa16f3dc992fc"
+    },
+    {
+      "number": 390,
+      "name": "Euryale aspera",
+      "file": "new/390_Euryale_aspera.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "e40f86560ac15d0d1d968215c756341e7ccbe8bf7ceedab548b3929a79b9943f"
+    },
+    {
+      "number": 391,
+      "name": "Ophiothrix fragilis",
+      "file": "new/391_Ophiothrix_fragilis.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "4428fd4daf09c317418cfb910eb6c0f8986d116f6ed6896c9852b3ddd84ab0f7"
+    },
+    {
+      "number": 392,
+      "name": "Clypeaster kieri",
+      "file": "new/392_Clypeaster_kieri.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "171ccefaa52efd470a35683e5c98eead38c5dd74f8cbc577025e929d36da6f95"
+    },
+    {
+      "number": 393,
+      "name": "Diadema setosum",
+      "file": "new/393_Diadema_setosum.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "f6cbdbbb69424a8f3eaf5a6e2b8cba37a14155ddf8dedccf34a28b3bf71680eb"
+    },
+    {
+      "number": 394,
+      "name": "Brissus gigas",
+      "file": "new/394_Brissus_gigas.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "8e7f4be8087463207ffc8827042444731df42aa3b3e93744c216a41db428888e"
+    },
+    {
+      "number": 395,
+      "name": "Cucumaria vegae",
+      "file": "new/395_Cucumaria_vegae.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "0211a353d26708c23f93f4958961dd9f8773195b3f0db1e8f4d0e56f76e680f7"
+    },
+    {
+      "number": 396,
+      "name": "Elpidia glacialis",
+      "file": "new/396_Elpidia_glacialis.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "1554453ce3d4f36ee00b5b0d42fc9aaddab27a1d2f0e41261d086652fb8667e3"
+    },
+    {
+      "number": 397,
+      "name": "Synapta maculata",
+      "file": "new/397_Synapta_maculata.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "45afa1f94e978e85a3cbcf85b4374b59d62767f5b56fe841853bf96d3200f130"
+    },
+    {
+      "number": 398,
+      "name": "Chiton cumingsii",
+      "file": "new/398_Chiton_cumingsii.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "875ba345b45164c5d5a2e7e30c35fe6f45d1baab25f0930c46e316f4ad10fd40"
+    },
+    {
+      "number": 399,
+      "name": "Acanthochitona rubrolineata",
+      "file": "new/399_Acanthochitona_rubrolineata.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "88584651ed41a30a73fe661d3d208433f88789e8f460a2a7fefb7e5790dd0002"
+    },
+    {
+      "number": 400,
+      "name": "Cryptoplax plana",
+      "file": "new/400_Cryptoplax_plana.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "369a376175988676535c94dbc5d51b0a853722b1b66802d17297c3d559026537"
+    },
+    {
+      "number": null,
+      "name": "Филин",
+      "file": "additional/Филин.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "a740fcecb822bdadd26bc5dc504c2a653fd6a47756339ebf37f6dec7988fe9fd"
+    },
+    {
+      "number": null,
+      "name": "Кошка",
+      "file": "additional/Кошка.png",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "0dcd44eb745180616585e04d90c7dccf3302e5933f2bff55700bbcefcb998ed8"
+    },
+    {
+      "number": null,
+      "name": "Волк",
+      "file": "additional/Волк.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "62179a4c8c0d15a82ed131a5f9162ecc7306cb0a55b11952c5f576d74c4135b6"
+    },
+    {
+      "number": null,
+      "name": "Лягушка",
+      "file": "additional/Лягушка.png",
+      "width": 1374,
+      "height": 1145,
+      "sha256": "f0ba42df1e0fff5ed4e92afdfcd0e960b167510c96bfa872e3fbd080beddd4c5"
     }
   ],
-  "new": 167
+  "new": 292
 }

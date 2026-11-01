@@ -24,17 +24,17 @@ function loadAtlas(){
  }};
  const ctx=vm.createContext({window,document,Image:FakeImage,Promise,URL,
      encodeURIComponent,console});
- for(const source of ['animal_atlas.js','selected_art_107.js','new_art_167.js']){
+ for(const source of ['animal_atlas.js','selected_art_107.js','new_art_167.js','new_art_125.js']){
   vm.runInContext(fs.readFileSync(source,'utf8'),ctx,{filename:source});
  }
  return window.AnimagiaAnimalAtlas;
 }
 const atlas=loadAtlas();
 
-test('only the 275 accepted unmodified transparent PNGs remain available',()=>{
- assert.equal(manifest.count,275);
- assert.equal(rows.length,275);
- assert.equal(new Set(rows.map(x=>x.file)).size,275);
+test('only the 400 accepted unmodified transparent PNGs remain available',()=>{
+ assert.equal(manifest.count,400);
+ assert.equal(rows.length,400);
+ assert.equal(new Set(rows.map(x=>x.file)).size,400);
  assert.equal(manifest.animals,104);
  assert.equal(manifest.additional,4);
  for(const item of rows){
@@ -49,7 +49,7 @@ test('only the 275 accepted unmodified transparent PNGs remain available',()=>{
 });
 
 test('only exact accepted species get animal imagery',()=>{
- assert.equal(atlas.originalArtworkCount,275);
+ assert.equal(atlas.originalArtworkCount,400);
  for(const [latin,expectedFile] of [
   ['Panthera leo','animals/001-Лев.png'],
   ['Panthera tigris','animals/002-Тигр.png'],
@@ -144,8 +144,8 @@ test('site build and index cannot publish or load the old atlas',()=>{
 });
 
 test('all 167 new original PNGs belong to their own approved cards',()=>{
- assert.equal(manifest.new,167);
- const newRows=rows.filter(x=>x.file.startsWith('new/'));
+ assert.equal(manifest.new,292);
+ const newRows=rows.filter(x=>x.file.startsWith('new/')&&x.number>=109&&x.number<=276&&x.number!==269);
  assert.equal(newRows.length,167);
  assert.equal(atlas.newOriginalArtworkExamples.length,167);
  for(const item of atlas.newOriginalArtworkExamples){
@@ -157,4 +157,22 @@ test('all 167 new original PNGs belong to their own approved cards',()=>{
    assert.equal(profile?.exact,true);
  }
  assert.equal(atlas.resolve([1540,'NoSuchAnimal noanimal','species']),null);
+});
+
+test('all 125 additional original artwork files are attached to exact scientific species',()=>{
+  const extra=atlas.additionalOriginalArtworkExamples;
+  assert.equal(extra.length,125);
+  const mapped=new Set();
+  for(const example of extra){
+    const entry=rows.find(x=>x.file===example.file);
+    assert(entry,'Missing manifest record '+example.file);
+    assert(entry.number===269||entry.number>=277&&entry.number<=400);
+    const result=atlas.resolve([1540,example.scientific,'species','Mammalia','Carnivora']);
+    assert.equal(result?.file,example.file);
+    assert.equal(result?.name,example.name);
+    assert.equal(result?.exact,example.scientific!=='Froekenia clara');
+    mapped.add(example.file);
+    assert.equal(atlas.resolve([1540,example.scientific,'subspecies']),null);
+  }
+  assert.equal(mapped.size,125);
 });

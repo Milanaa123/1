@@ -280,7 +280,7 @@ def build():
  DATA.mkdir(exist_ok=True,parents=True);approved_original_art=publish_selected_original_art(BASE,DEST);shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'ru_name_lookup.js',DEST/'ru_name_lookup.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'relic_card_stage1.css',DEST/'relic_card_stage1.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'animal_atlas.js',DEST/'animal_atlas.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
  # Ship only curated, checksum-verified original art; never publish older assets.
  shutil.copy2(BASE/'selected_art_107.js',DEST/'selected_art_107.js')
- shutil.copy2(BASE/'new_art_167.js',DEST/'new_art_167.js')
+ shutil.copy2(BASE/'new_art_167.js',DEST/'new_art_167.js');shutil.copy2(BASE/'new_art_125.js',DEST/'new_art_125.js')
  shutil.copy2(BASE/'approved_only_cards.js',DEST/'approved_only_cards.js')
  stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();genus_families=collections.defaultdict(set);synonym_candidates=collections.defaultdict(set);synonym_candidate_rows=0;t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
@@ -624,7 +624,7 @@ def build():
  meta['verified_russian_names_csv']={'file':russian_csv.name,'count':russian_csv_count,'sha256':hashlib.sha256(russian_csv.read_bytes()).hexdigest(),
      'columns':['scientific_name','rank','russian_name','phylum','class','order','family_latin','family_russian'],
      'policy':'Only verified, actually recorded source labels; all other taxa keep Latin name'}
- meta['artwork_key']='exact accepted species scientific name; approved 275 original PNG assets only'
+ meta['artwork_key']='exact accepted species scientific name; approved 400 original PNG assets only'
  meta['editorial_scope_warning']='Independent/nonparasitic status is approximated from taxonomy, not individually proven for each species'
  meta['category_filter']='Curated noncolonial independent animal groups: mammals, birds, reptiles, amphibians, fish, insects, spiders/scorpions, free-moving crustaceans, cephalopods and echinoderms. Excludes corals/polyps, sponges, attached molluscs and worms; ecology is inferred, not verified species by species.'
  meta['animal_name_method']='ancient-Greek-alphabet approximation of the original scientific name; not verified Ancient Greek lexical translation; digamma stands in for modern v/w'
