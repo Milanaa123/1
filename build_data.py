@@ -9,6 +9,7 @@ from family_evidence import load_exact_families, family_for_row
 from ru_catalog import indexed_taxon_row, FAMILY_RU, EXTERNAL_STATS, load_birdnet_names, taxon_ru_labels, genus_key, family_from_unambiguous_genus, RUSSIAN_SNAPSHOT, BULK_NAMES, SPECIES_RU, EXTERNAL_SPECIES_RU, WIKIDATA_SNAPSHOT, WIKIDATA_NAMES, wikidata_ru_label, INAT_NAMES, INAT_SNAPSHOT, inat_ru_label, BVI_NAMES, BVI_SNAPSHOT, bvi_ru_label, WIKIDATA_FAMILY_STATS, PUBLISHED_NAMES, PUBLISHED_RU_SHA256, published_ru_label, WIKIPEDIA_RU_PATH, WIKIPEDIA_RU_NAMES, WIKIPEDIA_RU_SNAPSHOT, wikipedia_ru_label, TKS_RU_NAMES, TKS_RU_STATS, tks_ru_label, _TKS_PATH, TKS_SUBSPECIES_NAMES, TKS_SUBSPECIES_STATS, tks_subspecies_ru_label, _TKS_SUBSPECIES_PATH
 from pathlib import Path
 from selected_original_art import publish_selected_original_art
+from artwork_representatives_builder import build_representative_art
 BASE=Path(__file__).parent.resolve();DEST=BASE/'public';DATA=DEST/'data'
 URL='https://download.checklistbank.org/col/monthly/2026-08-26_xr_txtree.zip'
 RANK={'species','subspecies'}  # only individual animal species and subspecies; no forms/varieties
@@ -280,7 +281,7 @@ def build():
  DATA.mkdir(exist_ok=True,parents=True);approved_original_art=publish_selected_original_art(BASE,DEST);shutil.copy2(BASE/'index.html',DEST/'index.html');shutil.copy2(BASE/'app.js',DEST/'app.js');shutil.copy2(BASE/'ru_name_lookup.js',DEST/'ru_name_lookup.js');shutil.copy2(BASE/'enhancements.js',DEST/'enhancements.js');shutil.copy2(BASE/'photo_gallery.js',DEST/'photo_gallery.js');shutil.copy2(BASE/'magic_theme.css',DEST/'magic_theme.css');shutil.copy2(BASE/'relic_card_stage1.css',DEST/'relic_card_stage1.css');shutil.copy2(BASE/'magic_ui.js',DEST/'magic_ui.js');shutil.copy2(BASE/'ritual_ui.js',DEST/'ritual_ui.js');shutil.copy2(BASE/'animal_atlas.js',DEST/'animal_atlas.js');shutil.copy2(BASE/'relic_features.js',DEST/'relic_features.js');shutil.copy2(BASE/'greek_taxa.js',DEST/'greek_taxa.js')
  # Ship only curated, checksum-verified original art; never publish older assets.
  shutil.copy2(BASE/'selected_art_107.js',DEST/'selected_art_107.js');shutil.copy2(BASE/'selected_art_400.js',DEST/'selected_art_400.js')
- shutil.copy2(BASE/'new_art_167.js',DEST/'new_art_167.js');shutil.copy2(BASE/'new_art_125.js',DEST/'new_art_125.js')
+ shutil.copy2(BASE/'new_art_167.js',DEST/'new_art_167.js');shutil.copy2(BASE/'new_art_125.js',DEST/'new_art_125.js');shutil.copy2(BASE/'representative_art.js',DEST/'representative_art.js')
  shutil.copy2(BASE/'approved_only_cards.js',DEST/'approved_only_cards.js');shutil.copy2(BASE/'approved_only_cards_400.js',DEST/'approved_only_cards_400.js')
  stack=[];active=False;base=-1;lines=formal=invalid_names=excluded_scope=excluded_extinct=excluded_uncertain=0;handles=collections.OrderedDict();genus_families=collections.defaultdict(set);synonym_candidates=collections.defaultdict(set);synonym_candidate_rows=0;t0=time.time()
  with tempfile.TemporaryDirectory(prefix='animagia-') as temp:
@@ -617,6 +618,7 @@ def build():
  meta['unverified_name_presentation']='If no documented Russian species name exists, show the exact Latin scientific name as title, without a missing-name annotation.'
  meta['missing_family_diagnostics']='families_missing.json'
  meta['approved_original_artwork']=approved_original_art
+  meta['representative_artwork']=build_representative_art(BASE,DEST)
  meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
   'distinct_families':len(family_values),'family_ru_present':family_ru_present,
   'verified_species_common_names':species_ru_present}
