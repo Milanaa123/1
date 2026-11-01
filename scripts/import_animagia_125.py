@@ -63,7 +63,9 @@ def main():
                     fail(f"Archive SHA-256 mismatch for {filename}")
                 width,height=struct.unpack(">II",body[16:24])
                 if width<200 or height<200:fail(f"Suspicious image dimensions: {filename}")
-                scientific=match.group(2).replace("_"," ")\n                if filename.endswith("_reconstruction.png"):\n                    scientific=scientific.removesuffix(" reconstruction")
+                scientific=match.group(2).replace("_"," ")
+                if filename.endswith("_reconstruction.png"):
+                    scientific=scientific.removesuffix(" reconstruction")
                 out_path="new/"+filename
                 if out_path in known_names:fail(f"Existing image cannot be overwritten: {out_path}")
                 if digest in known_shas:fail(f"Image duplicates original 275: {filename}")
