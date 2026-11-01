@@ -49,8 +49,8 @@ def artwork_sources(base: Path) -> list[dict]:
     return list(unique.values())
 
 
-def build_representative_art(base: Path, public: Path) -> dict:
-    """Index genuine genus/family/order membership; prefer closest relative."""
+def build_representative_art(base: Path, public: Path, required_classes: dict | None = None) -> dict:
+    """Index verified genus, family, order and class artwork (all accepted taxa)."""
     sources=artwork_sources(base)
     groups=defaultdict(set)
     for item in sources:
@@ -67,7 +67,7 @@ def build_representative_art(base: Path, public: Path) -> dict:
         for row in json.loads(path.read_text(encoding="utf8")):
             if row[1] in needed and row[2]=="species":
                 found[row[1]]=row
-    genus,family,order={},{},{}
+    genus,family,order,by_class,family_class,genus_class={},{},{},{},{},{}
     unmapped=[]
     # Prioritise original drawings, preserving the image bytes and identity.
     for item in sources:
@@ -80,16 +80,74 @@ def build_representative_art(base: Path, public: Path) -> dict:
             continue
         record=[item["file"],item["scientific"],item["label"]]
         order.setdefault(cls+"|"+ordr,record)
+        by_class.setdefault(cls,record)
         if fam:
             family.setdefault(cls+"|"+ordr+"|"+fam,record)
             name=item["scientific"].split(" ",1)[0]
             genus.setdefault(cls+"|"+ordr+"|"+fam+"|"+name,record)
-    payload={"version":1,"order":order,"family":family,"genus":genus}
+            family_class.setdefault(cls+"|"+fam,record)
+            genus_class.setdefault(cls+"|"+fam+"|"+name,record)
+
+    # Curated visual prototypes must be a REAL source within the SAME
+    # verified class/family of the frozen Catalogue of Life. This is not
+    # alphabetical matching, translated scientific names, or a made-up taxon.
+    preferred_family={
+        "Mammalia|Carnivora|Canidae":"Canis lupus",
+        "Mammalia|Carnivora|Felidae":"Felis catus",
+        "Mammalia|Carnivora|Ursidae":"Ursus arctos",
+        "Mammalia|Cetacea|Delphinidae":"Tursiops truncatus",
+        "Mammalia|Cetacea|Balaenopteridae":"Balaenoptera musculus",
+    }
+    preferred_class={
+        "Amphibia":"Alytes muletensis",
+        "Arachnida":"Neon valentulus",
+        "Asteroidea":"Asterias rubens",
+        "Aves":"Corvus corax",
+        "Cephalopoda":"Sepia officinalis",
+        "Chondrostei":"Polyodon spathula",
+        "Echinoidea":"Diadema setosum",
+        "Elasmobranchii":"Carcharodon carcharias",
+        "Holocephali":"Callorhinchus capensis",
+        "Holothuroidea":"Holothuria tubulosa",
+        "Insecta":"Mesoprionus angustatus",
+        "Malacostraca":"Penaeus silasi",
+        "Mammalia":"Canis lupus",
+        "Ophiuroidea":"Ophiothrix fragilis",
+        "Polyplacophora":"Chiton cumingsii",
+        "Reptilia":"Chamaeleo calyptratus",
+        "Teleostei":"Perca fluviatilis",
+    }
+    item_by_name={item["scientific"]:item for item in sources}
+    def approved_record(scientific):
+        item=item_by_name.get(scientific)
+        if item is None or scientific not in found:
+            raise AssertionError("Curated artwork has no verified source: "+scientific)
+        return [item["file"],scientific,item["label"]]
+    for key,scientific in preferred_family.items():
+        row=found.get(scientific)
+        if row is None or row[3]+"|"+row[4]+"|"+row[7]!=key:
+            raise AssertionError("Unverified family assignment: "+scientific+" -> "+key)
+        family[key]=approved_record(scientific)
+        family_class[row[3]+"|"+row[7]]=approved_record(scientific)
+    for cls,scientific in preferred_class.items():
+        row=found.get(scientific)
+        if row is None or row[3]!=cls:
+            raise AssertionError("Unverified class assignment: "+scientific+" -> "+cls)
+        by_class[cls]=approved_record(scientific)
+    if required_classes is not None:
+        missing_classes=set(required_classes)-set(by_class)
+        if missing_classes:
+            raise AssertionError("Class-level coverage missing: "+repr(sorted(missing_classes)))
+        if not required_classes or any(not cls or count<1 for cls,count in required_classes.items()):
+            raise AssertionError("Unexpected blank/invalid Catalogue of Life animal class")
+    payload={"version":2,"order":order,"family":family,"genus":genus,
+             "familyClass":family_class,"genusClass":genus_class,"class":by_class}
     out=public/"artwork_representatives_index.js"
     out.write_text("window.AnimagiaRepresentativeIndex=Object.freeze("+json.dumps(payload,ensure_ascii=False,separators=(",",":"))+");\n",encoding="utf8")
     score=1878
     score_file=public/"data"/(str(score//25)+".json")
-    coverage={"total":0,"exact":0,"frogs":0,"genus":0,"family":0,"order":0,"missing":0}
+    coverage={"total":0,"exact":0,"frogs":0,"genus":0,"family":0,
+              "order":0,"class":0,"missing":0}
     exact_source={x["scientific"] for x in sources}
     if score_file.is_file():
         for row in json.loads(score_file.read_text(encoding="utf8")):
@@ -99,20 +157,31 @@ def build_representative_art(base: Path, public: Path) -> dict:
             scientific=row[1]
             if row[2]=="species" and scientific in exact_source:
                 coverage["exact"]+=1
-            elif fam and cls+"|"+ordr+"|"+fam+"|"+scientific.split(" ",1)[0] in genus:
+            elif row[2]=="species" and cls=="Amphibia" and ordr=="Anura":
+                coverage["frogs"]+=1
+            elif fam and (cls+"|"+ordr+"|"+fam+"|"+scientific.split(" ",1)[0] in genus
+                or cls+"|"+fam+"|"+scientific.split(" ",1)[0] in genus_class):
                 coverage["genus"]+=1
-            elif fam and cls+"|"+ordr+"|"+fam in family:
+            elif fam and (cls+"|"+ordr+"|"+fam in family or cls+"|"+fam in family_class):
                 coverage["family"]+=1
             elif cls+"|"+ordr in order:
                 coverage["order"]+=1
-            elif row[2]=="species" and cls=="Amphibia" and ordr=="Anura":
-                coverage["frogs"]+=1
+            elif cls in by_class:
+                coverage["class"]+=1
             else:
                 coverage["missing"]+=1
         if coverage["total"]!=550:
             raise AssertionError("Unexpected number of matching taxa at score 1878")
+    if coverage["missing"] or coverage["total"]!=550:
+        raise AssertionError("550-match artwork coverage is incomplete: "+repr(coverage))
     stats={"source_scientific":len(sources),"catalogue_verified":len(found),
            "by_genus":len(genus),"by_family":len(family),"by_order":len(order),
-           "unmapped_source_count":len(unmapped),"score_1878":coverage}
+           "by_class":len(by_class),"by_family_without_order":len(family_class),
+           "by_genus_without_order":len(genus_class),
+           "unmapped_source_count":len(unmapped),"score_1878":coverage,
+           "accepted_catalogue_classes":len(required_classes or {}),
+           "catalogue_taxa_covered":sum(required_classes.values()) if required_classes is not None else None,
+           "class_level_guarantee": bool(required_classes is not None and
+                                      set(required_classes).issubset(by_class))}
     print("ANIMAGIA_REPRESENTATIVE_ART_INDEX",json.dumps(stats,ensure_ascii=False),flush=True)
     return stats
