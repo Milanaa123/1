@@ -9,7 +9,6 @@
     const byId = id => document.getElementById(id);
     const form = byId('form');
     const russian = byId('name'), latin = byId('latin'), greek = byId('greek');
-    const latinConfirmed = byId('latinOriginalConfirmed');
     const stageOne = byId('ritualStep1'), stageTwo = byId('ritualStep2');
     const stageThree = byId('ritualStep3');
     const arrowOne = byId('ritualArrow1'), arrowTwo = byId('ritualArrow2');
@@ -33,9 +32,7 @@
     const nameIsReady = () =>
       typeof validSourceName === 'function' && validSourceName(russian.value);
     const latinIsReady = () =>
-      typeof validLatinName === 'function' && validLatinName(latin.value) &&
-      (!(typeof latinNeedsConfirmation === 'function' && latinNeedsConfirmation(russian.value)) ||
-       latinConfirmed?.checked === true);
+      typeof validLatinName === 'function' && validLatinName(latin.value);
 
     function announce(message) {
       if (flowStatus) flowStatus.textContent = message;
@@ -78,13 +75,9 @@
         return false;
       }
       if (next === 3 && !latinIsReady()) {
-        const guessed=typeof latinNeedsConfirmation === 'function' && latinNeedsConfirmation(russian.value);
-        announce(guessed && !latinConfirmed?.checked
-          ? 'Подтверди исходное написание латиницей в отмеченном поле: автоматический вариант может изменить число.'
-          : 'Проверь написание латиницей.');
+        announce('Проверь написание латиницей.');
         if (stage < 2) stage = 2;
         updateLayout();
-        if (guessed && !latinConfirmed?.checked) latinConfirmed?.focus();
         return false;
       }
       if (stage < next) {
