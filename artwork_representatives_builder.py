@@ -19,7 +19,20 @@ def artwork_sources(base: Path) -> list[dict]:
     manifest=json.loads((root/"manifest.json").read_text(encoding="utf8"))
     if manifest["count"]!=400 or len(manifest["files"])!=400:
         raise AssertionError("Artwork must have exactly 400 originals")
-    by_number={item["number"]:item["file"] for item in manifest["files"] if item["number"] is not None}
+    # The old numbered animal gallery and the later 1–400 batches contain
+    # different source files with some of the SAME numeric IDs (e.g. #127
+    # is the original European catfish, but new/127 is a marmoset).
+    # Never key legacy scientific species by the number of a new batch.
+    legacy=[item for item in manifest["files"]
+            if item["file"].startswith("animals/") and item["number"] is not None]
+    by_number={}
+    for item in legacy:
+        number=item["number"]
+        if number in by_number:
+            raise AssertionError("Duplicate number in ORIGINAL animals/: "+str(number))
+        if not item["file"].startswith("animals/"+str(number).zfill(3)+"-"):
+            raise AssertionError("Original animal filename differs from its number: "+item["file"])
+        by_number[number]=item["file"]
     approved_files={item["file"] for item in manifest["files"]}
     sources=[]
     selected=(base/"selected_art_400.js").read_text(encoding="utf8")
@@ -27,7 +40,12 @@ def artwork_sources(base: Path) -> list[dict]:
     for name,number,label in re.findall(r"\['([^']+)',\[(\d+|null),'([^']+)'\]\]",first):
         if not re.fullmatch(r"[A-Z][a-zA-Z-]+ [a-zA-Z-]+",name):
             continue
-        file=by_number[int(number)] if number!="null" else "additional/"+label+".png"
+        if number=="null":
+            file="additional/"+label+".png"
+        else:
+            if int(number) not in by_number:
+                raise AssertionError("Original animals/ number not published: "+number+" "+name)
+            file=by_number[int(number)]
         if file not in approved_files:
             raise AssertionError("An approved scientific name points to a missing source: "+file)
         sources.append({"scientific":name,"file":file,"label":label})
