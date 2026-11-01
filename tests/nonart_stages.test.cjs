@@ -100,14 +100,18 @@ test('Saving different species with the same number generates distinct PNG filen
   filename(1531,[1531,'Chinchilla lanigera']));
  assert.ok(renderer.includes('const filename=cardDownloadFilename(sum,row)'));
 });
-test('Existing PNG and PDF mechanisms stay in the same code path',()=>{
+test('PNG cards remain unchanged and direct PDF bestiary has no print dialogue',()=>{
+ const book=fs.readFileSync('bestiary_pdf.js','utf8');
  assert.ok(renderer.includes('async function composeScreenCard(row)'));
  assert.ok(renderer.includes("canvas.toBlob(resolve,'image/png')"));
- assert.ok(renderer.includes("async function printBooklet(status)"));
- assert.ok(renderer.includes('window.print()'));
- assert.ok(renderer.includes('await gallery.drawable(illustration)'));
+ assert.ok(renderer.includes('async function downloadBooklet(status)'));
+ assert.ok(renderer.includes('window.AnimagiaBookPDF.download'));
+ assert.ok(!renderer.includes('window.print()'));
+ assert.ok(renderer.includes('await gallery.drawable(profile)'));
  assert.ok(renderer.includes('if(profile&&!sprite)return false;'));
- assert.ok(renderer.includes('if(gallery){\n    // Verified ecology exists independently of whether the animal has art.'));
  assert.match(page,/id="downloadRelic"/);
- assert.match(page,/id="printRelic"/);
+ assert.match(page,/id="downloadBestiary"/);
+ assert.match(page,/bestiary_pdf\.js\?v=enchanted-direct-pdf-v1/);
+ assert.ok(book.includes("return new Blob(parts,{type:'application/pdf'})"));
 });
+
