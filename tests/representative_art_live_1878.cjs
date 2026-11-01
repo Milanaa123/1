@@ -36,7 +36,7 @@ fs.mkdirSync(artifacts,{recursive:true});
    !!document.getElementById('error').textContent.trim(),null,{timeout:75000});
   assert.equal((await page.locator('#error').textContent()).trim(),'');
   const outcome=await page.evaluate(()=>{
-   const counts={exact:0,genus:0,family:0,order:0,generic:0,missing:0};
+   const counts={exact:0,genus:0,family:0,order:0,class:0,generic:0,missing:0};
    for(const row of results){
     const p=window.AnimagiaAnimalAtlas.resolve(row);
     const level=p?(p.exact===true?'exact':p.representativeLevel||'generic'):'missing';
@@ -51,7 +51,7 @@ fs.mkdirSync(artifacts,{recursive:true});
   assert.equal(outcome.score,1878);
   assert.equal(outcome.count,550);
   assert.deepEqual(outcome.counts,{
-   exact:0,genus:3,family:210,order:312,generic:0,missing:25
+   exact:0,genus:3,family:210,order:312,class:25,generic:0,missing:0
   });
   assert.ok(outcome.scrollWidth<=outcome.clientWidth+2,'Horizontal mobile overflow');
   await page.locator('#animalChooserOpen').click();
@@ -61,7 +61,9 @@ fs.mkdirSync(artifacts,{recursive:true});
   assert.match(await first.textContent(),/Образ отряда/);
   await page.screenshot({path:path.join(artifacts,'mobile-550-chooser.png')});
   await page.locator('#chooserFilterIllustrated').click();
-  assert.match(await page.locator('#animalChooserCount').textContent(),/Найдено 525/);
+  assert.match(await page.locator('#animalChooserCount').textContent(),/Найдено 550/);
+  const classResult=await page.evaluate(()=>results.filter(r=>window.AnimagiaAnimalAtlas.resolve(r)?.representativeLevel==='class').length);
+  assert.equal(classResult,25,'The 25 formerly unillustrated matches must now have a class image');
   const target=page.locator('#animalChooserList .animal-chooser-item')
    .filter({hasText:'Bowie sagittatus'}).first();
   await target.click();
