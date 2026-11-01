@@ -22,7 +22,7 @@ test('Canvas is not repainted while typing an unchanged blank search',()=>{
  assert.ok(relic.includes('canvas.width=1200;canvas.height=2000'));
  assert.ok(relic.includes('await gallery.drawable(profile)'));
  assert.ok(relic.includes("canvas.toBlob(resolve,'image/png')"));
- assert.ok(relic.includes('async function printBooklet(status)'));
+ assert.ok(relic.includes('async function downloadBooklet(status)'));
 });
 test('Repeat search only caches SHA-verified catalog shard, no names',()=>{
  assert.ok(search.includes('let lastVerifiedShard=null;'));
@@ -36,7 +36,7 @@ test('Repeat search only caches SHA-verified catalog shard, no names',()=>{
  assert.ok(search.includes("taxonGreekScore(row[1])!==target"));
  assert.ok(!search.includes('localStorage.setItem('));
 });
-test('Visual layout and export controls are unchanged',()=>{
- for(const name of ['relicCardBackdrop','relicAnimal','greek','name','downloadRelic','printRelic'])
+test('Original card geometry and new download controls remain accessible',()=>{
+ for(const name of ['relicCardBackdrop','relicAnimal','greek','name','downloadRelic','downloadBestiary'])
   assert.ok(html.includes('id="'+name+'"'),name);
 });
