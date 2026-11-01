@@ -618,7 +618,7 @@ def build():
  meta['unverified_name_presentation']='If no documented Russian species name exists, show the exact Latin scientific name as title, without a missing-name annotation.'
  meta['missing_family_diagnostics']='families_missing.json'
  meta['approved_original_artwork']=approved_original_art
-  meta['representative_artwork']=build_representative_art(BASE,DEST)
+ meta['representative_artwork']=build_representative_art(BASE,DEST)
  meta['family_catalogue']={'family_present':family_present,'family_missing':unique-family_present,
   'distinct_families':len(family_values),'family_ru_present':family_ru_present,
   'verified_species_common_names':species_ru_present}
@@ -626,7 +626,7 @@ def build():
  meta['verified_russian_names_csv']={'file':russian_csv.name,'count':russian_csv_count,'sha256':hashlib.sha256(russian_csv.read_bytes()).hexdigest(),
      'columns':['scientific_name','rank','russian_name','phylum','class','order','family_latin','family_russian'],
      'policy':'Only verified, actually recorded source labels; all other taxa keep Latin name'}
- meta['artwork_key']='exact accepted species scientific name; approved 400 original PNG assets only'
+ meta['artwork_key']='exact species scientific name for own portrait; Catalogue of Life genus, family or order for explicitly labelled representative drawings; 400 original PNG assets'
  meta['editorial_scope_warning']='Independent/nonparasitic status is approximated from taxonomy, not individually proven for each species'
  meta['category_filter']='Curated noncolonial independent animal groups: mammals, birds, reptiles, amphibians, fish, insects, spiders/scorpions, free-moving crustaceans, cephalopods and echinoderms. Excludes corals/polyps, sponges, attached molluscs and worms; ecology is inferred, not verified species by species.'
  meta['animal_name_method']='ancient-Greek-alphabet approximation of the original scientific name; not verified Ancient Greek lexical translation; digamma stands in for modern v/w'
