@@ -55,10 +55,22 @@ test('English original is accepted directly without Russian-name guessing',()=>{
  assert.equal(api.nameGreekFromLatin(api.nameLatin('Fraser Harold Brown')),
               'Φρασερ Ἁρολδ Βροϝν');
 });
-test('Cyrillic input never pretends to recover exact original English spelling',()=>{
- assert.equal(api.nameLatin('Гарольд Фрейзер Браун'),'Garold Freyzer Braun');
- assert.notEqual(api.nameLatin('Гарольд Фрейзер Браун'),'Harold Fraser Brown');
+test('Canonical English names are retained instead of mechanical spelling guesses',()=>{
+ assert.equal(api.nameLatin('Гарольд Фрейзер Браун'),'Harold Fraser Brown');
+ assert.equal(api.nameLatin('Фрейзер Гарольд Браун'),'Fraser Harold Brown');
+ assert.equal(api.nameLatin('Элла Мария Уиллоу'),'Ella Maria Willow');
+ assert.equal(api.nameLatin('Илайн Эли Нельсон'),'Elaine Eli Nelson');
+ assert.equal(api.nameLatin('Май Иордекэску'),'Mai Iordăchescu');
+ assert.equal(api.nameLatin('Пример'),'Primer', 'unknown words use ordinary editable romanisation');
  assert.equal(api.nameGreekFromLatin('Harold'), 'Ἁρολδ');
+ assert.equal(api.score(api.nameGreekFromLatin(api.nameLatin('Фрейзер Гарольд Браун'))),1339);
+});
+test('Latin names containing diacritics are preserved; Greek score uses their base letters',()=>{
+ const original='Mai Iordăchescu';
+ assert.equal(api.sourceNameIsLatin(original),true);
+ assert.equal(api.validLatinName(original),true);
+ assert.equal(api.nameLatin(original),original);
+ assert.equal(api.nameGreekFromLatin(original),api.nameGreekFromLatin('Mai Iordachescu'));
 });
 test('Greek digit sum ignores smooth and rough breathings',()=>{
  assert.equal(api.score('Ἁρολδ'),api.score('Αρολδ'));
