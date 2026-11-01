@@ -29,6 +29,8 @@ jobs:
         run: node --test tests/test-approved-only-art.cjs
       - name: Verify representative drawings are honestly labeled and taxonomically restricted
         run: node --test tests/test-representative-art.cjs
+      - name: Verify original fish, bird and mammal drawings never cross numbered asset batches
+        run: python -m unittest discover -s tests -p 'test_artwork_source_collision.py' -v
       - name: Check Python catalogue builder syntax
         run: python -m py_compile build_data.py audit_index.py ru_catalog.py artwork_representatives_builder.py
       - name: Validate family and Russian-name fields without changing Greek sums
