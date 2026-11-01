@@ -12,7 +12,14 @@ fs.mkdirSync(out,{recursive:true});
 const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.json':'application/json','.svg':'image/svg+xml'};
 const server=http.createServer((req,res)=>{
  const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
- const filename=path.resolve(root,'.'+pathname);
+ // Render publishes the approved original files at a new cache-safe public
+ // directory. The GitHub source repository stores identical PNGs at this
+ // path. Serve the alias locally, without any image re-encoding.
+ const published='/art/animagia-original-400/';
+ const serving=pathname.startsWith(published)
+  ?'/art/animagia-selected-107/'+pathname.slice(published.length)
+  :pathname;
+ const filename=path.resolve(root,'.'+serving);
  if(!filename.startsWith(root+path.sep)) {res.writeHead(403);res.end();return;}
  fs.readFile(filename,(err,data)=>{
   if(err){res.writeHead(404);res.end('not found');return;}
