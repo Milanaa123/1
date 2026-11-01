@@ -27,7 +27,7 @@ fs.mkdirSync(artifacts,{recursive:true});
     &&typeof taxonGreek==='function',null,{timeout:30000});
   await page.locator('#name').fill('Fraser Harold Brown');
   const greek=await page.evaluate(()=>taxonGreek('Cornufer opisthodon'));
-  assert.equal(await page.evaluate(x=>taxonGreekScore(x),greek).then(x=>x),1878);
+  assert.equal(await page.evaluate(x=>score(x),greek),1878);
   await page.locator('#greek').fill(greek);
   await page.locator('#run').click();
   await page.waitForFunction(()=>!document.getElementById('resultPanel').hidden||
