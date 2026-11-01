@@ -1,0 +1,69 @@
+name: Animagia import 125 original RGBA illustrations
+on:
+  push:
+    branches: [animagia-site]
+    paths:
+      - .github/workflows/animagia-import-new-125.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  artwork:
+    name: Verify user archives and publish original PNGs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Retrieve fourteen original artwork archives
+        env:
+          ARCHIVE_URL_0: 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-3cb0-8210-822c-2b1a191efee3/raw?se=2026-11-01T17%3A07%3A34Z&sp=r&sv=2026-02-06&sr=b&scid=4d29792e-9fc7-5a3b-a33e-4b42fe93203f&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-01T04%3A06%3A43Z&ske=2026-11-02T04%3A06%3A43Z&sks=b&skv=2026-02-06&sig=0Sr%2B4IabdHipfR%2B8/TyNPmzx5BeW7ARoJU/kccXnhek%3D'
+          ARCHIVE_URL_1: 'https://sdmntprnortheu.oaiusercontent.com/files/00000000-3c10-81f4-bc38-35e21927acfd/raw?se=2026-11-01T17%3A07%3A39Z&sp=r&sv=2026-02-06&sr=b&scid=ef8c4a29-a8bc-54d5-b05b-3589ffd6b22c&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-01T00%3A50%3A59Z&ske=2026-11-02T00%3A50%3A59Z&sks=b&skv=2026-02-06&sig=QN92PcCN81zudqqoC9hgcZQbb1Jt4Vo3BjNgQxH8iw4%3D'
+          ARCHIVE_URL_2: 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-a610-8210-a9b8-63d65e6845eb/raw?se=2026-11-01T17%3A07%3A30Z&sp=r&sv=2026-02-06&sr=b&scid=e03ba7f8-6ff9-5e20-a79a-fbf99bd1eeed&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-01T05%3A46%3A07Z&ske=2026-11-02T05%3A46%3A07Z&sks=b&skv=2026-02-06&sig=5IXpr/wJDhmzzJl9y/NpuTlM3s2QTL9rVzHc7ZsalV4%3D'
+          ARCHIVE_URL_3: 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-6034-8210-be92-d302b1f82ed0/raw?se=2026-11-01T17%3A07%3A30Z&sp=r&sv=2026-02-06&sr=b&scid=6e381c48-d04c-5e1b-84df-644c00825634&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-01T10%3A52%3A05Z&ske=2026-11-02T10%3A52%3A05Z&sks=b&skv=2026-02-06&sig=u2Kvv4/I4ROnxNW4hqWlIa/WzFw9he4hyjdfgKhe%2BBQ%3D'
+          ARCHIVE_URL_4: 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-0c8c-8210-98ea-557574a5263a/raw?se=2026-11-01T17%3A07%3A30Z&sp=r&sv=2026-02-06&sr=b&scid=43c9f4c4-b185-50fe-a9bd-58262a397f05&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-01T06%3A38%3A20Z&ske=2026-11-02T06%3A38%3A20Z&sks=b&skv=2026-02-06&sig=9JKS8MuM1fl2p3YRgBz9ebYB4KMkCNAM8ERlrsI74FM%3D'
+          ARCHIVE_URL_5: 'https://sdmntpreastus2.oaiusercontent.com/files/00000000-99b0-81f6-9fc3-d393bbf8d4bf/raw?se=2026-11-01T17%3A07%3A34Z&sp=r&sv=2026-02-06&sr=b&scid=c5e44266-76ea-571e-a056-00326c9ca295&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-01T09%3A41%3A45Z&ske=2026-11-02T09%3A41%3A45Z&sks=b&skv=2026-02-06&sig=lHO9z6PGv21Lk4TTWgiA2%2BVs9R3O2WNDuFss0zkI8Ac%3D'
+          ARCHIVE_URL_6: 'https://sdmntprukwest.oaiusercontent.com/files/00000000-c3c4-8243-a623-548d360668d8/raw?se=2026-11-01T17%3A07%3A32Z&sp=r&sv=2026-02-06&sr=b&scid=c9d9b6fc-bd45-5246-9cf1-c0905cb566b9&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-01T08%3A10%3A11Z&ske=2026-11-02T08%3A10%3A11Z&sks=b&skv=2026-02-06&sig=lT%2BL7WSqmYVB6l8uueEtqNnd6O4QnzZ9ctD4tcoEi2E%3D'
+          ARCHIVE_URL_7: 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-0400-8210-a1a1-b0006be1f2b0/raw?se=2026-11-01T17%3A07%3A32Z&sp=r&sv=2026-02-06&sr=b&scid=d658be42-1894-5613-9bb9-fbd0f41157ff&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-01T09%3A40%3A55Z&ske=2026-11-02T09%3A40%3A55Z&sks=b&skv=2026-02-06&sig=17eyQ5cVUhzH393hb5tS3SkBsnVPkbN8v/oF7ykGtrw%3D'
+          ARCHIVE_URL_8: 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-d67c-8210-9d54-f92d899116fd/raw?se=2026-11-01T17%3A07%3A34Z&sp=r&sv=2026-02-06&sr=b&scid=808d94c6-1ace-5c98-823b-ef40fdbe031a&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-01T06%3A38%3A20Z&ske=2026-11-02T06%3A38%3A20Z&sks=b&skv=2026-02-06&sig=/lPfGv8UrLVdjqQ5By8/wIg6HJ3dnthUkk6N4LrR%2B%2BY%3D'
+          ARCHIVE_URL_9: 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-b4fc-8210-b1f8-9ffa95d13604/raw?se=2026-11-01T17%3A07%3A35Z&sp=r&sv=2026-02-06&sr=b&scid=2101cfce-75c6-5540-86b1-9c1e7ef170f1&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-01T05%3A46%3A07Z&ske=2026-11-02T05%3A46%3A07Z&sks=b&skv=2026-02-06&sig=qb2WRjUp9PTGSvv98atvObyPZfGLomltm7TnhN8Av6M%3D'
+          ARCHIVE_URL_10: 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-2024-8210-b00a-3a9279a8373b/raw?se=2026-11-01T17%3A07%3A35Z&sp=r&sv=2026-02-06&sr=b&scid=eae0a91e-b05b-5732-bac7-77656fc51a60&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-01T07%3A04%3A35Z&ske=2026-11-02T07%3A04%3A35Z&sks=b&skv=2026-02-06&sig=UKSrbTcDU1G8J0EPDvtyu8b4tD0Y4RK3Eh%2BbfEsi1LI%3D'
+          ARCHIVE_URL_11: 'https://sdmntprsoutheastus3.oaiusercontent.com/files/00000000-64a8-820c-9a77-5f48a487c4da/raw?se=2026-11-01T17%3A07%3A38Z&sp=r&sv=2026-02-06&sr=b&scid=6488d13a-cbb9-5e78-85de-91f13ac21136&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-01T06%3A39%3A29Z&ske=2026-11-02T06%3A39%3A29Z&sks=b&skv=2026-02-06&sig=QpDKBhcPQXMXv9jvDtt%2BV%2BjH79J3OdBbRIQIIvPaX88%3D'
+          ARCHIVE_URL_12: 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-73c4-8210-bbd6-eb7ec4bc9a94/raw?se=2026-11-01T17%3A07%3A36Z&sp=r&sv=2026-02-06&sr=b&scid=a5b565e9-c161-5595-a1df-f57c1cab3be8&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-01T03%3A28%3A36Z&ske=2026-11-02T03%3A28%3A36Z&sks=b&skv=2026-02-06&sig=0e9I0RteUzLV3cmSv2ZVx%2BlA3GHxx7roo1%2BdQAcTGtw%3D'
+          ARCHIVE_URL_13: 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-8254-8210-b892-e1af41f7858f/raw?se=2026-11-01T17%3A07%3A37Z&sp=r&sv=2026-02-06&sr=b&scid=4622f0aa-13b2-52de-8aa6-e0e44c22e252&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-10-31T23%3A48%3A00Z&ske=2026-11-01T23%3A48%3A00Z&sks=b&skv=2026-02-06&sig=3sClT4n5LKjfaG/CM0BaVfaS4LM4gP0OP%2BpAmjC1zUQ%3D'
+        run: |
+          python3 - <<'PY'
+          import pathlib,os,urllib.request
+          directory=pathlib.Path('_incoming_animagia')
+          directory.mkdir(exist_ok=True)
+          files=["animagia_additions_91_portion_1.zip","animagia_additions_91_portion_2.zip","animagia_latest_original_png.zip","animagia_new_batch_02.zip","animagia_new_batch_03.zip","animagia_new_batch_04.zip","animagia_new_batch_05.zip","animagia_new_batch_06.zip","animagia_new_batch_07.zip","animagia_new_batch_08.zip","animagia_new_batch_09.zip","animagia_new_batch_10.zip","animagia_new_batch_11.zip","animagia_final_two_original_png.zip"]
+          for number,name in enumerate(files):
+              url=os.environ[f'ARCHIVE_URL_{number}']
+              print('Downloading',number+1,'/',len(files),name,flush=True)
+              with urllib.request.urlopen(url,timeout=180) as response:
+                  with (directory/name).open('wb') as target:
+                      while True:
+                          buf=response.read(1024*1024)
+                          if not buf:break
+                          target.write(buf)
+              print('Verified archive received', (directory/name).stat().st_size,flush=True)
+          PY
+      - name: Verify SHA-256 and import 125 exact species images
+        run: python3 scripts/import_animagia_125.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: QA 400 original artwork and calculator
+        run: |
+          node --check new_art_125.js
+          node --test tests/test-approved-only-art.cjs
+          node --test tests/name_ancient_transliteration.test.cjs tests/nonart_stages.test.cjs tests/test_card_artifact.cjs
+          python3 -m py_compile build_data.py selected_original_art.py
+      - name: Commit verified art and mappings
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add art/animagia-selected-107/ index.html build_data.py selected_original_art.py new_art_125.js tests/test-approved-only-art.cjs .github/workflows/animagia-quality.yml
+          git commit -m "Publish verified 400 original animal artworks and exact mappings"
+          git push origin HEAD:animagia-site
