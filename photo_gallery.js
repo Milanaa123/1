@@ -206,13 +206,11 @@ function photoStatus(done=false){
  const target=document.getElementById('galleryStatus');
  if(!target)return;
  if(!photoGallery.source){target.textContent='';return;}
- const checks='Проверено '+photoGallery.checked+' вариантов.';
  target.textContent=(photoGallery.scanning&&!done
-  ?'Поиск фотографий · '+found+'/30. '+checks
+  ?'✧ Наполняем атлас: '+found+' из 30'
   : found===PHOTO_TARGET
-    ?'Найдены 30 животных с подтверждёнными фотографиями. '+checks
-    : 'Найдено '+found+' из 30 животных с фотографиями. '+checks+
-      ' Другие совпадения можно скачать полным списком.')+
+    ?'✧ Тридцать удивительных животных ждут тебя'
+    : '✧ В атласе '+found+' из 30 животных')+
   (photoGallery.error?' '+photoGallery.error:'');
 }
 function bestiaryIcon(row){
@@ -255,26 +253,20 @@ function photoMakeCard(item,index) {
  const folio=document.createElement('span');folio.className='bestiary-folio';
  folio.textContent='ФОЛИАНТ · '+String(index+1).padStart(2,'0');
  const photoSeal=document.createElement('span');photoSeal.className='bestiary-photo-seal';
- photoSeal.textContent='✧ Фото проверено';
+ photoSeal.textContent='✧ Живая природа';
  top.append(mark,folio,photoSeal);
 
  const body=document.createElement('div');body.className='photo-card-body bestiary-card-body';
  const rank=document.createElement('div');rank.className='bestiary-category-row';
  const group=document.createElement('span');group.className='bestiary-category';group.textContent=bestiaryGroupName(row);
- const taxonomyRank=document.createElement('span');taxonomyRank.className='bestiary-rank';
- taxonomyRank.textContent=(row[2]==='subspecies'?'Подвид':'Вид');
- rank.append(group,taxonomyRank);
+ rank.append(group);
 
  const name=document.createElement('strong');name.className='animal-name';name.textContent=display(row);
- const origin=document.createElement('span');origin.className='bestiary-name-origin';
- origin.textContent=(row[9]||window.AnimagiaRussianNames?.get(row)||Object.prototype.hasOwnProperty.call(SPECIES_NAME_RU,row[1]))
-  ?'Проверенное русское название вида'
-  :(row[8]?'Название группы, а не вида; точное научное имя ниже':'Русское название вида не установлено; научное имя ниже');
  const science=document.createElement('small');science.className='bestiary-scientific';science.textContent=row[1];
 
  const engraving=document.createElement('div');engraving.className='bestiary-engraving';
  const number=document.createElement('span');number.className='bestiary-number';number.textContent=String(row[0]);
- const numberLabel=document.createElement('span');numberLabel.textContent='греческая сумма · точное совпадение';
+ const numberLabel=document.createElement('span');numberLabel.textContent='✧ Число формы';
  engraving.append(number,numberLabel);
 
  const photoButton=document.createElement('button');photoButton.type='button';
@@ -290,24 +282,6 @@ function photoMakeCard(item,index) {
  photoButton.setAttribute('aria-expanded','false');
  photoButton.addEventListener('click',()=>photoToggleInline(item,photoButton,photoPanel));
 
- const details=document.createElement('details');details.className='animal-detail bestiary-verification';
- const toggle=document.createElement('summary');toggle.textContent='Проверить вычисление и классификацию';
- const info=document.createElement('div');info.className='bestiary-facts';
- const taxonGreekName=document.createElement('p');
- taxonGreekName.textContent='Греческая запись: '+taxonGreek(row[1]);
- const exact=document.createElement('p');
- exact.textContent='Сумма животного: '+taxonGreekScore(row[1])+' · Сумма имени: '+sum+
-  ' · Разница: '+Math.abs(sum-row[0]);
- const classification=document.createElement('p');
- classification.textContent='Класс: '+bestiaryGroupName(row)+
-  (row[4]?' · Отряд: '+(ORDER_RU[row[4]]||row[4]):'')+
-  ' · Семейство: '+familyDisplay(row)+
-  ' · Ранг: '+(row[2]==='subspecies'?'подвид':'вид');
- const proof=document.createElement('a');proof.href=item.photo.source;
- proof.target='_blank';proof.rel='noopener noreferrer';
- proof.textContent='Источник проверенной фотографии · iNaturalist';
- info.append(taxonGreekName,exact,classification,proof);
- details.append(toggle,info);
  if(style&&(style.diet!=='unknown'||style.habitat!=='unknown')){
   const tags=document.createElement('div');tags.className='bestiary-animal-traits';
   for(const text of [style.diet!=='unknown'?style.dietText:null,
@@ -317,7 +291,7 @@ function photoMakeCard(item,index) {
   }
   body.append(tags);
  }
- body.append(rank,name,origin,science,engraving,photoButton,photoPanel,details);
+ body.append(rank,name,science,engraving,photoButton,photoPanel);
  // The real iNaturalist photograph is revealed with photoToggleInline().
  // Never insert unrelated class/family artwork into this PHOTO-only gallery.
  li.append(top,body);
@@ -404,9 +378,9 @@ function photoDraw() {
  const summary=document.getElementById('bestiarySummary');
  if(summary){
   summary.textContent=selected.length
-   ?'Показано '+visible.length+' из '+selected.length+
-      ' подтверждённых животных'+(query?' · поиск по названию':'')
-   :'Подбираем животных с подтверждёнными фотографиями…';
+   ?'В атласе '+visible.length+' из '+selected.length+
+      ' животных'+(query?' · поиск по названию':'')
+   :'Собираем твой атлас…';
  }
  const empty=document.getElementById('bestiaryEmpty');
  if(empty)empty.hidden=visible.length!==0||selected.length===0;
