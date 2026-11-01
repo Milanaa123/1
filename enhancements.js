@@ -242,5 +242,8 @@ download=function(format){
 };
 document.addEventListener('DOMContentLoaded',()=>{
   el('groupFilter').addEventListener('change',()=>{if(results.length)render();});
-  el('printPdf').addEventListener('click',()=>{if(typeof window.printBesteriary==='function')window.printBesteriary();else window.print();});
+  el('printPdf').addEventListener('click',()=>{
+   if(typeof window.downloadBestiaryPdf==='function')void window.downloadBestiaryPdf();
+   else el('printPdf').textContent='Обнови страницу, чтобы скачать бестиарий';
+  });
 });
