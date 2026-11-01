@@ -41,7 +41,7 @@ fs.mkdirSync(artifacts,{recursive:true});
     const p=window.AnimagiaAnimalAtlas.resolve(row);
     const level=p?(p.exact===true?'exact':p.representativeLevel||'generic'):'missing';
     counts[level]++;
-    if(p&&!p.exact&&!/НЕ изображение вида|обобщённый образ/i.test(p.note))
+    if(p&&!p.exact&&!/НЕ изображение вида|НЕ анатомический рисунок вида|обобщённый образ/i.test(p.note))
      throw Error('Missing taxon provenance warning for '+row[1]);
    }
    return {score:sum,count:results.length,counts,
