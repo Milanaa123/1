@@ -22,7 +22,8 @@ function createAtlas(){
   version:2,
   genus:{
    'Arachnida|Araneae|Salticidae|Myrmarachne':[
-    'new/345_Xysticus_kochi.png','Myrmarachne source','Паук']
+    'new/345_Xysticus_kochi.png','Myrmarachne source','Паук'],
+   'Mammalia|Carnivora|Canidae|Canis':['additional/Волк.png','Canis lupus','Волк']
   },
   family:{
    'Arachnida|Araneae|Salticidae':['new/342_Neon_valentulus.png','Neon valentulus','Паук'],
@@ -30,7 +31,8 @@ function createAtlas(){
   },
   genusClass:{
    'Arachnida|Salticidae|Myrmarachne':[
-    'new/345_Xysticus_kochi.png','Myrmarachne source','Паук']
+    'new/345_Xysticus_kochi.png','Myrmarachne source','Паук'],
+   'Mammalia|Canidae|Canis':['additional/Волк.png','Canis lupus','Волк']
   },
   familyClass:{
    'Arachnida|Salticidae':['new/342_Neon_valentulus.png','Neon valentulus','Паук'],
@@ -75,7 +77,7 @@ test('wolf for other Canidae; insects never fall back to mammals',()=>{
  const {atlas}=createAtlas();
  const canid=atlas.resolve(row('Canis simensis','Mammalia','Carnivora','Canidae'));
  assert.equal(canid.file,'additional/Волк.png');
- assert.equal(canid.representativeLevel,'family');
+ assert.equal(canid.representativeLevel,'genus');
  assert.equal(canid.exact,false);
  const insect=atlas.resolve(row('Ectobius larus','Insecta','','Ectobiidae'));
  assert.equal(insect.representativeLevel,'class');
