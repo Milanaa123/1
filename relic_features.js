@@ -1257,9 +1257,13 @@
   if(trigger)trigger.disabled=!rows.length;
   const count=get('relicAnimalResults');
   if(count){
-   const shown=rows.filter(row=>atlas()?.resolve(row)).length;
-   count.textContent=rows.length+' точных совпадений · '+shown+
-    ' с готовыми золотыми рисунками. Остальные доступны через поиск.';
+   const illustrated=rows.map(row=>atlas()?.resolve(row));
+   const exact=illustrated.filter(profile=>profile?.exact===true).length;
+   const related=illustrated.filter(profile=>profile&&profile.exact!==true).length;
+   const missing=rows.length-exact-related;
+   count.textContent=rows.length+' точных совпадений по числу · '+exact+
+    ' с рисунком именно этого вида · '+related+
+    ' с изображением другого вида/общим образом · '+missing+' без рисунка.';
   }
  }
  function animalGroup(row){
@@ -1319,8 +1323,15 @@
     const common=elem('strong',label(row));
     const scientific=elem('em',row[1]);
     content.append(common,scientific);
-    const badge=elem('small',withArt?'✧ Золотой образ':'Образ готовится');
+    const badgeText=!withArt?'Рисунка нет':withArt.exact===true?
+     '✧ Рисунок этого вида':
+     withArt.representativeLevel==='genus'?'◇ Другой вид того же рода':
+     withArt.representativeLevel==='family'?'◇ Образ семейства':
+     withArt.representativeLevel==='order'?'◇ Образ отряда':
+     '◇ Обобщённый образ';
+    const badge=elem('small',badgeText);
     badge.className=withArt?'animal-chooser-art-ready':'animal-chooser-art-pending';
+    if(withArt?.note)badge.title=withArt.note;
     btn.append(content,badge);
     btn.addEventListener('click',()=>{
      picker.value=row[1]+'|'+row[2];
@@ -1457,7 +1468,8 @@
   link.hidden=true;
   if(profile){
    gallery.render(frame,profile);
-   info.textContent=profile.exact?'Золотой облик':'Художественный образ формы';
+   info.textContent=profile.exact?'Рисунок выбранного вида':
+    (profile.note||'Обобщённый художественный образ, не рисунок этого вида');
   }else{
    frame.replaceChildren(elem('span','✦'));
    info.textContent='Образ скрытой формы ещё создаётся';
