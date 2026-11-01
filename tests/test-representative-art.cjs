@@ -96,11 +96,14 @@ test('class fallback works for missing orders and subspecies',()=>{
  assert.equal(subspecies.representativeLevel,'class');
  assert.equal(subspecies.exact,false);
 });
-test('use family evidence even when the order field is empty',()=>{
+test('use genus/family evidence even when the order field is empty',()=>{
  const {atlas}=createAtlas();
  const canid=atlas.resolve(row('Canis simensis','Mammalia','','Canidae'));
- assert.equal(canid.representativeLevel,'family');
+ assert.equal(canid.representativeLevel,'genus');
  assert.equal(canid.sourceScientific,'Canis lupus');
+ const otherCanid=atlas.resolve(row('Vulpes lagopus','Mammalia','','Canidae'));
+ assert.equal(otherCanid.representativeLevel,'family');
+ assert.equal(otherCanid.sourceScientific,'Canis lupus');
 });
 test('the original generic frog is preferred across Anura, not a wrong exact portrait',()=>{
  const {atlas}=createAtlas();
