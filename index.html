@@ -235,31 +235,46 @@ body.photo-dialog-open{overflow:hidden}
 <p>Транслитерация сохраняет последовательность букв исходного английского имени по объявленным правилам. Эллинизация (например, <em>Ἁρολδός</em>) добавляет греческое окончание и потому <strong>не используется автоматически</strong>. Не путай это с современной греческой передачей английского произношения.</p>
 <p>Ударения и придыхания на число не влияют. Самостоятельно проверь выбранную запись: она определяет поиск животных.</p></details>
 </div>
-<div id="ritualFinalActions" class="ritual-final-actions"><button id="run" class="main-btn" type="submit"><span id="runLabel">Найти животных</span><span aria-hidden="true">✧</span></button></div><p class="notice" id="error" role="alert"></p></form><p class="hint privacy-note">Без сохранения имён.</p></section><aside class="glass aside magic-side" aria-label="Три шага">
- <div class="magic-side-orbit" aria-hidden="true"><span>☽</span><span>✧</span><span>✦</span></div>
- <h3>Магия начинается с имени</h3>
- <p><b>01</b> Введи полное имя по-русски или по-английски</p>
- <p><b>02</b> Исправь оригинальное написание латиницей</p>
- <p><b>03</b> Проверь греческую запись и найди форму</p>
-</aside></div><div class="sound-bar"><button type="button" id="ritualSound" class="relic-sound" aria-pressed="false">♪ Звук выключен</button><span>Небольшой магический звон — только по желанию</span></div><section class="results" id="resultPanel" hidden><div class="section-eyebrow">02 · Результат вычисления</div><h2 style="font-family:'Cormorant Garamond',serif;font-size:42px;line-height:1.1;margin:11px 0 22px">Что показали числа</h2><div class="stats"><div class="stat"><label>Число имени</label><div class="number" id="score">—</div><div class="substat" id="formula">Греческая изопсефия</div></div><div class="stat"><label>Точных совпадений</label><div class="number" id="total">—</div><div class="substat">Виды и подвиды</div></div></div><p id="empty" class="note" role="status"></p>
-<details class="glass audit-panel" id="audit"><summary><span>Проверить расчёт по буквам</span><span class="audit-arrow">⌄</span></summary>
+<div id="ritualFinalActions" class="ritual-final-actions"><button id="run" class="main-btn" type="submit"><span id="runLabel">Найти животных</span><span aria-hidden="true">✧</span></button></div><p class="notice" id="error" role="alert"></p></form><p class="hint privacy-note">Без сохранения имён.</p><div class="method-shelf" aria-label="Подробности расчёта"><details class="glass audit-panel" id="audit"><summary><span>✧ Значения букв</span><span class="audit-arrow">⌄</span></summary>
 <div id="letterBreakdown" class="audit-content"></div>
 <p class="hint">Здесь показано значение каждой буквы и итоговая сумма.</p>
-</details>
-<details class="glass quality-panel" id="qualityPanel">
- <summary><span>✧ Надёжность расчётов и происхождение данных</span><span aria-hidden="true">⌄</span></summary>
+</details><details class="glass quality-panel" id="qualityPanel">
+ <summary><span>✧ Об источниках и расчёте</span><span aria-hidden="true">⌄</span></summary>
  <div class="quality-panel-body">
   <p id="qualityAuditSummary">Отчёт о проверке индекса появится после поиска.</p>
-  <p id="qualityAuditGroups"></p>
+  <p id="qualityAuditGroups"></p><p class="hint">Каталог: <span id="catalogVersion">Catalogue of Life XR 2026-08-26</span> · <span id="catalogCount">…</span> записей</p>
   <div class="quality-facts">
    <p><strong>Что проверено:</strong> греческая сумма каждого научного названия, место записи в индексе, вид или подвид, запретные группы по принятой классификации, повторения и целостность скачанного файла SHA-256.</p>
    <p><strong>Что НЕ подтверждается автоматически:</strong> что любой вид существует сегодня, ведёт самостоятельный образ жизни и никогда не является паразитом. Для этого необходима отдельная экологическая проверка конкретного вида.</p>
    <p><strong>Источник:</strong> <a href="https://www.catalogueoflife.org/data/download" target="_blank" rel="noopener noreferrer">Catalogue of Life Extended Release, 26.08.2026</a>. Extended Release дополняет экспертную базу автоматически интегрированными источниками. Каталог может содержать неточности.</p>
    <p><strong>Метод:</strong> воспроизводимая древнегреческая буквенная схема для латинизированных научных названий. Это не исторический перевод названий животных на древнегреческий.</p>
    <p><a href="./meta.json" target="_blank" rel="noopener noreferrer">Открыть технический отчёт и контрольные суммы каталога</a></p>
+  <p class="method-source-links"><a href="https://www.catalogueoflife.org/data/download" target="_blank" rel="noopener noreferrer">Catalogue of Life</a> · <a href="https://www.gbif.org/" target="_blank" rel="noopener noreferrer">GBIF</a> · <a href="https://www.itis.gov/" target="_blank" rel="noopener noreferrer">ITIS</a> · <a href="https://www.ncbi.nlm.nih.gov/taxonomy" target="_blank" rel="noopener noreferrer">NCBI</a> · <a href="https://www.wikidata.org/" target="_blank" rel="noopener noreferrer">Wikidata</a> · <a href="https://birdnet.cornell.edu/taxonomy/download" target="_blank" rel="noopener noreferrer">BirdNET+</a></p>
   </div>
  </div>
-</details><section class="glass relic-laboratory" id="relicLaboratory" aria-labelledby="relicTitle">
+</details><details class="relic-compare" id="compareDetails">
+  <summary>✧ Сравнить записи имени</summary>
+  <p>Сравнение помогает увидеть влияние букв и окончаний. Каждое число ищет <strong>только точные совпадения</strong> по опубликованному индексу.</p>
+  <div class="compare-inputs">
+   <div><label for="compareGreekA">Вариант I</label><input id="compareGreekA" type="text" lang="el" spellcheck="false" autocomplete="off" placeholder="Ἁρολδ Φρειζερ Βραουν"/></div>
+   <div><label for="compareGreekB">Вариант II</label><input id="compareGreekB" type="text" lang="el" spellcheck="false" autocomplete="off" placeholder="Ἁρολδός Φρέιζερ Βρούν"/></div>
+  </div>
+  <button type="button" id="compareRun" class="relic-download">Сравнить точные совпадения</button>
+  <p id="compareStatus" role="status" aria-live="polite" class="relic-feedback"></p>
+  <div id="compareResult" class="compare-results" hidden>
+   <div class="compare-result-item"><span>Вариант I</span><strong id="compareScoreA">—</strong><p id="compareCountA"></p><p id="compareExamplesA"></p></div>
+   <div class="compare-result-item"><span>Вариант II</span><strong id="compareScoreB">—</strong><p id="compareCountB"></p><p id="compareExamplesB"></p></div>
+  </div>
+  <p id="compareDiff" class="compare-difference" hidden></p>
+ </details></div></section><aside class="glass aside magic-side" aria-label="Три шага">
+ <div class="magic-side-orbit" aria-hidden="true"><span>☽</span><span>✧</span><span>✦</span></div>
+ <h3>Магия начинается с имени</h3>
+ <p><b>01</b> Введи полное имя по-русски или по-английски</p>
+ <p><b>02</b> Исправь оригинальное написание латиницей</p>
+ <p><b>03</b> Проверь греческую запись и найди форму</p>
+</aside></div><div class="sound-bar"><button type="button" id="ritualSound" class="relic-sound" aria-pressed="false">♪ Звук выключен</button><span>Небольшой магический звон — только по желанию</span></div><section class="results" id="resultPanel" hidden><div class="section-eyebrow">02 · Результат вычисления</div><h2 style="font-family:'Cormorant Garamond',serif;font-size:42px;line-height:1.1;margin:11px 0 22px">Что показали числа</h2><div class="stats"><div class="stat"><label>Число имени</label><div class="number" id="score">—</div><div class="substat" id="formula">Греческая изопсефия</div></div><div class="stat"><label>Точных совпадений</label><div class="number" id="total">—</div><div class="substat">Виды и подвиды</div></div></div><p id="empty" class="note" role="status"></p>
+
+<section class="glass relic-laboratory" id="relicLaboratory" aria-labelledby="relicTitle">
  <div class="relic-ornament" aria-hidden="true">✧ · ΑΝΙΜΑΓΙΑ · ✧</div>
  <div class="section-eyebrow">04 · Артефакты анимагии</div>
  <h2 id="relicTitle">Печать скрытой формы</h2>
@@ -286,7 +301,7 @@ body.photo-dialog-open{overflow:hidden}
    <div id="relicPreviewTraits" class="relic-preview-traits" hidden aria-label="Образ жизни животного"></div>
    <div class="relic-preview-single-number" aria-label="Число точного совпадения"><span>ЧИСЛО СОВПАДЕНИЯ</span><strong id="relicPreviewNameScore">—</strong></div>
    <p class="relic-preview-note">✧ ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ ✧</p>
-   <p class="relic-card-disclaimer">ДЕКОРАТИВНАЯ ПЕЧАТЬ · НЕ ХАРАКТЕРИСТИКА ВИДА ИЛИ ЛИЧНОСТИ</p>
+   
   </div>
   <div class="relic-tools">
    <label for="animalChooserOpen">Животное на памятной карточке</label>
@@ -295,29 +310,14 @@ body.photo-dialog-open{overflow:hidden}
     <span aria-hidden="true" class="chooser-chevron">⌄</span>
    </button>
    <select id="relicAnimal" hidden aria-hidden="true" tabindex="-1"><option value="">Сначала выполни расчёт</option></select>
-   <p id="relicAnimalResults" class="relic-caption" role="status">После расчёта можно выбрать любую точную форму.</p><p id="relicArtDisclosure" class="relic-caption" role="status" aria-live="polite" hidden></p>
-   <p class="relic-caption">Изображение родственного животного — не рисунок выбранного вида. Для форм без подходящего образа печать сохранит звёздное сияние.</p>
+   <p id="relicAnimalResults" class="relic-caption" role="status">После расчёта появятся твои формы.</p><p id="relicArtDisclosure" class="relic-caption art-disclosure" role="status" aria-live="polite" hidden></p>
    <button type="button" class="relic-download" id="downloadRelic">Скачать карточку PNG <span aria-hidden="true">↓</span></button>
-   <p id="relicStatus" class="relic-feedback" role="status" aria-live="polite"></p><p class="relic-caption">PNG скачивается напрямую и сохраняет прозрачные вырезы. Отображение файла в Галерее зависит от настроек Android.</p>
+   <p id="relicStatus" class="relic-feedback" role="status" aria-live="polite"></p>
    <button type="button" class="relic-secondary" id="printRelic">Оформить бестиарий в PDF (печать)</button>
-   <p class="relic-caption">Откроется системная печать. Выбери «Сохранить как PDF». Включены только отобранные карточки; полный список — в TXT/CSV ниже.</p>
+   
   </div>
  </div>
- <details class="relic-compare" id="compareDetails">
-  <summary>✧ Сравнить два древнегреческих написания</summary>
-  <p>Сравнение помогает увидеть влияние букв и окончаний. Каждое число ищет <strong>только точные совпадения</strong> по опубликованному индексу.</p>
-  <div class="compare-inputs">
-   <div><label for="compareGreekA">Вариант I</label><input id="compareGreekA" type="text" lang="el" spellcheck="false" autocomplete="off" placeholder="Ἁρολδ Φρειζερ Βραουν"/></div>
-   <div><label for="compareGreekB">Вариант II</label><input id="compareGreekB" type="text" lang="el" spellcheck="false" autocomplete="off" placeholder="Ἁρολδός Φρέιζερ Βρούν"/></div>
-  </div>
-  <button type="button" id="compareRun" class="relic-download">Сравнить точные совпадения</button>
-  <p id="compareStatus" role="status" aria-live="polite" class="relic-feedback"></p>
-  <div id="compareResult" class="compare-results" hidden>
-   <div class="compare-result-item"><span>Вариант I</span><strong id="compareScoreA">—</strong><p id="compareCountA"></p><p id="compareExamplesA"></p></div>
-   <div class="compare-result-item"><span>Вариант II</span><strong id="compareScoreB">—</strong><p id="compareCountB"></p><p id="compareExamplesB"></p></div>
-  </div>
-  <p id="compareDiff" class="compare-difference" hidden></p>
- </details>
+ 
 </section>
 <div id="animalChooser" class="animal-chooser" hidden role="dialog" aria-modal="true" aria-labelledby="animalChooserTitle">
  <div class="animal-chooser-shade" data-chooser-dismiss></div>
@@ -328,14 +328,11 @@ body.photo-dialog-open{overflow:hidden}
   </header>
   <p class="animal-chooser-group-title">Выбери группу животных</p>
   <div id="animalChooserGroups" class="animal-chooser-groups" role="group" aria-label="Группы животных"></div>
-  <div class="animal-chooser-tabs" role="group" aria-label="Фильтр иллюстраций">
-   <button type="button" id="chooserFilterIllustrated" aria-pressed="false">✦ С иллюстрациями</button>
-   <button type="button" id="chooserFilterAll" aria-pressed="true">Все совпадения</button>
-  </div>
-  <p class="animal-chooser-count" id="animalChooserCount" aria-live="polite">Список откроется после расчёта</p><p class="fineprint" id="animalChooserArtNotice">Рисунок конкретного вида и иллюстрация другого животного того же рода, семейства или отряда — разные вещи. Для художественных образов родственных групп подпись укажет, что изображён другой вид.</p>
+  
+  <p class="animal-chooser-count" id="animalChooserCount" aria-live="polite">Твой атлас откроется после расчёта</p>
   <div id="animalChooserList" class="animal-chooser-list" role="group" aria-label="Найденные животные"></div>
   <button type="button" id="animalChooserMore" class="animal-chooser-more" hidden>Показать ещё</button>
-  <p class="animal-chooser-footnote">Золотой образ может изображать родственную группу; научное название и число относятся именно к выбранному виду.</p>
+  
  </section>
 </div>
 <div id="printRelicCover" class="print-relic-cover" aria-hidden="true">
@@ -345,14 +342,14 @@ body.photo-dialog-open{overflow:hidden}
  <p id="printRelicGreek"></p>
  <strong id="printRelicNumber"></strong>
  <p id="printRelicCount"></p>
- <p class="print-relic-method">Точное числовое совпадение по условной древнегреческой буквенной системе · Catalogue of Life Extended Release 2026-08-26</p>
+ <p class="print-relic-method">✧ Атлас твоих скрытых форм ✧</p>
 </div><div id="printRelicList" class="print-relic-list" aria-hidden="true"></div><div class="species-grid" id="previewSection" hidden><div class="glass species bestiary-volume">
 <div class="bestiary-ornament" aria-hidden="true"><span>✧</span><span>Α · Ω</span><span>✧</span></div>
 <header class="bestiary-cover">
  <div class="section-eyebrow">03 · Книга найденных форм</div>
  <h2>Волшебный бестиарий</h2>
- <p class="bestiary-lead">Только реальные животные с точным числовым совпадением. Фотографии доступны по кнопке, научные имена и расчёты можно проверить.</p>
- <div class="bestiary-vow"><span aria-hidden="true">✦</span><strong id="featuredCount">0 из 30</strong><span>подтверждённых фотографий</span></div>
+ <p class="bestiary-lead">Тридцать удивительных животных, которых открыло твоё имя. Загляни в каждую историю.</p>
+ <div class="bestiary-vow"><span aria-hidden="true">✦</span><strong id="featuredCount">0 из 30</strong><span>страниц атласа</span></div>
 </header>
 <div class="bestiary-contents" aria-label="Главы бестиария" id="bestiaryChapters"></div>
 <div class="bestiary-explore">
@@ -364,5 +361,5 @@ body.photo-dialog-open{overflow:hidden}
 <div class="bestiary-progress" aria-hidden="true"><span id="bestiaryProgressFill"></span></div>
 <ol id="preview" class="animal-list photo-grid bestiary-pages"></ol>
 <p id="bestiaryEmpty" class="bestiary-empty" hidden>В выбранной главе нет животных с этим названием. Очисти поиск или выбери другую группу.</p>
-<p class="hint photo-note">В каталоге — самостоятельные животные: млекопитающие, птицы, рептилии, земноводные, рыбы, насекомые, пауки, ракообразные и отдельные подвижные морские животные. Кораллы, полипы, губки, плоские и другие черви, известные паразитические группы и вымершие таксоны исключены по правилам каталога. Отсутствие такой отметки не является самостоятельным доказательством современного существования вида.</p></div><div class="glass download-panel" id="downloads" hidden><span class="section-eyebrow">Без ограничений</span><h3>Все животные<br>одним файлом</h3><p>Полный список точных совпадений, включая греческие названия и суммы.</p><button class="export" id="exportTxt" type="button">Скачать TXT <span>↓</span></button><button class="export secondary" id="exportCsv" type="button">Скачать CSV <span>↓</span></button>
-<button class="export secondary" id="printPdf" type="button">PDF с подборкой (печать) <span>▣</span></button><p class="fineprint">Отсутствие † в каталоге само по себе не подтверждает существование вида сегодня.</p></div></div></section><footer class="bottom"><span>Каталог: <span id="catalogVersion">Catalogue of Life XR 2026-08-26</span> · <span id="catalogCount">…</span> записей</span><span>✧ Анимагия · <a href="https://www.catalogueoflife.org/data/download" target="_blank" rel="noopener noreferrer">Catalogue of Life</a> · <a href="https://www.gbif.org/" target="_blank" rel="noopener noreferrer">GBIF</a> · <a href="https://www.itis.gov/" target="_blank" rel="noopener noreferrer">ITIS</a> · <a href="https://www.ncbi.nlm.nih.gov/taxonomy" target="_blank" rel="noopener noreferrer">NCBI</a> · <a href="https://www.wikidata.org/" target="_blank" rel="noopener noreferrer">Wikidata (CC0)</a> · <a href="https://birdnet.cornell.edu/taxonomy/download" target="_blank" rel="noopener noreferrer">BirdNET+</a> · русские названия по проверенным справочникам; CoL/GBIF CC BY 4.0</span></footer></main><script src="./greek_taxa.js?v=ancient-v2" defer></script><script src="./app.js?v=original-latin-direct-input-20261031" defer></script><script src="./ru_name_lookup.js?v=verified-gbif-russian-20261029" defer></script><script src="./enhancements.js?v=latin-name-input-20261031" defer></script><script src="./photo_gallery.js?v=original-photo-only-top30-20261102" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=original-latin-input-20261031" defer></script><script src="./greek_weights_reference.js?v=full-method-table-five-columns-20261101" defer></script><script src="./animal_atlas.js?v=stage4-ecology-20261031" defer></script><script src="./selected_art_400.js?v=fresh-art400-20261101" defer></script><script src="./new_art_167.js?v=approved-275-20261030" defer></script><script src="./new_art_125.js?v=400" defer></script><script src="./artwork_representatives_index.js?v=all-class-index-20261101" defer></script><script src="./representative_art.js?v=complete-class-art-20261101" defer></script><script src="./approved_only_cards_400.js?v=group-coverage-20261101" defer></script><script src="./relic_features.js?v=complete-group-coverage-20261101" defer></script></body></html>
+</div><div class="glass download-panel" id="downloads" hidden><span class="section-eyebrow">Без ограничений</span><h3>Все животные<br>одним файлом</h3><p>Полный список точных совпадений, включая греческие названия и суммы.</p><button class="export" id="exportTxt" type="button">Скачать TXT <span>↓</span></button><button class="export secondary" id="exportCsv" type="button">Скачать CSV <span>↓</span></button>
+<button class="export secondary" id="printPdf" type="button">PDF с подборкой (печать) <span>▣</span></button></div></div></section><footer class="bottom"><span>✧ Анимагия</span><span>Атлас скрытых форм · Выбор за тобой</span></footer></main><script src="./greek_taxa.js?v=ancient-v2" defer></script><script src="./app.js?v=original-latin-direct-input-20261031" defer></script><script src="./ru_name_lookup.js?v=verified-gbif-russian-20261029" defer></script><script src="./enhancements.js?v=latin-name-input-20261031" defer></script><script src="./photo_gallery.js?v=clean-bestiary-20261102" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=original-latin-input-20261031" defer></script><script src="./greek_weights_reference.js?v=full-method-table-five-columns-20261101" defer></script><script src="./animal_atlas.js?v=stage4-ecology-20261031" defer></script><script src="./selected_art_400.js?v=fresh-art400-20261101" defer></script><script src="./new_art_167.js?v=approved-275-20261030" defer></script><script src="./new_art_125.js?v=400" defer></script><script src="./artwork_representatives_index.js?v=all-class-index-20261101" defer></script><script src="./representative_art.js?v=complete-class-art-20261101" defer></script><script src="./approved_only_cards_400.js?v=clean-cards-20261102" defer></script><script src="./relic_features.js?v=single-chooser-clean-20261102" defer></script></body></html>
