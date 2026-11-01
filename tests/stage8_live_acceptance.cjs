@@ -152,16 +152,20 @@ async function inspectViewport(page,where){
         assert.match(image.suggestedFilename(),/Canis_lupus\.png$/);
         fs.writeFileSync(prefix+'-export.png',png);
         await page.evaluate(()=>{window.__printed=0;window.print=()=>{window.__printed++};});
-        await page.locator('#printRelic').click();
-        await page.waitForFunction(()=>window.__printed>0,null,{timeout:30000});
-        const cards=await page.locator('#printRelicList .print-relic-animal').count();
-        check(cards>=1,'Print view has no cards');
-        const pdf=await page.pdf({format:'A4',printBackground:true,preferCSSPageSize:true});
+        const [book]=await Promise.all([
+          page.waitForEvent('download',{timeout:160000}),
+          page.locator('#downloadBestiary').click()
+        ]);
+        const pdf=fs.readFileSync(await book.path());
         assert.equal(pdf.subarray(0,5).toString(),'%PDF-');
-        check(pdf.length>10000,'Generated PDF unexpectedly small');
+        assert.match(book.suggestedFilename(),/Анимагия_волшебный_бестиарий_1531_\d+\.pdf$/);
+        const pages=(pdf.toString('latin1').match(/\/Type\s*\/Page\b/g)||[]).length;
+        check(pages>=2,'Downloaded bestiary has no illustrated animal pages');
+        check(pdf.length>60000,'Downloaded bestiary is too small to contain its illustrations');
+        check(await page.evaluate(()=>window.__printed)===0,'Direct PDF download must never open print');
         fs.writeFileSync(prefix+'-bestiary.pdf',pdf);
-        output('live wolf PNG and print PDF',{score:wolf.score,matching:wolf.matching,
-          pngBytes:png.length,pdfBytes:pdf.length,printCards:cards,download:image.suggestedFilename()});
+        output('live wolf PNG and direct illustrated PDF',{score:wolf.score,matching:wolf.matching,
+          pngBytes:png.length,pdfBytes:pdf.length,pages,download:book.suggestedFilename()});
         await page.locator('#name').fill('Fraser5 Brown');
         check(await page.locator('#resultPanel').isHidden(),'Editing the name should clear stale results');
         output('invalid input reset',{reset:true});
