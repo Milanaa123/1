@@ -12,7 +12,7 @@ loadPhotos=function(){
    continue;
   }
   const image=document.createElement('img');
-  image.src='./art/animagia-selected-107/'+p.file.split('/').map(encodeURIComponent).join('/');
+  image.src='./art/animagia-original-400/'+p.file.split('/').map(encodeURIComponent).join('/');
   image.alt='Золотой рисунок '+p.name;
   image.loading='lazy';
   image.decoding='async';
