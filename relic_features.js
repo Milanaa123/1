@@ -1448,14 +1448,13 @@
   if(disclosure){
    disclosure.hidden=!profile||profile.exact===true;
    disclosure.textContent=profile&&profile.exact!==true?
-    (profile.note||'Обобщённый рисунок родственной группы, не изображение выбранного вида'):'';
+    '✧ Образ родственной группы':'';
   }
   updateEcology(profile,row);
   link.hidden=true;
   if(profile){
    gallery.render(frame,profile);
-   info.textContent=profile.exact?'Рисунок выбранного вида':
-    (profile.note||'Обобщённый художественный образ, не рисунок этого вида');
+   info.textContent=profile.exact?'✧ Золотой рисунок':'✧ Образ группы';
   }else{
    frame.replaceChildren(elem('span','✦'));
    info.textContent='Образ скрытой формы ещё создаётся';
@@ -1513,9 +1512,7 @@
    let artNote='';
    if(sprite&&profile){
     gallery.drawCanvas(ctx,sprite,profile,205,760,790,570);
-    artNote=profile.exact===true?'':profile.sourceScientific?
-     'Иллюстрация другого вида: '+profile.sourceScientific:
-     'Обобщённый образ группы · не рисунок выбранного вида';
+    artNote=profile.exact===true?'':'✧ Образ родственной группы ✧';
    }else{
     // A quiet celestial mark is better than a biologically wrong silhouette.
     ctx.save();
@@ -1526,7 +1523,7 @@
     ctx.fillStyle='#E6C48D';ctx.globalAlpha=.9;
     ctx.font='58px Georgia,serif';ctx.fillText('✧',600,1106);
     ctx.restore();
-    artNote='Образ скрытой формы ещё создаётся';
+    artNote='✧ Атлас скрытых форм ✧';
    }
    ctx.fillStyle='#BDAAC3';ctx.font='17px Georgia,serif';ctx.textAlign='center';
    if(artNote)centered(ctx,artNote,1324,960,'17px Georgia,serif',1);
@@ -1581,7 +1578,7 @@
    ctx.fillStyle='#C9B0A0';ctx.font='17px Georgia,serif';
    ctx.fillText('✧ ТОЧНОЕ ЧИСЛОВОЕ СОВПАДЕНИЕ ✧',600,1868);
    ctx.fillStyle='#bda68d';ctx.font='15px Georgia,serif';
-   ctx.fillText('ДЕКОРАТИВНАЯ ПЕЧАТЬ · НЕ ХАРАКТЕРИСТИКА ВИДА ИЛИ ЛИЧНОСТИ',600,1931);
+   ctx.fillText('✧  А Т Л А С   С К Р Ы Т Ы Х   Ф О Р М  ✧',600,1931);
    paintDietAdornment(ctx,row,styl,greek);
 
  }
@@ -1637,7 +1634,7 @@
    status.textContent='Сначала выполни поиск точных совпадений.';return;
   }
   try{
-   status.textContent='Создаём PNG с прозрачной рамкой…';
+   status.textContent='Создаём твою карточку…';
    if(!await composeScreenCard(row))throw Error('Карточка не готова: проверь загрузку рисунка и повтори сохранение.');
    const canvas=get('relicCardBackdrop');
    const blob=await new Promise((resolve,reject)=>{
@@ -1649,7 +1646,7 @@
    link.href=url;link.download=filename;
    document.body.append(link);link.click();link.remove();
    setTimeout(()=>URL.revokeObjectURL(url),15000);
-   status.textContent='Карточка PNG скачана; декоративные вырезы остаются прозрачными.';
+   status.textContent='✧ Карточка сохранена';
   }catch(error){status.textContent='Не удалось сохранить карточку: '+error.message;}
  }
 
@@ -1699,7 +1696,7 @@
    difference.textContent='Разница сумм: '+Math.abs(a.number-b.number)+
      (a.number===b.number?' — числа одинаковые, даже если запись отличается.':' — это разные поиски.');
    box.hidden=false;difference.hidden=false;
-   status.textContent='Сравнение завершено, проверка SHA-256 пройдена.';
+   status.textContent='✧ Сравнение готово';
   }catch(err){status.textContent='Ошибка сравнения: '+err.message;}
   finally{btn.disabled=false;}
  }
@@ -1737,8 +1734,7 @@
       nature.habitat!=='unknown'?nature.habitatText:null,...nature.secondaryText].filter(Boolean);
     if(labels.length)art.append(elem('p',labels.join(' · ')));
    }
-   art.append(elem('p','Греческая запись: '+taxonGreek(r[1])));
-   art.append(elem('strong','Сумма '+r[0]+' · разница 0'));
+   art.append(elem('strong','✧ '+r[0]+' ✧'));
    frag.append(art);
   }
   list.replaceChildren(frag);
@@ -1801,7 +1797,7 @@
     get('sealCaption').textContent='Печать появится после расчёта';
    }else{
     if(previous!==sum+'|'+get('greek').value){decorateSVG(svg,sum,get('greek').value);previous=sum+'|'+get('greek').value;}
-    get('sealCaption').textContent='Число '+sum+' · декоративная магическая печать';
+    get('sealCaption').textContent='✧ Печать числа '+sum;
     updatePicker(picker);
     syncSilhouette(picker);
    }
