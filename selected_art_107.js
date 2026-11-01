@@ -148,7 +148,7 @@
   [164,'Nautilus pompilius'],[166,'Asterias rubens'],
   [167,'Echinus esculentus'],[168,'Holothuria tubulosa']
  ]);
- const directory='./art/animagia-selected-107/';
+ const directory='./art/animagia-original-400/';
  const cache=new Map();
  function profileFor(row){
   if(!row||row[2]!=='species'||typeof row[1]!=='string')return null;
