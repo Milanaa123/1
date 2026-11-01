@@ -27,7 +27,8 @@ const NAME_CYR_TO_LAT={
  'ю':'yu','я':'ya'
 };
 function sourceNameIsLatin(raw){
- const name=raw.trim();
+ // Accept a genuinely Latin-script original, including accented letters.
+ const name=raw.trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
  return /^[A-Za-z\s'’\-]+$/.test(name) && /[A-Za-z]{2,}/.test(name);
 }
 function validSourceName(raw){
@@ -35,12 +36,32 @@ function validSourceName(raw){
  return sourceNameIsLatin(name) ||
    (/^[А-Яа-яЁё\s'’\-]+$/.test(name) && /[А-Яа-яЁё]{2,}/.test(name));
 }
+// Canonical Latin spellings explicitly provided for characters in this
+// project. This is NOT a universal phonetic translator: arbitrary Cyrillic
+// names still use ordinary romanisation, and the Latin field stays editable.
+const KNOWN_ENGLISH_NAMES=Object.freeze({
+ 'фрейзер':'Fraser','гарольд':'Harold','браун':'Brown',
+ 'элла':'Ella','мария':'Maria','уиллоу':'Willow',
+ 'кристофер':'Christopher','джек':'Jack','кристалл':'Crystal',
+ 'джереми':'Jeremy','адриан':'Adrian','джонс':'Jones',
+ 'адалин':'Adalin','лойвелл':'Loyvell','крэбб':'Crabb',
+ 'хилари':'Hilary','юта':'Yuta','эмрис':'Emrys',
+ 'фрона':'Frona','флетчер':'Fletcher',
+ 'вейн':'Wayne','нэттл':'Nettle','фаукс':'Faux',
+ 'астрид':'Astrid','авель':'Avel','лавгуд':'Lovegood',
+ 'аматэус':'Amateus','креон':'Creon',
+ 'вивиан':'Vivian','флоренс':'Florence','руквуд':'Rookwood',
+ 'элизабет':'Elizabeth','агнесс':'Agness','флэтворти':'Flatworthy',
+ 'май':'Mai','иордекэску':'Iordăchescu',
+ 'илайн':'Elaine','эли':'Eli','нельсон':'Nelson'
+});
 function nameLatin(raw){
- // Never run Cyrillic-to-Latin guessing on an already correctly spelled
- // original English/Latin name. Keep capitalization, apostrophes, hyphens.
+ // Preserve an already-written Latin original exactly, apart from spacing.
  if(sourceNameIsLatin(raw))return raw.trim().replace(/\s+/g,' ');
  return raw.trim().replace(/[А-Яа-яЁё]+/g,token=>{
-  const letters=[...token.toLowerCase()].map(c=>NAME_CYR_TO_LAT[c]).join('');
+  const word=token.toLowerCase();
+  if(Object.hasOwn(KNOWN_ENGLISH_NAMES,word))return KNOWN_ENGLISH_NAMES[word];
+  const letters=[...word].map(c=>NAME_CYR_TO_LAT[c]||'').join('');
   return letters.slice(0,1).toUpperCase()+letters.slice(1);
  }).replace(/\s+/g,' ');
 }
@@ -71,7 +92,10 @@ const GREEK_BREATHING={
  rough:{α:'ἁ',ε:'ἑ',η:'ἡ',ι:'ἱ',ο:'ὁ',υ:'ὑ',ω:'ὡ'}
 };
 function nameGreekFromLatin(raw){
- return raw.trim().replace(/[A-Za-z]+(?:-[A-Za-z]+)*/g,token=>{
+ // Latin diacritics belong to the name spelling, not to a separate Greek
+ // numerical value. Retain the original in the Latin field.
+ return raw.trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+  .replace(/[A-Za-z]+(?:-[A-Za-z]+)*/g,token=>{
   const greek=token.toLowerCase().split('-').map(word=>{
    let i=0,out='';
    const rough=/^h[aeiouy]/.test(word);
@@ -101,14 +125,8 @@ function nameGreekFromLatin(raw){
  }).replace(/\s+/g,' ');
 }
 function validLatinName(raw){
- return !!raw.trim() && /^[A-Za-z\s'’\-]+$/.test(raw);
-}
-// Cyrillic spelling alone cannot identify the original Latin spelling.
-// Do not silently accept a guess and treat its numeric sum as definitive.
-function latinNeedsConfirmation(raw){return /[А-Яа-яЁё]/.test(raw);}
-function sourceLatinConfirmed(){
- return !latinNeedsConfirmation(el('name').value) ||
-  el('latinOriginalConfirmed')?.checked === true;
+ const text=raw.trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ return !!text && /^[A-Za-z\s'’\-]+$/.test(text);
 }
 function validGreek(raw){return !!raw.trim()&&[...norm(raw)].every(c=>W[c]!==undefined||/^[\s'’\-]$/.test(c));}
 function breakdown(raw){return raw.trim().split(/\s+/).map(word=>word+' ('+score(word)+')').join(' + ');}
@@ -352,39 +370,25 @@ function featured(rows){
 }
 function render(){el('preview').replaceChildren();let f=document.createDocumentFragment();for(let [i,r] of featured(results).entries()){let li=document.createElement('li'),no=document.createElement('span'),body=document.createElement('span'),name=document.createElement('span'),small=document.createElement('small');li.className='species-row';no.className='idx';no.textContent=String(i+1).padStart(2,'0');name.className='animal-name';name.textContent=display(r);small.textContent=r[1]+(r[2]==='subspecies'?' · подвид':'')+' · '+familyDisplay(r)+(r[5]?' · '+status(r):'');body.append(name,small);li.append(no,body);f.append(li);}el('preview').append(f);el('featuredCount').textContent=featured(results).length+' из '+results.length+' точных совпадений';el('previewSection').hidden=!results.length;el('downloads').hidden=!results.length;el('empty').textContent=results.length?'':'Совпадений с разницей 0 не найдено. Попробуйте изменить греческую транскрипцию.';}
 function reset(){serial++;el('resultPanel').hidden=true;el('previewSection').hidden=true;el('downloads').hidden=true;el('run').disabled=false;el('runLabel').textContent='Найти животных';results=[];sum=null;}
-async function run(){let greek=el('greek').value.trim();if(!sourceLatinConfirmed()){reset();el('error').textContent='Проверь исходное написание латиницей на шаге 2 и поставь отметку подтверждения. От него зависит число имени.';return;}if(!validSourceName(el('name').value)||!validGreek(greek)){reset();el('error').textContent='Введи имя на русском или английском и проверь греческие буквы.';return;}let n=score(greek),id=++serial;if(!n){reset();el('error').textContent='Не удалось вычислить число имени. Проверь греческую запись.';return;}el('run').disabled=true;el('runLabel').textContent='Проверяю каталог…';el('error').textContent='';try{let bid=Math.floor(n/25);if(meta&&!meta.available_buckets.includes(bid)){results=[];}else{let response=await fetch('./data/'+bid+'.json');if(!response.ok)throw Error('Архив результатов пока недоступен');let data=await response.json();if(id!==serial)return;results=data.filter(r=>r[0]===n);}sum=n;el('score').textContent=n.toLocaleString('ru-RU');el('total').textContent=results.length.toLocaleString('ru-RU');el('formula').textContent=breakdown(greek)+' · разница 0';el('resultPanel').hidden=false;render();el('resultPanel').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){el('error').textContent='Ошибка загрузки каталога: '+e.message;reset();}finally{if(id===serial){el('run').disabled=false;el('runLabel').textContent='Найти животных';}}}
+async function run(){let greek=el('greek').value.trim();if(!validSourceName(el('name').value)||!validGreek(greek)){reset();el('error').textContent='Введи имя на русском или английском и проверь греческие буквы.';return;}let n=score(greek),id=++serial;if(!n){reset();el('error').textContent='Не удалось вычислить число имени. Проверь греческую запись.';return;}el('run').disabled=true;el('runLabel').textContent='Проверяю каталог…';el('error').textContent='';try{let bid=Math.floor(n/25);if(meta&&!meta.available_buckets.includes(bid)){results=[];}else{let response=await fetch('./data/'+bid+'.json');if(!response.ok)throw Error('Архив результатов пока недоступен');let data=await response.json();if(id!==serial)return;results=data.filter(r=>r[0]===n);}sum=n;el('score').textContent=n.toLocaleString('ru-RU');el('total').textContent=results.length.toLocaleString('ru-RU');el('formula').textContent=breakdown(greek)+' · разница 0';el('resultPanel').hidden=false;render();el('resultPanel').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){el('error').textContent='Ошибка загрузки каталога: '+e.message;reset();}finally{if(id===serial){el('run').disabled=false;el('runLabel').textContent='Найти животных';}}}
 function csv(x){let s=String(x||'');return /[;\n"]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}
 function download(type){if(!results.length)return;let lines=results.map(r=>[category(r),display(r),r[1],RANK[r[2]]||r[2],r[0],status(r),r[3],r[4],r[6],r[7]||'',r[8]||'',verifiedRussianName(r)]);let content=type==='csv'?[[ 'Группа','Русское название','Научное название','Ранг','Сумма','Статус','Класс','Отряд','Тип','Семейство (лат.)','Семейство (рус.)','Русское название вида (проверенное)'],...lines].map(row=>row.map(csv).join(';')).join('\r\n'):[ 'Имя: '+el('name').value,'Греческая запись: '+el('greek').value,'Число: '+sum,'Совпадений: '+results.length,'Источник: Catalogue of Life XR 2026-08-26','',...results.map((r,i)=>(i+1)+'. '+display(r)+' ['+r[1]+'] · '+(RANK[r[2]]||r[2])+(r[5]?' · '+status(r):'')+' · '+familyDisplay(r))].join('\n');let url=URL.createObjectURL(new Blob(['\ufeff'+content],{type:type==='csv'?'text/csv;charset=utf-8':'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='Анимагия_'+sum+'_все_'+results.length+'.'+type;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);}
 document.addEventListener('DOMContentLoaded',()=>{
  const input=el('name'),latin=el('latin'),greek=el('greek');
- const confirm=el('latinOriginalConfirmed');
- const confirmRow=el('latinOriginalConfirmRow');
- const updateLatinNotice=()=>{
-  const needs=latinNeedsConfirmation(input.value);
-  if(confirmRow)confirmRow.hidden=!needs;
-  if(confirm&&!needs)confirm.checked=true;
- };
- // Only the person entering the name can confirm a proposed Latin spelling.
- // Nothing about this confirmation is persisted.
+ // Editing upstream restarts the chain; Greek can always be corrected manually.
  input.addEventListener('input',()=>{
   latin.value=nameLatin(input.value);
   greek.value=nameGreekFromLatin(latin.value);
-  if(confirm)confirm.checked=!latinNeedsConfirmation(input.value);
-  updateLatinNotice();
   reset();
  });
  latin.addEventListener('input',()=>{
   greek.value=nameGreekFromLatin(latin.value);
-  if(confirm&&latinNeedsConfirmation(input.value))confirm.checked=false;
   reset();
  });
- confirm?.addEventListener('change',reset);
  greek.addEventListener('input',reset);
  el('resetLatin').addEventListener('click',()=>{
   latin.value=nameLatin(input.value);
   greek.value=nameGreekFromLatin(latin.value);
-  if(confirm)confirm.checked=!latinNeedsConfirmation(input.value);
-  updateLatinNotice();
   reset();
  });
  el('resetGreek').addEventListener('click',()=>{
@@ -392,7 +396,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   reset();
  });
  el('form').addEventListener('submit',e=>{e.preventDefault();run();});
- updateLatinNotice();
  el('exportTxt').addEventListener('click',()=>download('txt'));
  el('exportCsv').addEventListener('click',()=>download('csv'));
  fetch('./meta.json').then(r=>{if(!r.ok)throw Error('meta');return r.json()})
