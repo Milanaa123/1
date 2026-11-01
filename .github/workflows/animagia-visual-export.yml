@@ -6,6 +6,7 @@ on:
     paths:
       - tests/visual_export_smoke.cjs
       - tests/stage8_live_acceptance.cjs
+      - tests/representative_art_live_1878.cjs
       - .github/workflows/animagia-visual-export.yml
 permissions:
   contents: read
@@ -26,6 +27,8 @@ jobs:
         run: node tests/visual_export_smoke.cjs
       - name: Stage 8 live Render desktop and mobile end-to-end acceptance
         run: node tests/stage8_live_acceptance.cjs
+      - name: Verify real 550 matches and related artwork labels on mobile
+        run: node tests/representative_art_live_1878.cjs
       - name: Preserve QA captures
         if: always()
         uses: actions/upload-artifact@v4
@@ -34,4 +37,5 @@ jobs:
           path: |
             qa-artifacts/browser-export/
             qa-artifacts/stage8-live/
+            qa-artifacts/illustrated-1878/
           if-no-files-found: ignore
