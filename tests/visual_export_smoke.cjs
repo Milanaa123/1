@@ -91,6 +91,16 @@ const listen=()=>new Promise(ok=>server.listen(0,'127.0.0.1',ok));
  assert.equal(secondaryPdf.subarray(0,5).toString(),'%PDF-');
  assert.equal(await page.evaluate(()=>window.__printed),0,'Bottom PDF button must not print either');
  await page.setViewportSize({width:390,height:844});
+ await page.locator('#downloadBestiary').scrollIntoViewIfNeeded();
+ const mobileDownload=page.waitForEvent('download',{timeout:60000});
+ await page.locator('#downloadBestiary').click();
+ const mobileBook=await mobileDownload;
+ const mobilePdf=fs.readFileSync(await mobileBook.path());
+ assert.equal(mobilePdf.subarray(0,5).toString(),'%PDF-');
+ assert.equal((mobilePdf.toString('latin1').match(/\/Type\s*\/Page\b/g)||[]).length,2);
+ assert.equal(await page.evaluate(()=>window.__printed),0,
+  'Android-width PDF download must never invoke print');
+ fs.writeFileSync(path.join(out,'mobile-download-bestiary.pdf'),mobilePdf);
  await page.screenshot({path:path.join(out,'mobile-preview.png'),fullPage:true});
  const mobile=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth}));
  assert(mobile.scroll<=mobile.client+2,'Horizontal page overflow: '+JSON.stringify(mobile));
