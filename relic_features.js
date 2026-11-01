@@ -40,10 +40,73 @@
    typeof sum==='number'?results.filter(r=>Array.isArray(r)&&r.length>=7&&r[0]===sum):[];
  const chosenRows=()=>{
   const rows=safeRows();
+  if(rows.length<=1)return rows;
+  // A magical book must not contain 30 identical generic frogs just because
+  // the verified photo TOP-30 has not finished loading yet. Choose up to 30
+  // visually distinct gold illustrations and diverse zoological classes,
+  // including the species selected on the personal card. The on-screen
+  // TOP-30 photo gallery is untouched.
+  const gallery=atlas(),valid=new Map(rows.map(r=>[r[1]+'|'+r[2],r]));
   const known=typeof photoGallery!=='undefined'&&photoGallery&&
     Array.isArray(photoGallery.chosen)?photoGallery.chosen.map(x=>x.row)
-       .filter(x=>rows.some(r=>r[1]===x[1]&&r[2]===x[2])):[];
-  return (known.length?known:rows).slice(0,30);
+     .filter(r=>valid.has(r[1]+'|'+r[2])):[];
+  const photos=new Set(known.map(r=>r[1]+'|'+r[2]));
+  const pinned=get('relicAnimal')?.value;
+  const byClass=new Map();
+  const art=new Map();
+  for(const row of rows){
+   const key=row[1]+'|'+row[2];
+   const profile=gallery?.resolve(row);
+   art.set(key,profile?.file||'');
+   const cls=row[3]||'Другие животные';
+   if(!byClass.has(cls))byClass.set(cls,[]);
+   byClass.get(cls).push(row);
+  }
+  const priority=(r)=>{
+   const key=r[1]+'|'+r[2],prof=gallery?.resolve(r);
+   return (photos.has(key)?1000:0)+
+    (typeof r[9]==='string'&&r[9].trim()?110:0)+
+    (prof?.exact===true?50:0)+(r[2]==='species'?10:0);
+  };
+  for(const list of byClass.values())list.sort((a,b)=>
+   priority(b)-priority(a)||a[1].localeCompare(b[1]));
+  const order=['Mammalia','Aves','Reptilia','Amphibia',
+   'Teleostei','Chondrostei','Elasmobranchii','Holocephali',
+   'Malacostraca','Cephalopoda','Asteroidea','Ophiuroidea',
+   'Echinoidea','Holothuroidea','Polyplacophora','Arachnida','Insecta'];
+  const groups=[...byClass.keys()].sort((a,b)=>{
+   const ai=order.indexOf(a),bi=order.indexOf(b);
+   return (ai<0?999:ai)-(bi<0?999:bi)||a.localeCompare(b);
+  });
+  const selected=[],names=new Set(),images=new Set();
+  const accept=(row,uniqueImage)=>{
+   const key=row[1]+'|'+row[2],file=art.get(key);
+   if(names.has(key)||(uniqueImage&&(!file||images.has(file))))return false;
+   names.add(key);if(file)images.add(file);selected.push(row);return true;
+  };
+  if(pinned&&valid.has(pinned))accept(valid.get(pinned),false);
+  // First pass: rotate through classes while preserving distinct images.
+  for(let round=0;round<30&&selected.length<30;round++){
+   let added=0;
+   for(const group of groups){
+    if(selected.length>=30)break;
+    const row=byClass.get(group).find(r=>
+     !names.has(r[1]+'|'+r[2])&&
+     art.get(r[1]+'|'+r[2])&&!images.has(art.get(r[1]+'|'+r[2])));
+    if(row&&accept(row,true))added++;
+   }
+   if(!added)break;
+  }
+  // In a tiny/rare result, preserve the 30-book capacity without hiding
+  // legitimately matched species simply because they share one image.
+  for(const group of groups){
+   if(selected.length>=30)break;
+   for(const row of byClass.get(group)){
+    if(selected.length>=30)break;
+    accept(row,false);
+   }
+  }
+  return selected;
  };
  const label=r=>(typeof display==='function'?display(r):r[1]);
  function decorateSVG(svg,n,greekName){
