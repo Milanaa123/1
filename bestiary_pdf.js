@@ -194,14 +194,14 @@
   arcaneMoon(ctx,cx,cy,27);ctx.restore();
  }
  async function entry(ctx,row,index,top,resolve,nameOf){
-  const x=91,w=818,h=344;
+  const x=91,w=818,h=306;
   frame(ctx,x,top,w,h,21,'#262335','#b99b6dbb');
   frame(ctx,x+10,top+10,w-20,h-20,15,'#191b2abd','#8a735953');
   // Illuminated parchment label inset stays behind image and Latin name.
   const g=ctx.createLinearGradient(x,top,x+w,top+h);
   g.addColorStop(0,'#41304a7a');g.addColorStop(.45,'#1e233200');g.addColorStop(1,'#41314f45');
   frame(ctx,x+11,top+11,w-22,h-22,14,g,null);
-  const artX=x+28,artY=top+35,artW=258,artH=265;
+  const artX=x+28,artY=top+31,artW=255,artH=231;
   frame(ctx,artX,artY,artW,artH,12,'#121927','#b18d5f70');
   const imageBg=ctx.createRadialGradient(artX+artW/2,artY+artH/2,30,artX+artW/2,artY+artH/2,170);
   imageBg.addColorStop(0,'#47344e');imageBg.addColorStop(1,'#15182a');
@@ -212,16 +212,16 @@
    if(!asset||!drawImage(ctx,asset.image,artX+15,artY+17,artW-30,artH-34))
     placeholder(ctx,artX,artY,artW,artH);
   }finally{asset?.dispose?.()}
-  const tx=x+323,maxWidth=460;
-  text(ctx,'✧  С Т Р А Н И Ц А  '+String(index+1).padStart(2,'0'),tx,top+64,18,'#bc9b6d','left',false,true);
+  const tx=x+317,maxWidth=460;
+  text(ctx,'✧  С Т Р А Н И Ц А  '+String(index+1).padStart(2,'0'),tx,top+57,18,'#bc9b6d','left',false,true);
   const label=String(nameOf(row)||row[1]);
-  fit(ctx,label,tx,top+124,maxWidth,48,25,'#f6dbad');
-  multiline(ctx,row[1],tx,top+168,maxWidth-6,25,33,2,'#c9b9d4',true);
-  line(ctx,tx,top+208,tx+maxWidth-15,top+208,1,.57);
-  text(ctx,NATURE[row[3]]||'Животный мир',tx,top+241,20,GOLD,'left',false);
+  fit(ctx,label,tx,top+105,maxWidth,47,24,'#f6dbad');
+  multiline(ctx,row[1],tx,top+151,maxWidth-6,24,30,2,'#c9b9d4',true);
+  line(ctx,tx,top+188,tx+maxWidth-15,top+188,1,.57);
+  text(ctx,NATURE[row[3]]||'Животный мир',tx,top+221,20,GOLD,'left',false);
   const rank=row[2]==='subspecies'?'Подвид':'Вид';
-  text(ctx,'✧  '+rank+(profile&&!profile.exact?' · Образ группы':''),tx,top+281,18,'#bdb0c9','left',false);
-  text(ctx,String(row[0]),x+w-33,top+320,32,'#f0d19c','right',true,true);
+  text(ctx,'✧  '+rank+(profile&&!profile.exact?' · Образ группы':''),tx,top+260,18,'#bdb0c9','left',false);
+  text(ctx,String(row[0]),x+w-33,top+283,31,'#f0d19c','right',true,true);
   star(ctx,x+w-26,top+29,7);
  }
  async function innerPage(ctx,rows,start,totalCount,score,nameOf,resolve,page,totalPages){
@@ -230,7 +230,7 @@
   text(ctx,'ЛЕТОПИСЬ СКРЫТЫХ ФОРМ',500,176,49,'#f6deaf','center',true,true);
   star(ctx,500,207,9);line(ctx,138,207,473,207,1,.7);line(ctx,527,207,862,207,1,.7);
   text(ctx,'ИЗБРАННЫЕ СОЗДАНИЯ · '+String(start+1)+'–'+String(start+rows.length),500,250,21,'#d8c2ce','center',false);
-  for(const [i,row] of rows.entries())await entry(ctx,row,start+i,285+i*368,resolve,nameOf);
+  for(const [i,row] of rows.entries())await entry(ctx,row,start+i,276+i*330,resolve,nameOf);
   footer(ctx,page,totalPages,score);
  }
  function jpegOf(canvas){
