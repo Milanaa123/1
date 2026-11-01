@@ -11,7 +11,7 @@ jobs:
   artwork:
     name: Verify user archives and publish original PNGs
     runs-on: ubuntu-24.04
-    timeout-minutes: 37
+    timeout-minutes: 38
     steps:
       - uses: actions/checkout@v4
         with:
