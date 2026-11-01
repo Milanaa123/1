@@ -1328,6 +1328,7 @@
      withArt.representativeLevel==='genus'?'◇ Другой вид того же рода':
      withArt.representativeLevel==='family'?'◇ Образ семейства':
      withArt.representativeLevel==='order'?'◇ Образ отряда':
+     withArt.representativeLevel==='class'?'◇ Образ класса':
      '◇ Обобщённый образ';
     const badge=elem('small',badgeText);
     badge.className=withArt?'animal-chooser-art-ready':'animal-chooser-art-pending';
