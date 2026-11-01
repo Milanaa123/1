@@ -13,12 +13,14 @@ loadPhotos=function(){
   }
   const image=document.createElement('img');
   image.src='./art/animagia-original-400/'+p.file.split('/').map(encodeURIComponent).join('/');
-  image.alt='Золотой рисунок '+p.name;
+  image.alt=p.exact===true?'Рисунок вида '+p.scientific:
+   'Художественный рисунок '+(p.sourceScientific||p.name)+' (не изображение вида '+item.row[1]+')';
   image.loading='lazy';
   image.decoding='async';
   image.style.objectFit='contain';
   image.onerror=()=>{image.remove();item.credit.textContent='Рисунок недоступен';};
   item.media.append(image);
-  item.credit.textContent='Оригинальный проверенный PNG';
+  item.credit.textContent=p.exact===true?'Оригинальный рисунок этого вида':
+   'Иллюстрация другого вида/общий образ: '+(p.sourceScientific||p.name);
  }
 };
