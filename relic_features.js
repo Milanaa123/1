@@ -1700,47 +1700,46 @@
   }catch(err){status.textContent='Ошибка сравнения: '+err.message;}
   finally{btn.disabled=false;}
  }
- async function printBooklet(status){
-  if(!safeRows().length||!validGreek(get('greek').value)||score(get('greek').value)!==sum){
-   status.textContent='Сначала найди точные совпадения.';return;
+ async function downloadBooklet(status){
+  const bookStatus=get('bookletStatus')||status;
+  const greek=get('greek').value.trim();
+  if(!safeRows().length||!validGreek(greek)||score(greek)!==sum){
+   bookStatus.textContent='Сначала выполни расчёт, чтобы открыть свой бестиарий.';
+   return;
   }
-  status.textContent='Составляем золотой бестиарий…';
-  const gallery=atlas();
-  const cards=chosenRows(),list=get('printRelicList'),frag=document.createDocumentFragment();
-  get('printRelicName').textContent='Имя: '+get('name').value.trim();
-  get('printRelicGreek').textContent='Греческая запись: '+get('greek').value.trim();
-  get('printRelicNumber').textContent=String(sum);
-  get('printRelicCount').textContent='Всего точных совпадений: '+safeRows().length+
-    ' · Карточек в бестиарии: '+cards.length;
-  for(const [i,r] of cards.entries()){
-   const art=elem('article');art.className='print-relic-animal';
-   art.append(elem('span','✧ '+String(i+1).padStart(2,'0')));
-   const illustration=atlas()?.resolve(r);
-   const image=illustration?await gallery.drawable(illustration):null;
-   if(illustration&&image){
-    const windowArt=elem('canvas');windowArt.className='print-art-cell';
-    windowArt.width=400;windowArt.height=330;
-    windowArt.setAttribute('role','img');
-    windowArt.setAttribute('aria-label','Золотой образ '+r[1]);
-    gallery.drawCanvas(windowArt.getContext('2d'),image,illustration,0,0,400,330);
-    art.append(windowArt);
-   }
-   art.append(elem('h3',label(r)));
-   art.append(elem('p',r[1]+' · '+(r[2]==='subspecies'?'подвид':'вид')));
-   if(gallery){
-    // Verified ecology exists independently of whether the animal has art.
-    const nature=gallery.style(gallery.classify(r));
-    const labels=[nature.diet!=='unknown'?nature.dietText:null,
-      nature.habitat!=='unknown'?nature.habitatText:null,...nature.secondaryText].filter(Boolean);
-    if(labels.length)art.append(elem('p',labels.join(' · ')));
-   }
-   art.append(elem('strong','✧ '+r[0]+' ✧'));
-   frag.append(art);
+  if(!window.AnimagiaBookPDF?.download){
+   bookStatus.textContent='Не удалось открыть книгу. Обнови страницу и попробуй ещё раз.';
+   return;
   }
-  list.replaceChildren(frag);
-  status.textContent='В печати выбери «Сохранить как PDF».';
-  window.print();
+  const rows=chosenRows(),mainButton=get('downloadBestiary'),otherButton=get('printPdf');
+  if(!rows.length){
+   bookStatus.textContent='Для этой записи пока нет страниц. Попробуй другое имя.';
+   return;
+  }
+  mainButton.disabled=true;
+  if(otherButton)otherButton.disabled=true;
+  bookStatus.textContent='✧ Пробуждаем страницы волшебного атласа…';
+  try{
+   const out=await window.AnimagiaBookPDF.download({
+    rows,name:get('name').value.trim(),greek,
+    score:sum,nameOf:label,
+    resolve:row=>atlas()?.resolve(row)||null,
+    onProgress:(done,total)=>{
+     bookStatus.textContent='✧ Создаём книгу: '+done+' из '+total+' страниц';
+    }
+   });
+   bookStatus.textContent='✧ Бестиарий скачан: '+out.pages+
+    ' страниц, '+out.animals+' животных.';
+  }catch(error){
+   bookStatus.textContent='Не удалось скачать книгу: '+error.message;
+  }finally{
+   const ok=!get('resultPanel').hidden&&safeRows().length>0&&
+    score(get('greek').value.trim())===sum;
+   mainButton.disabled=!ok;
+   if(otherButton)otherButton.disabled=!ok;
+  }
  }
+
  function installSound(){
   const button=get('ritualSound'),panel=get('resultPanel'),number=get('score');
   let enabled=false,awaiting=false,ctx=null;
@@ -1783,7 +1782,24 @@
   function update(){
    const ok=!get('resultPanel').hidden&&safeRows().length>0&&
      score(get('greek').value.trim())===sum;
-   get('downloadRelic').disabled=!ok;get('printRelic').disabled=!ok;
+   get('downloadRelic').disabled=!ok;get('downloadBestiary').disabled=!ok;
+   const bookletCount=get('bookletPreviewCount'),bookletNumber=get('bookletPreviewNumber'),
+    bookletName=get('bookletPreviewName'),bookletArt=get('bookletFeaturedArt');
+   if(bookletCount)bookletCount.textContent=ok?String(chosenRows().length):'0';
+   if(bookletNumber)bookletNumber.textContent=ok?String(sum):'—';
+   const bookRow=ok?(safeRows().find(row=>row[1]+'|'+row[2]===picker.value)||chosenRows()[0]):null;
+   if(bookletName)bookletName.textContent=bookRow?label(bookRow):'Твоя история начинается здесь';
+   if(bookletArt){
+    const sig=bookRow?bookRow[1]+'|'+bookRow[2]:'';
+    if(bookletArt.dataset.signature!==sig){
+     bookletArt.dataset.signature=sig;
+     const profile=bookRow?atlas()?.resolve(bookRow):null;
+     if(profile&&atlas()?.render)atlas().render(bookletArt,profile);
+     else{
+      bookletArt.replaceChildren(elem('span','✧'));
+     }
+    }
+   }
 
    if(!ok){
     if(typeof closeAnimalChooser==='function')closeAnimalChooser();
@@ -1806,8 +1822,8 @@
   const closeAnimalChooser=setupAnimalChooser(picker);
   get('downloadRelic').addEventListener('click',()=>{void savePNG(picker,status);});
 
-  get('printRelic').addEventListener('click',()=>printBooklet(status));
-  window.printBesteriary=()=>printBooklet(status);
+  get('downloadBestiary').addEventListener('click',()=>{void downloadBooklet(status);});
+  window.downloadBestiaryPdf=()=>downloadBooklet(status);
   get('compareRun').addEventListener('click',()=>{void compare(get('compareRun'));});
   get('compareDetails').addEventListener('toggle',()=>{
    const greek=get('greek').value.trim();
