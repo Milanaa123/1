@@ -3,12 +3,13 @@ from __future__ import annotations
 import hashlib, json, shutil, struct
 from pathlib import Path
 
-ART_REL=Path("art/animagia-selected-107")
+SOURCE_ART_REL=Path("art/animagia-selected-107")
+OUTPUT_ART_REL=Path("art/animagia-original-400")
 PNG_SIGNATURE=bytes([137,80,78,71,13,10,26,10])
 
 def publish_selected_original_art(base, destination):
     base=Path(base);destination=Path(destination)
-    source=base/ART_REL
+    source=base/SOURCE_ART_REL
     manifest=json.loads((source/"manifest.json").read_text(encoding="utf-8"))
     assert manifest["count"]==400 and manifest["animals"]==104 and manifest["additional"]==4 and manifest["new"]==292
     records=manifest["files"]
@@ -25,11 +26,11 @@ def publish_selected_original_art(base, destination):
         dimensions=struct.unpack(">II",raw[16:24])
         assert dimensions==(item["width"],item["height"]),(path,"incorrect dimensions")
         assert hashlib.sha256(raw).hexdigest()==item["sha256"],(path,"checksum mismatch")
-        dest=destination/ART_REL/path
+        dest=destination/OUTPUT_ART_REL/path
         dest.parent.mkdir(parents=True,exist_ok=True)
         shutil.copyfile(sourcefile,dest)
         bytes_published+=len(raw)
-    shutil.copyfile(source/"manifest.json",destination/ART_REL/"manifest.json")
+    shutil.copyfile(source/"manifest.json",destination/OUTPUT_ART_REL/"manifest.json")
     print("ANIMAGIA_400_ORIGINAL_RGBA_PNG_PUBLISHED",len(seen),bytes_published,flush=True)
     return {"count":len(seen),"original_png_bytes":bytes_published,
-        "directory":str(ART_REL),"sha256_audited":True,"reencoded":False}
+        "directory":str(OUTPUT_ART_REL),"sha256_audited":True,"reencoded":False}
