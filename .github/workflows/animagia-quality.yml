@@ -18,13 +18,15 @@ jobs:
           node-version: '22'
       - name: Check syntax of website scripts
         run: |
-          for file in app.js ru_name_lookup.js greek_taxa.js enhancements.js photo_gallery.js animal_atlas.js selected_art_107.js new_art_167.js new_art_125.js approved_only_cards.js approved_chooser_gallery.js relic_features.js; do node --check "$file"; done
+          for file in app.js ru_name_lookup.js greek_taxa.js enhancements.js photo_gallery.js animal_atlas.js selected_art_107.js selected_art_400.js new_art_167.js new_art_125.js representative_art.js approved_only_cards.js approved_only_cards_400.js approved_chooser_gallery.js relic_features.js; do node --check "$file"; done
       - name: Verify exact photo-only TOP-30, category order and insect cap
         run: node --test tests/photo-gallery.test.cjs
       - name: Verify 400 source PNG checksums and exclusive card rendering
         run: node --test tests/test-approved-only-art.cjs
+      - name: Verify representative drawings are honestly labeled and taxonomically restricted
+        run: node --test tests/test-representative-art.cjs
       - name: Check Python catalogue builder syntax
-        run: python -m py_compile build_data.py audit_index.py ru_catalog.py
+        run: python -m py_compile build_data.py audit_index.py ru_catalog.py artwork_representatives_builder.py
       - name: Validate family and Russian-name fields without changing Greek sums
         run: python -m unittest discover -s tests -p 'test_quality.py' -v
       - name: Check exact-species Russian name lookup with mocked API
