@@ -66,7 +66,7 @@ test('TOP-30 is still the original verified iNaturalist photographic experience'
  assert.ok(!photos.includes('bestiary-name-origin'));
  assert.ok(!photos.includes('atlas.render(drawing,profile)'));
  assert.match(html,/photo_gallery\.js\?v=clean-bestiary-20261102/);
- assert.match(html,/magic_theme\.css\?v=unified-atlas-polish-20261102/);
+ assert.match(html,/magic_theme\.css\?v=enchanted-book-studio-v1/);
 });
 test('card and file-download controls remain reachable',()=>{
  for(const id of ['relicCardBackdrop','relicAnimal','animalChooserOpen',
@@ -76,7 +76,7 @@ test('card and file-download controls remain reachable',()=>{
   assert.ok(html.includes('id="'+id+'"'),id);
  }
  assert.match(chooser,/canvas\.width=1200;canvas\.height=2000/);
- assert.match(chooser,/window\.print\(\)/);
+ assert.match(chooser,/downloadBooklet\(status\)/);
 });
 
 test('Enchanted bestiary creates a direct illustrated PDF and never invokes print',()=>{
