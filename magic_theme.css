@@ -1750,3 +1750,19 @@ html{overflow-x:clip}
   max-width:160mm;margin:0 auto
  }
 }
+
+/* The original Latin spelling cannot be inferred reliably from Cyrillic.
+   Confirmation is local to the current form and never stored. */
+.latin-confirmation{
+ display:flex;align-items:flex-start;gap:11px;margin:12px 0;padding:13px 14px;
+ background:#44332777;border:1px solid #dab68191;border-radius:12px;
+ color:#f1dec4;line-height:1.55;font-size:12px;cursor:pointer;
+ overflow-wrap:anywhere;min-width:0
+}
+.latin-confirmation[hidden]{display:none!important}
+.latin-confirmation input[type="checkbox"]{
+ flex:0 0 auto;width:19px;height:19px;margin:1px 0 0;accent-color:#dfbc87;cursor:pointer
+}
+.latin-confirmation:focus-within{
+ outline:2px solid #f4d5a0;outline-offset:2px
+}
