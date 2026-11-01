@@ -1750,3 +1750,95 @@ html{overflow-x:clip}
   max-width:160mm;margin:0 auto
  }
 }
+
+
+/* Final polish — one illustrated atlas, with no art-availability badges. */
+.method-shelf{
+ display:grid;gap:10px;margin:24px 0 0;min-width:0
+}
+.form-panel .method-shelf>details{
+ width:100%;margin:0;min-width:0;
+ border:1px solid #b4996a55;border-radius:13px;
+ background:linear-gradient(140deg,#242133b2,#18192bcf);
+ box-shadow:inset 0 1px #f0d29c0a;
+ color:#e6d8d1
+}
+.form-panel .method-shelf>details>summary{
+ padding:15px 18px;font:600 13px/1.6 Manrope,system-ui,sans-serif;
+ color:#e8ce9f;cursor:pointer;list-style:none
+}
+.form-panel .method-shelf>details>summary::-webkit-details-marker{display:none}
+.form-panel .method-shelf>details>summary::after{
+ content:'⌄';float:right;font-size:17px;color:#d6b47c;
+ transition:transform .2s
+}
+.form-panel .method-shelf>details[open]>summary::after{transform:rotate(180deg)}
+.form-panel .method-shelf .audit-content,
+.form-panel .method-shelf .quality-panel-body,
+.form-panel .method-shelf .compare-results{
+ max-width:100%;overflow-wrap:anywhere
+}
+.form-panel .method-shelf .quality-panel-body,
+.form-panel .method-shelf .audit-content{padding:10px 17px 17px}
+.form-panel .method-shelf .method-source-links{line-height:1.9;font-size:12px}
+.form-panel .method-shelf .method-source-links a{color:#ebc993}
+.animal-chooser-panel{
+ background:radial-gradient(ellipse 75% 38% at 50% 0%,#6a465156,transparent 74%),#191829;
+ border-color:#d3b789;
+ box-shadow:0 30px 100px #04030bdd,inset 0 0 0 1px #c1a47728
+}
+.animal-chooser-list{gap:7px}
+.animal-chooser-item{
+ min-height:72px;padding:14px 17px;border-radius:13px;
+ border-color:#aa8c6545;
+ background:linear-gradient(105deg,#30283caa,#242134d4);
+ box-shadow:inset 0 1px #fff7e50a;
+ transition:background .18s,border-color .18s,transform .18s;
+}
+.animal-chooser-item:hover,
+.animal-chooser-item[aria-pressed="true"]{
+ border-color:#e5c18d;
+ background:linear-gradient(110deg,#54404dd4,#30273fdc)
+}
+.animal-chooser-item:active{transform:scale(.993)}
+.animal-chooser-item-names{gap:4px;flex:1}
+.animal-chooser-item-names strong{color:#fae6c4;line-height:1.35}
+.animal-chooser-sparkle{
+ flex:0 0 auto;display:grid;place-items:center;
+ width:34px;height:34px;border-radius:50%;
+ color:#ddbb85;font:24px 'Cormorant Garamond',Georgia,serif;
+ background:#9e7c531a;border:1px solid #b89c6b38
+}
+.animal-chooser-count{
+ font:500 12px/1.5 Manrope,system-ui,sans-serif;
+ color:#e6caac;letter-spacing:.01em
+}
+.relic-tools .art-disclosure{
+ margin:1px 0 12px;color:#bda988;font:italic 12px Georgia,serif
+}
+.bestiary-card{
+ border-color:#9977505c;
+ background:linear-gradient(150deg,#211d31,#191928);
+ box-shadow:inset 0 1px #e8cb9b13,0 10px 28px #0908112c
+}
+.bestiary-card .bestiary-photo-seal{
+ letter-spacing:.03em;text-transform:none
+}
+.bestiary-card .photo-card-body.bestiary-card-body{gap:11px}
+.bestiary-card .bestiary-scientific{color:#c0b3c2}
+.bestiary-card .bestiary-inline-photo{margin-top:12px}
+.bottom{
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+ color:#a99eb3;font:12px/1.6 Manrope,system-ui,sans-serif;
+ letter-spacing:.035em
+}
+.bottom span:first-child{font:600 23px 'Cormorant Garamond',Georgia,serif;color:#e2c48e}
+@media(max-width:680px){
+ .animal-chooser-item{min-height:65px;padding:12px 13px}
+ .animal-chooser-sparkle{width:29px;height:29px;font-size:21px}
+ .form-panel .method-shelf>details>summary{padding:12px 14px}
+ .bottom{justify-content:center;text-align:center}
+}
+@media print{
+ .method-shelf,.animal-chooser-sparkle{display:none!important}
+}
