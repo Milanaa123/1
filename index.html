@@ -162,7 +162,7 @@ body.photo-dialog-open{overflow:hidden}
 .greek-method-reference[open]{margin:15px 0;padding:10px}
 @media(max-width:480px){.greek-method-table th,.greek-method-table td{padding:6px 8px;font-size:12px}}
 
-</style><link rel="stylesheet" href="./magic_theme.css?v=unified-atlas-polish-20261102">
+</style><link rel="stylesheet" href="./magic_theme.css?v=enchanted-book-studio-v1">
 <link rel="stylesheet" href="./relic_card_stage1.css?v=sharp-art4x-20261028"></head><body><main class="wrap"><nav class="nav"><div class="brand"><span class="brand-sigil" aria-hidden="true"><svg viewBox="0 0 40 40" focusable="false">
  <circle cx="20" cy="20" r="16.5"/>
  <circle cx="20" cy="20" r="11.4" stroke-dasharray="1.4 3.5"/>
@@ -313,11 +313,40 @@ body.photo-dialog-open{overflow:hidden}
    <p id="relicAnimalResults" class="relic-caption" role="status">После расчёта появятся твои формы.</p><p id="relicArtDisclosure" class="relic-caption art-disclosure" role="status" aria-live="polite" hidden></p>
    <button type="button" class="relic-download" id="downloadRelic">Скачать карточку PNG <span aria-hidden="true">↓</span></button>
    <p id="relicStatus" class="relic-feedback" role="status" aria-live="polite"></p>
-   <button type="button" class="relic-secondary" id="printRelic">Оформить бестиарий в PDF (печать)</button>
-   
   </div>
  </div>
- 
+ <section class="enchanted-book-studio" id="enchantedBookStudio" aria-labelledby="enchantedBookTitle">
+  <div class="enchanted-book-intro">
+   <span class="enchanted-book-eyebrow">✦ &nbsp; ТВОЯ ЛИЧНАЯ ВОЛШЕБНАЯ КНИГА &nbsp; ✦</span>
+   <h3 id="enchantedBookTitle">Волшебный<br><em>бестиарий</em></h3>
+   <p>Листы старинного атласа, золотые образы животных, звёздные печати и тайны твоего имени — всё в одной настоящей книге.</p>
+   <div class="enchanted-book-metrics"><span>☾ <strong id="bookletPreviewCount">30</strong> избранных форм</span><span>✧ Иллюстрированные страницы</span></div>
+  </div>
+  <div class="enchanted-book-display" aria-hidden="true">
+   <div class="enchanted-book-spread enchanted-book-spread-back"></div>
+   <div class="enchanted-book-spread enchanted-book-spread-mid"></div>
+   <div class="enchanted-book-cover">
+    <div class="enchanted-book-cover-inner">
+     <span class="enchanted-book-mark">✧ A N I M A G I A ✧</span>
+     <span class="enchanted-book-moons">✦ &nbsp; ☾ &nbsp; ✧ &nbsp; ☽ &nbsp; ✦</span>
+     <strong>АТЛАС<br>СКРЫТЫХ<br>ФОРМ</strong>
+     <div id="bookletFeaturedArt" class="enchanted-book-animal"><span>✧</span></div>
+     <span class="enchanted-book-score">✧ <span id="bookletPreviewNumber">—</span> ✧</span>
+     <span class="enchanted-book-name" id="bookletPreviewName">Твоя история начинается здесь</span>
+    </div>
+   </div>
+   <div class="enchanted-book-shadow"></div>
+  </div>
+  <div class="enchanted-book-actions">
+   <p>Твоя собственная книга с обложкой и отдельными страницами для найденных животных. Сохранится прямо на телефон или компьютер.</p>
+   <button type="button" id="downloadBestiary" class="enchanted-book-download" disabled>
+    <span class="enchanted-book-download-icon" aria-hidden="true">↓</span>
+    <span>Скачать бестиарий <small>PDF · сразу в загрузки</small></span>
+    <span class="enchanted-book-download-star" aria-hidden="true">✧</span>
+   </button>
+   <p id="bookletStatus" class="enchanted-book-status" role="status" aria-live="polite"></p>
+  </div>
+ </section>
 </section>
 <div id="animalChooser" class="animal-chooser" hidden role="dialog" aria-modal="true" aria-labelledby="animalChooserTitle">
  <div class="animal-chooser-shade" data-chooser-dismiss></div>
@@ -362,4 +391,4 @@ body.photo-dialog-open{overflow:hidden}
 <ol id="preview" class="animal-list photo-grid bestiary-pages"></ol>
 <p id="bestiaryEmpty" class="bestiary-empty" hidden>В выбранной главе нет животных с этим названием. Очисти поиск или выбери другую группу.</p>
 </div><div class="glass download-panel" id="downloads" hidden><span class="section-eyebrow">Без ограничений</span><h3>Все животные<br>одним файлом</h3><p>Сохрани все свои найденные формы.</p><button class="export" id="exportTxt" type="button">Скачать TXT <span>↓</span></button><button class="export secondary" id="exportCsv" type="button">Скачать CSV <span>↓</span></button>
-<button class="export secondary" id="printPdf" type="button">PDF с подборкой (печать) <span>▣</span></button></div></div></section><footer class="bottom"><span>✧ Анимагия</span><span>Атлас скрытых форм · Выбор за тобой</span></footer></main><script src="./greek_taxa.js?v=ancient-v2" defer></script><script src="./app.js?v=original-latin-direct-input-20261031" defer></script><script src="./ru_name_lookup.js?v=verified-gbif-russian-20261029" defer></script><script src="./enhancements.js?v=latin-name-input-20261031" defer></script><script src="./photo_gallery.js?v=clean-bestiary-20261102" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=original-latin-input-20261031" defer></script><script src="./greek_weights_reference.js?v=full-method-table-five-columns-20261101" defer></script><script src="./animal_atlas.js?v=stage4-ecology-20261031" defer></script><script src="./selected_art_400.js?v=fresh-art400-20261101" defer></script><script src="./new_art_167.js?v=approved-275-20261030" defer></script><script src="./new_art_125.js?v=400" defer></script><script src="./artwork_representatives_index.js?v=all-class-index-20261101" defer></script><script src="./representative_art.js?v=complete-class-art-20261101" defer></script><script src="./approved_only_cards_400.js?v=clean-cards-20261102" defer></script><script src="./relic_features.js?v=single-chooser-clean-20261102" defer></script></body></html>
+<button class="export secondary" id="printPdf" type="button">Скачать волшебный бестиарий PDF <span>↓</span></button></div></div></section><footer class="bottom"><span>✧ Анимагия</span><span>Атлас скрытых форм · Выбор за тобой</span></footer></main><script src="./greek_taxa.js?v=ancient-v2" defer></script><script src="./app.js?v=original-latin-direct-input-20261031" defer></script><script src="./ru_name_lookup.js?v=verified-gbif-russian-20261029" defer></script><script src="./enhancements.js?v=latin-name-input-20261031" defer></script><script src="./photo_gallery.js?v=clean-bestiary-20261102" defer></script><script src="./magic_ui.js?v=enchanted-atlas-p1" defer></script><script src="./ritual_ui.js?v=original-latin-input-20261031" defer></script><script src="./greek_weights_reference.js?v=full-method-table-five-columns-20261101" defer></script><script src="./animal_atlas.js?v=stage4-ecology-20261031" defer></script><script src="./selected_art_400.js?v=fresh-art400-20261101" defer></script><script src="./new_art_167.js?v=approved-275-20261030" defer></script><script src="./new_art_125.js?v=400" defer></script><script src="./artwork_representatives_index.js?v=all-class-index-20261101" defer></script><script src="./representative_art.js?v=complete-class-art-20261101" defer></script><script src="./approved_only_cards_400.js?v=clean-cards-20261102" defer></script><script src="./bestiary_pdf.js?v=enchanted-direct-pdf-v1" defer></script><script src="./relic_features.js?v=enchanted-book-download-v1" defer></script></body></html>
