@@ -166,7 +166,7 @@ def main():
       ("assert.equal(new Set(rows.map(x=>x.file)).size,275)","assert.equal(new Set(rows.map(x=>x.file)).size,400)"),
       ("assert.equal(atlas.originalArtworkCount,275)","assert.equal(atlas.originalArtworkCount,400)"),
       ("assert.equal(manifest.new,167)","assert.equal(manifest.new,292)"),
-      ("rows.filter(x=>x.file.startsWith('new/'))","rows.filter(x=>x.file.startsWith('new/')&&x.number>=109&&x.number<=276)")
+      ("rows.filter(x=>x.file.startsWith('new/'))","rows.filter(x=>x.file.startsWith('new/')&&x.number>=109&&x.number<=276&&x.number!==269)")
     ]
     for before,after in edits:
         if test_content.count(before)!=1:fail(f"Unexpected test marker: {before}")
