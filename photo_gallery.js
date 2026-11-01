@@ -243,8 +243,10 @@ function photoMakeCard(item,index) {
  li.className='species-row verified-animal-card bestiary-card';
  li.dataset.animalGroup=photoBroadGroup(row);
  li.dataset.scientificKey=row[1]+'|'+row[2];
+ // TOP-30 is the user's original REAL PHOTO gallery.
+ // Do not substitute taxonomic-group gold artwork as a photograph.
+ // Taxon fallback art belongs exclusively in the separate animal-card UI.
  const atlas=typeof window!=='undefined'?window.AnimagiaAnimalAtlas:null;
- const profile=atlas?.resolve(row)||null;
  const style=atlas?.style(atlas.classify(row))||null;
  if(style){li.dataset.diet=style.diet;li.dataset.habitat=style.habitat;}
 
@@ -316,14 +318,9 @@ function photoMakeCard(item,index) {
   body.append(tags);
  }
  body.append(rank,name,origin,science,engraving,photoButton,photoPanel,details);
- if(profile&&atlas){
-  const drawing=document.createElement('div');drawing.className='bestiary-illustration';
-  atlas.render(drawing,profile);
-  const note=document.createElement('div');
-  note.className='bestiary-illustration-label';
-  note.textContent=profile.exact?'Художественная иллюстрация вида':'Обобщённая иллюстрация группы';
-  li.append(top,drawing,note,body);
- }else li.append(top,body);
+ // The real iNaturalist photograph is revealed with photoToggleInline().
+ // Never insert unrelated class/family artwork into this PHOTO-only gallery.
+ li.append(top,body);
  return li;
 }
 function bestiaryUpdateChapters(selected,groupControl,previous){
