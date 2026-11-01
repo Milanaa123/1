@@ -8,7 +8,7 @@ loadPhotos=function(){
   if(item.stamp!==photoStamp)continue;
   const p=window.AnimagiaAnimalAtlas?.resolve(item.row);
   if(!p||p.artSet!=='original107'){
-   item.credit.textContent='Рисунок пока не готов';
+   item.credit.textContent='✧ Скоро появится';
    continue;
   }
   const image=document.createElement('img');
@@ -18,9 +18,8 @@ loadPhotos=function(){
   image.loading='lazy';
   image.decoding='async';
   image.style.objectFit='contain';
-  image.onerror=()=>{image.remove();item.credit.textContent='Рисунок недоступен';};
+  image.onerror=()=>{image.remove();item.credit.textContent='✧ Образ временно недоступен';};
   item.media.append(image);
-  item.credit.textContent=p.exact===true?'Оригинальный рисунок этого вида':
-   'Иллюстрация другого вида/общий образ: '+(p.sourceScientific||p.name);
+  item.credit.textContent=p.exact===true?'✧ Золотой рисунок':'✧ Образ группы';
  }
 };
