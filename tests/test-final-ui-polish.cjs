@@ -86,7 +86,7 @@ test('Enchanted bestiary creates a direct illustrated PDF and never invokes prin
  assert.match(html,/id="enchantedBookStudio"/);
  assert.match(html,/id="downloadBestiary"/);
  assert.match(html,/Скачать бестиарий/);
- assert.match(html,/bestiary_pdf\.js\?v=enchanted-direct-pdf-v1/);
+ assert.match(html,/bestiary_pdf\.js\?v=enchanted-direct-pdf-v2/);
  assert.match(pdf,/window\.AnimagiaBookPDF=Object\.freeze/);
  assert.match(pdf,/application\/pdf/);
  assert.match(pdf,/\/DCTDecode/);
