@@ -7,13 +7,17 @@ on:
       - tests/visual_export_smoke.cjs
       - tests/stage8_live_acceptance.cjs
       - tests/representative_art_live_1878.cjs
+      - bestiary_pdf.js
+      - relic_features.js
+      - index.html
+      - magic_theme.css
       - .github/workflows/animagia-visual-export.yml
 permissions:
   contents: read
 jobs:
   chromium-qa:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 16
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,9 +27,9 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright@1.57.0
           npx playwright install chromium
-      - name: Exercise screen canvas, PNG download, print PDF and mobile
+      - name: Verify PNG and direct book PDF downloads in local Chromium
         run: node tests/visual_export_smoke.cjs
-      - name: Stage 8 live Render desktop and mobile end-to-end acceptance
+      - name: Verify live Render bestiary PDF and responsive desktop/mobile calculator
         run: node tests/stage8_live_acceptance.cjs
       - name: Verify real 550 matches and related artwork labels on mobile
         run: node tests/representative_art_live_1878.cjs
