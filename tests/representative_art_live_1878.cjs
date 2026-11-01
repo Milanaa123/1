@@ -23,7 +23,7 @@ fs.mkdirSync(artifacts,{recursive:true});
    status:200,contentType:'application/json',body:'{"results":[]}'
   }));
   await page.goto(base,{waitUntil:'domcontentloaded',timeout:90000});
-  await page.waitForFunction(()=>window.AnimagiaAnimalAtlas?.representativeLevels?.length===3
+  await page.waitForFunction(()=>window.AnimagiaAnimalAtlas?.representativeLevels?.length===4
     &&typeof taxonGreek==='function',null,{timeout:30000});
   await page.locator('#name').fill('Fraser Harold Brown');
   await page.locator('#ritualToGreek').click();
