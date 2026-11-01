@@ -111,7 +111,7 @@ test('PNG cards remain unchanged and direct PDF bestiary has no print dialogue',
  assert.ok(renderer.includes('if(profile&&!sprite)return false;'));
  assert.match(page,/id="downloadRelic"/);
  assert.match(page,/id="downloadBestiary"/);
- assert.match(page,/bestiary_pdf\.js\?v=enchanted-direct-pdf-v1/);
+ assert.match(page,/bestiary_pdf\.js\?v=enchanted-direct-pdf-v2/);
  assert.ok(book.includes("return new Blob(parts,{type:'application/pdf'})"));
 });
 
