@@ -168,11 +168,6 @@ function showAuditReport(fresh){
  let lastVerifiedShard=null;
 run=async function(){
  const raw=el('name').value.trim(),latin=el('latin').value.trim(),greek=el('greek').value.trim();
- if(!sourceLatinConfirmed()){
-  reset();
-  el('error').textContent='Сначала проверь предложенную латиницу на шаге 2 и поставь отметку подтверждения: её написание изменяет итоговую сумму.';
-  return;
- }
  if(!validSourceName(raw)||!validLatinName(latin)||!validGreek(greek)){
   reset();el('error').textContent='Проверь имя, латинскую запись и греческую запись. В первом поле допускаются русский или английский, но не смешение алфавитов.';return;
  }
