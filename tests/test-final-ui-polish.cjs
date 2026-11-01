@@ -70,10 +70,31 @@ test('TOP-30 is still the original verified iNaturalist photographic experience'
 });
 test('card and file-download controls remain reachable',()=>{
  for(const id of ['relicCardBackdrop','relicAnimal','animalChooserOpen',
-   'downloadRelic','printRelic','printRelicList','exportTxt','exportCsv','printPdf',
+   'downloadRelic','downloadBestiary','bookletStatus','bookletPreviewCount',
+   'bookletFeaturedArt','exportTxt','exportCsv','printPdf',
    'featuredCount','galleryStatus','groupFilter','greekMethodWeightsBody']){
   assert.ok(html.includes('id="'+id+'"'),id);
  }
  assert.match(chooser,/canvas\.width=1200;canvas\.height=2000/);
  assert.match(chooser,/window\.print\(\)/);
+});
+
+test('Enchanted bestiary creates a direct illustrated PDF and never invokes print',()=>{
+ const pdf=fs.readFileSync(path.join(root,'bestiary_pdf.js'),'utf8');
+ const behavior=fs.readFileSync(path.join(root,'relic_features.js'),'utf8');
+ const controls=fs.readFileSync(path.join(root,'enhancements.js'),'utf8');
+ assert.match(html,/id="enchantedBookStudio"/);
+ assert.match(html,/id="downloadBestiary"/);
+ assert.match(html,/Скачать бестиарий/);
+ assert.match(html,/bestiary_pdf\.js\?v=enchanted-direct-pdf-v1/);
+ assert.match(pdf,/window\.AnimagiaBookPDF=Object\.freeze/);
+ assert.match(pdf,/application\/pdf/);
+ assert.match(pdf,/\/DCTDecode/);
+ assert.match(pdf,/downloadBlob\(blob,filename\)/);
+ assert.match(behavior,/downloadBooklet\(status\)/);
+ assert.match(controls,/window\.downloadBestiaryPdf/);
+ assert.ok(!behavior.includes('window.print()'),'No print dialog in book exporter');
+ assert.ok(!controls.includes('window.print()'),'No print dialog from bottom button');
+ assert.ok(!html.includes('PDF (печать)'));
+ assert.ok(!html.includes('Оформить бестиарий в PDF (печать)'));
 });
