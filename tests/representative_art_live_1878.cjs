@@ -26,6 +26,8 @@ fs.mkdirSync(artifacts,{recursive:true});
   await page.waitForFunction(()=>window.AnimagiaAnimalAtlas?.representativeLevels?.length===3
     &&typeof taxonGreek==='function',null,{timeout:30000});
   await page.locator('#name').fill('Fraser Harold Brown');
+  await page.locator('#ritualToGreek').click();
+  await page.locator('#ritualStep3').waitFor({state:'visible'});
   const greek=await page.evaluate(()=>taxonGreek('Cornufer opisthodon'));
   assert.equal(await page.evaluate(x=>score(x),greek),1878);
   await page.locator('#greek').fill(greek);
@@ -70,6 +72,8 @@ fs.mkdirSync(artifacts,{recursive:true});
   },null,{timeout:45000});
   const note=await page.locator('#relicSilhouetteStatus').textContent();
   assert.match(note,/Neon valentulus/);
+  assert.equal(await page.locator('#relicArtDisclosure').isVisible(),true,'Related-species warning must be visible');
+  assert.match(await page.locator('#relicArtDisclosure').textContent(),/НЕ изображение вида Bowie sagittatus/);
   await page.waitForFunction(()=>
    document.getElementById('relicCardBackdrop').dataset.posterReady==='1',null,{timeout:45000});
   const [download]=await Promise.all([
