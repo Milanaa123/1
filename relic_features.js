@@ -1527,7 +1527,9 @@
    let artNote='';
    if(sprite&&profile){
     gallery.drawCanvas(ctx,sprite,profile,205,760,790,570);
-    artNote='';
+    artNote=profile.exact===true?'':profile.sourceScientific?
+     'Иллюстрация другого вида: '+profile.sourceScientific:
+     'Обобщённый образ группы · не рисунок выбранного вида';
    }else{
     // A quiet celestial mark is better than a biologically wrong silhouette.
     ctx.save();
@@ -1541,7 +1543,7 @@
     artNote='Образ скрытой формы ещё создаётся';
    }
    ctx.fillStyle='#BDAAC3';ctx.font='17px Georgia,serif';ctx.textAlign='center';
-   if(artNote)ctx.fillText(artNote,600,1324);
+   if(artNote)centered(ctx,artNote,1324,960,'17px Georgia,serif',1);
    ctx.fillStyle='#D5B684';ctx.font='22px Georgia,serif';
    ctx.fillText('✧  С К Р Ы Т А Я   Ф О Р М А  ✧',600,1355);
    // Generic Russian category and the species epithet are separate lines.
