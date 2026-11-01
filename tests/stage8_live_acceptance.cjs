@@ -107,7 +107,12 @@ async function inspectViewport(page,where){
       output(device+' full-name calculation',{greek,score:result.score,count:result.total,layout});
       await page.locator('#animalChooserOpen').click();
       check(await page.locator('#animalChooser').isVisible(),'Chooser should open on '+device);
-      await page.locator('#chooserFilterIllustrated').click();
+      check(await page.locator('#chooserFilterIllustrated,#chooserFilterAll').count()===0,
+        'No separate art-availability filters may remain');
+      check(await page.locator('#animalChooserList .animal-chooser-item').count()>0,
+        'All animal matches must appear in one list');
+      check(await page.locator('.animal-chooser-art-ready,.animal-chooser-art-pending').count()===0,
+        'All cards must be free of image-availability badges');
       const chooser=await page.locator('#animalChooserCount').textContent();
       await page.locator('#animalChooserClose').click();
       check(!(await page.locator('#animalChooser').isVisible()),'Chooser should close');
