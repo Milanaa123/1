@@ -1229,10 +1229,8 @@
   return safeRows().find(r=>r[1]===parts[0]&&r[2]===parts[1])||null;
  }
  function orderedAnimals(){
-  const rows=safeRows(),provider=atlas();
-  const illustrated=[],others=[];
-  for(const row of rows)(provider?.resolve(row)?illustrated:others).push(row);
-  return [...illustrated,...others];
+  // Stable list of all matches, independent of illustration availability.
+  return safeRows();
  }
  function updatePicker(picker){
   const rows=orderedAnimals();
@@ -1256,15 +1254,9 @@
   const trigger=get('animalChooserOpen');
   if(trigger)trigger.disabled=!rows.length;
   const count=get('relicAnimalResults');
-  if(count){
-   const illustrated=rows.map(row=>atlas()?.resolve(row));
-   const exact=illustrated.filter(profile=>profile?.exact===true).length;
-   const related=illustrated.filter(profile=>profile&&profile.exact!==true).length;
-   const missing=rows.length-exact-related;
-   count.textContent=rows.length+' точных совпадений по числу · '+exact+
-    ' с рисунком именно этого вида · '+related+
-    ' с изображением другого вида/общим образом · '+missing+' без рисунка.';
-  }
+  if(count)count.textContent=rows.length
+   ?'В твоём атласе '+rows.length+' животных. Выбери любимое.'
+   :'Атлас откроется после расчёта.';
  }
  function animalGroup(row){
   const c=row[3];
@@ -1280,23 +1272,19 @@
  }
  function setupAnimalChooser(picker){
   const modal=get('animalChooser'),trigger=get('animalChooserOpen'),close=get('animalChooserClose'),
-   groups=get('animalChooserGroups'),items=get('animalChooserList'),counter=get('animalChooserCount'),
-   illustrated=get('chooserFilterIllustrated'),all=get('chooserFilterAll'),more=get('animalChooserMore');
-  if(!modal||!trigger||!close||!groups||!items||!counter||!more||!illustrated||!all)return;
+   groups=get('animalChooserGroups'),items=get('animalChooserList'),
+   counter=get('animalChooserCount'),more=get('animalChooserMore');
+  if(!modal||!trigger||!close||!groups||!items||!counter||!more)return;
   const labels={all:'Все',mammal:'Млекопитающие',bird:'Птицы',reptile:'Рептилии',
    amphibian:'Земноводные',fish:'Рыбы',spider:'Паукообразные',
    insect:'Насекомые',marine:'Морские',other:'Другие'};
-  let onlyIllustrated=false,group='all',limit=48;
+  let group='all',limit=48;
   function matches(){
-   return orderedAnimals().filter(row=>{
-    if(onlyIllustrated&&!atlas()?.resolve(row))return false;
-    return group==='all'||animalGroup(row)===group;
-   });
+   return orderedAnimals().filter(row=>group==='all'||animalGroup(row)===group);
   }
   function renderGroups(){
    const counts={all:0};
    for(const row of orderedAnimals()){
-    if(onlyIllustrated&&!atlas()?.resolve(row))continue;
     const key=animalGroup(row);
     counts[key]=(counts[key]||0)+1;counts.all++;
    }
@@ -1316,42 +1304,33 @@
   function render(){
    const matched=matches(),slice=matched.slice(0,limit),frag=document.createDocumentFragment();
    for(const row of slice){
-    const withArt=atlas()?.resolve(row);
     const btn=elem('button');btn.type='button';btn.className='animal-chooser-item';
     btn.setAttribute('aria-pressed',String(picker.value===row[1]+'|'+row[2]));
     const content=elem('span');content.className='animal-chooser-item-names';
     const common=elem('strong',label(row));
     const scientific=elem('em',row[1]);
     content.append(common,scientific);
-    const badgeText=!withArt?'Рисунка нет':withArt.exact===true?
-     '✧ Рисунок этого вида':
-     withArt.representativeLevel==='genus'?'◇ Другой вид того же рода':
-     withArt.representativeLevel==='family'?'◇ Образ семейства':
-     withArt.representativeLevel==='order'?'◇ Образ отряда':
-     withArt.representativeLevel==='class'?'◇ Образ класса':
-     '◇ Обобщённый образ';
-    const badge=elem('small',badgeText);
-    badge.className=withArt?'animal-chooser-art-ready':'animal-chooser-art-pending';
-    if(withArt?.note)badge.title=withArt.note;
-    btn.append(content,badge);
+    const sparkle=elem('span','✧');
+    sparkle.className='animal-chooser-sparkle';
+    sparkle.setAttribute('aria-hidden','true');
+    btn.append(content,sparkle);
     btn.addEventListener('click',()=>{
      picker.value=row[1]+'|'+row[2];
      updatePicker(picker);syncSilhouette(picker);closeChooser();
     });
     frag.append(btn);
    }
-   if(!matched.length)frag.append(elem('p','В этой группе нет точных совпадений.'));
+   if(!matched.length)frag.append(elem('p','Здесь пока нет твоих животных.'));
    items.replaceChildren(frag);
-   counter.textContent='Найдено '+matched.length+' · показано '+slice.length;
+   counter.textContent=matched.length+' животных'+
+    (matched.length>slice.length?' · ещё '+(matched.length-slice.length)+' ниже':'');
    more.hidden=matched.length<=limit;
-   illustrated.setAttribute('aria-pressed',String(onlyIllustrated));
-   all.setAttribute('aria-pressed',String(!onlyIllustrated));
    renderGroups();
   }
   function openChooser(){
    if(trigger.disabled)return;
    modal.hidden=false;document.body.classList.add('animal-chooser-opened');
-   limit=48;onlyIllustrated=false;group='all';
+   limit=48;group='all';
    render();close.focus();
   }
   function closeChooser(){
@@ -1361,8 +1340,6 @@
   trigger.addEventListener('click',openChooser);
   close.addEventListener('click',closeChooser);
   modal.querySelector('[data-chooser-dismiss]').addEventListener('click',closeChooser);
-  illustrated.addEventListener('click',()=>{onlyIllustrated=true;group='all';limit=48;render()});
-  all.addEventListener('click',()=>{onlyIllustrated=false;group='all';limit=48;render()});
   more.addEventListener('click',()=>{limit+=48;render()});
   document.addEventListener('keydown',event=>{
    if(modal.hidden)return;
