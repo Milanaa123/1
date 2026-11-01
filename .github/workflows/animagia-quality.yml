@@ -23,6 +23,8 @@ jobs:
         run: node --test tests/photo-gallery.test.cjs
       - name: Verify polished single-list UI and clean real-photo gallery
         run: node --test tests/test-final-ui-polish.cjs
+      - name: Verify varied illustrated bestiary selection and PDF page geometry
+        run: node --test tests/test-bestiary-diversity.cjs
       - name: Verify 400 source PNG checksums and exclusive card rendering
         run: node --test tests/test-approved-only-art.cjs
       - name: Verify representative drawings are honestly labeled and taxonomically restricted
