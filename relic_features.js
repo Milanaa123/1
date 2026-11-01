@@ -1451,6 +1451,8 @@
  }
  function clearIllustration(){
   const frame=get('relicSilhouetteFrame'),info=get('relicSilhouetteStatus');
+  const disclosure=get('relicArtDisclosure');
+  if(disclosure){disclosure.hidden=true;disclosure.textContent='';}
   const link=get('relicSilhouetteSource');
   if(!frame||!info||!link)return;
   frame.replaceChildren(elem('span','✧'));
@@ -1464,6 +1466,12 @@
   if(!frame||!info||!row)return;
   if(serial!==currentPictureSerial)return;
   const gallery=atlas(),profile=gallery?.resolve(row)||null;
+  const disclosure=get('relicArtDisclosure');
+  if(disclosure){
+   disclosure.hidden=!profile||profile.exact===true;
+   disclosure.textContent=profile&&profile.exact!==true?
+    (profile.note||'Обобщённый рисунок родственной группы, не изображение выбранного вида'):'';
+  }
   updateEcology(profile,row);
   link.hidden=true;
   if(profile){
