@@ -1842,3 +1842,216 @@ html{overflow-x:clip}
 @media print{
  .method-shelf,.animal-chooser-sparkle{display:none!important}
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   THE ENCHANTED BESTIARY STUDIO · Book, not printer. 100% CSS decoration;
+   the illustrated species are always the visitor's original approved art.
+   ═══════════════════════════════════════════════════════════════════════ */
+.enchanted-book-studio{
+ --book-gold:#e9cb93;--book-gold-muted:#bda07b;
+ position:relative; isolation:isolate; overflow:hidden;
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,350px);
+ align-items:center;gap:24px 26px;
+ margin:36px 0 5px;padding:42px clamp(19px,4vw,45px) 38px;
+ border:1px solid #d8b7809e;border-radius:22px;
+ background:
+  radial-gradient(ellipse 47% 50% at 84% 45%,#7e58703a,transparent 85%),
+  radial-gradient(ellipse 74% 56% at 16% 0%,#805c7331,transparent 75%),
+  linear-gradient(135deg,#1f1c30 0%,#15182b 53%,#241b32 100%);
+ box-shadow:inset 0 0 0 6px #b8975530,
+  inset 0 0 0 8px #e8c58b17,
+  0 16px 38px #06070d4f;
+}
+.enchanted-book-studio::before{
+ content:"✧  ☾  ✦  ✧  ☽  ✦  ✧";position:absolute;
+ top:9px;left:22px;right:22px;text-align:center;pointer-events:none;
+ color:#f4d5a16e;font:15px Georgia,serif;letter-spacing:20px;
+}
+.enchanted-book-studio::after{
+ content:"";position:absolute;inset:16px;border:1px solid #b8a07147;
+ border-radius:14px;pointer-events:none;z-index:-1;
+}
+.enchanted-book-intro{grid-column:1;align-self:end;position:relative;z-index:1}
+.enchanted-book-eyebrow{
+ display:block;font:600 10px/1.7 Manrope,system-ui,sans-serif;
+ color:#e6c38c;letter-spacing:.16em;text-transform:uppercase
+}
+.enchanted-book-intro h3{
+ font:600 clamp(39px,5vw,65px)/.93 "Cormorant Garamond",Georgia,serif;
+ letter-spacing:.005em;color:#fae6c2;
+ margin:18px 0 16px;text-shadow:0 2px 26px #f5c78038
+}
+.enchanted-book-intro h3 em{
+ font-weight:400;font-style:normal;color:#e3bb7b
+}
+.enchanted-book-intro>p,
+.enchanted-book-actions>p:first-child{
+ color:#cfc0d3;font:13px/1.82 Manrope,system-ui,sans-serif;
+ max-width:410px;margin:0;overflow-wrap:break-word
+}
+.enchanted-book-metrics{
+ display:flex;flex-wrap:wrap;gap:10px;margin-top:20px
+}
+.enchanted-book-metrics span{
+ display:inline-flex;align-items:center;gap:7px;
+ padding:9px 12px;border-radius:99px;
+ border:1px solid #c7a97965;background:#a6864c12;
+ font:11px/1.2 Manrope,system-ui,sans-serif;color:#ebd4b0
+}
+.enchanted-book-metrics strong{font-size:14px;color:#fff0d3}
+.enchanted-book-display{
+ grid-column:2;grid-row:1 / span 2;min-width:0;
+ display:flex;align-items:center;justify-content:center;
+ height:414px;position:relative;perspective:850px
+}
+.enchanted-book-cover{
+ position:relative;z-index:4;
+ width:min(78%,280px);aspect-ratio: .74;
+ transform:rotate(-5deg) rotateY(-6deg);
+ border:3px solid #e8bf79;border-left:12px solid #aa784b;
+ border-radius:9px 17px 15px 9px;
+ background:
+  radial-gradient(ellipse 60% 48% at 55% 35%,#84608342,transparent 85%),
+  radial-gradient(circle at 30% 10%,#8d6a5542,transparent 50%),
+  linear-gradient(137deg,#292337,#111a2b 65%,#322338);
+ box-shadow:12px 19px 0 #0e0d20,14px 21px 0 #e2c084,
+  14px 26px 35px #0000009e,inset 0 0 0 3px #4f415bbd,
+  inset 0 0 0 6px #edc58155,0 0 48px #ba885c24;
+ transition:transform .3s ease,box-shadow .3s ease
+}
+.enchanted-book-studio:hover .enchanted-book-cover{
+ transform:rotate(-3deg) rotateY(0deg) translateY(-4px);
+ box-shadow:12px 19px 0 #0e0d20,14px 21px 0 #e2c084,
+  14px 28px 38px #000000a9,inset 0 0 0 3px #4f415bbd,
+  inset 0 0 0 6px #edc58155,0 0 57px #e6bc7a3e
+}
+.enchanted-book-cover::before{
+ content:"";position:absolute;inset:11px;border:1px solid #c8a16b9f;
+ border-radius:3px;pointer-events:none
+}
+.enchanted-book-cover::after{
+ content:"✧";position:absolute;left:-3px;top:49%;color:#f1dba6;
+ font:20px Georgia,serif;text-shadow:0 0 7px #eebf79
+}
+.enchanted-book-cover-inner{
+ padding:21px 17px 24px;
+ height:100%;display:flex;flex-direction:column;
+ align-items:center;justify-content:space-around;gap:5px;text-align:center
+}
+.enchanted-book-mark{
+ color:#e7c995;font:600 10px/1.2 Georgia,serif;
+ letter-spacing:.09em;white-space:nowrap
+}
+.enchanted-book-moons{
+ color:#f5d9a6;font:23px/1.1 Georgia,serif;
+ letter-spacing:5px;text-shadow:0 0 16px #ffd59b4a
+}
+.enchanted-book-cover-inner>strong{
+ color:#ffdf9c;font:600 clamp(20px,2.5vw,34px)/.98 "Cormorant Garamond",Georgia,serif;
+ letter-spacing:.05em;text-shadow:0 0 13px #f6bf782b
+}
+.enchanted-book-animal{
+ width:134px;height:122px;max-width:86%;
+ display:grid;place-items:center;overflow:hidden;
+ background:radial-gradient(circle,#b992633e,transparent 65%);
+ border-block:1px solid #dbb57544;
+ color:#ebcb8c;font:50px Georgia,serif
+}
+.enchanted-book-animal img{
+ max-width:100%;max-height:100%;object-fit:contain;
+ width:100%;height:100%;display:block;
+ filter:drop-shadow(0 0 9px #dfb97040)
+}
+.enchanted-book-score{
+ font:600 22px "Cormorant Garamond",Georgia,serif;color:#f7dfb6
+}
+.enchanted-book-name{
+ font:italic 11px/1.3 Georgia,serif;color:#dfced2;
+ max-width:100%;overflow-wrap:anywhere
+}
+.enchanted-book-spread{
+ position:absolute;z-index:1;width:65%;max-width:260px;height:319px;
+ border:2px solid #d9c3a2;border-radius:11px;
+ background:linear-gradient(107deg,#bf9e7b,#ebd7ac 28%,#c09d78 100%);
+ box-shadow:7px 11px 17px #00000059
+}
+.enchanted-book-spread-back{transform:translate(31px,-3px) rotate(11deg)}
+.enchanted-book-spread-mid{transform:translate(19px,2px) rotate(2deg)}
+.enchanted-book-shadow{
+ position:absolute;z-index:0;bottom:21px;left:10%;right:10%;height:47px;
+ background:#02030b7b;filter:blur(19px);border-radius:50%
+}
+.enchanted-book-actions{
+ grid-column:1;grid-row:2;position:relative;z-index:2;
+ align-self:start;display:flex;flex-direction:column;gap:14px
+}
+.enchanted-book-download{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:13px;width:100%;max-width:450px;min-height:83px;
+ padding:15px 20px;border:2px solid #f4d198;border-radius:14px;
+ background:linear-gradient(115deg,#e9c893 0%,#d8b47c 48%,#f5dca8 100%);
+ box-shadow:inset 0 1px #fff5d0,0 7px 23px #a77e4640;
+ color:#251e2b;text-align:left;cursor:pointer;
+ font:700 18px/1.22 Manrope,system-ui,sans-serif;
+ transition:transform .2s,filter .2s,box-shadow .2s
+}
+.enchanted-book-download:not(:disabled):hover{
+ transform:translateY(-2px);filter:brightness(1.07);
+ box-shadow:inset 0 1px #fff5d0,0 11px 32px #b78c5680
+}
+.enchanted-book-download:not(:disabled):active{transform:scale(.985)}
+.enchanted-book-download:disabled{opacity:.55;cursor:not-allowed;filter:saturate(.5)}
+.enchanted-book-download:focus-visible{outline:3px solid #fff4ca;outline-offset:3px}
+.enchanted-book-download-icon{
+ display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;
+ border:1px solid #5b452d6e;border-radius:50%;
+ font:37px/1 Georgia,serif
+}
+.enchanted-book-download span:nth-child(2){flex:1}
+.enchanted-book-download small{
+ display:block;margin-top:5px;color:#604b3b;
+ font:600 11px/1.2 Manrope,system-ui,sans-serif
+}
+.enchanted-book-download-star{font:30px/1 Georgia,serif}
+.enchanted-book-status{
+ margin:0!important;min-height:22px;font:12px/1.5 Manrope,system-ui,sans-serif;
+ color:#ecd2a6;max-width:430px
+}
+@media(max-width:840px){
+ .enchanted-book-studio{
+  grid-template-columns:minmax(0,1fr) minmax(215px,300px);
+  padding:35px 25px 25px;gap:15px
+ }
+ .enchanted-book-display{height:388px}
+ .enchanted-book-intro h3{font-size:48px}
+ .enchanted-book-cover{width:80%}
+}
+@media(max-width:630px){
+ .enchanted-book-studio{
+  grid-template-columns:minmax(0,1fr);
+  padding:35px 22px 28px;
+  gap:16px;
+ }
+ .enchanted-book-intro{grid-row:1;grid-column:1;text-align:center}
+ .enchanted-book-intro h3{font-size:clamp(40px,11vw,58px)}
+ .enchanted-book-intro>p{margin-inline:auto}
+ .enchanted-book-metrics{justify-content:center}
+ .enchanted-book-display{grid-row:2;grid-column:1;height:353px}
+ .enchanted-book-cover{width:min(65%,242px)}
+ .enchanted-book-spread{width:65%;max-width:223px;height:260px}
+ .enchanted-book-actions{grid-row:3;grid-column:1;text-align:center}
+ .enchanted-book-actions>p:first-child{margin-inline:auto}
+ .enchanted-book-download{max-width:none;text-align:left}
+ .enchanted-book-status{text-align:center;max-width:none}
+}
+@media(max-width:370px){
+ .enchanted-book-studio{padding-inline:14px}
+ .enchanted-book-download{padding:13px 11px;font-size:16px;gap:10px}
+ .enchanted-book-download-icon{width:38px;height:38px;flex-basis:38px;font-size:30px}
+ .enchanted-book-mark{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .enchanted-book-cover,.enchanted-book-download{transition:none!important}
+}
+@media print{.enchanted-book-studio{display:none!important}}
