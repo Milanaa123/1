@@ -63,7 +63,7 @@ def main():
                     fail(f"Archive SHA-256 mismatch for {filename}")
                 width,height=struct.unpack(">II",body[16:24])
                 if width<200 or height<200:fail(f"Suspicious image dimensions: {filename}")
-                scientific=match.group(2).replace("_"," ")
+                scientific=match.group(2).replace("_"," ")\n                if filename.endswith("_reconstruction.png"):\n                    scientific=scientific.removesuffix(" reconstruction")
                 out_path="new/"+filename
                 if out_path in known_names:fail(f"Existing image cannot be overwritten: {out_path}")
                 if digest in known_shas:fail(f"Image duplicates original 275: {filename}")
@@ -126,7 +126,8 @@ def main():
         ('ANIMAGIA_275_ORIGINAL_RGBA_PNG_PUBLISHED','ANIMAGIA_400_ORIGINAL_RGBA_PNG_PUBLISHED')],
       "build_data.py":[
         ("shutil.copy2(BASE/'new_art_167.js',DEST/'new_art_167.js')",
-         "shutil.copy2(BASE/'new_art_167.js',DEST/'new_art_167.js');shutil.copy2(BASE/'new_art_125.js',DEST/'new_art_125.js')")],
+         "shutil.copy2(BASE/'new_art_167.js',DEST/'new_art_167.js');shutil.copy2(BASE/'new_art_125.js',DEST/'new_art_125.js')"),
+        ("approved 275 original PNG assets only","approved 400 original PNG assets only")],
       "index.html":[
         ('<script src="./new_art_167.js?v=','<script src="./new_art_167.js?v=')]
     }
@@ -146,6 +147,49 @@ def main():
     if newtag in content:fail("New mapping script already loaded")
     content=content[:script_tag.end()]+newtag+content[script_tag.end():]
     html.write_text(content,encoding="utf8")
+    # The original 167 drawings remain independently tested; add a separate
+    # acceptance test for all new 125 names, paths and originals.
+    tests=ROOT/"tests"/"test-approved-only-art.cjs"
+    test_content=tests.read_text(encoding="utf8")
+    edits=[
+      ("'selected_art_107.js','new_art_167.js'","'selected_art_107.js','new_art_167.js','new_art_125.js'"),
+      ("only the 275 accepted","only the 400 accepted"),
+      ("assert.equal(manifest.count,275)","assert.equal(manifest.count,400)"),
+      ("assert.equal(rows.length,275)","assert.equal(rows.length,400)"),
+      ("assert.equal(new Set(rows.map(x=>x.file)).size,275)","assert.equal(new Set(rows.map(x=>x.file)).size,400)"),
+      ("assert.equal(atlas.originalArtworkCount,275)","assert.equal(atlas.originalArtworkCount,400)"),
+      ("assert.equal(manifest.new,167)","assert.equal(manifest.new,292)"),
+      ("rows.filter(x=>x.file.startsWith('new/'))","rows.filter(x=>x.file.startsWith('new/')&&x.number<=276)")
+    ]
+    for before,after in edits:
+        if test_content.count(before)!=1:fail(f"Unexpected test marker: {before}")
+        test_content=test_content.replace(before,after)
+    test_content += """
+test('all 125 additional original artwork files are attached to exact scientific species',()=>{
+  const extra=atlas.additionalOriginalArtworkExamples;
+  assert.equal(extra.length,125);
+  const mapped=new Set();
+  for(const example of extra){
+    const entry=rows.find(x=>x.file===example.file);
+    assert(entry,'Missing manifest record '+example.file);
+    assert(entry.number===269||entry.number>=277&&entry.number<=400);
+    const result=atlas.resolve([1540,example.scientific,'species','Mammalia','Carnivora']);
+    assert.equal(result?.file,example.file);
+    assert.equal(result?.name,example.name);
+    assert.equal(result?.exact,example.scientific!=='Froekenia clara');
+    mapped.add(example.file);
+    assert.equal(atlas.resolve([1540,example.scientific,'subspecies']),null);
+  }
+  assert.equal(mapped.size,125);
+});
+"""
+    tests.write_text(test_content,encoding="utf8")
+    workflow=ROOT/".github"/"workflows"/"animagia-quality.yml"
+    quality=workflow.read_text(encoding="utf8")
+    if quality.count("new_art_167.js")!=1:fail("Missing quality script check")
+    quality=quality.replace("new_art_167.js","new_art_167.js new_art_125.js")
+    quality=quality.replace("Verify 275 source PNG","Verify 400 source PNG")
+    workflow.write_text(quality,encoding="utf8")
     print("ANIMAGIA_IMPORT_125_PASS",json.dumps({
         "added":len(new),"total":old["count"],
         "new":old["new"],"bytes":sum(len(new[n][5]) for n in new),
