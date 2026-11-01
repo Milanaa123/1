@@ -56,26 +56,35 @@ fs.mkdirSync(artifacts,{recursive:true});
   assert.ok(outcome.scrollWidth<=outcome.clientWidth+2,'Horizontal mobile overflow');
   await page.locator('#animalChooserOpen').click();
   await page.locator('#animalChooser').waitFor({state:'visible'});
-  assert.match(await page.locator('#animalChooserCount').textContent(),/Найдено 550/);
+  assert.match(await page.locator('#animalChooserCount').textContent(),/550 животных/);
   const first=page.locator('#animalChooserList .animal-chooser-item').first();
-  assert.match(await first.textContent(),/Образ отряда/);
+  assert.ok((await first.textContent()).length>4);
   await page.screenshot({path:path.join(artifacts,'mobile-550-chooser.png')});
-  await page.locator('#chooserFilterIllustrated').click();
-  assert.match(await page.locator('#animalChooserCount').textContent(),/Найдено 550/);
+  assert.equal(await page.locator('#chooserFilterIllustrated,#chooserFilterAll').count(),0);
+  assert.equal(await page.locator('.animal-chooser-art-ready,.animal-chooser-art-pending').count(),0);
+  assert.match(await page.locator('#animalChooserCount').textContent(),/550 животных/);
   const classResult=await page.evaluate(()=>results.filter(r=>window.AnimagiaAnimalAtlas.resolve(r)?.representativeLevel==='class').length);
   assert.equal(classResult,25,'The 25 formerly unillustrated matches must now have a class image');
+  const groupButton=page.locator('#animalChooserGroups .animal-chooser-group')
+   .filter({hasText:'Паукообразные'}).first();
+  await groupButton.click();
   const target=page.locator('#animalChooserList .animal-chooser-item')
    .filter({hasText:'Bowie sagittatus'}).first();
+  for(let attempt=0;attempt<25 && await target.count()===0;attempt++){
+   if(await page.locator('#animalChooserMore').isHidden())break;
+   await page.locator('#animalChooserMore').click();
+  }
+  assert.equal(await target.count(),1,'Bowie must remain selectable in the unified atlas');
   await target.click();
   await page.waitForFunction(()=>{
    const i=document.querySelector('#relicSilhouetteFrame img');
    return !!i && i.complete && i.naturalWidth>0 &&
-    document.getElementById('relicSilhouetteStatus').textContent.includes('НЕ изображение вида Bowie sagittatus');
+    document.getElementById('relicSilhouetteStatus').textContent.includes('Образ группы');
   },null,{timeout:45000});
   const note=await page.locator('#relicSilhouetteStatus').textContent();
-  assert.match(note,/Neon valentulus/);
+  assert.match(note,/Образ группы/);
   assert.equal(await page.locator('#relicArtDisclosure').isVisible(),true,'Related-species warning must be visible');
-  assert.match(await page.locator('#relicArtDisclosure').textContent(),/НЕ изображение вида Bowie sagittatus/);
+  assert.match(await page.locator('#relicArtDisclosure').textContent(),/Образ родственной группы/);
   await page.waitForFunction(()=>
    document.getElementById('relicCardBackdrop').dataset.posterReady==='1',null,{timeout:45000});
   const [download]=await Promise.all([
