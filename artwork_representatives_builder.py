@@ -129,6 +129,14 @@ def build_representative_art(base: Path, public: Path, required_classes: dict | 
             raise AssertionError("Unverified family assignment: "+scientific+" -> "+key)
         family[key]=approved_record(scientific)
         family_class[row[3]+"|"+row[7]]=approved_record(scientific)
+    # Use the wolf, not the generic jackal, for other species of Canis.
+    preferred_genus={"Mammalia|Carnivora|Canidae|Canis":"Canis lupus"}
+    for key,scientific in preferred_genus.items():
+        row=found.get(scientific)
+        if row is None or row[3]+"|"+row[4]+"|"+row[7]+"|"+scientific.split(" ",1)[0]!=key:
+            raise AssertionError("Unverified genus assignment: "+scientific+" -> "+key)
+        genus[key]=approved_record(scientific)
+        genus_class[row[3]+"|"+row[7]+"|"+scientific.split(" ",1)[0]]=approved_record(scientific)
     for cls,scientific in preferred_class.items():
         row=found.get(scientific)
         if row is None or row[3]!=cls:
