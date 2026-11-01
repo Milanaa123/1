@@ -36,7 +36,7 @@ test('The favored magic circle remains the established, unchanged algorithm',()=
  assert.ok(js.includes('function nameArc(glyphs,font,r)'));
  assert.ok(js.includes("transform:'rotate('"));
  assert.ok(js.includes("decorateSVG(svg,sum,get('greek').value)"));
- assert.ok(html.includes('relic-card-disclaimer'));
+ assert.ok(html.includes('relic-preview-note'),'The decorative card retains its poetic final caption');
 });
 test('Card uses proportional title / figure / ecology / exact matching values',()=>{
  const order=['class="relic-card-masthead"','id="personalSeal"',
