@@ -11,7 +11,7 @@ const root=path.join(__dirname,'..');
 const script=fs.readFileSync(path.join(root,'app.js'),'utf8');
 const ctx={document:{addEventListener(){}}};
 const api=vm.runInNewContext(script+`
-;({nameGreekFromLatin,validLatinName,validGreek,score,nameLatin,validSourceName,sourceNameIsLatin,latinNeedsConfirmation,sourceLatinConfirmed})
+;({nameGreekFromLatin,validLatinName,validGreek,score,nameLatin,validSourceName,sourceNameIsLatin})
 `,ctx,{filename:'app.js'});
 const keycases=[
  ['Fraser','Φρασερ',906],
@@ -77,30 +77,4 @@ test('visible example accurately explains written transliteration',()=>{
  assert.ok(html.includes('транслитерация латинских букв'));
  assert.ok(html.includes('Если известен английский оригинал, введи его сразу латиницей'));
  assert.ok(!html.includes('placeholder="Φρέιζερ Ἁρολδός Βρούν"'));
-});
-
-test('Cyrillic input requires confirmation of original Latin spelling before scoring',()=>{
- const nodes={
-  name:{value:'Фрейзер Гарольд Браун'},
-  latinOriginalConfirmed:{checked:false}
- };
- ctx.document.getElementById=id=>nodes[id];
- assert.equal(api.latinNeedsConfirmation(nodes.name.value),true);
- assert.equal(api.nameLatin(nodes.name.value),'Freyzer Garold Braun');
- assert.equal(api.score(api.nameGreekFromLatin(api.nameLatin(nodes.name.value))),1878);
- assert.equal(api.sourceLatinConfirmed(),false);
- nodes.latinOriginalConfirmed.checked=true;
- assert.equal(api.sourceLatinConfirmed(),true);
- nodes.name.value='Fraser Harold Brown';
- nodes.latinOriginalConfirmed.checked=false;
- assert.equal(api.latinNeedsConfirmation(nodes.name.value),false);
- assert.equal(api.sourceLatinConfirmed(),true);
- assert.equal(api.score(api.nameGreekFromLatin(api.nameLatin(nodes.name.value))),1339);
-});
-test('site requires explicit checked Latin original only for Cyrillic input',()=>{
- const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
- assert.match(html,/id="latinOriginalConfirmed" type="checkbox"/);
- assert.match(html,/id="latinOriginalConfirmRow"/);
- assert.match(html,/Freyzer Garold Braun/);
- assert.match(html,/Fraser Harold Brown/);
 });
