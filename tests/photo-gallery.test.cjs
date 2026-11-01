@@ -160,7 +160,7 @@ test('TOP-30 has no obsolete full-screen photo modal and keeps stable per-specie
 
 test('TOP-30 cards contain REAL verified photographs only, never general taxonomic artwork',()=>{
  const html=fs.readFileSync('index.html','utf8');
- assert.match(html,/photo_gallery\.js\?v=original-photo-only-top30-20261102/);
+ assert.match(html,/photo_gallery\.js\?v=clean-bestiary-20261102/);
  assert.match(source,/photoButton\.addEventListener\('click',\(\)=>photoToggleInline\(item,photoButton,photoPanel\)\)/);
  assert.match(source,/image\.src=preview/);
  assert.match(source,/item\.photo\.source/);
@@ -169,4 +169,12 @@ test('TOP-30 cards contain REAL verified photographs only, never general taxonom
  assert.ok(!source.includes('bestiary-illustration-label'),
   'A family/class drawing may not be presented as a real animal photo');
  assert.match(source,/li\.append\(top,body\)/);
+});
+
+test('Polished photo-only bestiary has no technical QA blocks inside animal cards',()=>{
+ assert.ok(!source.includes('bestiary-verification'));
+ assert.ok(!source.includes('bestiary-name-origin'));
+ assert.ok(!source.includes('греческая сумма · точное совпадение'));
+ assert.ok(source.includes('link.href=item.photo.source'),'Photographer attribution is retained');
+ assert.ok(source.includes("photoButton.textContent='Посмотреть фотографию'"));
 });
