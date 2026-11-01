@@ -80,8 +80,13 @@ def main():
     for number in sorted(new):
         rel,scientific,width,height,digest,body,filename=new[number]
         destination=ART/rel
-        if destination.exists():fail(f"Existing artwork would be overwritten: {rel}")
-        destination.write_bytes(body)
+        if destination.exists():
+            # A handful of older uploads are present in Git but missing from
+            # the 275-entry index. Reuse only byte-identical files.
+            if hashlib.sha256(destination.read_bytes()).hexdigest()!=digest:
+                fail(f"Existing artwork differs from the approved archive: {rel}")
+        else:
+            destination.write_bytes(body)
         old["files"].append({"number":number,"name":scientific,"file":rel,
                              "width":width,"height":height,"sha256":digest})
         examples.append([scientific,rel,scientific])
