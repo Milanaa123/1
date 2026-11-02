@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      FIREBASE_PROJECT_ID: ${{ vars.ANIMAGIA_FIREBASE_PROJECT_ID }}
+      FIREBASE_PROJECT_ID: animagia-d34f9
       FIREBASE_AUTH_CONFIGURED: ${{ secrets.ANIMAGIA_FIREBASE_SERVICE_ACCOUNT != '' }}
     steps:
       - name: Checkout independent branch (Render branch unchanged)
@@ -66,5 +66,5 @@ jobs:
         if: ${{ env.FIREBASE_PROJECT_ID == '' || env.FIREBASE_AUTH_CONFIGURED != 'true' }}
         run: |
           echo "::notice::The static site was checked but NOT published to Firebase."
-          echo "::notice::Set repository variable ANIMAGIA_FIREBASE_PROJECT_ID and secret ANIMAGIA_FIREBASE_SERVICE_ACCOUNT."
+          echo "::notice::Set GitHub Actions secret ANIMAGIA_FIREBASE_SERVICE_ACCOUNT; Firebase project ID is already configured."
           echo "::notice::Original Render service and animagia-site branch were not modified."
