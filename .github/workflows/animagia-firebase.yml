@@ -1,0 +1,70 @@
+name: Animagia independent Firebase mirror
+on:
+  push:
+    branches: [animagia-firebase]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: animagia-firebase
+  cancel-in-progress: true
+
+jobs:
+  build-audit-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      FIREBASE_PROJECT_ID: ${{ vars.ANIMAGIA_FIREBASE_PROJECT_ID }}
+      FIREBASE_AUTH_CONFIGURED: ${{ secrets.ANIMAGIA_FIREBASE_SERVICE_ACCOUNT != '' }}
+    steps:
+      - name: Checkout independent branch (Render branch unchanged)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build complete static Animagia publication
+        run: |
+          python3 build_data.py > /tmp/animagia-firebase-build.log 2>&1 || { tail -n 100 /tmp/animagia-firebase-build.log; exit 1; }
+          tail -n 8 /tmp/animagia-firebase-build.log | cut -c1-320
+      - name: Verify 400 original PNG hashes and all catalogue rows
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json
+          root=Path('public')
+          manifest=json.loads((root/'art/animagia-original-400/manifest.json').read_text(encoding='utf-8'))
+          meta=json.loads((root/'meta.json').read_text(encoding='utf-8'))
+          assert (root/'index.html').is_file()
+          assert (root/'data/53.json').is_file()
+          assert manifest['count']==400 and len(manifest['files'])==400
+          assert meta['quality_audit']['status']=='passed'
+          assert meta['quality_audit']['checked_records']==1193864
+          total=0
+          for f in root.rglob('*'):
+              if f.is_file(): total+=f.stat().st_size
+          assert total < 10_000_000_000, f'Exceeds Firebase free Hosting storage limit: {total}'
+          for item in manifest['files']:
+              blob=(root/'art/animagia-original-400'/item['file']).read_bytes()
+              assert blob[:8] == bytes.fromhex('89504e470d0a1a0a')
+              assert hashlib.sha256(blob).hexdigest()==item['sha256'],item['file']
+          print('FIREBASE_READY byte_size=',total,'approved_original_pngs=',manifest['count'],
+                'verified_records=',meta['quality_audit']['checked_records'])
+          PY
+      - name: Publish separate Firebase URL only if project and credentials are configured
+        if: ${{ env.FIREBASE_PROJECT_ID != '' && env.FIREBASE_AUTH_CONFIGURED == 'true' }}
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          firebaseServiceAccount: ${{ secrets.ANIMAGIA_FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ env.FIREBASE_PROJECT_ID }}
+          channelId: live
+      - name: Explain why Firebase publication was skipped
+        if: ${{ env.FIREBASE_PROJECT_ID == '' || env.FIREBASE_AUTH_CONFIGURED != 'true' }}
+        run: |
+          echo "::notice::The static site was checked but NOT published to Firebase."
+          echo "::notice::Set repository variable ANIMAGIA_FIREBASE_PROJECT_ID and secret ANIMAGIA_FIREBASE_SERVICE_ACCOUNT."
+          echo "::notice::Original Render service and animagia-site branch were not modified."
